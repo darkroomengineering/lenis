@@ -1,0 +1,128 @@
+.c-header {
+    position: relative;
+
+    @media (max-width: $to-small) {
+        height: 50vh;
+        min-height: 340px;
+    }
+
+    @media (min-width: $from-small) and (max-width: $to-medium) {
+        height: 80vh;
+        min-height: 380px;
+    }
+
+    @media (min-width: $from-medium) {
+        height: 100vh;
+        min-height: rem(750px);
+    }
+}
+
+.c-header_title {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    margin: 0;
+    padding: rem($unit-small) 0;
+    perspective: 600px;
+    -webkit-perspective: 600px;
+}
+
+.c-header_line {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    left: 0;
+    margin: 0;
+    transform: scaleX(0);
+    transition: transform 0.6s $easing;
+
+    &.is-inview {
+        transform: scaleX(1)
+    }
+}
+
+.c-header_title_line {
+   display: block;
+   opacity: 0;
+   transform-origin: center top;
+   transform-style: preserve-3d;
+   transform: translateY(100%) rotateX(-80deg);
+   transition: opacity 0s $Power2EaseOut, transform 0s $Power2EaseOut;
+
+   html.is-ready & {
+       transform: none;
+       opacity: 1;
+       transition-duration: 0.8s;
+
+       @for $i from 1 through 4 {
+           &:nth-child(#{$i}){
+               transition-delay: $i*0.1s;
+           }
+       }
+   }
+
+   span {
+        display: inline-block;
+    }
+
+   &.-version {
+        text-transform: none;
+        font-size: 0;
+    }
+}
+
+
+
+.c-header_heading {
+    padding: rem(30px) 0;
+}
+
+.c-header_heading_label {
+    display: block;
+    transition: transform 0s $easing;
+
+    transform: translateY(-60px);
+
+    html.is-ready & {
+        transform: none;
+        transition-duration: 0.6s;
+
+    }
+
+    html.is-ready .o-layout_item:nth-child(2) & {
+        transition-delay: 0.1s;
+    }
+}
+
+.c-header_logo {
+    position: absolute;
+    bottom: rem(40px);
+    right: 0;
+    opacity: 0;
+    transform: translateY($unit * 2);
+    transition: opacity 0s $Power2EaseOut, transform 0s $Power2EaseOut;
+
+    @media (max-width: $to-small) {
+        width: 30px;
+        height: 66px;
+    }
+
+    @media (min-width: $from-small) {
+        width: rem(64px);
+        height: rem(140px);
+    }
+
+    svg {
+        display: block;
+        width: 100%;
+        height: 100%;
+    }
+
+    html.is-ready & {
+        transform: none;
+        opacity: 1;
+        transition-delay: 0.6s;
+        transition-duration: 0.6s;
+
+    }
+}

@@ -1,0 +1,34 @@
+.o-title {
+    margin: 0;
+    padding: rem($unit-small) 0;
+    perspective: 600px;
+    -webkit-perspective: 600px;
+}
+
+
+.o-title_line {
+    display: block;
+    opacity: 0;
+    transform-origin: center top;
+    transform-style: preserve-3d;
+    transform: translateY(100%) rotateX(-80deg);
+    transition: opacity 0.8s $Power2EaseOut, transform 0.8s $Power2EaseOut;
+    font-size: 0;
+
+    .o-title.is-inview & {
+        transform: none;
+        opacity: 1;
+
+        @for $i from 1 through 4 {
+            &:nth-child(#{$i}){
+                transition-delay: 0.3 + $i*0.1s;
+            }
+        }
+    }
+
+    span {
+        display: inline-block;
+        min-width: 0.05em;
+        font-size: $font-size-h1;
+    }
+}

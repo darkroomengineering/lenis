@@ -1,0 +1,17 @@
+{
+  "name": "lenis",
+  "private": true,
+  "version": "0.0.0",
+  "scripts": {
+    "dev": "vite docs",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "devDependencies": {
+    "vite": "^2.8.0"
+  },
+  "dependencies": {
+    "normalize.css": "^8.0.1",
+    "sass": "^1.49.8"
+  }
+}

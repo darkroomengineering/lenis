@@ -1,0 +1,60 @@
+.c-cta_line {
+    margin: 0;
+    transform: scaleX(0);
+    transition: transform 0.6s $easing;
+
+    &.-margin {
+        margin-bottom: 30px;
+    }
+
+    &.is-inview {
+        transform: scaleX(1)
+    }
+}
+
+.c-cta_content {
+    margin: rem($unit) 0;
+}
+
+.c-cta_content_text {
+    max-width: 520px;
+
+    > * {
+        opacity: 0;
+        transform: translateY(60px);
+        transition: opacity 0.6s $easing, transform 0.6s $easing;
+
+        &:not(:first-child) {
+            margin-top: rem(30px);
+        }
+    }
+
+    &.is-inview {
+        > * {
+            opacity: 1;
+            transform: none;
+
+            @for $i from 1 through 3 {
+                &:nth-child(#{$i}){
+                    transition-delay: $i*0.06s;
+                }
+            }
+        }
+    }
+}
+
+.c-cta_button {
+    opacity: 0;
+    transform: translateY(60px);
+    transition: opacity 0.6s $easing, transform 0.6s $easing;
+    margin-top: rem(90px);
+
+    &.is-inview {
+        opacity: 1;
+        transform: none;
+    }
+}
+
+.c-cta_section {
+    margin-bottom: rem(180px);
+}

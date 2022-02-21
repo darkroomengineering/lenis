@@ -1,0 +1,42 @@
+.o-image_wrapper {
+    position: relative;
+    overflow: hidden;
+    background-color: hsl(0,11%, 81%);
+
+    &.-full {
+        height: 100%;
+        margin: 0 rem(100px);
+        display: flex;
+        align-content: center;
+
+        
+        @media (max-width: $to-small) {
+            margin: rem($unit/2) 0;
+        }
+    }
+}
+
+.o-image {
+    opacity: 0.75;
+    mix-blend-mode: multiply;
+
+    img {
+        width: 100%;
+        opacity: 0;
+        transform: scale(1.4);
+        transition: opacity 1.2s $Power2EaseOut, transform 1.2s $Power2EaseOut;
+    }
+
+    &.is-inview {
+        img {
+            opacity: 1;
+            transform: scale(1);
+            transition-delay: 0.6s;
+        }
+    }
+
+    .o-image_wrapper.-full & {
+        align-self: center;
+
+    }
+}

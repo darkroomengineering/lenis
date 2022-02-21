@@ -1,0 +1,14 @@
+.c-intro {
+    margin: rem($unit * 2) 0;
+    font-size: rem(35px);
+    line-height: 1.2;
+    opacity: 0;
+    transform: translateY($unit);
+    transition: opacity 0.6s $easing, transform 0.6s $easing;
+
+    &.is-inview {
+        opacity: 1;
+        transform: none;
+        transition-delay: 0.3s;
+    }
+}

@@ -1,0 +1,37 @@
+// ==========================================================================
+// Objects / Ratio
+// ==========================================================================
+
+/**
+ * Create ratio-bound content blocks, to keep media (e.g. images, videos) in
+ * their correct aspect ratios.
+ *
+ * http://alistapart.com/article/creating-intrinsic-ratios-for-video
+ *
+ * 1. Default cropping is a 1:1 ratio (i.e. a perfect square).
+ */
+.o-ratio {
+    position: relative;
+    display: block;
+    overflow: hidden;
+
+    &:before {
+        display: block;
+        padding-bottom: 100%; /* [1] */
+        width: 100%;
+        content: "";
+    }
+}
+
+.o-ratio_content,
+    .o-ratio > img,
+    .o-ratio > iframe,
+    .o-ratio > embed,
+    .o-ratio > object {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    // height: 100%;
+}

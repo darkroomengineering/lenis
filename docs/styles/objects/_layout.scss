@@ -1,0 +1,119 @@
+// ==========================================================================
+// Objects / Layout
+// ==========================================================================
+
+//
+// Grid-like layout system.
+//
+// The layout object provides us with a column-style layout system. This file
+// contains the basic structural elements, but classes should be complemented
+// with width utilities, for example:
+//
+// @example
+//   <div class="o-layout">
+//     <div class="o-layout_item  u-1/1  u-1/3@medium">
+//     </div>
+//     <div class="o-layout_item  u-1/2  u-1/3@medium">
+//     </div>
+//     <div class="o-layout_item  u-1/2  u-1/3@medium">
+//     </div>
+//   </div>
+//
+// We can also manipulate entire layout systems by adding a series of modifiers
+// to the `.o-layout` block. For example:
+//
+// @example
+//   <div class="o-layout  -reverse">
+//
+// This will reverse the displayed order of the system so that it runs in the
+// opposite order to our source, effectively flipping the system over.
+//
+// @example
+//   <div class="o-layout  -[right|center]">
+//
+// This will cause the system to fill up from either the centre or the right
+// hand side. Default behaviour is to fill up the layout system from the left.
+//
+// @requires tools/layout
+// @link https://github.com/inuitcss/inuitcss/blob/0420ba8/objects/_objects.layout.scss
+//
+
+.o-layout {
+    @include o-layout;
+
+    // Gutter modifiers
+    &.-gutter {
+        margin-left: rem(-$unit);
+    }
+
+    &.-gutter-small {
+        margin-left: rem(-$unit/2);
+    }
+
+    // Horizontal alignment modifiers
+    &.-center {
+        text-align: center;
+    }
+
+    &.-right {
+        text-align: right;
+    }
+
+    &.-reverse {
+        direction: rtl;
+
+        &.-flex {
+            flex-direction: row-reverse;
+        }
+    }
+
+    &.-flex {
+         display: flex;
+
+         &.-top {
+            align-items: flex-start;
+         }
+         &.-middle {
+            align-items: center;
+         }
+         &.-bottom {
+            align-items: flex-end;
+         }
+    }
+    &.-stretch {
+        align-items: stretch;
+    }
+}
+
+.o-layout_item {
+    @include o-layout_item;
+
+    // Gutter modifiers
+    .o-layout.-gutter > & {
+        padding-left: rem($unit);
+    }
+
+    .o-layout.-gutter-small > & {
+        padding-left: rem($unit/2);
+    }
+
+    // Vertical alignment modifiers
+    .o-layout.-middle > & {
+        vertical-align: middle;
+    }
+
+    .o-layout.-bottom > & {
+        vertical-align: bottom;
+    }
+
+    // Horizontal alignment modifiers
+    .o-layout.-center > &,
+    .o-layout.-right > &,
+    .o-layout.-reverse > & {
+        text-align: left;
+    }
+
+    .o-layout.-reverse > & {
+        direction: ltr;
+    }
+}

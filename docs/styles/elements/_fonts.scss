@@ -1,0 +1,15 @@
+// ==========================================================================
+// Base / Fonts
+// ==========================================================================
+
+
+@font-face {
+    font-family: 'Neue Montreal';
+    src: url('../fonts/NeueMontreal-Medium.woff2') format('woff2'),
+        url('../fonts/NeueMontreal-Medium.woff') format('woff');
+    font-weight: 500;
+    font-style: normal;
+}
+$font-neue-montreal: 'Neue Montreal';
+
+$font-lucida : 'Lucida Grande';

@@ -1,0 +1,59 @@
+// ==========================================================================
+// Objects / Buttons
+// ==========================================================================
+.o-button {
+    position: relative;
+    z-index: 1;
+    color: white;
+    padding: rem(32px) rem(35px);
+    font-size: rem(24px);
+    background-color: $black;
+    transition: color 0.3s $easing;
+    width: 100%;
+    text-align: left;
+
+    &::before{
+        content:"";
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        right: 0;
+        left: 0;
+        z-index: -1;
+        transform: scaleY(0);
+        transform-origin: center top;
+        background-color: $white;
+        transition: transform 0.3s $easing;
+    }
+
+
+    @include u-hocus {
+        color: $black;
+
+        &::before {
+            transform: scaleY(1);
+            transform-origin: center bottom;
+        }
+    }
+}
+
+.o-button_icon {
+    display: inline-block;
+    vertical-align: middle;
+    width: rem(55px);
+    height: rem(55px);
+    margin-right: rem($unit / 4);
+
+    svg {
+        display: block;
+        width: 100%;
+        height: 100%;
+    }
+}
+
+.o-button_arrow {
+    position: absolute;
+    top: 50%;
+    right: rem(35px);
+    transform: translateY(-50%);
+}

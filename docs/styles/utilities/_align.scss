@@ -1,0 +1,49 @@
+// ==========================================================================
+// Utilities / Alignment
+// ==========================================================================
+
+// Floats
+// ==========================================================================
+.u-float-left {
+    float: left !important;
+}
+
+.u-float-right {
+    float: right !important;
+}
+
+// Horizontal Text
+// ==========================================================================
+.u-text-center {
+    text-align: center !important;
+}
+
+.u-text-left {
+    text-align: left !important;
+}
+
+.u-text-right {
+    text-align: right !important;
+}
+
+// Vertical Text
+// ==========================================================================
+.u-align-baseline {
+    vertical-align: baseline !important;
+}
+
+.u-align-bottom {
+    vertical-align: bottom !important;
+}
+
+.u-align-middle {
+    vertical-align: middle !important;
+}
+
+.u-align-top {
+    vertical-align: top !important;
+}
+
+.u-vertical-center {
+    @include o-vertical-center;
+}

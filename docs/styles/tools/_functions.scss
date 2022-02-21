@@ -1,0 +1,128 @@
+// Tools / Functions
+// ==========================================================================
+
+//
+// Converts the given pixel value to its EM quivalent.
+//
+// @param  {Number} $size                     - The pixel value to convert.
+// @param  {Number} $base [$font-size] - The assumed base font size.
+// @return {Number} Scalable pixel value in EMs.
+//
+@function em($size, $base: $font-size) {
+    @if (type-of($size) == number) {
+        @if (unit($size) != "px") {
+            @error "`#{$size}` needs to be a pixel value.";
+        }
+    } @else {
+        @error "`#{$size}` needs to be a number.";
+    }
+
+    @if (type-of($base) == number) {
+        @if (unit($base) != "px") {
+            @error "`#{$base}` needs to be a pixel value.";
+        }
+    } @else {
+        @error "`#{$base}` needs to be a number.";
+    }
+
+    @return ($size / $base) * 1em;
+}
+
+//
+// Converts the given pixel value to its REM quivalent.
+//
+// @param  {Number} $size                     - The pixel value to convert.
+// @param  {Number} $base [$font-size] - The assumed base font size.
+// @return {Number} Scalable pixel value in REMs.
+//
+@function rem($size, $base: $font-size) {
+    @if (type-of($size) == number) {
+        @if (unit($size) != "px") {
+            @error "`#{$size}` needs to be a pixel value.";
+        }
+    } @else {
+        @error "`#{$size}` needs to be a number.";
+    }
+
+    @if (type-of($base) == number) {
+        @if (unit($base) != "px") {
+            @error "`#{$base}` needs to be a pixel value.";
+        }
+    } @else {
+        @error "`#{$base}` needs to be a number.";
+    }
+
+    @return ($size / $base) * 1rem;
+}
+
+//
+// Converts a number to a percentage.
+//
+// @alias  percentage()
+// @link   http://sassdoc.com/annotations/#alias
+// @param  {Number} $number - The value to convert.
+// @return {Number} A percentage.
+//
+@function span($number) {
+    @return percentage($number);
+}
+
+//
+// Checks if a list contains a value(s).
+//
+// @link   https://github.com/thoughtbot/bourbon/blob/master/core/bourbon/validators/_contains.scss
+// @param  {List} $list   - The list to check against.
+// @param  {List} $values - A single value or list of values to check for.
+// @return {Boolean}
+// @access private
+//
+@function list-contains(
+    $list,
+    $values...
+) {
+    @each $value in $values {
+        @if type-of(index($list, $value)) != "number" {
+            @return false;
+        }
+    }
+
+    @return true;
+}
+
+//
+// Resolve whether a rule is important or not.
+//
+// @param  {Boolean}     $flag - Whether a rule is important (TRUE) or not (FALSE).
+// @return {String|Null} Returns `!important` or NULL.
+//
+@function important($flag: false) {
+    @if ($flag == true) {
+        @return !important;
+    } @elseif ($important == false) {
+        @return null;
+    } @else {
+        @error "`#{$flag}` needs to be `true` or `false`."
+    }
+}
+
+//
+// Determine if the current context is for a WYSIWYG editor.
+//
+// @requires {String} $context - The global context of the stylesheet.
+// @return   {Boolean} If the $context is set to "editor".
+//
+@function is-editor() {
+    @return ('editor' == $context);
+}
+
+//
+// Determine if the current context is for the front-end.
+//
+// @requires {String} $context - The global context of the stylesheet.
+// @return   {Boolean} If the $context is set to "frontend".
+//
+@function is-frontend() {
+    @return ('frontend' == $context);
+}
+
+$context: 'frontend' !default;

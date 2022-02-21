@@ -1,0 +1,85 @@
+.c-direction-block_wrapper {
+    margin-bottom: rem(500px);
+
+    @media (min-width: $from-large) {
+        min-height: 180vh;
+    }
+    @media (min-width: $from-medium) and (max-width: $to-large) {
+        min-height: 130vh;
+    }
+    @media (min-width: $from-small) and (max-width: $to-medium) {
+        min-height: 100vh;
+    }
+    @media (max-width: $to-small) {
+        min-height: 70vh;
+    }
+
+    @media (min-width: $from-medium) {
+        margin-top: -35vh;
+    }
+}
+
+.c-direction-block {
+    position: absolute;
+    right: 0;
+    left: 0;
+    z-index: 1;
+
+    @media (min-width: $from-large) {
+        top: -50vh;
+        bottom: -50vh;
+    }
+    @media (min-width: $from-small) and (max-width: $to-large) {
+        top: -30vh;
+        bottom: -50vh;
+    }
+    @media (max-width: $to-small) {
+        top: -15vh;
+        bottom: 0;
+    }
+
+    @media (min-width: $from-medium) and (max-width: $to-large) {
+        margin-top: rem(100px);
+    }
+
+    @media (min-width: $from-large) {
+        margin-top: rem(300px);
+    }
+}
+
+.c-direction-block_item {
+    position: absolute;
+    font-size: 10vw;
+    white-space: nowrap;
+    font-weight: $semi-bold;
+    text-transform: uppercase;
+    line-height: 1;
+
+    span {
+        display: block;
+        background-color: $white;
+        white-space: nowrap;
+        padding: 0 20px;
+    }
+
+    &.-one {
+        top: 33%;
+        transform: translateX(-50vw) rotate(26deg)
+    }
+    &.-two {
+        top: 45%;
+        // transform: translateX(-50vw);
+    }
+    &.-three {
+        top: 55%;
+        transform: rotate(9deg)
+    }
+    &.-four {
+        top: 68%;
+        transform: translateX(-50vw) rotate(-19deg)
+    }
+    &.-five {
+        top: 63%;
+        transform: translateX(-10vw) rotate(3deg)
+    }
+}

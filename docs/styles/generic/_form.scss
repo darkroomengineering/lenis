@@ -1,0 +1,44 @@
+// ==========================================================================
+// Generic / Forms
+// ==========================================================================
+
+input,
+select,
+textarea {
+    display: block;
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    outline: 0;
+    border: 0;
+    border-radius: 0;
+    background: none transparent;
+    color: inherit;
+    font: inherit;
+    line-height: normal;
+    appearance: none;
+}
+
+select {
+    text-transform: none;
+
+    &::-ms-expand {
+        display: none;
+    }
+
+    &::-ms-value {
+        background: none;
+        color: inherit;
+    }
+
+    // Remove Firefox :focus dotted outline, breaks color inherit
+    // &:-moz-focusring {
+    //     color: transparent;
+    //     text-shadow: 0 0 0 #000000; // Text :focus color
+    // }
+}
+
+textarea {
+    overflow: auto;
+    resize: vertical;
+}

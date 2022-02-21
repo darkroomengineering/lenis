@@ -1,0 +1,10 @@
+.c-features {
+    padding: rem($unit * 2) 0;
+}
+
+.c-features_item {
+    background-color: rgba(0,0,0,0.1);
+    border-radius: 20px;
+    padding: rem($unit);
+    margin-bottom: rem($unit);
+}

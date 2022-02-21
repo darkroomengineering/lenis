@@ -1,0 +1,215 @@
+// ==========================================================================
+// Tools / Mixins
+// ==========================================================================
+
+//
+// Set the color of the highlight that appears over a link while it's being tapped.
+//
+// By default, the highlight is suppressed.
+//
+// @param  {Color} $value [rgba(0, 0, 0, 0)] - The value of the highlight.
+// @output `-webkit-tap-highlight-color`
+//
+@mixin tap-highlight-color($value: rgba(0, 0, 0, 0)) {
+    -webkit-tap-highlight-color: $value;
+}
+
+//
+// Set whether or not touch devices use momentum-based scrolling for the given element.
+//
+// By default, applies momentum-based scrolling for the current element.
+//
+// @param  {String} $value [rgba(0, 0, 0, 0)] - The type of scrolling.
+// @output `-webkit-overflow-scrolling`
+//
+@mixin overflow-scrolling($value: touch) {
+    -webkit-overflow-scrolling: $value;
+}
+
+//
+// Micro clearfix rules for containing floats.
+//
+// @link   http://www.cssmojo.com/the-very-latest-clearfix-reloaded/
+// @param  {List} $supports The type of clearfix to generate.
+// @output Injects `:::after` pseudo-element.
+//
+@mixin u-clearfix($supports...) {
+    &::after {
+        display: if(list-contains($supports, table), table, block);
+        clear: both;
+        content: if(list-contains($supports, opera), " ", "");
+    }
+}
+
+//
+// Generate a font-size and baseline-compatible line-height.
+//
+// @link   https://github.com/inuitcss/inuitcss/c14029c/tools/_tools.font-size.scss
+// @param  {Number}  $font-size           - The size of the font.
+// @param  {Number}  $line-height [auto]  - The line box height.
+// @param  {Boolean} $important   [false] - Whether the font-size is important.
+// @output `font-size`, `line-height`
+//
+@mixin font-size($font-size, $line-height: auto, $important: false) {
+    $important: important($important);
+    font-size: rem($font-size) $important;
+
+    @if ($line-height == "auto") {
+        line-height: ceil($font-size / $line-height) * ($line-height / $font-size) $important;
+    }
+    @else {
+        @if (type-of($line-height) == number or $line-height == "inherit" or $line-height == "normal") {
+            line-height: $line-height $important;
+        }
+        @elseif ($line-height != "none" and $line-height != false) {
+            @error "D’oh! `#{$line-height}` is not a valid value for `$line-height`."
+        }
+    }
+}
+
+//
+// Vertically-center the direct descendants of the current element.
+//
+// Centering is achieved by displaying children as inline-blocks. Any whitespace
+// between elements is nullified by redefining the font size of the container
+// and its children.
+//
+// @output `font-size`, `display`, `vertical-align`
+//
+@mixin o-vertical-center {
+    font-size: 0;
+
+    &::before {
+        display: inline-block;
+        height: 100%;
+        content: "";
+        vertical-align: middle;
+    }
+
+    > * {
+        display: inline-block;
+        vertical-align: middle;
+        font-size: 1rem;
+    }
+}
+
+//
+// Generate `:hover` and `:focus` styles in one go.
+//
+// @link    https://github.com/inuitcss/inuitcss/blob/master/tools/_tools.mixins.scss
+// @content Wrapped in `:focus` and `:hover` pseudo-classes.
+// @output  Wraps the given content in `:focus` and `:hover` pseudo-classes.
+//
+@mixin u-hocus {
+    &:focus,
+    &:hover {
+        @content;
+    }
+}
+
+//
+// Generate `:active` and `:focus` styles in one go.
+//
+// @see     {Mixin} u-hocus
+// @content Wrapped in `:focus` and `:active` pseudo-classes.
+// @output  Wraps the given content in `:focus` and `:hover` pseudo-classes.
+//
+@mixin u-actus {
+    &:focus,
+    &:active {
+        @content;
+    }
+}
+
+//
+// Prevent text from wrapping onto multiple lines for the current element.
+//
+// An ellipsis is appended to the end of the line.
+//
+// 1. Ensure that the node has a maximum width after which truncation can occur.
+// 2. Fix for IE 8/9 if `word-wrap: break-word` is in effect on ancestor nodes.
+//
+// @param  {Number} $width [100%] - The maximum width of element.
+// @output `max-width`, `word-wrap`, `white-space`, `overflow`, `text-overflow`
+//
+@mixin u-truncate($width: 100%) {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    word-wrap: normal;  // [2]
+    @if $width {
+        max-width: $width; // [1]
+    }
+}
+
+//
+// Applies accessible hiding to the current element.
+//
+// @param  {Boolean} $important [true] - Whether the visibility is important.
+// @output Properties for removing the element from the document flow.
+//
+@mixin u-accessibly-hidden($important: true) {
+    $important: important($important);
+    position: absolute $important;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    margin: 0;
+    padding: 0;
+    width: 1px;
+    height: 1px;
+    border: 0;
+}
+
+//
+// Allows an accessibly hidden element to be focusable via keyboard navigation.
+//
+// @content For styling the now visible element.
+// @output  Injects `:focus`, `:active` pseudo-classes.
+//
+@mixin u-accessibly-focusable {
+    @include u-actus {
+        clip: auto;
+        width: auto;
+        height: auto;
+
+        @content;
+    }
+}
+
+//
+// Hide the current element from all.
+//
+// The element will be hidden from screen readers and removed from the document flow.
+//
+// @link   http://juicystudio.com/article/screen-readers-display-none.php
+// @param  {Boolean} $important [true] - Whether the visibility is important.
+// @output `display`, `visibility`
+//
+@mixin u-hidden($important: true) {
+    $important: important($important);
+    display: none   $important;
+    visibility: hidden $important;
+}
+
+//
+// Show the current element for all.
+//
+// The element will be accessible from screen readers and visible in the document flow.
+//
+// @param  {String}  $display   [block] - The rendering box used for the element.
+// @param  {Boolean} $important [true]  - Whether the visibility is important.
+// @output `display`, `visibility`
+//
+@mixin u-shown($display: block, $important: true) {
+    $important: important($important);
+    display: $display $important;
+    visibility: visible  $important;
+}
+
+// Customs
+
+@mixin u-label {
+    font-size: rem(24px);
+    text-transform: uppercase;
+    font-weight: $semi-bold;
+}

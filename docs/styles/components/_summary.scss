@@ -1,0 +1,88 @@
+.c-summary {
+    margin: rem($unit) 0 rem($unit * 2) 0;
+}
+
+.c-summary_text {
+    font-size: rem(18px);
+    font-weight: $semi-bold;
+    opacity: 0;
+    transform: translateY(60px);
+    transition: transform 1s $easing;
+
+    .c-summary.is-inview & {
+        opacity: 1;
+        transform: none;
+    }
+
+    @media (min-width: $from-medium) {
+        max-width: 320px;
+    }
+}
+
+.c-summary_list {
+    @media (max-width: $to-medium) {
+        margin-top: rem($unit/2);
+    }
+}
+
+.c-summary_list_item {
+    position: relative;
+    opacity: 0;
+    transform: translateY(60px);
+    transition: opacity 0.6s $easing, transform 0.6s $easing;
+
+    &::after {
+        content:"";
+        position: absolute;
+        bottom: 0;
+        right: 0;
+        left: 0;
+        height: 1px;
+        background-color: $black;
+        transform: scaleX(0);
+        transform-origin: center left;
+        transition: transform 0.6s $easing;
+    }
+
+    &.is-inview {
+        transform: none;
+        opacity: 1;
+
+        &::after {
+            transform: scaleX(1);
+        }
+
+        @for $i from 1 through 6 {
+            &:nth-child(#{$i}){
+                transition-delay: $i*0.1s;
+                &::after {
+                    transition-delay: 0.4 + $i*0.1s;
+                }
+            }
+        }
+    }
+
+    a {
+        display: block;
+        padding: 8px 0;
+    }
+}
+
+.c-summary_list_icon {
+    position: absolute;
+    top: 50%;
+    right: 0;
+    transform: translateY(-50%) translateX(30px) rotate(90deg);
+    opacity: 0;
+    transition: opacity 0.4s $easing, transform 0.4s $easing;
+
+    .c-summary_list_item.is-inview & {
+        transform: translateY(-50%) rotate(0deg);
+        opacity: 1;
+    }
+    @for $i from 1 through 6 {
+        .c-summary_list_item.is-inview:nth-child(#{$i}) &{
+            transition-delay: 0.5 + $i*0.1s;
+        }
+    }
+}

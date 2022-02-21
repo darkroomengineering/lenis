@@ -1,0 +1,50 @@
+// ==========================================================================
+// Utilities / Widths
+// ==========================================================================
+
+////
+/// @link https://github.com/inuitcss/inuitcss/blob/6eb574f/utilities/_utilities.widths.scss
+////
+
+/// Which fractions would you like in your grid system(s)?
+/// By default, the boilerplate provides fractions of one whole, halves, thirds,
+/// quarters, and fifths, e.g.:
+///
+/// @example css
+///   .u-1/2
+///   .u-2/5
+///   .u-3/4
+///   .u-2/3
+$widths-fractions: 1 2 3 4 5 !default;
+
+@include widths($widths-fractions);
+
+.u-1\/2\@from-small {
+    @media (min-width: $from-small) {
+        width: span(1/2);
+    }
+}
+
+.u-1\/3\@from-medium {
+    @media (min-width: $from-medium) {
+        width: span(1/3);
+    }
+}
+
+.u-1\/2\@from-medium {
+    @media (min-width: $from-medium) {
+        width: span(1/2);
+    }
+}
+
+.u-2\/5\@from-medium {
+    @media (min-width: $from-medium) {
+        width: span(2/5);
+    }
+}
+
+.u-3\/5\@from-medium {
+    @media (min-width: $from-medium) {
+        width: span(3/5);
+    }
+}

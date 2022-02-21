@@ -1,0 +1,61 @@
+// ==========================================================================
+// Tools / Layout
+// ==========================================================================
+
+//
+// Grid-like layout system.
+//
+// The layout tools provide a column-style layout system. This file contains
+// the mixins to generate basic structural elements.
+//
+// @link https://github.com/inuitcss/inuitcss/blob/0420ba8/objects/_objects.layout.scss
+//
+
+//
+// Generate the layout container.
+//
+// 1. Use the negative margin trick for multi-row grids:
+//    http://csswizardry.com/2011/08/building-better-grid-systems/
+//
+// @requires {function} u-list-reset
+// @output   `font-size`, `margin`, `padding`, `list-style`
+//
+@mixin o-layout($gutter: 0, $fix-whitespace: true) {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+
+    @if ($fix-whitespace) {
+        font-size: 0;
+    }
+
+    @if (type-of($gutter) == number) {
+        margin-left: -$gutter; // [1]
+    }
+}
+
+//
+// Generate the layout item.
+//
+// 1. Required in order to combine fluid widths with fixed gutters.
+// 2. Allows us to manipulate grids vertically, with text-level properties,
+//    etc.
+// 3. Default item alignment is with the tops of each other, like most
+//    traditional grid/layout systems.
+// 4. By default, all layout items are full-width (mobile first).
+// 5. Gutters provided by left padding:
+//    http://csswizardry.com/2011/08/building-better-grid-systems/
+//
+@mixin o-layout_item($gutter: 0, $fix-whitespace: true) {
+    display: inline-block; // [2]
+    width: 100%; // [4]
+    vertical-align: top; // [3]
+
+    @if ($fix-whitespace) {
+        font-size: 1rem;
+    }
+
+    @if (type-of($gutter) == number) {
+        padding-left: $gutter; // [5]
+    }
+}

@@ -1,0 +1,85 @@
+// ==========================================================================
+// Base / Headings
+// ==========================================================================
+
+@mixin h {
+    margin-top: 0;
+    line-height: $line-height-h;
+}
+
+//
+// Provide a generic class to apply common heading styles.
+//
+// @example
+//   <p class="u-h"></p>
+//
+//
+.o-h {
+    @include h;
+    margin-bottom: 0;
+    line-height: 1;
+    font-weight: $normal;
+}
+
+//
+// Styles for headings 1 through 6 with classes to provide
+// a double stranded heading hierarchy, e.g. we semantically
+// need an H2, but we want it to be sized like an H1:
+//
+// @example
+//   <h2 class="o-h1"></h2>
+//
+//
+h1, .o-h1 {
+    @extend .o-h;
+
+    line-height: 0.9;
+    text-transform: uppercase;
+
+    @media (max-width: $to-small) {
+        font-size: 12vw;
+    }
+
+    @media (min-width: $from-small) and (max-width: $to-huge) {
+        font-size: $font-size-h1;
+
+        &.-huge {
+            font-size: 36vh;
+        }
+    }
+
+    @media (min-width: $from-huge) {
+        font-size: 12vw;
+    }
+}
+
+h2, .o-h2 {
+    @extend .o-h;
+
+    font-size: rem($font-size-h2);
+}
+
+h3, .o-h3 {
+    @extend .o-h;
+
+    font-size: rem($font-size-h3);
+}
+
+h4, .o-h4 {
+    @extend .o-h;
+    line-height: 1.2;
+
+    font-size: rem($font-size-h4);
+}
+
+h5, .o-h5 {
+    @extend .o-h;
+
+    font-size: rem($font-size-h5);
+}
+
+h6, .o-h6 {
+    @extend .o-h;
+
+    font-size: rem($font-size-h6);
+}

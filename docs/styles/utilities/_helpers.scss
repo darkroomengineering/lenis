@@ -1,0 +1,100 @@
+// ==========================================================================
+// Utilities / Helpers
+// ==========================================================================
+
+// Colors
+.u-white {
+    color: $white;
+}
+
+// Text / font
+.u-label {
+    @include u-label;
+}
+
+.u-icon {
+    font-family: $font-lucida;
+    font-size: rem(18px);
+}
+
+.u-text {
+    font-size: rem(14px);
+}
+
+// Layout
+// ==========================================================================
+.u-clearfix {
+    @include u-clearfix;
+}
+
+// Decorative
+// =============================================================================
+.u-truncate {
+    @include u-truncate;
+}
+
+//  Visibility / Display
+// ==========================================================================
+[hidden][aria-hidden="false"] {
+    position: absolute;
+    display: inherit;
+    clip: rect(0, 0, 0, 0);
+}
+
+[hidden][aria-hidden="false"]:focus {
+    clip: auto;
+}
+
+// .u-block {
+//     display: block;
+// }
+
+// /**
+//  * 1. Fix for Firefox bug: an image styled `max-width:100%` within an
+//  * inline-block will display at its default size, and not limit its width to
+//  * 100% of an ancestral container.
+//  */
+// .u-inline-block {
+//     display: inline-block !important;
+//     max-width: 100%; /* 1 */
+// }
+
+// .u-inline {
+//     display: inline !important;
+// }
+
+// .u-table {
+//     display: table !important;
+// }
+
+// .u-tableCell {
+//     display: table-cell !important;
+// }
+
+// .u-tableRow {
+//     display: table-row !important;
+// }
+
+/**
+ * Completely remove from the flow but leave available to screen readers.
+ */
+.u-screen-reader-text {
+    @include u-accessibly-hidden;
+}
+
+@media not print {
+    .u-screen-reader-text\@screen {
+        @include u-accessibly-hidden;
+    }
+}
+
+/*
+ * Extends the `.screen-reader-text` class to allow the element
+ * to be focusable when navigated to via the keyboard.
+ *
+ * @link https://www.drupal.org/node/897638
+ * @todo Define styles when focused.
+ */
+.u-screen-reader-text.-focusable {
+    @include u-accessibly-focusable;
+}

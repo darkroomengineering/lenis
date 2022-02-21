@@ -1,0 +1,88 @@
+// ==========================================================================
+// Objects / Crop
+// ==========================================================================
+
+//
+// @link https://github.com/inuitcss/inuitcss/blob/19d0c7e/objects/_objects.crop.scss
+//
+
+// A list of cropping ratios that get generated as modifier classes.
+$crop-ratios: (
+    (2:1),
+    (4:3),
+    (16:9),
+) !default;
+
+/**
+ * Provide a cropping container in order to display media (usually images)
+ * cropped to certain ratios.
+ *
+ * 1. Set up a positioning context in which the image can sit.
+ * 2. This is the crucial part: where the cropping happens.
+ */
+.o-crop {
+    position: relative; /* [1] */
+    display: block;
+    overflow: hidden; /* [2] */
+}
+
+/**
+ * Apply this class to the content (usually `img`) that needs cropping.
+ *
+ * 1. Image’s default positioning is top-left in the cropping box.
+ * 2. Make sure the media doesn’t stop itself too soon.
+ */
+.o-crop_content {
+    position: absolute;
+    top: 0; /* [1] */
+    left: 0; /* [1] */
+    max-width: none; /* [2] */
+
+    /**
+     * We can position the media in different locations within the cropping area.
+     */
+    &.-right {
+        right: 0;
+        left: auto;
+    }
+
+    &.-bottom {
+        top: auto;
+        bottom: 0;
+    }
+
+    &.-center {
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+    }
+}
+
+/* stylelint-disable */
+
+//
+// Generate a series of crop classes to be used like so:
+//
+// @example
+//   <div class="o-crop -16:9">
+//
+//
+.o-crop {
+    @each $crop in $crop-ratios {
+        @each $antecedent, $consequent in $crop {
+            @if (type-of($antecedent) != number) {
+                @error "`#{$antecedent}` needs to be a number."
+            }
+
+            @if (type-of($consequent) != number) {
+                @error "`#{$consequent}` needs to be a number."
+            }
+
+            &.-#{$antecedent}\:#{$consequent} {
+                padding-bottom: ($consequent/$antecedent) * 100%;
+            }
+        }
+    }
+}
+
+/* stylelint-enable */

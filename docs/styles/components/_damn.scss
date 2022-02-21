@@ -1,0 +1,9 @@
+.c-damn {
+    @media (max-width: $to-medium) {
+        padding: 150vh 0 0 0;
+    }
+
+    @media (min-width: $from-medium) {
+        padding: 100vh 0 0 0;
+    }
+}

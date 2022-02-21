@@ -1,0 +1,98 @@
+// ==========================================================================
+// Tools / Font Faces
+// ==========================================================================
+
+$global-font-file-formats: "woff2", "woff" !default;
+
+//
+// Builds the `src` list for an `@font-face` declaration.
+//
+// @link https://github.com/thoughtbot/bourbon/blob/master/core/bourbon/utilities/_font-source-declaration.scss
+// @link http://goo.gl/Ru1bKP
+//
+// @param  {String} $font-family  - The font family name.
+// @param  {String} $file-path    - The path to the font family.
+// @param  {List}   $file-formats - The file formats to request.
+// @return {List}
+//
+// @require {function} list-contains
+//
+// @access private
+//
+@function font-source-declaration(
+    $font-family,
+    $file-path,
+    $file-formats
+) {
+    $src: ();
+    $formats-map: (
+        eot:   "#{$file-path}.eot?#iefix" format("embedded-opentype"),
+        woff2: "#{$file-path}.woff2" format("woff2"),
+        woff:  "#{$file-path}.woff" format("woff"),
+        ttf:   "#{$file-path}.ttf" format("truetype"),
+        svg:   "#{$file-path}.svg##{$font-family}" format("svg"),
+    );
+
+    @each $key, $values in $formats-map {
+        @if list-contains($file-formats, $key) {
+            $file-path: nth($values, 1);
+            $font-format: nth($values, 2);
+            $src: append($src, url("#{$assets-path}#{$file-path}") $font-format, comma);
+        }
+    }
+
+    @return $src;
+}
+
+//
+// Generates an `@font-face` declaration.
+//
+// You can choose the specific file formats you need to output; the mixin supports
+// `eot`, `ttf`, `svg`, `woff2` and `woff`.
+//
+// @link https://github.com/thoughtbot/bourbon/blob/master/core/bourbon/library/_font-face.scss
+//
+// @param {String}      $font-family - The font family name.
+// @param {String}      $file-path   - The path to the font family.
+// @param {String|List} $file-formats [("ttf", "woff2", "woff")]
+//     A list of file formats to support,
+//     for example ("eot", "ttf", "svg", "woff2", "woff").
+//
+// @content
+//     Any additional CSS properties that are included in the `@include`
+//     directive will be output within the `@font-face` declaration, e.g.
+//     you can pass in `font-weight`, `font-style` and/or `unicode-range`.
+//
+// @example scss
+//   @include font-face(
+//       "source-sans-pro",
+//       "fonts/source-sans-pro-regular",
+//       ("woff2", "woff")
+//     ) {
+//     font-style: normal;
+//     font-weight: 400;
+//   }
+//
+//   // CSS Output
+//   @font-face {
+//     font-family: "source-sans-pro";
+//     src: url("fonts/source-sans-pro-regular.woff2") format("woff2"),
+//          url("fonts/source-sans-pro-regular.woff") format("woff");
+//     font-style: normal;
+//     font-weight: 400;
+//   }
+//
+// @require {function} _font-source-declaration
+// @require {function} _retrieve-bourbon-setting
+//
+@mixin font-face(
+    $font-family,
+    $file-path,
+    $file-formats: $global-font-file-formats
+) {
+    @font-face {
+        font-family: $font-family;
+        src: font-source-declaration( $font-family, $file-path, $file-formats);
+        @content;
+    }
+}

@@ -1,0 +1,58 @@
+// ==========================================================================
+// Generic / Media
+// ==========================================================================
+
+//
+// 1. Setting `vertical-align` removes the whitespace that appears under `img`
+//    elements when they are dropped into a page as-is. Safer alternative to
+//    using `display: block;`.
+//
+audio,
+canvas,
+iframe,
+img,
+svg,
+video {
+    vertical-align: middle; /* [1] */
+}
+
+//
+// Add the correct display in iOS 4-7.
+//
+audio:not([controls]) {
+    display: none;
+    height: 0;
+}
+
+//
+// 2. Fluid media for responsive purposes.
+//
+img,
+svg {
+    max-width: 100%; /* [2] */
+    height: auto;
+
+    //
+    // 4. If a `width` and/or `height` attribute have been explicitly defined, let’s
+    //    not make the image fluid.
+    //
+    &[width], /* [4] */
+    &[height] {
+        /* [4] */
+        max-width: none;
+    }
+}
+
+//
+// 4. Offset `alt` text from surrounding copy.
+//
+img {
+    font-style: italic; /* [4] */
+}
+
+//
+// 5. SVG elements should fallback to their surrounding text color.
+//
+svg {
+    fill: currentColor; /* [5] */
+}

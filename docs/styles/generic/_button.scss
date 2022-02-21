@@ -1,0 +1,35 @@
+// ==========================================================================
+// Generic / Buttons
+// ==========================================================================
+
+//
+// 1. Allow us to style box model properties.
+// 2. Fixes odd inner spacing in IE7.
+// 3. Reset/normalize some styles.
+// 4. Line different sized buttons up a little nicer.
+// 5. Make buttons inherit font styles (often necessary when styling `input`s as buttons).
+// 6. Force all button-styled elements to appear clickable.
+//
+button,
+.o-button {
+    @include u-hocus {
+        text-decoration: none;
+    }
+
+    display: inline-block; /* [1] */
+    overflow: visible; /* [2] */
+    margin: 0; /* [3] */
+    padding: 0;
+    outline: 0;
+    border: 0;
+    background: none transparent;
+    color: inherit;
+    vertical-align: middle; /* [4] */
+    text-align: center; /* [3] */
+    text-decoration: none;
+    text-transform: none;
+    font: inherit; /* [5] */
+    line-height: normal;
+    cursor: pointer; /* [6] */
+    user-select: none;
+}

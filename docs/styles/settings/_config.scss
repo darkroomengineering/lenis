@@ -1,0 +1,93 @@
+// ==========================================================================
+// Settings / Config
+// ==========================================================================
+
+// Context
+// =============================================================================
+// The current stylesheet context. Available values: frontend, editor.
+$context: frontend  !default;
+
+// Path is relative to the stylesheets directory.
+$assets-path: "../"  !default;
+
+// Typefaces
+// =============================================================================
+$font-sans-serif: Arial, sans-serif;
+
+// Typography
+// =============================================================================
+// Base
+$font-size:   16px;
+$line-height: 24px / $font-size;
+$font-family: $font-sans-serif;
+$color:       #222222;
+// Headings
+$font-size-h1:  13.5vw  !default;
+$font-size-h2:  32px  !default;
+$font-size-h3:  24px  !default;
+$font-size-h4:  16px  !default;
+$font-size-h5:  16px  !default;
+$font-size-h6:  15px  !default;
+$line-height-h: $line-height;
+// Weights
+$light:  300;
+$normal: 400;
+$medium: 500;
+$semi-bold: 600;
+$bold:   700;
+
+// Transitions
+// =============================================================================
+$speed:  0.3s;
+$bounce: cubic-bezier(0.17, 0.67, 0.3, 1.33);
+$Power1EaseOut: cubic-bezier(0.250, 0.460, 0.450, 0.940);
+$Power2EaseOut: cubic-bezier(0.215, 0.610, 0.355, 1.000);
+$Power3EaseOut: cubic-bezier(0.165, 0.840, 0.440, 1.000);
+$Power4EaseOut: cubic-bezier(0.230, 1.000, 0.320, 1.000);
+$Power1EaseIn: cubic-bezier(0.550, 0.085, 0.680, 0.530) ;
+$Power2EaseIn: cubic-bezier(0.550, 0.055, 0.675, 0.190);
+$Power3EaseIn: cubic-bezier(0.895, 0.030, 0.685, 0.220);
+$Power4EaseIn: cubic-bezier(0.755, 0.050, 0.855, 0.060);
+$ExpoEaseOut: cubic-bezier(0.190, 1.000, 0.220, 1.000);
+$ExpoEaseIn: cubic-bezier(0.950, 0.050, 0.795, 0.035);
+$ExpoEaseInOut: cubic-bezier(1.000, 0.000, 0.000, 1.000);
+$SineEaseOut: cubic-bezier(0.390, 0.575, 0.565, 1.000);
+$SineEaseIn: cubic-bezier(0.470, 0.000, 0.745, 0.715);
+$Power1EaseInOut: cubic-bezier(0.455, 0.030, 0.515, 0.955);
+$Power2EaseInOut: cubic-bezier(0.645, 0.045, 0.355, 1.000);
+$Power3EaseInOut: cubic-bezier(0.770, 0.000, 0.175, 1.000);
+$Power4EaseInOut: cubic-bezier(0.860, 0.000, 0.070, 1.000);
+$SlowEaseOut: cubic-bezier(.04,1.15,0.4,.99);
+$easing: $Power2EaseOut;
+
+
+// Spacing Units
+// =============================================================================
+$unit:       60px;
+$unit-small: 40px;
+
+// Container
+// ==========================================================================
+$container-width: 1440px;
+$padding:         $unit;
+
+// Breakpoints
+// =============================================================================
+$from-tiny:     500px              !default;
+$to-tiny:       $from-tiny - 1     !default;
+$from-small:    700px              !default;
+$to-small:      $from-small - 1    !default;
+$from-medium:   1000px             !default;
+$to-medium:     $from-medium - 1   !default;
+$from-large:    1200px             !default;
+$to-large:      $from-large - 1    !default;
+$from-big:      1400px             !default;
+$to-big:        $from-big - 1      !default;
+$from-huge:     1600px             !default;
+$to-huge:       $from-huge - 1     !default;
+$from-enormous: 1800px             !default;
+$to-enormous:   $from-enormous - 1 !default;
+$from-gigantic: 2000px             !default;
+$to-gigantic:   $from-gigantic - 1 !default;
+$from-colossal: 2400px             !default;
+$to-colossal:   $from-colossal - 1 !default;

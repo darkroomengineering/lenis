@@ -1,0 +1,95 @@
+.c-speed-block {
+    position: relative;
+
+    @media (min-width: $from-medium) {
+        &.-margin {
+            margin-top: rem($unit * 2);
+        }
+    }
+
+    @media (max-width: $to-medium) {
+        margin: rem($unit/2) 0;
+    }
+    @media (max-width: $to-small) {
+        margin: $unit/4 0;
+    }
+}
+
+.c-speed-block_image {
+    margin-top: -30px;
+    margin-bottom: -30px;
+}
+
+.c-speed-block_title {
+    @include u-label;
+    color: $white;
+    text-align: center;
+    position: absolute;
+    bottom: rem($unit);
+    right: 0;
+    left: 0;
+    opacity: 0;
+    transform: translateY(60px);
+    transition: opacity 0.6s $easing, transform 0.6s $easing;
+
+    &.is-inview {
+        opacity: 1;
+        transform: none;
+        transition-delay: 0.3s;
+    }
+
+    @media (max-width: $to-large) {
+        display: none;
+    }
+}
+
+.c-speed-block_bubble {
+    position: absolute;
+    right: 20px;
+    top: 30%;
+    z-index: 1;
+    color: $beige;
+    padding: rem($unit/2.5) rem($unit-small);
+    font-size: rem(20px);
+
+    &.-right {
+        right: - 30px;
+    }
+    &.-left {
+        right: auto;
+        left: - 30px;
+    }
+    &.-top {
+        top: -20%;
+    }
+    &.-bottom {
+        top: auto;
+        bottom: 0;
+    }
+
+    &::before {
+        content:"";
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        right: 0;
+        left: 0;
+        z-index: -1;
+        background-color: $black;
+        border-radius: 50%;
+        transform: scale(0);
+        transition: transform 0.6s $bounce;
+    }
+
+    &.is-inview {
+        &::before {
+            transform: scale(1);
+            transition-delay: 0.3s;
+        }
+    }
+
+    @media (max-width: $to-large) {
+        display: none;
+    }
+}
+

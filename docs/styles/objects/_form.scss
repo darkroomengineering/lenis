@@ -1,0 +1,154 @@
+// ==========================================================================
+// Objects / Buttons
+// ==========================================================================
+
+// Label
+// =============================================================================
+.o-label {
+    display: block;
+    margin-bottom: rem(15px);
+}
+
+// Input
+// =============================================================================
+$input-icon-color: 424242; // No #
+
+.o-input {
+    padding: rem(10px);
+    border-width: 1px;
+    border-style: solid;
+    border-color: lightgray;
+    background-color: white;
+
+    &:focus {
+        border-color: gray;
+    }
+
+    &::placeholder {
+        color: gray;
+    }
+}
+
+// Checkbox
+// =============================================================================
+$checkbox: rem(18px);
+$checkbox-icon-color: $input-icon-color;
+
+.o-checkbox {
+    position: absolute;
+    width: 0;
+    opacity: 0;
+
+    &:focus {
+        + .o-checkbox-label {
+            &::before {
+                border-color: gray;
+            }
+        }
+    }
+
+    &:checked {
+        + .o-checkbox-label {
+            &::after {
+                opacity: 1;
+            }
+        }
+    }
+}
+
+.o-checkbox-label {
+    @extend .o-label;
+
+    position: relative;
+    display: inline-block;
+    margin-right: 0.5em;
+    padding-left: ($checkbox + rem(10px));
+
+    &::before, &::after {
+
+        position: absolute;
+        top: 50%;
+        left: 0;
+        display: inline-block;
+        margin-top: (-$checkbox / 2);
+        padding: 0;
+        width: $checkbox;
+        height: $checkbox;
+        content: "";
+    }
+
+    &::before {
+        background-color: $white;
+    }
+
+    &::after {
+        border-color: transparent;
+        background-color: transparent;
+        background-image: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20version%3D%221.1%22%20x%3D%220%22%20y%3D%220%22%20width%3D%2213%22%20height%3D%2210.5%22%20viewBox%3D%220%200%2013%2010.5%22%20enable-background%3D%22new%200%200%2013%2010.5%22%20xml%3Aspace%3D%22preserve%22%3E%3Cpath%20fill%3D%22%23#{$checkbox-icon-color}%22%20d%3D%22M4.8%205.8L2.4%203.3%200%205.7l4.8%204.8L13%202.4c0%200-2.4-2.4-2.4-2.4L4.8%205.8z%22%2F%3E%3C%2Fsvg%3E");
+        background-position: center;
+        background-size: rem(13px);
+        background-repeat: no-repeat;
+        opacity: 0;
+    }
+}
+
+// Radio
+// =============================================================================
+$radio-icon-color: $input-icon-color;
+
+.o-radio {
+    @extend .o-checkbox;
+}
+
+.o-radio-label {
+    @extend .o-checkbox-label;
+
+    &::before, &::after {
+        border-radius: 50%;
+    }
+
+    &::after {
+        background-image: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20version%3D%221.1%22%20x%3D%220%22%20y%3D%220%22%20width%3D%2213%22%20height%3D%2213%22%20viewBox%3D%220%200%2013%2013%22%20enable-background%3D%22new%200%200%2013%2013%22%20xml%3Aspace%3D%22preserve%22%3E%3Ccircle%20fill%3D%22%23#{$radio-icon-color}%22%20cx%3D%226.5%22%20cy%3D%226.5%22%20r%3D%226.5%22%2F%3E%3C%2Fsvg%3E");
+        background-size: rem(8px);
+    }
+}
+
+// Select
+// =============================================================================
+$select-icon: rem(40px);
+$select-icon-color: $input-icon-color;
+
+.o-select {
+    @extend .o-input;
+
+    position: relative;
+    z-index: 1;
+    padding-right: $select-icon;
+}
+
+.o-select-wrap {
+    position: relative;
+
+    &::after {
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        z-index: 2;
+        width: $select-icon;
+        background-image: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20version%3D%221.1%22%20x%3D%220%22%20y%3D%220%22%20width%3D%2213%22%20height%3D%2211.3%22%20viewBox%3D%220%200%2013%2011.3%22%20enable-background%3D%22new%200%200%2013%2011.3%22%20xml%3Aspace%3D%22preserve%22%3E%3Cpolygon%20fill%3D%22%23#{$select-icon-color}%22%20points%3D%226.5%2011.3%203.3%205.6%200%200%206.5%200%2013%200%209.8%205.6%20%22%2F%3E%3C%2Fsvg%3E");
+        background-position: center;
+        background-size: rem(10px);
+        background-repeat: no-repeat;
+        content: "";
+        pointer-events: none;
+    }
+}
+
+// Textarea
+// =============================================================================
+.o-textarea {
+    @extend .o-input;
+
+    min-height: rem(100px);
+}

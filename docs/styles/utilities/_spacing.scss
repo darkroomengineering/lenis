@@ -1,0 +1,56 @@
+// ==========================================================================
+// Utilities / Spacing
+// ==========================================================================
+
+////
+/// Utility classes to put specific spacing values onto elements. The below loop
+/// will generate us a suite of classes like:
+///
+/// @example
+///   .u-margin-top {}
+///   .u-padding-left-large {}
+///   .u-margin-right-small {}
+///   .u-padding {}
+///   .u-padding-right-none {}
+///   .u-padding-horizontal {}
+///   .u-padding-vertical-small {}
+///
+/// @link https://github.com/inuitcss/inuitcss/blob/512977a/utilities/_utilities.spacing.scss
+////
+
+/* stylelint-disable string-quotes */
+
+$spacing-directions: (
+    null:          null,
+    '-top':        '-top',
+    '-right':      '-right',
+    '-bottom':     '-bottom',
+    '-left':       '-left',
+    '-horizontal': '-left' '-right',
+    '-vertical':   '-top'  '-bottom',
+) !default;
+
+$spacing-properties: (
+    'padding': 'padding',
+    'margin':  'margin',
+) !default;
+
+$spacing-sizes: (
+    null:     $unit,
+    '-small': $unit-small,
+    '-none':  0
+) !default;
+
+@each $property-namespace, $property in $spacing-properties {
+    @each $direction-namespace, $direction-rules in $spacing-directions {
+        @each $size-namespace, $size in $spacing-sizes {
+            .u-#{$property-namespace}#{$direction-namespace}#{$size-namespace} {
+                @each $direction in $direction-rules {
+                    #{$property}#{$direction}: $size !important;
+                }
+            }
+        }
+    }
+}
+
+/* stylelint-enable string-quotes */

@@ -1,0 +1,40 @@
+// ==========================================================================
+// Utilities / Headings
+// ==========================================================================
+
+/**
+ * Redefine all of our basic heading styles against utility classes so as to
+ * provide larger (or smaller) generic font sizes. Anything more opinionated
+ * than simple font-size changes should likely be applied via "o-" classes
+ *
+ * @example
+ *   <p class="u-h1"></p>
+ *
+ * @requires base/headings
+ * @link http://csswizardry.com/2016/02/managing-typography-on-large-apps/
+ * @link https://github.com/inuitcss/inuitcss/blob/develop/utilities/_utilities.headings.scss
+ */
+
+.u-h1 {
+    font-size: rem($font-size-h1) !important;
+}
+
+.u-h2 {
+    font-size: rem($font-size-h2) !important;
+}
+
+.u-h3 {
+    font-size: rem($font-size-h3) !important;
+}
+
+.u-h4 {
+    font-size: rem($font-size-h4) !important;
+}
+
+.u-h5 {
+    font-size: rem($font-size-h5) !important;
+}
+
+.u-h6 {
+    font-size: rem($font-size-h6) !important;
+}

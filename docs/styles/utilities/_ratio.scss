@@ -1,0 +1,42 @@
+// ==========================================================================
+// Utilities / Ratio
+// ==========================================================================
+
+//
+// @link https://github.com/inuitcss/inuitcss/blob/19d0c7e/objects/_objects.ratio.scss
+//
+
+// A list of aspect ratios that get generated as modifier classes.
+
+$aspect-ratios: (
+    (2:1),
+    (4:3),
+    (16:9),
+) !default;
+
+/* stylelint-disable */
+
+//
+// Generate a series of ratio classes to be used like so:
+//
+// @example
+//   <div class="o-ratio u-16:9">
+//
+//
+@each $ratio in $aspect-ratios {
+    @each $antecedent, $consequent in $ratio {
+        @if (type-of($antecedent) != number) {
+            @error "`#{$antecedent}` needs to be a number."
+        }
+
+        @if (type-of($consequent) != number) {
+            @error "`#{$consequent}` needs to be a number."
+        }
+
+        &.u-#{$antecedent}\:#{$consequent}::before {
+            padding-bottom: ($consequent/$antecedent) * 100%;
+        }
+    }
+}
+
+/* stylelint-enable */

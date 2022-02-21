@@ -1,0 +1,85 @@
+// ==========================================================================
+// Utilities / States
+// ==========================================================================
+
+/**
+ * ARIA roles display visual cursor hints
+ */
+[aria-busy="true"] {
+    cursor: progress;
+}
+
+[aria-controls] {
+    cursor: pointer;
+}
+
+[aria-disabled] {
+    cursor: default;
+}
+
+/**
+ * Control visibility without affecting flow.
+ */
+
+.is-visible {
+    visibility: visible !important;
+    opacity: 1 !important;
+}
+
+.is-invisible {
+    visibility: hidden !important;
+    opacity: 0 !important;
+}
+
+/**
+ * Completely remove from the flow and screen readers.
+ */
+
+.is-hidden {
+    @include u-hidden;
+}
+
+@media not print {
+    .is-hidden\@screen {
+        @include u-hidden;
+    }
+}
+
+@media print {
+    .is-hidden\@print {
+        @include u-hidden;
+    }
+}
+
+// .is-hidden\@to-large {
+//     @media (max-width: $to-large) {
+//         display: none;
+//     }
+// }
+
+// .is-hidden\@from-large {
+//     @media (min-width: $from-large) {
+//         display: none;
+//     }
+// }
+
+// /**
+//  * Display a hidden-by-default element.
+//  */
+
+// .is-shown {
+//     @include u-shown;
+// }
+
+// table.is-shown {
+//     display: table !important;
+// }
+
+// tr.is-shown {
+//     display: table-row !important;
+// }
+
+// td.is-shown,
+// th.is-shown {
+//     display: table-cell !important;
+// }

@@ -1,0 +1,74 @@
+// ==========================================================================
+// Base / Page
+// ==========================================================================
+
+//
+// Simple page-level setup.
+//
+// 1. Set the default `font-size` and `line-height` for the entire project,
+//    sourced from our default variables.
+// 2. Force scrollbars to always be visible to prevent awkward ‘jumps’ when
+//    navigating between pages that do/do not have enough content to produce
+//    scrollbars naturally.
+// 3. Ensure the page always fills at least the entire height of the viewport.
+//
+html {
+  color: $color;
+  font-family: $font-neue-montreal;
+  line-height: $line-height; /* [1] */
+
+  @media (max-width: $to-small) {
+    font-size: 12px;
+  }
+
+  @media (min-width: $from-small) and (max-width: $to-medium) {
+    font-size: 13px;
+  }
+
+  @media (min-width: $from-medium) and (max-width: $to-large) {
+    font-size: 14px;
+  }
+
+  @media (min-width: $from-large) and (max-width: $to-huge) {
+    font-size: $font-size; /* [1] */
+  }
+
+  @media (min-width: $from-huge) and (max-width: $to-gigantic) {
+    font-size: 18px;
+  }
+
+  @media (min-width: $from-gigantic) and (max-width: $to-colossal) {
+    font-size: 21px;
+  }
+
+  @media (min-width: $from-colossal) {
+    font-size: 24px;
+  }
+
+  // &:not(.has-scroll-init) {
+  //     cursor: wait;
+  //     overflow: hidden;
+  // }
+}
+
+::selection {
+  background-color: $selection-background-color;
+  color: $selection-text-color;
+  text-shadow: none;
+}
+
+a {
+  transition: color 0.3s $easing;
+
+  @media (min-width: $from-large) {
+    @include u-hocus {
+      color: $link-hover-color;
+    }
+  }
+
+  color: $link-color;
+
+  &.-underline {
+    text-decoration: underline;
+  }
+}
