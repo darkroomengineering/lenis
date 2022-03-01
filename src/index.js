@@ -2,10 +2,16 @@ import { lerp, truncate } from "./scripts/utils/maths"
 import { offsetTop, offsetLeft, Rect } from "./scripts/utils/rect"
 
 class Speed extends Rect {
-  constructor(element, speed) {
+  constructor(element) {
     super(element)
-    const float = parseFloat(speed)
-    this.speed = !isNaN(float) ? float / 10 : 0
+
+    let speed = element.getAttribute("data-scroll-speed")
+    speed = element.speed = parseFloat(speed)
+    speed = !isNaN(speed) ? speed : 0
+    this.speed = speed / 10
+
+    this.direction = element.getAttribute("data-scroll-direction")
+    this.position = element.getAttribute("data-scroll-position")
   }
 }
 
@@ -16,9 +22,10 @@ class Section extends Rect {
 }
 
 class Core {
-  constructor({ wrapper, content }) {
+  constructor({ wrapper, content, direction }) {
     this.wrapperElement = wrapper
     this.contentElement = content
+    this.direction = direction
 
     this.delta = { x: window.scrollX, y: window.scrollY }
     this.scroll = { x: window.scrollX, y: window.scrollY }
@@ -31,6 +38,21 @@ class Core {
 
     this.update = this.update.bind(this)
     window.addEventListener("resize", this.update, false)
+
+    this.anchors = [...document.querySelectorAll("a[href^='#']")]
+    this.anchorsHandler = (event) => {
+      event.preventDefault()
+
+      const target = event.currentTarget.getAttribute("href")
+      this.scrollTo(target)
+    }
+    this.anchors.forEach((element) => {
+      element.addEventListener("click", this.anchorsHandler, false)
+    })
+  }
+
+  get directionAxis() {
+    return this.direction === "horizontal" ? "x" : "y"
   }
 
   get velocity() {
@@ -50,60 +72,74 @@ class Core {
     }
   }
 
-  scrollTo() {
-    let top
-    let left
-    let options
+  scrollTo(target, options = {}) {
+    let offset = parseInt(options.offset) || 0
+    let immediate = options.immediate || false
 
-    if (typeof arguments[0] === "number") {
-      left = arguments[0]
-      top = arguments[1]
-      options = arguments[2]
-    } else {
-      const target = arguments[0]
-      options = arguments[1]
-
+    if (typeof target === "string") {
+      // Selector or boundaries
       if (target === "top") {
-        top = 0
-        left = this.delta.x
+        target = 0
       } else if (target === "bottom") {
-        top = this.limit.y
-        left = this.delta.x
+        target = this.limit.y
       } else if (target === "left") {
-        top = this.delta.y
-        left = 0
+        target = 0
       } else if (target === "right") {
-        top = this.delta.y
-        left = this.limit.x
-      } else if (!!target.nodeType) {
-        top = offsetTop(target)
-        left = offsetLeft(target)
+        target = this.limit.x
       } else {
-        const node = document.querySelector(target)
-        top = offsetTop(node)
-        left = offsetLeft(node)
+        target = document.querySelector(target)
+        // If the query fails, abort
+        if (!target) {
+          return
+        }
+      }
+    } else if (typeof target === "number") {
+      // Absolute coordinate
+      target = parseInt(target)
+    } else if (target && target.tagName) {
+      // DOM Element
+      // We good 👍
+    } else {
+      console.warn("`target` parameter is not valid")
+      return
+    }
+
+    // We have a target that is not a coordinate yet, get it
+    if (typeof target !== "number") {
+      const top = offsetTop(target)
+      const left = offsetLeft(target)
+
+      if (this.direction === "horizontal") {
+        target = left
+      } else {
+        target = top
       }
     }
 
-    if (options) {
-      left += options.offsetLeft || 0
-      top += options.offsetTop || 0
+    target += offset
 
-      if (options.immediate) {
-        this.delta = { x: left, y: top }
-        this.scroll = { x: left, y: top }
-        this.latestScroll = { x: left, y: top }
-        this.isMoving = true
-      }
+    if (this.direction === "horizontal") {
+      this.setScroll(target, this.delta.y, immediate)
+    } else {
+      this.setScroll(this.delta.x, target, immediate)
     }
-
-    window.scrollTo(left, top)
   }
 
   onScroll() {
     console.log("lenis onScroll")
-    this.isMoving = true
+
     this.delta = { x: window.scrollX, y: window.scrollY }
+    this.isMoving = true
+  }
+
+  setScroll(x, y, immediate = false) {
+    window.scrollTo(x, y)
+
+    if (immediate) {
+      this.delta = { x, y }
+      this.scroll = { x, y }
+      this.latestScroll = { x, y }
+    }
   }
 
   raf() {
@@ -150,6 +186,10 @@ class Native extends Core {
     super.onScroll()
     this.latestScroll = { x: this.scroll.x, y: this.scroll.y }
     this.scroll = { x: this.delta.x, y: this.delta.y }
+
+    requestAnimationFrame(() => {
+      this.latestScroll = { x: this.scroll.x, y: this.scroll.y }
+    })
   }
 }
 
@@ -181,7 +221,7 @@ class Smooth extends Core {
   applyTransforms() {
     if (this.sections.length > 0) {
       this.sections.forEach((section) => {
-        const { inView } = section.compute(
+        const inView = section.computeIntersection(
           this.scroll.x,
           this.scroll.y,
           this.windowHeight * 0.5
@@ -205,8 +245,88 @@ class Smooth extends Core {
       )
     }
 
-    this.speedElements.forEach((speedElement) => {
-      // const { top, height } = speedElement.compute(
+    this.speedElements.forEach((current) => {
+      current.element.classList.add("is-inview")
+
+      const scrollRight = this.scroll.x + this.windowWidth
+      const scrollBottom = this.scroll.y + this.windowHeight
+
+      const scrollMiddle = {
+        x: this.scroll.x + this.windowWidth / 2,
+        y: this.scroll.y + this.windowHeight / 2,
+      }
+
+      let translate = 0
+
+      const inView = current.computeIntersection(
+        this.scroll.x,
+        this.scroll.y,
+        this.windowHeight / 2
+      )
+      const { top, left, height } = current.computeRect(0, 0)
+
+      if (inView) {
+        switch (current.position) {
+          case "top":
+            translate = this.scroll[this.directionAxis] * -current.speed
+            break
+
+          case "elementTop":
+            translate = (scrollBottom - top) * -current.speed
+            break
+
+          case "bottom":
+            translate =
+              (this.limit[this.directionAxis] -
+                scrollBottom +
+                this.windowHeight) *
+              current.speed
+            break
+
+          case "left":
+            translate = this.scroll[this.directionAxis] * -current.speed
+            break
+
+          case "elementLeft":
+            translate = (scrollRight - left) * -current.speed
+            break
+
+          case "right":
+            translate =
+              (this.limit[this.directionAxis] -
+                scrollRight +
+                this.windowHeight) *
+              current.speed
+            break
+
+          default:
+            translate =
+              (scrollMiddle[this.directionAxis] - (top + height / 2)) *
+              -current.speed
+            break
+        }
+
+        if (
+          current.direction === "horizontal" ||
+          (this.direction === "horizontal" && current.direction !== "vertical")
+        ) {
+          current.element.style.setProperty(
+            "transform",
+            `translate3d(${translate}px, 0, 0)`
+          )
+        } else {
+          current.element.style.setProperty(
+            "transform",
+            `translate3d(0, ${translate}px, 0)`
+          )
+        }
+      }
+
+      // if (current.position === "top") {
+      //   translate = this.scroll[this.directionAxis] * -current.speed
+      // }
+
+      // const { top, height } = speedElement.computeRect(
       //   this.scroll.x,
       //   this.scroll.y,
       //   0
@@ -216,17 +336,44 @@ class Smooth extends Core {
       //   y:
       //     (top + height / 2 - this.windowHeight / 2) / (-this.windowHeight / 2),
       // }
-      // const x = this.scroll.x * speedElement.speed
-      // const y = speedElement.speed * distanceToCenter.y * this.windowHeight
-      // speedElement.element.style.setProperty(
-      //   "transform",
-      //   `translate3d(${-x}px, ${-y}px, 0)`
+      // let x = 0,
+      //   y = 0
+      // if (speedElement.direction === "horizontal") {
+      //   x = speedElement.speed * distanceToCenter.y * this.windowHeight
+      //   y = this.scroll.y
+      // } else {
+      //   y = speedElement.speed * distanceToCenter.y * this.windowHeight
+      // }
+      // const inView = speedElement.computeIntersection(
+      //   this.scroll.x,
+      //   this.scroll.y + y,
+      //   0
       // )
+      // const shouldTransform = speedElement.computeIntersection(
+      //   this.scroll.x,
+      //   this.scroll.y + y,
+      //   this.windowHeight * 0.5
+      // )
+      // if (inView) {
+      //   speedElement.element.classList.add("is-inview")
+      // } else {
+      //   speedElement.element.classList.remove("is-inview")
+      // }
+      // if (shouldTransform) {
+      //   speedElement.element.style.setProperty(
+      //     "transform",
+      //     `translate3d(${-x}px, ${-y}px, 0)`
+      //   )
+      // }
       // speedElement.element.setAttribute("data-center", distanceToCenter.y)
     })
 
     this.inViewElements.forEach((inViewElement) => {
-      const { inView } = inViewElement.compute(this.scroll.x, this.scroll.y, 0)
+      const inView = inViewElement.computeIntersection(
+        this.scroll.x,
+        this.scroll.y,
+        0
+      )
 
       if (inView) {
         inViewElement.element.classList.add("is-inview")
@@ -243,29 +390,16 @@ class Smooth extends Core {
     this.sections = [...document.querySelectorAll("[data-scroll-section]")].map(
       (element) => new Section(element)
     )
-    this.sections.forEach((section) => {
-      section.update()
-    })
 
     //parallax
     this.speedElements = [
       ...document.querySelectorAll("[data-scroll-speed]"),
-    ].map(
-      (element) => new Speed(element, element.getAttribute("data-scroll-speed"))
-    )
-    this.speedElements.forEach((element) => {
-      element.update()
-    })
+    ].map((element) => new Speed(element))
 
     // in view
-    this.inViewElements = [...document.querySelectorAll("[data-scroll]")].map(
-      (element) => new Rect(element)
-    )
-    this.inViewElements.forEach((element) => {
-      element.update()
-    })
-
-    console.log(this.speedElements)
+    this.inViewElements = [
+      ...document.querySelectorAll("[data-scroll]:not([data-scroll-speed])"),
+    ].map((element) => new Rect(element))
 
     this.applyTransforms()
   }
@@ -275,6 +409,8 @@ const defaultOptions = {
   smooth: false,
   autoRaf: true,
   lerp: 0.1,
+  direction: "vertical",
+  effects: true,
 }
 
 class Lenis {
@@ -282,17 +418,26 @@ class Lenis {
     console.log("lenis init", options)
 
     this.options = { ...defaultOptions, ...options }
+    this.options.lerp = !isNaN(parseFloat(this.options.lerp))
+      ? parseFloat(this.options.lerp)
+      : defaultOptions.lerp
+
+    if (this.options.lerp <= 0 || this.options.lerp > 1) {
+      this.options.lerp = defaultOptions.lerp
+    }
+
+    console.log(this.options)
 
     if (!this.options.wrapper || !this.options.content) {
       console.warn("lenis: missing wrapper or content")
       return
     }
 
-    this.instance = this.options.smooth
+    document.documentElement.classList.add("has-scroll-init")
+
+    this.scroll = this.options.smooth
       ? new Smooth(this.options)
       : new Native(this.options)
-
-    document.documentElement.classList.add("has-scroll-init")
 
     if (this.options.smooth === true) {
       document.documentElement.classList.add("has-scroll-smooth")
@@ -303,20 +448,24 @@ class Lenis {
   }
 
   raf() {
-    this.instance.raf()
+    this.scroll.raf()
     if (this.options.autoRaf) requestAnimationFrame(this.raf)
   }
 
-  scrollTo() {
-    this.instance.scrollTo(...arguments)
+  scrollTo(target, options) {
+    this.scroll.scrollTo(target, options)
+  }
+
+  setScroll(x, y) {
+    this.scroll.setScroll(x, y)
   }
 
   update() {
-    this.instance.update()
+    this.scroll.update()
   }
 
   destroy() {
-    this.instance.destroy()
+    this.scroll.destroy()
   }
 }
 

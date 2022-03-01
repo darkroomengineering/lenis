@@ -11,6 +11,7 @@ const scroll = new Lenis({
   wrapper: document.querySelector("[data-scroll-wrapper]"),
   content: document.querySelector("[data-scroll-content]"),
   smooth: true,
+  lerp: 0.1,
 })
 
 window.scroll = scroll

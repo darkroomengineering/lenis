@@ -1,5 +1,5 @@
 html {
-  scroll-behavior: smooth;
+  // scroll-behavior: smooth;
 
   &.has-scroll-init {
     &.has-scroll-smooth {
@@ -12,4 +12,8 @@ html {
       }
     }
   }
+}
+
+body {
+  overflow-anchor: none;
 }

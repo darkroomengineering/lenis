@@ -20,31 +20,31 @@ $widths-fractions: 1 2 3 4 5 !default;
 @include widths($widths-fractions);
 
 .u-1\/2\@from-small {
-    @media (min-width: $from-small) {
-        width: span(1/2);
-    }
+  @media (min-width: $from-small) {
+    width: span(1/2);
+  }
 }
 
 .u-1\/3\@from-medium {
-    @media (min-width: $from-medium) {
-        width: span(1/3);
-    }
+  @media (min-width: $from-medium) {
+    width: span(1/3);
+  }
 }
 
 .u-1\/2\@from-medium {
-    @media (min-width: $from-medium) {
-        width: span(1/2);
-    }
+  @media (min-width: $from-medium) {
+    width: span(1/2);
+  }
 }
 
 .u-2\/5\@from-medium {
-    @media (min-width: $from-medium) {
-        width: span(2/5);
-    }
+  @media (min-width: $from-medium) {
+    width: span(2/5);
+  }
 }
 
 .u-3\/5\@from-medium {
-    @media (min-width: $from-medium) {
-        width: span(3/5);
-    }
+  @media (min-width: $from-medium) {
+    width: span(3/5);
+  }
 }

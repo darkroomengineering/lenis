@@ -42,7 +42,7 @@ export class Rect {
     this.bottom = this.top + this.height
   }
 
-  compute(x, y, margin = 0) {
+  computeRect(x = 0, y = 0) {
     const rect = {
       top: this.top - y,
       left: this.left - x,
@@ -51,9 +51,16 @@ export class Rect {
       bottom: this.windowHeight - (this.top - y + this.height),
       right: this.windowWidth - (this.left - x + this.width),
     }
+
+    return rect
+  }
+
+  computeIntersection(x, y, margin = 0) {
+    const rect = this.computeRect(x, y)
+
     const inView =
       rect.top + rect.height > -margin && rect.bottom + rect.height > -margin
 
-    return { ...rect, inView }
+    return inView
   }
 }
