@@ -38,12 +38,6 @@ class ScrollElement extends Rect {
   }
 }
 
-class Section extends Rect {
-  constructor(element) {
-    super(element)
-  }
-}
-
 class Core {
   constructor({ wrapper, content, direction, smooth, lerp, effects }) {
     this.wrapperElement = wrapper
@@ -66,11 +60,17 @@ class Core {
     window.addEventListener("resize", this.update, false)
 
     // prevent anchor link click
-    this.anchors = [...document.querySelectorAll("a[href^='#']")]
+    this.anchors = [
+      ...document.querySelectorAll("a[href^='#'], [data-scroll-to]"),
+    ]
     this.anchorsHandler = (event) => {
       event.preventDefault()
 
-      const target = event.currentTarget.getAttribute("href")
+      const selector =
+        event.currentTarget.getAttribute("href") ||
+        event.currentTarget.getAttribute("data-scroll-to")
+      const target = document.querySelector(selector)
+
       this.scrollTo(target)
     }
     this.anchors.forEach((element) => {
@@ -210,16 +210,15 @@ class Core {
       y: document.body.clientHeight - this.windowHeight,
     }
 
-    // console.log(this.windowHeight)
     // sections
     this.sections = [
       ...this.contentElement.querySelectorAll("[data-scroll-section]"),
-    ].map((element) => new Section(element))
+    ].map((element) => new Rect(element))
 
     // scroll elements (speed, sticky, etc...)
     this.scrollElements = [
       ...this.contentElement.querySelectorAll(
-        "[data-scroll]:not([data-scroll-section])"
+        "[data-scroll],[data-scroll-speed],[data-scroll-sticky]"
       ),
     ].map((element) => new ScrollElement(element))
 
@@ -320,6 +319,13 @@ class Core {
                 break
             }
           }
+
+          const inView = current.computeIntersection(
+            this.scroll.x,
+            this.scroll.y,
+            -current.speed * (this.windowHeight / 2)
+          )
+          current.element.classList.toggle("is-inview", inView)
         } else if (current.sticky) {
           // sticky
 
@@ -374,6 +380,14 @@ class Core {
               )
             }
           }
+        } else {
+          // test inview for any other scroll element
+          const inView = current.computeIntersection(
+            this.scroll.x,
+            this.scroll.y,
+            0
+          )
+          current.element.classList.toggle("is-inview", inView)
         }
 
         // translate element
@@ -411,9 +425,10 @@ class Core {
           0
         )
         // current.element.classList.toggle("is-inview", inView)
-        current.element.classList.toggle("is-inview", true)
+        // current.element.classList.toggle("is-inview", true)
       })
     } else {
+      // if not effects
       this.scrollElements.forEach((current) => {
         const inView = current.computeIntersection(
           this.scroll.x,
@@ -424,25 +439,17 @@ class Core {
         current.element.classList.toggle("is-inview", inView)
       })
     }
-
-    // this.inViewElements.forEach((inViewElement) => {
-    //   const inView = inViewElement.computeIntersection(
-    //     this.scroll.x,
-    //     this.scroll.y,
-    //     0
-    //   )
-
-    //   if (inView) {
-    //     inViewElement.element.classList.add("is-inview")
-    //   } else {
-    //     inViewElement.element.classList.remove("is-inview")
-    //   }
-    // })
   }
 
   destroy() {
     window.removeEventListener("scroll", this.onScroll, false)
     window.removeEventListener("resize", this.update, false)
+
+    document.body.style.removeProperty("height")
+
+    this.anchors.forEach((element) => {
+      element.removeEventListener("click", this.anchorsHandler, false)
+    })
 
     this.sections.forEach((current) => {
       current.element.style.removeProperty("transform")
@@ -525,6 +532,7 @@ class Lenis {
     this.scroll.destroy()
     document.documentElement.classList.remove("has-scroll-init")
     document.documentElement.classList.remove("has-scroll-smooth")
+    cancelAnimationFrame(this.raf)
   }
 }
 
