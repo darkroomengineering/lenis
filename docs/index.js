@@ -10,8 +10,9 @@ setTimeout(() => {
 const scroll = new Lenis({
   wrapper: document.querySelector("[data-scroll-wrapper]"),
   content: document.querySelector("[data-scroll-content]"),
-  smooth: true,
+  // smooth: false,
   lerp: 0.1,
+  effects: false,
 })
 
 window.scroll = scroll

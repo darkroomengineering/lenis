@@ -28,7 +28,7 @@ export class Rect {
     )
     this.windowHeight = Math.min(
       document.documentElement.clientHeight,
-      window.innerWidth
+      window.innerHeight
     )
 
     this.top = offsetTop(this.element)
