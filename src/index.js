@@ -194,7 +194,9 @@ class Core {
     this.contentHeight = this.contentElement.offsetHeight
     this.contentWidth = this.contentElement.offsetWidth
 
-    document.body.style.setProperty("height", this.contentHeight + "px")
+    if (this.smooth) {
+      document.body.style.setProperty("height", this.contentHeight + "px")
+    }
 
     this.windowWidth = Math.min(
       document.documentElement.clientWidth,
@@ -465,10 +467,10 @@ class Core {
 }
 
 const defaultOptions = {
-  autoRaf: true,
-  lerp: 0.1,
-  direction: "vertical",
-  effects: true,
+  autoRaf: true, // [Boolean] does Lenis should handle it's own raf or not
+  smooth: 0.88, // [Boolean, Number] smoothness: 0 is native, 1 is smooth
+  direction: "vertical", // [String] "vertical" or "horizontal"
+  effects: true, // [Boolean] enable/disable effects (parallax, sticky)
 }
 
 class Lenis {
@@ -482,23 +484,19 @@ class Lenis {
       return
     }
 
+    // convert Boolean to Number
+    this.options.lerp = this.options.smooth + 0
+
+    // parse as Number
     this.options.lerp = !isNaN(parseFloat(this.options.lerp))
       ? parseFloat(this.options.lerp)
       : defaultOptions.lerp
 
+    this.options.lerp = clamp(0.01, 1 - this.options.lerp, 1)
     this.options.smooth = this.options.lerp < 1
-
-    if (this.options.lerp <= 0 || this.options.lerp > 1) {
-      this.options.lerp = defaultOptions.lerp
-    }
-
-    console.log(this.options)
 
     document.documentElement.classList.add("has-scroll-init")
 
-    // this.scroll = this.options.smooth
-    //   ? new Smooth(this.options)
-    //   : new Native(this.options)
     this.scroll = new Core(this.options)
 
     if (this.options.smooth === true) {
