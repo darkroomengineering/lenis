@@ -28,10 +28,12 @@ class ScrollElement extends Rect {
 
     this.offset = new Array(2).fill(0).map((_, i) => this.offset[i] || 0)
 
-    this.target = element.getAttribute("data-scroll-target")
-    this.target = this.target
-      ? new Rect(document.querySelector(this.target))
-      : new Rect(element)
+    this.target = document.querySelector(
+      element.getAttribute("data-scroll-target")
+    )
+    if (this.target) {
+      this.target = new Rect(this.target)
+    }
   }
 
   update() {
@@ -340,7 +342,7 @@ class Core extends EventEmitter {
             -current.speed * (this.windowHeight / 2)
           )
           current.element.classList.toggle("is-inview", inView)
-        } else if (current.sticky) {
+        } else if (current.sticky && current.target) {
           // sticky
 
           const shouldTransform = current.target.computeIntersection(
