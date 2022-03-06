@@ -11,6 +11,7 @@
     "vite": "^2.8.0"
   },
   "dependencies": {
+    "events": "^3.3.0",
     "normalize.css": "^8.0.1",
     "sass": "^1.49.8"
   }

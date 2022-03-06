@@ -1,11 +1,13 @@
 lockfileVersion: 5.3
 
 specifiers:
+  events: ^3.3.0
   normalize.css: ^8.0.1
   sass: ^1.49.8
   vite: ^2.8.0
 
 dependencies:
+  events: 3.3.0
   normalize.css: 8.0.1
   sass: 1.49.8
 
@@ -246,6 +248,11 @@ packages:
       esbuild-windows-64: 0.14.23
       esbuild-windows-arm64: 0.14.23
     dev: true
+
+  /events/3.3.0:
+    resolution: {integrity: sha512-mQw+2fkQbALzQ7V0MY0IqdnXNOeTtP4r0lN9z7AAawCXgqea7bDii20AYrIBrFd/Hx0M2Ocz6S111CaFkUcb0Q==}
+    engines: {node: '>=0.8.x'}
+    dev: false
 
   /fill-range/7.0.1:
     resolution: {integrity: sha512-qOo9F+dMUmC2Lcb4BbVvnKJxTPjCm+RRpe4gDuGrzkL7mEVl/djYSu2OdQ2Pa302N4oqkSg9ir6jaLWJ2USVpQ==}

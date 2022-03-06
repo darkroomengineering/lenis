@@ -30,11 +30,11 @@
 }
 
 .c-section_infos_inner {
-  > * {
-    opacity: 0;
-    transform: translateY(60px);
-    transition: opacity 0.6s $easing, transform 0.6s $easing;
-  }
+  // > * {
+  //   opacity: 0;
+  //   transform: translateY(60px);
+  //   transition: opacity 0.6s $easing, transform 0.6s $easing;
+  // }
 
   &.is-inview {
     > * {

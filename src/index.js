@@ -1,5 +1,6 @@
 import { clamp, lerp, truncate } from "./scripts/utils/maths"
 import { offsetTop, offsetLeft, Rect } from "./scripts/utils/rect"
+import EventEmitter from "events"
 
 class ScrollElement extends Rect {
   constructor(element) {
@@ -38,8 +39,11 @@ class ScrollElement extends Rect {
   }
 }
 
-class Core {
+class Core extends EventEmitter {
   constructor({ wrapper, content, direction, smooth, lerp, effects }) {
+    super()
+    this.setMaxListeners(Infinity)
+
     this.wrapperElement = wrapper
     this.contentElement = content
     this.direction = direction
@@ -53,10 +57,10 @@ class Core {
 
     this.update()
 
-    this.onScroll = this.onScroll.bind(this)
+    // this.onScroll = this.onScroll.bind(this)
     window.addEventListener("scroll", this.onScroll, false)
 
-    this.update = this.update.bind(this)
+    // this.update = this.update.bind(this)
     window.addEventListener("resize", this.update, false)
 
     // prevent anchor link click
@@ -152,7 +156,7 @@ class Core {
     }
   }
 
-  onScroll() {
+  onScroll = () => {
     this.delta = { x: window.scrollX, y: window.scrollY }
 
     this.isMoving = true
@@ -176,6 +180,14 @@ class Core {
         y: lerp(this.scroll.y, this.delta.y, this.lerp),
       }
 
+      this.emit("scroll", {
+        scroll: this.scroll,
+        delta: this.delta,
+        progress: this.progress,
+        velocity: this.velocity,
+        limit: this.limit,
+      })
+
       if (
         truncate(this.velocity.x, 4) === 0 &&
         truncate(this.velocity.y, 4) === 0
@@ -188,7 +200,7 @@ class Core {
     }
   }
 
-  update() {
+  update = () => {
     console.log("lenis update")
 
     this.contentHeight = this.contentElement.offsetHeight
@@ -337,51 +349,65 @@ class Core {
             this.windowHeight / 2
           )
 
-          if (shouldTransform) {
-            const { height, width } = current
-            const {
-              top: targetTop,
-              height: targetHeight,
-              left: targetLeft,
-              width: targetWidth,
-            } = current.target.computeRect(this.scroll.x, this.scroll.y)
+          const { height, width, top, left } = current.computeRect(
+            this.scroll.x,
+            this.scroll.y
+          )
 
-            // convert % to px
-            const offset = current.offset.map((v) =>
-              typeof v === "string" && v.includes("%")
-                ? (parseFloat(v) / 100) * this.direction === "horizontal"
-                  ? this.windowWidth
-                  : this.windowHeight
-                : v
-            )
+          const {
+            top: targetTop,
+            height: targetHeight,
+            left: targetLeft,
+            width: targetWidth,
+            bottom: targetBottom,
+          } = current.target.computeRect(this.scroll.x, this.scroll.y)
 
-            if (offset.includes("center")) {
-              if (this.direction === "horizontal") {
-                offset[0] = this.windowWidth / 2 - width / 2
-                offset[1] = 0
-              } else {
-                offset[0] = this.windowHeight / 2 - height / 2
-                offset[1] = 0
-              }
+          // convert % to px
+          const offset = current.offset.map((v) =>
+            typeof v === "string" && v.includes("%")
+              ? (parseFloat(v) / 100) * this.direction === "horizontal"
+                ? this.windowWidth
+                : this.windowHeight
+              : v
+          )
+
+          if (offset.includes("center")) {
+            if (this.direction === "horizontal") {
+              offset[0] = this.windowWidth / 2 - width / 2
+              offset[1] = 0
+            } else {
+              offset[0] = this.windowHeight / 2 - height / 2
+              offset[1] = 0
             }
-            // else {
-            offset[0] = parseFloat(offset[0])
-            offset[1] = parseFloat(offset[1])
+          }
+          // else {
+          offset[0] = parseFloat(offset[0])
+          offset[1] = parseFloat(offset[1])
 
+          if (shouldTransform) {
             if (this.direction === "horizontal") {
               translate = clamp(
                 0,
                 -targetLeft + offset[0],
-                targetWidth - width - offset[1]
+                targetWidth - width - offset[1] + (targetLeft - left)
               )
             } else {
               translate = clamp(
                 0,
                 -targetTop + offset[0],
-                targetHeight - height - offset[1]
+                targetHeight - height - offset[1] + (targetTop - top)
               )
             }
           }
+
+          // const { top, height, bottom } = current.target.computeRect(
+          //   this.scroll.x,
+          //   this.scroll.y
+          // )
+
+          const inView =
+            top + targetHeight > offset[1] && targetBottom + targetHeight > 0
+          current.element.classList.toggle("is-inview", inView)
         } else {
           // test inview for any other scroll element
           const inView = current.computeIntersection(
@@ -417,17 +443,6 @@ class Core {
             )
           }
         }
-
-        // TODO: inview
-
-        // set inview class
-        const inView = current.computeIntersection(
-          this.scroll.x,
-          this.scroll.y,
-          0
-        )
-        // current.element.classList.toggle("is-inview", inView)
-        // current.element.classList.toggle("is-inview", true)
       })
     } else {
       // if not effects
@@ -503,11 +518,11 @@ class Lenis {
       document.documentElement.classList.add("has-scroll-smooth")
     }
 
-    this.raf = this.raf.bind(this)
+    // this.raf = this.raf.bind(this)
     if (this.options.autoRaf) requestAnimationFrame(this.raf)
   }
 
-  raf() {
+  raf = () => {
     if (this.options.autoRaf) {
       this.scroll.raf()
       requestAnimationFrame(this.raf)
@@ -531,6 +546,16 @@ class Lenis {
     document.documentElement.classList.remove("has-scroll-init")
     document.documentElement.classList.remove("has-scroll-smooth")
     cancelAnimationFrame(this.raf)
+  }
+
+  on(...args) {
+    this.scroll.on(...args)
+    // console.log(args)
+  }
+
+  off(...args) {
+    this.scroll.on(...args)
+    // this.scroll.off(args)
   }
 }
 
