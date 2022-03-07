@@ -1,4 +1,4 @@
-import { clamp, lerp, truncate } from "./scripts/utils/maths"
+import { clamp, lerp, truncate, mapRange } from "./scripts/utils/maths"
 import { offsetTop, offsetLeft, Rect } from "./scripts/utils/rect"
 import EventEmitter from "events"
 
@@ -271,8 +271,10 @@ class Core extends EventEmitter {
       }
     }
 
-    if (this.effects) {
-      this.scrollElements.forEach((current) => {
+    let inView = false
+
+    this.scrollElements.forEach((current) => {
+      if (this.effects) {
         const scrollRight = this.scroll.x + this.windowWidth
         const scrollBottom = this.scroll.y + this.windowHeight
 
@@ -292,12 +294,12 @@ class Core extends EventEmitter {
             this.windowHeight / 2
           )
 
-          if (shouldTransform) {
-            const { top, left, height } = current
+          const { top, left, height, width } = current
 
+          if (shouldTransform) {
             switch (current.position) {
               case "top":
-                translate = this.scroll[this.directionAxis] * -current.speed
+                translate = this.scroll.y * -current.speed
                 break
 
               case "elementTop":
@@ -306,14 +308,12 @@ class Core extends EventEmitter {
 
               case "bottom":
                 translate =
-                  (this.limit[this.directionAxis] -
-                    scrollBottom +
-                    this.windowHeight) *
+                  (this.limit.y - scrollBottom + this.windowHeight) *
                   current.speed
                 break
 
               case "left":
-                translate = this.scroll[this.directionAxis] * -current.speed
+                translate = this.scroll.x * -current.speed
                 break
 
               case "elementLeft":
@@ -322,26 +322,33 @@ class Core extends EventEmitter {
 
               case "right":
                 translate =
-                  (this.limit[this.directionAxis] -
-                    scrollRight +
-                    this.windowHeight) *
+                  (this.limit.x - scrollRight + this.windowHeight) *
                   current.speed
                 break
 
               default:
-                translate =
-                  (scrollMiddle[this.directionAxis] - (top + height / 2)) *
-                  -current.speed
+                if (this.direction === "horizontal") {
+                  translate =
+                    (scrollMiddle.x - (left + width / 2)) * -current.speed
+                } else {
+                  translate =
+                    (scrollMiddle.y - (top + height / 2)) * -current.speed
+                }
                 break
             }
           }
 
-          const inView = current.computeIntersection(
-            this.scroll.x,
-            this.scroll.y,
-            -current.speed * (this.windowHeight / 2)
-          )
-          current.element.classList.toggle("is-inview", inView)
+          if (this.direction === "horizontal") {
+            inView = current.computeIntersection(
+              this.scroll.x - translate,
+              this.scroll.y
+            )
+          } else {
+            inView = current.computeIntersection(
+              this.scroll.x,
+              this.scroll.y - translate
+            )
+          }
         } else if (current.sticky && current.target) {
           // sticky
 
@@ -360,6 +367,7 @@ class Core extends EventEmitter {
             top: targetTop,
             height: targetHeight,
             left: targetLeft,
+            right: targetRight,
             width: targetWidth,
             bottom: targetBottom,
           } = current.target.computeRect(this.scroll.x, this.scroll.y)
@@ -382,7 +390,7 @@ class Core extends EventEmitter {
               offset[1] = 0
             }
           }
-          // else {
+
           offset[0] = parseFloat(offset[0])
           offset[1] = parseFloat(offset[1])
 
@@ -402,22 +410,16 @@ class Core extends EventEmitter {
             }
           }
 
-          // const { top, height, bottom } = current.target.computeRect(
-          //   this.scroll.x,
-          //   this.scroll.y
-          // )
-
-          const inView =
-            top + targetHeight > offset[1] && targetBottom + targetHeight > 0
-          current.element.classList.toggle("is-inview", inView)
+          if (this.direction === "horizontal") {
+            inView =
+              left + targetWidth > offset[1] && targetRight + targetWidth > 0
+          } else {
+            inView =
+              top + targetHeight > offset[1] && targetBottom + targetHeight > 0
+          }
         } else {
           // test inview for any other scroll element
-          const inView = current.computeIntersection(
-            this.scroll.x,
-            this.scroll.y,
-            0
-          )
-          current.element.classList.toggle("is-inview", inView)
+          inView = current.computeIntersection(this.scroll.x, this.scroll.y, 0)
         }
 
         // translate element
@@ -445,19 +447,13 @@ class Core extends EventEmitter {
             )
           }
         }
-      })
-    } else {
-      // if not effects
-      this.scrollElements.forEach((current) => {
-        const inView = current.computeIntersection(
-          this.scroll.x,
-          this.scroll.y,
-          0
-        )
-        // current.element.classList.toggle("is-inview", inView)
-        current.element.classList.toggle("is-inview", inView)
-      })
-    }
+      } else {
+        // test inview even if effects are disabled
+        inView = current.computeIntersection(this.scroll.x, this.scroll.y, 0)
+      }
+
+      current.element.classList.toggle("is-inview", inView)
+    })
   }
 
   destroy() {
