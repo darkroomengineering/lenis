@@ -44,10 +44,39 @@ class ScrollElement extends Rect {
   }
 }
 
-class Core extends EventEmitter {
-  constructor({ wrapper, content, direction, smooth, lerp, effects }) {
+const defaultOptions = {
+  autoRaf: true, // [Boolean] does Lenis should handle it's own raf or not
+  smooth: 0.88, // [Boolean, Number] smoothness: 0 is native, 1 is smooth
+  direction: "vertical", // [String] "vertical" or "horizontal"
+  effects: true, // [Boolean] enable/disable effects (parallax, sticky)
+}
+
+export default class Lenis extends EventEmitter {
+  constructor(options = {}) {
     super()
     this.setMaxListeners(Infinity)
+
+    this.options = { ...defaultOptions, ...options }
+
+    if (!this.options.wrapper || !this.options.content) {
+      console.warn("lenis: missing wrapper or content")
+      return
+    }
+
+    // convert Boolean to Number
+    this.options.lerp = this.options.smooth + 0
+
+    // parse as Number
+    this.options.lerp = !isNaN(parseFloat(this.options.lerp))
+      ? parseFloat(this.options.lerp)
+      : defaultOptions.lerp
+
+    this.options.lerp = clamp(0.01, 1 - this.options.lerp, 1)
+    this.options.smooth = this.options.lerp < 1
+
+    document.documentElement.classList.add("has-scroll-init")
+
+    const { wrapper, content, direction, smooth, lerp, effects } = this.options
 
     this.wrapperElement = wrapper
     this.contentElement = content
@@ -85,6 +114,13 @@ class Core extends EventEmitter {
     this.anchors.forEach((element) => {
       element.addEventListener("click", this.anchorsHandler, false)
     })
+
+    if (this.options.smooth === true) {
+      document.documentElement.classList.add("has-scroll-smooth")
+    }
+
+    // this.raf = this.raf.bind(this)
+    if (this.options.autoRaf) requestAnimationFrame(this.raf)
   }
 
   get directionAxis() {
@@ -177,7 +213,11 @@ class Core extends EventEmitter {
     }
   }
 
-  raf() {
+  raf = () => {
+    if (this.options.autoRaf) {
+      requestAnimationFrame(this.raf)
+    }
+
     if (this.isMoving) {
       this.latestScroll = { x: this.scroll.x, y: this.scroll.y }
       this.scroll = {
@@ -479,6 +519,10 @@ class Core extends EventEmitter {
     window.removeEventListener("scroll", this.onScroll, false)
     window.removeEventListener("resize", this.update, false)
 
+    document.documentElement.classList.remove("has-scroll-init")
+    document.documentElement.classList.remove("has-scroll-smooth")
+    cancelAnimationFrame(this.raf)
+
     document.body.style.removeProperty("height")
 
     this.anchors.forEach((element) => {
@@ -500,81 +544,3 @@ class Core extends EventEmitter {
     this.scrollElements = []
   }
 }
-
-const defaultOptions = {
-  autoRaf: true, // [Boolean] does Lenis should handle it's own raf or not
-  smooth: 0.88, // [Boolean, Number] smoothness: 0 is native, 1 is smooth
-  direction: "vertical", // [String] "vertical" or "horizontal"
-  effects: true, // [Boolean] enable/disable effects (parallax, sticky)
-}
-
-class Lenis {
-  constructor(options = {}) {
-    console.log("lenis init", this)
-
-    this.options = { ...defaultOptions, ...options }
-
-    if (!this.options.wrapper || !this.options.content) {
-      console.warn("lenis: missing wrapper or content")
-      return
-    }
-
-    // convert Boolean to Number
-    this.options.lerp = this.options.smooth + 0
-
-    // parse as Number
-    this.options.lerp = !isNaN(parseFloat(this.options.lerp))
-      ? parseFloat(this.options.lerp)
-      : defaultOptions.lerp
-
-    this.options.lerp = clamp(0.01, 1 - this.options.lerp, 1)
-    this.options.smooth = this.options.lerp < 1
-
-    document.documentElement.classList.add("has-scroll-init")
-
-    this.scroll = new Core(this.options)
-
-    if (this.options.smooth === true) {
-      document.documentElement.classList.add("has-scroll-smooth")
-    }
-
-    // this.raf = this.raf.bind(this)
-    if (this.options.autoRaf) requestAnimationFrame(this.raf)
-  }
-
-  raf = () => {
-    this.scroll.raf()
-    if (this.options.autoRaf) {
-      requestAnimationFrame(this.raf)
-    }
-  }
-
-  scrollTo(target, options) {
-    this.scroll.scrollTo(target, options)
-  }
-
-  setScroll(x, y, immediate) {
-    this.scroll.setScroll(x, y, immediate)
-  }
-
-  update() {
-    this.scroll.update()
-  }
-
-  destroy() {
-    this.scroll.destroy()
-    document.documentElement.classList.remove("has-scroll-init")
-    document.documentElement.classList.remove("has-scroll-smooth")
-    cancelAnimationFrame(this.raf)
-  }
-
-  on(...args) {
-    this.scroll.on(...args)
-  }
-
-  off(...args) {
-    this.scroll.on(...args)
-  }
-}
-
-export default Lenis
