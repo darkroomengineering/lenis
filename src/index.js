@@ -91,10 +91,7 @@ export default class Lenis extends EventEmitter {
 
     this.update()
 
-    // this.onScroll = this.onScroll.bind(this)
     window.addEventListener("scroll", this.onScroll, false)
-
-    // this.update = this.update.bind(this)
     window.addEventListener("resize", this.update, false)
 
     // prevent anchor link click
@@ -119,12 +116,7 @@ export default class Lenis extends EventEmitter {
       document.documentElement.classList.add("has-scroll-smooth")
     }
 
-    // this.raf = this.raf.bind(this)
     if (this.options.autoRaf) requestAnimationFrame(this.raf)
-  }
-
-  get directionAxis() {
-    return this.direction === "horizontal" ? "x" : "y"
   }
 
   get velocity() {
