@@ -21,7 +21,11 @@ window.scroll = scroll
 console.log(scroll)
 
 scroll.on("scroll", (e) => {
-  // console.log(e)
+  console.log(e.currentElements)
+})
+
+scroll.on("call", (a, b, c) => {
+  console.log(a, b, c)
 })
 
 // let options = {

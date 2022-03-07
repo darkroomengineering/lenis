@@ -1,6 +1,6 @@
-import { clamp, lerp, truncate, mapRange } from "./scripts/utils/maths"
-import { offsetTop, offsetLeft, Rect } from "./scripts/utils/rect"
 import EventEmitter from "events"
+import { clamp, lerp, truncate } from "./scripts/utils/maths"
+import { offsetLeft, offsetTop, Rect } from "./scripts/utils/rect"
 
 class ScrollElement extends Rect {
   constructor(element) {
@@ -11,6 +11,8 @@ class ScrollElement extends Rect {
     speed = !isNaN(speed) ? speed : 0
     this.speed = speed / 10
 
+    this.inView = false
+    this.call = element.getAttribute("data-scroll-call")
     this.delay = element.getAttribute("data-scroll-delay")
     this.delay = this.delay ? parseFloat(this.delay) : null
     this.repeat = element.getAttribute("data-scroll-repeat") !== null
@@ -20,6 +22,7 @@ class ScrollElement extends Rect {
     this.offset = element.getAttribute("data-scroll-offset")
     if (this.offset) {
       this.offset = this.offset
+        .replaceAll(" ", "")
         .split(",")
         .map((v) => (["top", "bottom"].includes(v) ? 0 : v))
     } else {
@@ -188,6 +191,9 @@ class Core extends EventEmitter {
         progress: this.progress,
         velocity: this.velocity,
         limit: this.limit,
+        currentElements: this.scrollElements.filter(
+          (current) => current.inView
+        ),
       })
 
       if (
@@ -248,7 +254,7 @@ class Core extends EventEmitter {
           const inView = current.computeIntersection(
             this.scroll.x,
             this.scroll.y,
-            0 // TODO: add optional margin
+            this.windowHeight / 2 // TODO: add optional margin
           )
           if (inView) {
             current.element.style.removeProperty("pointer-events")
@@ -372,14 +378,7 @@ class Core extends EventEmitter {
             bottom: targetBottom,
           } = current.target.computeRect(this.scroll.x, this.scroll.y)
 
-          // convert % to px
-          const offset = current.offset.map((v) =>
-            typeof v === "string" && v.includes("%")
-              ? (parseFloat(v) / 100) * this.direction === "horizontal"
-                ? this.windowWidth
-                : this.windowHeight
-              : v
-          )
+          let offset = current.offset
 
           if (offset.includes("center")) {
             if (this.direction === "horizontal") {
@@ -389,6 +388,16 @@ class Core extends EventEmitter {
               offset[0] = this.windowHeight / 2 - height / 2
               offset[1] = 0
             }
+          } else {
+            // convert % to px
+            offset = offset.map((v) =>
+              typeof v === "string" && v.includes("%")
+                ? (parseFloat(v.replaceAll("%", "")) / 100) *
+                  (this.direction === "horizontal"
+                    ? this.windowWidth
+                    : this.windowHeight)
+                : v
+            )
           }
 
           offset[0] = parseFloat(offset[0])
@@ -452,7 +461,17 @@ class Core extends EventEmitter {
         inView = current.computeIntersection(this.scroll.x, this.scroll.y, 0)
       }
 
-      current.element.classList.toggle("is-inview", inView)
+      if (current.call && current.inView !== inView) {
+        this.emit("call", current.call, inView, current)
+      }
+
+      current.inView = inView
+
+      if (inView) {
+        current.element.classList.add("is-inview")
+      } else if (current.repeat) {
+        current.element.classList.remove("is-inview")
+      }
     })
   }
 
@@ -465,17 +484,20 @@ class Core extends EventEmitter {
     this.anchors.forEach((element) => {
       element.removeEventListener("click", this.anchorsHandler, false)
     })
+    this.anchors = []
 
     this.sections.forEach((current) => {
       current.element.style.removeProperty("transform")
       current.element.style.removeProperty("pointer-events")
       current.element.style.removeProperty("visibility")
     })
+    this.sections = []
 
     this.scrollElements.forEach((current) => {
       current.element.style.removeProperty("transform")
       current.element.classList.remove("is-inview")
     })
+    this.scrollElements = []
   }
 }
 
@@ -488,7 +510,7 @@ const defaultOptions = {
 
 class Lenis {
   constructor(options = {}) {
-    console.log("lenis init", options)
+    console.log("lenis init", this)
 
     this.options = { ...defaultOptions, ...options }
 
@@ -521,8 +543,8 @@ class Lenis {
   }
 
   raf = () => {
+    this.scroll.raf()
     if (this.options.autoRaf) {
-      this.scroll.raf()
       requestAnimationFrame(this.raf)
     }
   }
@@ -548,12 +570,10 @@ class Lenis {
 
   on(...args) {
     this.scroll.on(...args)
-    // console.log(args)
   }
 
   off(...args) {
     this.scroll.on(...args)
-    // this.scroll.off(args)
   }
 }
 
