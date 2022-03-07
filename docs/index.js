@@ -7,7 +7,7 @@ setTimeout(() => {
   document.documentElement.classList.add("is-ready")
 }, 300)
 
-const scroll = new Lenis({
+const lenis = new Lenis({
   wrapper: document.querySelector("[data-scroll-wrapper]"),
   content: document.querySelector("[data-scroll-content]"),
   direction: "vertical",
@@ -16,15 +16,15 @@ const scroll = new Lenis({
   autoRaf: true,
 })
 
-window.scroll = scroll
+window.lenis = lenis
 
-console.log(scroll)
+console.log(lenis)
 
-scroll.on("scroll", (e) => {
+lenis.on("scroll", (e) => {
   console.log(e.currentElements)
 })
 
-scroll.on("call", (a, b, c) => {
+lenis.on("call", (a, b, c) => {
   console.log(a, b, c)
 })
 
