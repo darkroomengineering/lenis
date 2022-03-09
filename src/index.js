@@ -79,6 +79,8 @@ export default class Lenis extends EventEmitter {
     const { wrapper, content, direction, smooth, lerp, effects } = this.options
 
     this.wrapperElement = wrapper
+    this.wrapperElement.addEventListener("scroll", this.onWrapperScroll, false)
+
     this.contentElement = content
     this.direction = direction
     this.smooth = smooth
@@ -93,6 +95,7 @@ export default class Lenis extends EventEmitter {
 
     window.addEventListener("scroll", this.onScroll, false)
     window.addEventListener("resize", this.update, false)
+    document.addEventListener("focus", this.onFocus, true)
 
     // prevent anchor link click
     this.anchors = [
@@ -193,6 +196,17 @@ export default class Lenis extends EventEmitter {
     this.delta = { x: window.scrollX, y: window.scrollY }
 
     this.isMoving = true
+  }
+
+  onFocus = ({ target }) => {
+    const top = offsetTop(target)
+    this.scrollTo(top, {
+      offset: -(this.windowHeight / 2 - target.offsetHeight / 2),
+    })
+  }
+
+  onWrapperScroll = () => {
+    this.wrapperElement.scrollTo(0, 0)
   }
 
   setScroll(x, y, immediate = true) {
@@ -508,6 +522,12 @@ export default class Lenis extends EventEmitter {
   }
 
   destroy() {
+    this.wrapperElement.removeEventListener(
+      "scroll",
+      this.onWrapperScroll,
+      false
+    )
+    document.removeEventListener("focus", this.onFocus, true)
     window.removeEventListener("scroll", this.onScroll, false)
     window.removeEventListener("resize", this.update, false)
 

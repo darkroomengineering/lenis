@@ -21,11 +21,11 @@ window.lenis = lenis
 console.log(lenis)
 
 lenis.on("scroll", (e) => {
-  console.log(e.currentElements)
+  // console.log(e.currentElements)
 })
 
 lenis.on("call", (a, b, c) => {
-  console.log(a, b, c)
+  // console.log(a, b, c)
 })
 
 // let options = {
