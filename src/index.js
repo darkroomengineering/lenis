@@ -12,6 +12,7 @@ class ScrollElement extends Rect {
     this.speed = speed / 10
 
     this.inView = false
+    this.id = element.getAttribute("data-scroll-id")
     this.call = element.getAttribute("data-scroll-call")
     this.delay = element.getAttribute("data-scroll-delay")
     this.delay = this.delay ? parseFloat(this.delay) : null
