@@ -1,6 +1,9 @@
 export function offsetTop(element, accumulator = 0) {
   const top = accumulator + element.offsetTop
-  if (element.offsetParent) {
+  if (
+    element.offsetParent &&
+    typeof element.offsetParent.dataset.scrollWrapper === "undefined"
+  ) {
     return offsetTop(element.offsetParent, top)
   }
   return top
@@ -8,7 +11,10 @@ export function offsetTop(element, accumulator = 0) {
 
 export function offsetLeft(element, accumulator = 0) {
   const left = accumulator + element.offsetLeft
-  if (element.offsetParent) {
+  if (
+    element.offsetParent &&
+    typeof element.offsetParent.dataset.scrollWrapper === "undefined"
+  ) {
     return offsetLeft(element.offsetParent, left)
   }
   return left

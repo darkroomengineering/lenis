@@ -1,4 +1,9 @@
 import Lenis from "../src"
+import { gsap } from "gsap"
+import { ScrollTrigger } from "gsap/ScrollTrigger"
+// https://codepen.io/GreenSock/pen/ExPdqKy?editors=1010
+
+gsap.registerPlugin(ScrollTrigger)
 
 document.documentElement.classList.add("is-loaded")
 document.documentElement.classList.remove("is-loading")
@@ -10,105 +15,109 @@ setTimeout(() => {
 const lenis = new Lenis({
   wrapper: document.querySelector("[data-scroll-wrapper]"),
   content: document.querySelector("[data-scroll-content]"),
-  direction: "vertical",
-  smooth: 0.88,
-  effects: true,
-  autoRaf: true,
+  lerp: 0.1,
+  smooth: true,
+})
+
+// lenis.on("scroll", ({ lerpedScroll }) => {
+//   console.log(lerpedScroll.y)
+// })
+
+// function raf() {
+//   lenis.raf()
+//   requestAnimationFrame(raf)
+// }
+
+// requestAnimationFrame(raf)
+
+gsap.ticker.add(() => {
+  lenis.raf()
 })
 
 window.lenis = lenis
 
 console.log(lenis)
 
-lenis.on("scroll", (e) => {
-  // console.log(e.currentElements)
+lenis.on("scroll", ScrollTrigger.update)
+
+ScrollTrigger.defaults({ markers: true })
+
+if (lenis.smooth === true) {
+  ScrollTrigger.scrollerProxy(document.body, {
+    scrollTop(value) {
+      // return arguments.length
+      //   ? lenis.scrollTo(value, true)
+      //   : lenis.lerpedScroll.y
+      return lenis.lerpedScroll.y
+    },
+    getBoundingClientRect() {
+      return {
+        top: 0,
+        left: 0,
+        width: window.innerWidth,
+        height: window.innerHeight,
+      }
+    },
+    fixedMarkers: true,
+    pinType: "transform",
+  })
+}
+
+// // each time the window updates, we should refresh ScrollTrigger and then update LocomotiveScroll.
+ScrollTrigger.addEventListener("refresh", () => lenis.update())
+
+// after everything is set up, refresh() ScrollTrigger and update LocomotiveScroll because padding may have been added for pinning, etc.
+ScrollTrigger.refresh()
+
+// --- RED PANEL ---
+gsap.from(".line-1", {
+  scrollTrigger: {
+    id: "red",
+    trigger: ".line-1",
+    scrub: true,
+    start: "top bottom",
+    end: "top top",
+  },
+  scaleX: 0,
+  transformOrigin: "left center",
+  ease: "none",
 })
 
-lenis.on("call", (a, b, c) => {
-  // console.log(a, b, c)
+// --- ORANGE PANEL ---
+gsap.from(".line-2", {
+  scrollTrigger: {
+    id: "orange",
+    trigger: ".orange",
+    scrub: true,
+    pin: true,
+    start: "top top",
+    end: "+=100%",
+    onUpdate: (self) => {
+      console.log(self.progress)
+    },
+  },
+  scaleX: 0,
+  transformOrigin: "left center",
+  ease: "none",
 })
 
-// let options = {
-//   el: document.querySelector("#js-scroll"),
-//   smooth: true,
-//   getSpeed: true,
-//   getDirection: true,
-//   autoRaf: false,
-// }
+// // --- PURPLE/GREEN PANEL ---
+var tl = gsap.timeline({
+  scrollTrigger: {
+    id: "PURPLE",
+    trigger: ".purple",
+    // scroller: ".smooth-scroll",
+    scrub: true,
+    pin: true,
+    start: "top top",
+    end: "+=100%",
+  },
+})
 
-// if (
-//   document.querySelector("#js-scroll").getAttribute("data-horizontal") == "true"
-// ) {
-//   options.direction = "horizontal"
-//   options.gestureDirection = "both"
-//   options.tablet = {
-//     smooth: true,
-//     direction: "horizontal",
-//     horizontalGesture: true,
-//     autoRaf: false,
-//   }
-//   options.smartphone = {
-//     smooth: false,
-//   }
-//   options.reloadOnContextChange = true
-// }
-
-// setTimeout(() => {
-//   const scroll = new LocomotiveScroll(options)
-//   window.scroll = scroll
-
-//   function onFrame() {
-//     scroll.raf()
-//     requestAnimationFrame(onFrame)
-//   }
-
-//   requestAnimationFrame(onFrame)
-
-//   let dynamicBackgrounds = []
-//   let dynamicColorElements = []
-
-//   scroll.on("scroll", (instance) => {
-//     const progress = (360 * instance.scroll.y) / instance.limit.y
-
-//     scroll.el.style.backgroundColor = `hsl(${progress}, 11%, 81%)`
-
-//     dynamicBackgrounds.forEach((obj) => {
-//       obj.el.style.backgroundColor = `hsl(${progress}, 11%, 81%)`
-//     })
-//     dynamicColorElements.forEach((obj) => {
-//       obj.el.style.color = `hsl(${progress}, 11%, 81%)`
-//     })
-
-//     document.documentElement.setAttribute("data-direction", instance.direction)
-//   })
-
-//   scroll.on("call", (value, way, obj) => {
-//     if (value === "dynamicBackground") {
-//       if (way === "enter") {
-//         dynamicBackgrounds.push({
-//           id: obj.id,
-//           el: obj.el,
-//         })
-//       } else {
-//         for (var i = 0; i < dynamicBackgrounds.length; i++) {
-//           if (obj.id === dynamicBackgrounds[i].id) {
-//             dynamicBackgrounds.splice(i, 1)
-//           }
-//         }
-//       }
-//     } else if (value === "dynamicColor") {
-//       if (way === "enter") {
-//         dynamicColorElements.push({
-//           id: obj.id,
-//           el: obj.el,
-//         })
-//       } else {
-//         for (var i = 0; i < dynamicColorElements.length; i++) {
-//           if (obj.id === dynamicColorElements[i].id) {
-//             dynamicColorElements.splice(i, 1)
-//           }
-//         }
-//       }
-//     }
-//   })
-// }, 1000)
+tl.from(".purple p", { scale: 0.3, rotation: 45, autoAlpha: 0, ease: "power2" })
+  .from(
+    ".line-3",
+    { scaleX: 0, transformOrigin: "left center", ease: "none" },
+    0
+  )
+  .to(".purple", { backgroundColor: "#28a92b" }, 0)

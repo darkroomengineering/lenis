@@ -1,12 +1,48 @@
+// html {
+//   &.has-scroll-init {
+//     &.has-scroll-smooth {
+//       [data-scroll-wrapper] {
+//         top: 0;
+//         bottom: 0;
+//         left: 0;
+//         right: 0;
+//         position: fixed;
+//         overflow: hidden;
+//         overflow: clip;
+//       }
+
+//       [data-scroll-section] {
+//         will-change: transform;
+//       }
+//     }
+//   }
+// }
+
 html {
-  &.has-scroll-init {
-    &.has-scroll-smooth {
+  &:not(.lenis) {
+    overflow: hidden;
+  }
+
+  &.lenis {
+    &.lenis-smooth {
+      // scrollbar-width:none !important;
+
+      // body {
+      //   -ms-overflow-style:none;
+
+      //   &::-webkit-scrollbar {
+      //     width: 0 !important;
+      //     height: 0 !important;
+      //   }
+      // }
+
       [data-scroll-wrapper] {
         top: 0;
         bottom: 0;
         left: 0;
         right: 0;
-        position: fixed;
+        position: sticky;
+        height: 100vh;
         overflow: hidden;
         overflow: clip;
       }

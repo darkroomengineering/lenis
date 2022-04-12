@@ -16,6 +16,7 @@ specifiers:
   eslint-plugin-react-hooks: ^4.3.0
   eslint-plugin-simple-import-sort: ^7.0.0
   events: ^3.3.0
+  gsap: ^3.10.2
   husky: ^7.0.4
   normalize.css: ^8.0.1
   prettier: ^2.5.1
@@ -28,6 +29,7 @@ specifiers:
 
 dependencies:
   events: 3.3.0
+  gsap: 3.10.2
   normalize.css: 8.0.1
   sass: 1.49.8
 
@@ -2622,6 +2624,10 @@ packages:
     resolution: {integrity: sha512-S0nG3CLEQiY/ILxqtztTWH/3iRRdyBLw6KMDxnKMchrtbj2OFmehVh0WUCfW3DUrIgx/qFrJPICrq4Z4sTR9UQ==}
     engines: {node: '>=0.10.0'}
     dev: true
+
+  /gsap/3.10.2:
+    resolution: {integrity: sha512-exJVOda3O1NpgGjM4dzZONmSODWFP+JF/DwfiBfCPQPr15nm3M0TQczYKLZlMdBNdWxHMvRPKVqc1e1/6YD+zA==}
+    dev: false
 
   /has-ansi/2.0.0:
     resolution: {integrity: sha1-NPUEnOHs3ysGSa8+8k5F7TVBbZE=}
