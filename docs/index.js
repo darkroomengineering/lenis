@@ -5,14 +5,14 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger'
 
 gsap.registerPlugin(ScrollTrigger)
 
-console.log(window)
+// console.log(window)
 
 const lenis = new Lenis({
   wrapper: document.querySelector('#scroll-wrapper'),
   content: document.querySelector('#scroll-content'),
   lerp: 0.1,
   smooth: true,
-  customScrollbar: false,
+  customScrollbar: true,
 })
 
 gsap.ticker.add(() => {
@@ -34,7 +34,7 @@ gsap.ticker.add(() => {
 
 // console.log(lenis)
 
-ScrollTrigger.defaults({ markers: true })
+// ScrollTrigger.defaults({ markers: true })
 
 if (lenis.smooth === true) {
   lenis.on('scroll', ScrollTrigger.update)
@@ -102,55 +102,55 @@ parallaxElements.forEach((element) => {
     )
 })
 
-// // --- RED PANEL ---
-// gsap.from('.line-1', {
-//   scrollTrigger: {
-//     id: 'red',
-//     trigger: '.line-1',
-//     scrub: true,
-//     start: 'top bottom',
-//     end: 'bottom top',
-//   },
-//   scaleX: 0,
-//   transformOrigin: 'left center',
-//   ease: 'none',
-// })
+// --- RED PANEL ---
+gsap.from('.line-1', {
+  scrollTrigger: {
+    id: 'red',
+    trigger: '.line-1',
+    scrub: true,
+    start: 'top bottom',
+    end: 'bottom top',
+  },
+  scaleX: 0,
+  transformOrigin: 'left center',
+  ease: 'none',
+})
 
-// // --- ORANGE PANEL ---
-// gsap.from('.line-2', {
-//   scrollTrigger: {
-//     id: 'orange',
-//     trigger: '.orange',
-//     scrub: true,
-//     pin: true,
-//     start: 'top top',
-//     end: '+=100%',
-//     onUpdate: (self) => {
-//       console.log(self.progress)
-//     },
-//   },
-//   scaleX: 0,
-//   transformOrigin: 'left center',
-//   ease: 'none',
-// })
+// --- ORANGE PANEL ---
+gsap.from('.line-2', {
+  scrollTrigger: {
+    id: 'orange',
+    trigger: '.orange',
+    scrub: true,
+    pin: true,
+    start: 'top top',
+    end: '+=100%',
+    onUpdate: (self) => {
+      console.log(self.progress)
+    },
+  },
+  scaleX: 0,
+  transformOrigin: 'left center',
+  ease: 'none',
+})
 
-// // --- PURPLE/GREEN PANEL ---
-// var tl = gsap.timeline({
-//   scrollTrigger: {
-//     id: 'PURPLE',
-//     trigger: '.purple',
-//     // scroller: ".smooth-scroll",
-//     scrub: true,
-//     pin: true,
-//     start: 'top top',
-//     end: '+=100%',
-//   },
-// })
+// --- PURPLE/GREEN PANEL ---
+var tl = gsap.timeline({
+  scrollTrigger: {
+    id: 'PURPLE',
+    trigger: '.purple',
+    // scroller: ".smooth-scroll",
+    scrub: true,
+    pin: true,
+    start: 'top top',
+    end: '+=100%',
+  },
+})
 
-// tl.from('.purple p', { scale: 0.3, rotation: 45, autoAlpha: 0, ease: 'power2' })
-//   .from(
-//     '.line-3',
-//     { scaleX: 0, transformOrigin: 'left center', ease: 'none' },
-//     0
-//   )
-//   .to('.purple', { backgroundColor: '#28a92b' }, 0)
+tl.from('.purple p', { scale: 0.3, rotation: 45, autoAlpha: 0, ease: 'power2' })
+  .from(
+    '.line-3',
+    { scaleX: 0, transformOrigin: 'left center', ease: 'none' },
+    0
+  )
+  .to('.purple', { backgroundColor: '#28a92b' }, 0)

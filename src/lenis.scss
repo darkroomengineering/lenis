@@ -16,26 +16,28 @@
 //       }
 //     }
 //   }
-// }
+// 
 
 html {
-  // &:not(.lenis) {
-  //   overflow: hidden;
-  // }
-
-  &.lenis {
-    &.lenis-custom-scrollbar {
-      scrollbar-width:none !important;
-      
-      body {
-        -ms-overflow-style: none;
-      
-        &::-webkit-scrollbar {
-          width: 0 !important;
-          height: 0 !important;
+        scrollbar-width: none !important;
+        
+        body {
+          -ms-overflow-style: none;
+        
+          &::-webkit-scrollbar {
+            display: none;
+            -webkit-appearance: none;
+            width: 0 !important;
+            height: 0 !important;
+          }
         }
-      }
-    }
+}
+
+html {
+  &.lenis {
+    // &.lenis-custom-scrollbar {
+
+    // }
 
     &.lenis-smooth {
       [data-scroll-wrapper] {
