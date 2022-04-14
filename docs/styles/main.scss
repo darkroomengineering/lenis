@@ -1,5 +1,11 @@
 @import "../src/lenis";
 
+.box {
+    height: 250px;
+    width: 250px;
+    background-color: blue;
+}
+
 .panel.align-top {
     align-items: flex-start;
 }

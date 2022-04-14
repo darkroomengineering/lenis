@@ -19,23 +19,25 @@
 // }
 
 html {
-  &:not(.lenis) {
-    overflow: hidden;
-  }
+  // &:not(.lenis) {
+  //   overflow: hidden;
+  // }
 
   &.lenis {
+    &.lenis-custom-scrollbar {
+      scrollbar-width:none !important;
+      
+      body {
+        -ms-overflow-style: none;
+      
+        &::-webkit-scrollbar {
+          width: 0 !important;
+          height: 0 !important;
+        }
+      }
+    }
+
     &.lenis-smooth {
-      // scrollbar-width:none !important;
-
-      // body {
-      //   -ms-overflow-style:none;
-
-      //   &::-webkit-scrollbar {
-      //     width: 0 !important;
-      //     height: 0 !important;
-      //   }
-      // }
-
       [data-scroll-wrapper] {
         top: 0;
         bottom: 0;
@@ -46,6 +48,24 @@ html {
         overflow: hidden;
         overflow: clip;
       }
+    }
+  }
+
+  .lenis-scrollbar {
+    position: fixed;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    width: 10px;
+
+    .lenis-scrollbar-thumb {
+      width: 100%;
+      height: 64px;
+      border-radius: 8px;
+      border: 2px solid transparent;
+      background-color: red;
+      background-clip: padding-box;
+      box-sizing: border-box;
     }
   }
 }

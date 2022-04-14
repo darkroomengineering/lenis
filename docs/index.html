@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html class="is-smooth-scroll-compatible is-loading" lang="en">
+<html lang="en">
   <head>
     <meta charset="utf-8" />
     <title>
@@ -35,11 +35,10 @@
     />
 
     <link rel="stylesheet" href="/styles/main.scss" />
-    <link rel="stylesheet" href="../src/lenis.scss" />
   </head>
   <body>
-    <div data-scroll-wrapper>
-      <div class="smooth-scroll" data-scroll-content>
+    <div id="scroll-wrapper">
+      <div id="scroll-content">
         <div class="description panel blue" data-scroll-section>
           <div>
             <h1>Locomotive Scroll + ScrollTrigger</h1>
@@ -53,6 +52,12 @@
             </div>
           </div>
         </div>
+
+        <section data-scroll-section>
+          <div class="panel white">
+            <div class="box" data-scroll-speed="0.1"></div>
+          </div>
+        </section>
 
         <section data-scroll-section>
           <div class="panel red">

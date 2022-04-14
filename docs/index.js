@@ -1,22 +1,22 @@
-import Lenis from "../src"
-import { gsap } from "gsap"
-import { ScrollTrigger } from "gsap/ScrollTrigger"
+import Lenis from '../src'
+import { gsap } from 'gsap'
+import { ScrollTrigger } from 'gsap/ScrollTrigger'
 // https://codepen.io/GreenSock/pen/ExPdqKy?editors=1010
 
 gsap.registerPlugin(ScrollTrigger)
 
-document.documentElement.classList.add("is-loaded")
-document.documentElement.classList.remove("is-loading")
-
-setTimeout(() => {
-  document.documentElement.classList.add("is-ready")
-}, 300)
+console.log(window)
 
 const lenis = new Lenis({
-  wrapper: document.querySelector("[data-scroll-wrapper]"),
-  content: document.querySelector("[data-scroll-content]"),
+  wrapper: document.querySelector('#scroll-wrapper'),
+  content: document.querySelector('#scroll-content'),
   lerp: 0.1,
   smooth: true,
+  customScrollbar: false,
+})
+
+gsap.ticker.add(() => {
+  lenis.raf()
 })
 
 // lenis.on("scroll", ({ lerpedScroll }) => {
@@ -30,19 +30,15 @@ const lenis = new Lenis({
 
 // requestAnimationFrame(raf)
 
-gsap.ticker.add(() => {
-  lenis.raf()
-})
+// window.lenis = lenis
 
-window.lenis = lenis
-
-console.log(lenis)
-
-lenis.on("scroll", ScrollTrigger.update)
+// console.log(lenis)
 
 ScrollTrigger.defaults({ markers: true })
 
 if (lenis.smooth === true) {
+  lenis.on('scroll', ScrollTrigger.update)
+
   ScrollTrigger.scrollerProxy(document.body, {
     scrollTop(value) {
       // return arguments.length
@@ -59,65 +55,102 @@ if (lenis.smooth === true) {
       }
     },
     fixedMarkers: true,
-    pinType: "transform",
+    pinType: 'transform',
   })
+
+  // // each time the window updates, we should refresh ScrollTrigger and then update LocomotiveScroll.
+  ScrollTrigger.addEventListener('refresh', () => lenis.update())
+
+  // after everything is set up, refresh() ScrollTrigger and update LocomotiveScroll because padding may have been added for pinning, etc.
+  ScrollTrigger.refresh()
 }
 
-// // each time the window updates, we should refresh ScrollTrigger and then update LocomotiveScroll.
-ScrollTrigger.addEventListener("refresh", () => lenis.update())
+const parallaxElements = [...document.querySelectorAll('[data-scroll-speed]')]
 
-// after everything is set up, refresh() ScrollTrigger and update LocomotiveScroll because padding may have been added for pinning, etc.
-ScrollTrigger.refresh()
+parallaxElements.forEach((element) => {
+  const speed = parseFloat(element.getAttribute('data-scroll-speed'))
 
-// --- RED PANEL ---
-gsap.from(".line-1", {
-  scrollTrigger: {
-    id: "red",
-    trigger: ".line-1",
-    scrub: true,
-    start: "top bottom",
-    end: "top top",
-  },
-  scaleX: 0,
-  transformOrigin: "left center",
-  ease: "none",
+  gsap
+    .timeline({
+      scrollTrigger: {
+        invalidateOnRefresh: true,
+        id: 'parallax',
+        trigger: element,
+        scrub: true,
+        start: `top bottom`,
+        end: () => {
+          const y = window.innerHeight * speed
+          return `bottom-=${y * 2} top`
+        },
+      },
+      defaults: { ease: 'none' },
+    })
+    .fromTo(
+      element,
+      {
+        y: () => {
+          const y = window.innerHeight * speed
+          return y
+        },
+      },
+      {
+        y: () => {
+          const y = window.innerHeight * speed
+          return -y
+        },
+      }
+    )
 })
 
-// --- ORANGE PANEL ---
-gsap.from(".line-2", {
-  scrollTrigger: {
-    id: "orange",
-    trigger: ".orange",
-    scrub: true,
-    pin: true,
-    start: "top top",
-    end: "+=100%",
-    onUpdate: (self) => {
-      console.log(self.progress)
-    },
-  },
-  scaleX: 0,
-  transformOrigin: "left center",
-  ease: "none",
-})
+// // --- RED PANEL ---
+// gsap.from('.line-1', {
+//   scrollTrigger: {
+//     id: 'red',
+//     trigger: '.line-1',
+//     scrub: true,
+//     start: 'top bottom',
+//     end: 'bottom top',
+//   },
+//   scaleX: 0,
+//   transformOrigin: 'left center',
+//   ease: 'none',
+// })
+
+// // --- ORANGE PANEL ---
+// gsap.from('.line-2', {
+//   scrollTrigger: {
+//     id: 'orange',
+//     trigger: '.orange',
+//     scrub: true,
+//     pin: true,
+//     start: 'top top',
+//     end: '+=100%',
+//     onUpdate: (self) => {
+//       console.log(self.progress)
+//     },
+//   },
+//   scaleX: 0,
+//   transformOrigin: 'left center',
+//   ease: 'none',
+// })
 
 // // --- PURPLE/GREEN PANEL ---
-var tl = gsap.timeline({
-  scrollTrigger: {
-    id: "PURPLE",
-    trigger: ".purple",
-    // scroller: ".smooth-scroll",
-    scrub: true,
-    pin: true,
-    start: "top top",
-    end: "+=100%",
-  },
-})
+// var tl = gsap.timeline({
+//   scrollTrigger: {
+//     id: 'PURPLE',
+//     trigger: '.purple',
+//     // scroller: ".smooth-scroll",
+//     scrub: true,
+//     pin: true,
+//     start: 'top top',
+//     end: '+=100%',
+//   },
+// })
 
-tl.from(".purple p", { scale: 0.3, rotation: 45, autoAlpha: 0, ease: "power2" })
-  .from(
-    ".line-3",
-    { scaleX: 0, transformOrigin: "left center", ease: "none" },
-    0
-  )
-  .to(".purple", { backgroundColor: "#28a92b" }, 0)
+// tl.from('.purple p', { scale: 0.3, rotation: 45, autoAlpha: 0, ease: 'power2' })
+//   .from(
+//     '.line-3',
+//     { scaleX: 0, transformOrigin: 'left center', ease: 'none' },
+//     0
+//   )
+//   .to('.purple', { backgroundColor: '#28a92b' }, 0)

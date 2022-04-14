@@ -1,10 +1,10 @@
-import { lerp, truncate } from "./scripts/utils/maths"
+import { lerp, truncate } from './scripts/utils/maths'
 // import { offsetLeft, offsetTop } from "./scripts/utils/rect"
-import EventEmitter from "events"
+import EventEmitter from 'events'
 
 function getTranslate(element) {
   const matrix = new DOMMatrixReadOnly(
-    window.getComputedStyle(element).getPropertyValue("transform")
+    window.getComputedStyle(element).getPropertyValue('transform')
   )
 
   return {
@@ -34,42 +34,103 @@ class BoundingClientRect {
   }
 }
 
+class Scrollbar {
+  constructor() {
+    this.element = document.createElement('div')
+    this.thumb = document.createElement('div')
+
+    this.element.classList.add('lenis-scrollbar')
+    this.thumb.classList.add('lenis-scrollbar-thumb')
+
+    this.element.appendChild(this.thumb)
+
+    document.body.appendChild(this.element)
+
+    this.onWindowResize()
+
+    window.addEventListener('resize', this.onWindowResize, false)
+  }
+
+  update() {
+    this.height = this.thumb.offsetHeight
+  }
+
+  onWindowResize = () => {
+    this.windowWidth = Math.min(
+      document.documentElement.clientWidth,
+      window.innerWidth
+    )
+    this.windowHeight = Math.min(
+      document.documentElement.clientHeight,
+      window.innerHeight
+    )
+
+    this.update()
+  }
+
+  transform(progress) {
+    this.thumb.style.transform = `translateY(${
+      progress * (this.windowHeight - this.height) + 'px'
+    })`
+  }
+}
+
 export default class Lenis extends EventEmitter {
-  constructor({ wrapper, content, lerp = 0.1, smooth = true }) {
+  constructor({
+    wrapper,
+    content,
+    lerp = 0.1,
+    smooth = true,
+    customScrollbar = true,
+  }) {
     super()
     this.setMaxListeners(Infinity)
 
+    this.customScrollbar = customScrollbar
     this.smooth = smooth
     this.lerp = lerp
     this.wrapper = wrapper
     this.content = content
 
-    document.documentElement.classList.add("lenis")
-    document.documentElement.classList.toggle("lenis-smooth", this.smooth)
+    //prevent scroll go to 0 when on page refresh
+    this.height = this.content.offsetHeight
+    if (this.smooth) document.body.style.height = this.height + 'px'
+
+    this.wrapper.setAttribute('data-scroll-wrapper', true)
+    this.content.setAttribute('data-scroll-content', true)
+
+    document.documentElement.classList.add('lenis')
+    document.documentElement.classList.toggle('lenis-smooth', this.smooth)
+    document.documentElement.classList.toggle(
+      'lenis-custom-scrollbar',
+      this.customScrollbar
+    )
 
     this.preventTransforms = false
 
-    this.sections = [...document.querySelectorAll("[data-scroll-section]")].map(
+    if (this.customScrollbar) this.scrollbar = new Scrollbar()
+
+    this.sections = [...document.querySelectorAll('[data-scroll-section]')].map(
       (element) => new BoundingClientRect(element)
     )
 
     this.onWindowResize()
 
-    window.addEventListener("scroll", this.onWindowScroll, false)
-    window.addEventListener("resize", this.onWindowResize, false)
+    window.addEventListener('scroll', this.onWindowScroll, false)
+    window.addEventListener('resize', this.onWindowResize, false)
 
     // supports TAB focus
-    window.addEventListener("keydown", this.onKeyDown, false)
+    window.addEventListener('keydown', this.onKeyDown, false)
 
     // supports CMD+F focus
     this.focus = true
     // window.addEventListener("wheel", this.onWheel, false)
-    window.addEventListener("focus", this.onFocus, false)
-    window.addEventListener("blur", this.onBlur, false)
+    window.addEventListener('focus', this.onFocus, false)
+    window.addEventListener('blur', this.onBlur, false)
   }
 
   onKeyDown = (e) => {
-    if (e.key === "Tab") {
+    if (e.key === 'Tab') {
       this.applyTransforms(true)
     }
   }
@@ -90,21 +151,26 @@ export default class Lenis extends EventEmitter {
   }
 
   destroy() {
-    window.removeEventListener("scroll", this.onWindowScroll, false)
-    window.removeEventListener("resize", this.onWindowResize, false)
-    window.removeEventListener("keydown", this.onKeyDown, false)
-    // window.removeEventListener("wheel", this.onWheel, false)
-    window.removeEventListener("focus", this.onFocus, false)
-    window.removeEventListener("blur", this.onBlur, false)
+    document.body.style.removeProperty('height')
 
-    document.documentElement.classList.remove("lenis")
-    document.documentElement.classList.remove("lenis-smooth")
+    window.removeEventListener('scroll', this.onWindowScroll, false)
+    window.removeEventListener('resize', this.onWindowResize, false)
+    window.removeEventListener('keydown', this.onKeyDown, false)
+    // window.removeEventListener("wheel", this.onWheel, false)
+    window.removeEventListener('focus', this.onFocus, false)
+    window.removeEventListener('blur', this.onBlur, false)
+
+    this.wrapper.removeAttribute('data-scroll-wrapper', true)
+    this.content.removeAttribute('data-scroll-content', true)
+
+    document.documentElement.classList.remove('lenis')
+    document.documentElement.classList.remove('lenis-smooth')
   }
 
   update() {
     this.height = this.content.offsetHeight
 
-    document.body.style.height = this.height + "px"
+    if (this.smooth) document.body.style.height = this.height + 'px'
 
     this.scroll = {
       x: window.scrollX,
@@ -115,11 +181,13 @@ export default class Lenis extends EventEmitter {
       y: window.scrollY,
     }
 
+    if (this.scrollbar) this.scrollbar.update()
+
     this.sections.forEach((section) => {
       section.update()
     })
 
-    this.emit("scroll", {
+    this.emit('scroll', {
       scroll: this.scroll,
       lerpedScroll: this.lerpedScroll,
     })
@@ -172,7 +240,7 @@ export default class Lenis extends EventEmitter {
     }
 
     if (needsUpdate) {
-      this.emit("scroll", {
+      this.emit('scroll', {
         scroll: this.scroll,
         lerpedScroll: this.lerpedScroll,
       })
@@ -181,6 +249,8 @@ export default class Lenis extends EventEmitter {
   }
 
   applyTransforms(force = false) {
+    if (this.scrollbar) this.scrollbar.transform(this.progress)
+
     if (this.smooth === true) {
       if (this.sections.length > 0) {
         this.sections.forEach(({ offsetTop, height, element }) => {
@@ -194,16 +264,21 @@ export default class Lenis extends EventEmitter {
             // element.style.removeProperty("pointerEvents")
             element.style.transform = `translate3d(0,${-this.lerpedScroll
               .y}px,0)`
-          } else {
-            // element.style.removeProperty("transform")
-            // element.style.opacity = 0
-            // element.style.pointerEvents = "none"
           }
+          // else {
+          // element.style.removeProperty("transform")
+          // element.style.opacity = 0
+          // element.style.pointerEvents = "none"
+          // }
         })
       } else {
         this.content.style.transform = `translate3d(0,${-this.lerpedScroll
           .y}px,0)`
       }
     }
+  }
+
+  get progress() {
+    return this.lerpedScroll.y / (this.height - this.windowHeight)
   }
 }
