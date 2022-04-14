@@ -51,13 +51,13 @@ class Scrollbar {
     this.onWindowResize()
 
     window.addEventListener('resize', this.onWindowResize, false)
-    window.addEventListener('mousedown', this.onMouseDown, false)
+    this.element.addEventListener('mousedown', this.onMouseDown, false)
     window.addEventListener('mousemove', this.onMouseMove, false)
     window.addEventListener('mouseup', this.onMouseUp, false)
   }
 
   onMouseDown = ({ clientY }) => {
-    this.onMouseDown = true
+    this.mouseDown = true
 
     const progress = clientY / this.windowHeight
 
@@ -65,7 +65,7 @@ class Scrollbar {
   }
 
   onMouseMove = ({ clientY }) => {
-    if (!this.onMouseDown) return
+    if (!this.mouseDown) return
 
     const progress = clientY / this.windowHeight
 
@@ -73,12 +73,12 @@ class Scrollbar {
   }
 
   onMouseUp = () => {
-    this.onMouseDown = false
+    this.mouseDown = false
   }
 
   destroy() {
     window.removeEventListener('resize', this.onWindowResize, false)
-    window.removeEventListener('mousedown', this.onMouseDown, false)
+    this.element.removeEventListener('mousedown', this.onMouseDown, false)
     window.removeEventListener('mousemove', this.onMouseMove, false)
     window.removeEventListener('mouseup', this.onMouseUp, false)
   }
