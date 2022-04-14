@@ -46,27 +46,34 @@ This is our take on smooth scroll
 ###  Setup
 ```html
 <html>
-	<body>
-		<div id="scroll-wrapper">
-			<div id="scroll-content">
-				<section data-scroll-section>
-				</section>
-				<section data-scroll-section>
-				</section>
-			<div>
-		<div>
-	</body>
+  <body>
+    <div id="scroll-wrapper">
+      <div id="scroll-content">
+        <section data-scroll-section>
+		</section>
+		<section data-scroll-section>
+		</section>
+      <div>
+    <div>
+  </body>
 </html>
 ```
 
 ```js
 const lenis = new Lenis({
-	wrapper: document.querySelector('#scroll-wrapper'),
-	content: document.querySelector('#scroll-content'),
-	lerp: 0.1,
-	smooth: true,
-	customScrollbar: true,
+  wrapper: document.querySelector('#scroll-wrapper'),
+  content: document.querySelector('#scroll-content'),
+  lerp: 0.1,
+  smooth: true,
+  customScrollbar: true,
 })
+
+function raf() {
+  lenis.raf()
+  requestAnimationFrame(raf)
+}
+
+requestAnimationFrame(raf)
 ```
 
 <br>
@@ -74,6 +81,7 @@ const lenis = new Lenis({
 ### Features
 
 - Uses native scroll
+- Keep scroll on page refresh
 - CMD/CTRL + F (page search)
 - Tab navigation
 - Scroll sections

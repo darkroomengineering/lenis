@@ -35,7 +35,9 @@ class BoundingClientRect {
 }
 
 class Scrollbar {
-  constructor() {
+  constructor(lenis) {
+    this.lenis = lenis
+
     this.element = document.createElement('div')
     this.thumb = document.createElement('div')
 
@@ -49,6 +51,36 @@ class Scrollbar {
     this.onWindowResize()
 
     window.addEventListener('resize', this.onWindowResize, false)
+    window.addEventListener('mousedown', this.onMouseDown, false)
+    window.addEventListener('mousemove', this.onMouseMove, false)
+    window.addEventListener('mouseup', this.onMouseUp, false)
+  }
+
+  onMouseDown = ({ clientY }) => {
+    this.onMouseDown = true
+
+    const progress = clientY / this.windowHeight
+
+    window.scrollTo(0, progress * this.lenis.limit)
+  }
+
+  onMouseMove = ({ clientY }) => {
+    if (!this.onMouseDown) return
+
+    const progress = clientY / this.windowHeight
+
+    window.scrollTo(0, progress * this.lenis.limit)
+  }
+
+  onMouseUp = () => {
+    this.onMouseDown = false
+  }
+
+  destroy() {
+    window.removeEventListener('resize', this.onWindowResize, false)
+    window.removeEventListener('mousedown', this.onMouseDown, false)
+    window.removeEventListener('mousemove', this.onMouseMove, false)
+    window.removeEventListener('mouseup', this.onMouseUp, false)
   }
 
   update() {
@@ -106,7 +138,7 @@ export default class Lenis extends EventEmitter {
 
     this.preventTransforms = false
 
-    if (this.customScrollbar) this.scrollbar = new Scrollbar()
+    if (this.customScrollbar) this.scrollbar = new Scrollbar(this)
 
     this.onWindowResize()
 
@@ -163,6 +195,8 @@ export default class Lenis extends EventEmitter {
 
     document.documentElement.classList.remove('lenis')
     document.documentElement.classList.remove('lenis-smooth')
+
+    if (this.scrollbar) this.scrollbar.destroy()
   }
 
   update() {
