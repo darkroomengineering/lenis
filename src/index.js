@@ -82,6 +82,7 @@ export default class Lenis extends EventEmitter {
     lerp = 0.1,
     smooth = true,
     customScrollbar = true,
+    debug = false,
   }) {
     super()
     this.setMaxListeners(Infinity)
@@ -91,6 +92,7 @@ export default class Lenis extends EventEmitter {
     this.lerp = lerp
     this.wrapper = wrapper
     this.content = content
+    this.debug = debug
 
     //prevent scroll go to 0 when on page refresh
     this.height = this.content.offsetHeight
@@ -101,18 +103,10 @@ export default class Lenis extends EventEmitter {
 
     document.documentElement.classList.add('lenis')
     document.documentElement.classList.toggle('lenis-smooth', this.smooth)
-    document.documentElement.classList.toggle(
-      'lenis-custom-scrollbar',
-      this.customScrollbar
-    )
 
     this.preventTransforms = false
 
     if (this.customScrollbar) this.scrollbar = new Scrollbar()
-
-    this.sections = [...document.querySelectorAll('[data-scroll-section]')].map(
-      (element) => new BoundingClientRect(element)
-    )
 
     this.onWindowResize()
 
@@ -141,11 +135,15 @@ export default class Lenis extends EventEmitter {
   // }
 
   onFocus = () => {
+    if (this.debug) console.log('Lenis onFocus')
+
     this.focus = true
     this.applyTransforms(true)
   }
 
   onBlur = () => {
+    if (this.debug) console.log('Lenis onBlur')
+
     this.focus = false
     this.applyTransforms(true)
   }
@@ -168,6 +166,7 @@ export default class Lenis extends EventEmitter {
   }
 
   update() {
+    if (this.debug) console.log('Lenis update')
     this.height = this.content.offsetHeight
 
     if (this.smooth) document.body.style.height = this.height + 'px'
@@ -183,6 +182,10 @@ export default class Lenis extends EventEmitter {
 
     if (this.scrollbar) this.scrollbar.update()
 
+    this.sections = [...document.querySelectorAll('[data-scroll-section]')].map(
+      (element) => new BoundingClientRect(element)
+    )
+
     this.sections.forEach((section) => {
       section.update()
     })
@@ -196,6 +199,8 @@ export default class Lenis extends EventEmitter {
   }
 
   onWindowResize = () => {
+    if (this.debug) console.log('Lenis onWindowResize')
+
     this.windowWidth = Math.min(
       document.documentElement.clientWidth,
       window.innerWidth
@@ -249,6 +254,8 @@ export default class Lenis extends EventEmitter {
   }
 
   applyTransforms(force = false) {
+    if (this.debug) console.log('Lenis applyTransforms')
+
     if (this.scrollbar) this.scrollbar.transform(this.progress)
 
     if (this.smooth === true) {
@@ -278,7 +285,11 @@ export default class Lenis extends EventEmitter {
     }
   }
 
+  get limit() {
+    return this.height - this.windowHeight
+  }
+
   get progress() {
-    return this.lerpedScroll.y / (this.height - this.windowHeight)
+    return this.lerpedScroll.y / this.limit
   }
 }

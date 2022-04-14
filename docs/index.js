@@ -13,6 +13,7 @@ const lenis = new Lenis({
   lerp: 0.1,
   smooth: true,
   customScrollbar: true,
+  debug: true,
 })
 
 gsap.ticker.add(() => {
@@ -30,11 +31,11 @@ gsap.ticker.add(() => {
 
 // requestAnimationFrame(raf)
 
-// window.lenis = lenis
+window.lenis = lenis
 
-// console.log(lenis)
+console.log(lenis)
 
-// ScrollTrigger.defaults({ markers: true })
+ScrollTrigger.defaults({ markers: true })
 
 if (lenis.smooth === true) {
   lenis.on('scroll', ScrollTrigger.update)
@@ -125,9 +126,6 @@ gsap.from('.line-2', {
     pin: true,
     start: 'top top',
     end: '+=100%',
-    onUpdate: (self) => {
-      console.log(self.progress)
-    },
   },
   scaleX: 0,
   transformOrigin: 'left center',
