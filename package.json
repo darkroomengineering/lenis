@@ -39,7 +39,8 @@
     "events": "^3.3.0",
     "gsap": "^3.10.2",
     "normalize.css": "^8.0.1",
-    "sass": "^1.49.8"
+    "sass": "^1.49.8",
+    "virtual-scroll": "^2.2.1"
   },
   "files": [
     "dist"

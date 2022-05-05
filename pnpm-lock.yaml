@@ -25,6 +25,7 @@ specifiers:
   rollup-plugin-terser: ^7.0.2
   rollup-plugin-uglify: ^6.0.4
   sass: ^1.49.8
+  virtual-scroll: ^2.2.1
   vite: ^2.8.0
 
 dependencies:
@@ -32,6 +33,7 @@ dependencies:
   gsap: 3.10.2
   normalize.css: 8.0.1
   sass: 1.49.8
+  virtual-scroll: 2.2.1
 
 devDependencies:
   '@babel/core': 7.17.5
@@ -3638,6 +3640,10 @@ packages:
     resolution: {integrity: sha1-f17oI66AUgfACvLfSoTsP8+lcLQ=}
     dev: true
 
+  /tiny-emitter/2.1.0:
+    resolution: {integrity: sha512-NB6Dk1A9xgQPMoGqC5CVXn123gWyte215ONT5Pp5a0yt4nlEoO1ZWeCwpncaekPHXO60i47ihFnZPiRPjRMq4Q==}
+    dev: false
+
   /to-fast-properties/1.0.3:
     resolution: {integrity: sha1-uDVx+k2MJbguIxsG46MFXeTKGkc=}
     engines: {node: '>=0.10.0'}
@@ -3739,6 +3745,12 @@ packages:
   /v8-compile-cache/2.3.0:
     resolution: {integrity: sha512-l8lCEmLcLYZh4nbunNZvQCJc5pv7+RCwa8q/LdUx8u7lsWvPDKmpodJAJNwkAhJC//dFY48KuIEmjtd4RViDrA==}
     dev: true
+
+  /virtual-scroll/2.2.1:
+    resolution: {integrity: sha512-RvjcLxluh7B/6GPzLgQ9d0NYG4yqEguTc3MU7AvxyPVltuo2Cq5RokTL9RKUaZCMJ64in2hus0d03gTtoHp55g==}
+    dependencies:
+      tiny-emitter: 2.1.0
+    dev: false
 
   /vite/2.8.4_sass@1.49.8:
     resolution: {integrity: sha512-GwtOkkaT2LDI82uWZKcrpRQxP5tymLnC7hVHHqNkhFNknYr0hJUlDLfhVRgngJvAy3RwypkDCWtTKn1BjO96Dw==}
