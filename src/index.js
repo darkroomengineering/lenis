@@ -4,8 +4,8 @@ import { clamp, lerp, truncate } from './scripts/utils/maths'
 export default class Lenis {
   constructor() {
     document.addEventListener('wheel', this.onWheel, { passive: false })
-    window.addEventListener('scroll', this.onScroll, { passive: false })
-    window.addEventListener('resize', this.onWindowResize, { passive: false })
+    window.addEventListener('scroll', this.onScroll, false)
+    window.addEventListener('resize', this.onWindowResize, false)
 
     this.virtualScroll = new VirtualScroll({
       firefoxMultiplier: 50,
@@ -15,7 +15,7 @@ export default class Lenis {
       passive: true,
     })
 
-    this.virtualScroll.on(this.onVScroll)
+    this.virtualScroll.on(this.onVirtualScroll)
 
     this.onWindowResize()
     this.maxScroll = document.body.offsetHeight - this.windowHeight
@@ -29,8 +29,10 @@ export default class Lenis {
 
   destroy() {
     document.removeEventListener('wheel', this.onWheel, { passive: false })
-    window.removeEventListener('scroll', this.onScroll, { passive: false })
+    window.removeEventListener('scroll', this.onScroll, false)
+    window.removeEventListener('resize', this.onWindowResize, false)
     this.virtualScroll.destroy()
+    this.resizeObserver.disconnect()
   }
 
   onResize = (entries) => {
@@ -50,7 +52,7 @@ export default class Lenis {
     e.preventDefault()
   }
 
-  onVScroll = ({ deltaY }) => {
+  onVirtualScroll = ({ deltaY }) => {
     this.targetScroll -= deltaY
     this.targetScroll = clamp(0, this.targetScroll, this.maxScroll)
   }
