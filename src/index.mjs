@@ -1,3 +1,3 @@
-import Lenis from './lenis'
+import Lenis from './lenis.js'
 
 export default Lenis

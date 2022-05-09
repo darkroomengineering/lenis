@@ -1,6 +1,6 @@
 import EventEmitter from 'events'
 import VirtualScroll from 'virtual-scroll'
-import { clamp, lerp, truncate } from './maths'
+import { clamp, lerp, truncate } from './maths.js'
 
 export default class Lenis extends EventEmitter {
   constructor({ lerp = 0.1, smooth = true } = {}) {
