@@ -1,4 +1,4 @@
-<!-- [![LENIS](https://assets.studiofreight.com/lenis/header.png)](https://github.com/studio-freight/lenis) -->
+[![LENIS](https://assets.studiofreight.com/lenis/header.png)](https://github.com/studio-freight/lenis)
 
 <!-- <p align="center">
 
