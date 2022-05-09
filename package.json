@@ -1,10 +1,13 @@
 {
-  "name": "lenis",
+  "name": "@studio-freight/lenis",
   "private": true,
   "version": "0.0.1",
   "description": "Lenis is a smooth scroll library to normalize the scrolling experience across devices",
   "author": "studio-freight",
-  "repository": "studio-freight/lenis",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/studio-freight/lenis.git"
+  },
   "main": "src/index.mjs",
   "sideEffects": false,
   "scripts": {
@@ -28,5 +31,16 @@
   "lint-staged": {
     "*.js": "eslint --cache --fix",
     "*.{js,css,md}": "prettier --write"
-  }
+  },
+  "bugs": {
+    "url": "https://github.com/studio-freight/lenis/issues"
+  },
+  "homepage": "https://github.com/studio-freight/lenis#readme",
+  "directories": {
+    "doc": "docs"
+  },
+  "keywords": [
+    "smooth",
+    "scroll"
+  ]
 }
