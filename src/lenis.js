@@ -19,7 +19,7 @@ export default class Lenis extends EventEmitter {
     // listen and normalize wheel event cross-browser
     this.virtualScroll = new VirtualScroll({
       firefoxMultiplier: 50,
-      mouseMultiplier: 0.4,
+      mouseMultiplier: navigator.platform.indexOf('Win') > -1 ? 1 : 0.4,
       useKeyboard: false,
       useTouch: false,
       passive: true,
