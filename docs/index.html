@@ -8,72 +8,43 @@
     <link rel="stylesheet" href="/styles/main.scss" />
   </head>
   <body>
-    <div id="scroll-wrapper">
-      <div id="scroll-content">
-        <div class="description panel blue" data-scroll-section>
-          <div>
-            <h1>Locomotive Scroll + ScrollTrigger</h1>
-            <p>
-              Demonstrates how ScrollTrigger can be used with a smooth scrolling
-              library like Locomotive Scroll, including scrubbing and pinning.
-            </p>
-            <div class="scroll-down">
-              Scroll down
-              <div class="arrow"></div>
-            </div>
-          </div>
-        </div>
-
-        <section data-scroll-section>
-          <div class="panel white">
-            <div class="box" data-scroll-speed="0.1"></div>
-          </div>
-        </section>
-
-        <section data-scroll-section>
-          <div class="panel red">
-            <p>
-              <span class="line line-1"></span>This line's animation will begin
-              when it enters the viewport and finish when its top edge hits the
-              top of the viewport, staying perfectly in sync with the scrollbar
-              because it has <code>scrub:&nbsp;true</code>
-              <button>button</button>
-            </p>
-          </div>
-        </section>
-
-        <section data-scroll-section>
-          <div class="panel orange">
-            <p>
-              <span class="line line-2"></span>This orange panel gets pinned
-              when its top edge hits the top of the viewport, then the line's
-              animation is linked with the scroll position until it has traveled
-              100% of the viewport's height (<code>end: "+=100%"</code>), then
-              the orange panel is unpinned and normal scrolling resumes. Padding
-              is added automatically to push the rest of the content down so
-              that it catches up with the scroll when it unpins. You can set
-              <code>pinSpacing: false</code> to prevent that if you prefer.
-              <button>button</button>
-            </p>
-          </div>
-        </section>
-
-        <section data-scroll-section>
-          <div class="panel purple">
-            <p>
-              <span class="line line-3"></span>This panel gets pinned in a
-              similar way, and has a more involved animation that's wrapped in a
-              timeline, fading the background color and animating the transforms
-              of the paragraph in addition to the line, all synced with the
-              scroll position perfectly.
-            </p>
-          </div>
-        </section>
-
-        <section class="panel gray" data-scroll-section>DONE!</section>
-      </div>
-    </div>
-
+    <section>
+      Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc malesuada
+      auctor ipsum et pellentesque. Curabitur non neque et est pellentesque
+      molestie quis nec massa. Quisque fringilla eleifend turpis eu congue.
+      Aenean quis ornare ipsum. Phasellus ligula ante, dapibus sed lacus in,
+      venenatis aliquam sem. Suspendisse potenti. Aliquam ut laoreet turpis.
+      Integer aliquet arcu odio. Mauris sit amet eros elit. Class aptent taciti
+      sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos.
+      Sed luctus nunc eu purus ultrices maximus. Sed imperdiet sem at magna
+      accumsan vehicula. Sed imperdiet congue convallis.
+    </section>
+    <section>
+      Fusce et pellentesque ex, quis maximus nisl. In molestie aliquet dolor.
+      Morbi sit amet enim quis eros aliquet posuere quis vel arcu. Curabitur ut
+      sollicitudin metus. Sed blandit sem magna, ac vestibulum erat ornare ut.
+      Vivamus sed enim et nisi gravida blandit vel tempus nibh. Sed congue neque
+      felis. Ut a lacinia libero, eget congue dui. Pellentesque aliquam arcu vel
+      rhoncus efficitur. In hac habitasse platea dictumst. Quisque tincidunt est
+      sit amet purus iaculis, vel semper diam egestas.
+    </section>
+    <section>
+      Praesent placerat imperdiet semper. Proin sit amet libero nec tortor
+      tempus commodo pulvinar et dui. Maecenas eros arcu, dignissim eget
+      eleifend non, dapibus ut quam. Etiam dolor quam, convallis non tempor ac,
+      hendrerit sed risus. Aliquam cursus vestibulum turpis, et pellentesque
+      felis dapibus vel. Maecenas faucibus facilisis velit nec pretium. Nam
+      hendrerit posuere egestas. Phasellus tincidunt gravida eros, quis porta
+      nisi rhoncus vitae. Suspendisse id sollicitudin mauris.
+    </section>
+    <section>
+      Nam nec egestas arcu. Phasellus aliquam molestie imperdiet. Duis
+      consectetur enim vitae tellus faucibus ultricies. Aenean mauris erat,
+      tincidunt in felis sed, dignissim consequat tortor. Praesent fringilla
+      velit volutpat nisi pellentesque, et imperdiet justo elementum. Morbi
+      sagittis velit tristique sapien posuere congue. Nullam elementum auctor
+      ullamcorper. Nunc gravida libero eu ligula tempus iaculis.
+    </section>
     <script src="./index.js" type="module"></script>
   </body>
 </html>

@@ -1,6 +1,6 @@
 import EventEmitter from 'events'
 import VirtualScroll from 'virtual-scroll'
-import { clamp, lerp, truncate } from './scripts/utils/maths'
+import { clamp, lerp, truncate } from './maths'
 
 export default class Lenis extends EventEmitter {
   constructor({ lerp = 0.1, smooth = true } = {}) {
@@ -61,7 +61,7 @@ export default class Lenis extends EventEmitter {
 
   onWheel = (e) => {
     // prevent native wheel scroll
-    if (this.smooth) e.preventDefault()
+    if (this.smooth && !e.ctrlKey) e.preventDefault()
   }
 
   onVirtualScroll = ({ deltaY }) => {
@@ -70,7 +70,7 @@ export default class Lenis extends EventEmitter {
   }
 
   raf() {
-    if (this.smooth === false) return
+    if (!this.smooth) return
 
     // lerp scroll value
     this.scroll = lerp(this.scroll, this.targetScroll, this.lerp)
@@ -88,11 +88,10 @@ export default class Lenis extends EventEmitter {
   }
 
   onScroll = () => {
-    // if your not scrolling we can estimate you aren't scrolling with wheel (cmd+F, keyboard or whatever). So we must scroll to without any easing
-    if (this.scrolling === false || this.smooth === false) {
+    // if scrolling is false we can estimate you aren't scrolling with wheel (cmd+F, keyboard or whatever). So we must scroll to without any easing
+    if (!this.scrolling || !this.smooth) {
       const scrollY = Math.round(window.scrollY)
-      this.scroll = scrollY
-      this.targetScroll = scrollY
+      this.targetScroll = this.scroll = scrollY
       this.emit('scroll', { scroll: this.scroll })
     }
   }
