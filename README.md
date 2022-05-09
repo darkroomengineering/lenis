@@ -1,7 +1,4 @@
-
-[![LENIS](https://assets.studiofreight.com/lenis/header.png)](https://github.com/studio-freight/lenis)
-
-  
+<!-- [![LENIS](https://assets.studiofreight.com/lenis/header.png)](https://github.com/studio-freight/lenis) -->
 
 <!-- <p align="center">
 
@@ -33,39 +30,18 @@
 
 </p> -->
 
-  
-
 ## Introduction
-
-  
 
 This is our take on smooth scroll
 
 <br>
   
 ###  Setup
-```html
-<html>
-  <body>
-    <div id="scroll-wrapper">
-      <div id="scroll-content">
-        <section data-scroll-section>
-		</section>
-		<section data-scroll-section>
-		</section>
-      <div>
-    <div>
-  </body>
-</html>
-```
 
 ```js
 const lenis = new Lenis({
-  wrapper: document.querySelector('#scroll-wrapper'),
-  content: document.querySelector('#scroll-content'),
   lerp: 0.1,
   smooth: true,
-  customScrollbar: true,
 })
 
 function raf() {
@@ -74,18 +50,16 @@ function raf() {
 }
 
 requestAnimationFrame(raf)
+
 ```
 
 <br>
 
 ### Features
 
-- Uses native scroll
-- Keep scroll on page refresh
-- CMD/CTRL + F (page search)
-- Tab navigation
-- Scroll sections
-- GSAP ScrollTrigger compatible
-- Custom scrollbar
+- Keeps scroll position on page refresh
+- Accessibility, keeps native features (CMD+F page search, Tab and arrow navigation, etc.)
 - External RAF
-- Debug mode
+- Performant
+- SSR proof
+```
