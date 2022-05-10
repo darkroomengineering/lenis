@@ -24,9 +24,9 @@
     "vite": "^2.8.0"
   },
   "dependencies": {
-    "events": "^3.3.0",
     "path": "^0.12.7",
     "sass": "^1.49.8",
+    "tiny-emitter": "^2.1.0",
     "virtual-scroll": "^2.2.1"
   },
   "lint-staged": {

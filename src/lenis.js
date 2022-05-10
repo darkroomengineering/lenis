@@ -1,13 +1,10 @@
-import EventEmitter from 'events'
+import EventEmitter from 'tiny-emitter'
 import VirtualScroll from 'virtual-scroll'
-import { clamp, lerp, truncate } from './maths.js'
+import { clamp, lerp } from './maths.js'
 
 export default class Lenis extends EventEmitter {
   constructor({ lerp = 0.1, smooth = true } = {}) {
     super()
-
-    // prevent EventSmitter warnings
-    this.setMaxListeners(Infinity)
 
     this.lerp = lerp
     this.smooth = smooth
@@ -34,8 +31,7 @@ export default class Lenis extends EventEmitter {
     this.resizeObserver = new ResizeObserver(this.onResize)
     this.resizeObserver.observe(document.body)
 
-    this.scroll = window.scrollY
-    this.targetScroll = window.scrollY
+    this.targetScroll = this.scroll = window.scrollY
   }
 
   destroy() {
@@ -74,24 +70,23 @@ export default class Lenis extends EventEmitter {
 
     // lerp scroll value
     this.scroll = lerp(this.scroll, this.targetScroll, this.lerp)
-    if (truncate(this.scroll, 0) === truncate(this.targetScroll, 0)) {
+    if (Math.round(this.scroll) === Math.round(this.targetScroll)) {
       this.scroll = this.targetScroll
     }
-
-    this.scrolling = this.scroll !== this.targetScroll
 
     if (this.scrolling) {
       // scroll to lerped scroll value
       window.scrollTo(0, this.scroll)
       this.emit('scroll', { scroll: this.scroll })
     }
+
+    this.scrolling = this.scroll !== this.targetScroll
   }
 
-  onScroll = () => {
+  onScroll = (e) => {
     // if scrolling is false we can estimate you aren't scrolling with wheel (cmd+F, keyboard or whatever). So we must scroll to without any easing
     if (!this.scrolling || !this.smooth) {
-      const scrollY = Math.round(window.scrollY)
-      this.targetScroll = this.scroll = scrollY
+      this.targetScroll = this.scroll = window.scrollY
       this.emit('scroll', { scroll: this.scroll })
     }
   }
