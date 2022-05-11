@@ -2,11 +2,21 @@
 
 ## Introduction
 
-This is our take on smooth scroll
+This is our take on smooth scroll, lightweight, hard working, smooth as butter scroll.
 
 <br>
-  
-###  Setup
+
+### Installing
+
+just the usual:
+
+```bash
+$ npm i @studio-freight/lenis
+```
+
+or replace `npm` with your package manager of choice :)
+
+### Setup
 
 ```js
 const lenis = new Lenis({
@@ -20,8 +30,8 @@ function raf() {
 }
 
 requestAnimationFrame(raf)
-
 ```
+
 <br>
 
 ### Features
