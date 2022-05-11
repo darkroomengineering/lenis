@@ -16,6 +16,8 @@ $ npm i @studio-freight/lenis
 
 or replace `npm` with your package manager of choice :)
 
+<br>
+
 ### Setup
 
 ```js
