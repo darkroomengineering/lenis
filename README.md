@@ -21,7 +21,7 @@ or replace `npm` with your package manager of choice :)
 ### Setup
 
 ```js
-import Lenis from '@studio-freight/lenis/src'
+import Lenis from '@studio-freight/lenis'
 
 const lenis = new Lenis({
   lerp: 0.1,
