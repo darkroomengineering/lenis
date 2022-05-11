@@ -8,6 +8,7 @@
     "url": "git+https://github.com/studio-freight/lenis.git"
   },
   "main": "src/index.mjs",
+  "type": "module",
   "sideEffects": false,
   "scripts": {
     "dev": "vite docs",
