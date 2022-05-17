@@ -1,6 +1,6 @@
 {
   "name": "@studio-freight/lenis",
-  "version": "0.0.4",
+  "version": "0.0.9",
   "description": "Lenis is a smooth scroll library to normalize the scrolling experience across devices",
   "author": "studio-freight",
   "repository": {
@@ -8,11 +8,12 @@
     "url": "git+https://github.com/studio-freight/lenis.git"
   },
   "main": "src/index.mjs",
+  "type": "module",
   "sideEffects": false,
   "scripts": {
     "dev": "vite docs",
-    "build": "vite build --config vite.config.js",
-    "preview": "vite preview --config vite.config.js"
+    "build": "vite build --config vite.config.cjs",
+    "preview": "vite preview --config vite.config.cjs"
   },
   "devDependencies": {
     "eslint": "^8.10.0",

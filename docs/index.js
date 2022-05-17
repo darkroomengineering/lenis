@@ -12,3 +12,13 @@ function raf() {
 }
 
 raf()
+
+const button = document.querySelector('a[href="#top"]')
+button.addEventListener(
+  'click',
+  (e) => {
+    // e.preventDefault()
+    lenis.scrollTo('#top')
+  },
+  false
+)

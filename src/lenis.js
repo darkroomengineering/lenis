@@ -90,4 +90,40 @@ export default class Lenis extends EventEmitter {
       this.emit('scroll', { scroll: this.scroll })
     }
   }
+
+  scrollTo(target, { offset = 0 } = {}) {
+    let y
+
+    if (typeof target === 'number') {
+      // Number
+      y = target
+    } else if (target === '#top') {
+      y = 0
+    } else if (target === '#bottom') {
+      y = this.maxScroll
+    } else {
+      let node
+
+      if (typeof target === 'string') {
+        // CSS selector
+        node = document.querySelector(target)
+      } else if (target.nodeType) {
+        // Node element
+        node = target
+      } else {
+        return
+      }
+
+      if (!target) return
+      y = node.getBoundingClientRect().top + this.scroll
+    }
+
+    y += offset
+
+    this.targetScroll = y
+    this.scrolling = true
+    if (!this.smooth) {
+      this.scroll = y
+    }
+  }
 }
