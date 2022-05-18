@@ -34,6 +34,14 @@ export default class Lenis extends EventEmitter {
     this.targetScroll = this.scroll = window.scrollY
   }
 
+  start() {
+    this.stopped = false
+  }
+
+  stop() {
+    this.stopped = true
+  }
+
   destroy() {
     document.removeEventListener('wheel', this.onWheel, { passive: false })
     window.removeEventListener('scroll', this.onScroll, false)
@@ -61,12 +69,13 @@ export default class Lenis extends EventEmitter {
   }
 
   onVirtualScroll = ({ deltaY }) => {
+    if(this.stopped) return
     this.targetScroll -= deltaY
     this.targetScroll = clamp(0, this.targetScroll, this.maxScroll)
   }
 
   raf() {
-    if (!this.smooth) return
+    if (!this.smooth  || this.stopped) return
 
     // lerp scroll value
     this.scroll = lerp(this.scroll, this.targetScroll, this.lerp)
