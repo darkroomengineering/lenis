@@ -116,7 +116,7 @@ export default class Lenis extends EventEmitter {
       if (typeof target === 'string') {
         // CSS selector
         node = document.querySelector(target)
-      } else if (target.nodeType) {
+      } else if (target?.nodeType) {
         // Node element
         node = target
       } else {
