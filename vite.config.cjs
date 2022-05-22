@@ -2,8 +2,5 @@ const { resolve } = require('path')
 const { defineConfig } = require('vite')
 
 module.exports = defineConfig({
-  root: resolve(__dirname, 'docs/'),
-  build: {
-    outDir: '../dist',
-  }
+  root: resolve(__dirname, 'docs/')
 })

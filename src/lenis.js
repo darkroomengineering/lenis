@@ -16,7 +16,7 @@ export default class Lenis extends EventEmitter {
     // listen and normalize wheel event cross-browser
     this.virtualScroll = new VirtualScroll({
       firefoxMultiplier: 50,
-      mouseMultiplier: navigator.platform.indexOf('Win') > -1 ? 1 : 0.4,
+      mouseMultiplier: navigator.userAgentData.platform.indexOf('Win') > -1 ? 1 : 0.4,
       useKeyboard: false,
       useTouch: false,
       passive: true,
@@ -69,13 +69,13 @@ export default class Lenis extends EventEmitter {
   }
 
   onVirtualScroll = ({ deltaY }) => {
-    if(this.stopped) return
+    if (this.stopped) return
     this.targetScroll -= deltaY
     this.targetScroll = clamp(0, this.targetScroll, this.maxScroll)
   }
 
   raf() {
-    if (!this.smooth  || this.stopped) return
+    if (!this.smooth || this.stopped) return
 
     // lerp scroll value
     this.scroll = lerp(this.scroll, this.targetScroll, this.lerp)
