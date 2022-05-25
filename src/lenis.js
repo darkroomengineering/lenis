@@ -13,11 +13,12 @@ export default class Lenis extends EventEmitter {
     window.addEventListener('scroll', this.onScroll, false)
     window.addEventListener('resize', this.onWindowResize, false)
 
+    const platform = navigator?.userAgentData?.platform || navigator?.platform || 'unknown'
+
     // listen and normalize wheel event cross-browser
     this.virtualScroll = new VirtualScroll({
       firefoxMultiplier: 50,
-      mouseMultiplier: navigator.userAgentData.platform.indexOf('Win') > -1 ? 1 : 0.4,
-      useKeyboard: false,
+      mouseMultiplier: platform.indexOf('Win') > -1 ? 1 : 0.4, useKeyboard: false,
       useTouch: false,
       passive: true,
     })
