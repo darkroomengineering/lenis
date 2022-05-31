@@ -13,7 +13,7 @@
   "sideEffects": false,
   "scripts": {
     "dev": "vite src-docs",
-    "docs:build": "vite build --base=/src-docs",
+    "docs:build": "vite build --base=/docs",
     "package:build": "microbundle src/lenis.js",
     "build": "npm run package:build && npm run docs:build",
     "prepublishOnly": "npm run build"
