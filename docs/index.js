@@ -1,4 +1,4 @@
-import Lenis from '../src/lenis'
+import Lenis from '../dist/lenis.modern'
 import './styles/main.css'
 
 const lenis = new Lenis({ lerp: 0.1, smooth: true })

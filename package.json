@@ -23,7 +23,7 @@
     "husky": "^8.0.1",
     "microbundle": "^0.15.0",
     "prettier": "^2.6.2",
-    "prettier-eslint": "^15.0.0",
+    "prettier-eslint": "^15.0.1",
     "vite": "^2.9.9"
   },
   "dependencies": {
