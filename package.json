@@ -12,8 +12,8 @@
   "type": "module",
   "sideEffects": false,
   "scripts": {
-    "dev": "vite src-docs",
-    "docs:build": "vite build --base=/docs",
+    "dev": "vite docs",
+    "docs:build": "vite build",
     "package:build": "microbundle src/lenis.js",
     "build": "npm run package:build && npm run docs:build",
     "prepublishOnly": "npm run build"
