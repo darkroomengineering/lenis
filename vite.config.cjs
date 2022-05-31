@@ -3,4 +3,7 @@ const { defineConfig } = require('vite')
 
 module.exports = defineConfig({
   root: resolve(__dirname, 'docs/'),
+  build: {
+    outDir: '../docs/dist',
+  },
 })

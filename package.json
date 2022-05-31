@@ -30,7 +30,6 @@
   },
   "dependencies": {
     "path": "^0.12.7",
-    "sass": "^1.52.1",
     "tiny-emitter": "^2.1.0",
     "virtual-scroll": "^2.2.1"
   },
