@@ -1,0 +1,1 @@
+html,body{overscroll-behavior:none;min-height:100%}body{margin:0;background:linear-gradient(#ffffff,red);font-family:Helvetica,sans-serif;font-size:2.5vw;line-height:120%}section{height:100vh;display:flex;justify-content:center;align-items:center;padding:0 14vw;flex-direction:column}
