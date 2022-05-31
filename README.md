@@ -48,6 +48,12 @@ requestAnimationFrame(raf)
 
 <br/>
 
+## Lenis in use
+- [Wyre](https://www.sendwyre.com/) by [Studio Freight](https://www.studiofreight.com/)
+- [Scroll Animation Ideas for Image Grids](https://tympanus.net/Development/ScrollAnimationsGrid/) by [Codrops](https://tympanus.net/codrops)
+
+<br/>
+
 ## Authors
 
 This set of hooks is curated and maintained by the Studio Freight Darkroom team:
