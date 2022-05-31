@@ -2,7 +2,7 @@
 
 ## Introduction
 
-This is our take on smooth scroll, lightweight, hard working, smooth as butter scroll.
+This is our take on smooth scroll, lightweight, hard working, smooth as butter scroll. See [Demo](https://lenis.studiofreight.com/)
 
 <br>
 
