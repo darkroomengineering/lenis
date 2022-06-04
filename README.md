@@ -28,6 +28,11 @@ const lenis = new Lenis({
   smooth: true,
 })
 
+//get scroll value
+lenis.on('scroll', ({ scroll }) => {
+  console.log({ scroll })
+})
+
 function raf() {
   lenis.raf()
   requestAnimationFrame(raf)
