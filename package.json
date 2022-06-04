@@ -30,6 +30,7 @@
   },
   "dependencies": {
     "path": "^0.12.7",
+    "stats.js": "^0.17.0",
     "tiny-emitter": "^2.1.0",
     "virtual-scroll": "^2.2.1"
   },

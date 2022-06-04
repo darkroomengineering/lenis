@@ -31,7 +31,8 @@
       accumsan vehicula. Sed imperdiet congue convallis.
     </section>
     <section>
-      <div class="overflow">
+      <!-- nested scroll workaround -->
+      <div class="overflow" onwheel="event.stopPropagation()">
         In nulla ipsum, viverra in hendrerit nec, varius non metus. Donec eu
         efficitur ligula. Integer ut sollicitudin sapien. Sed semper iaculis
         libero, sed rutrum sem eleifend in. Praesent nec justo pulvinar ante
