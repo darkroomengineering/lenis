@@ -3,12 +3,16 @@ html,body {
     min-height: 100%;
 }
 
-body {
-    margin: 0;
+html {
+    
     background: linear-gradient(#ffffff, red);
     font-family: Helvetica, sans-serif;
     font-size: 2.5vw;
     line-height: 120%;
+}
+
+body {
+    margin: 0;
 }
 
 section {
@@ -18,4 +22,10 @@ section {
     align-items: center;
     padding: 0 14vw;
     flex-direction: column;
+}
+
+.overflow {
+    height: 250px;
+    overflow-y: auto;
+    overscroll-behavior: contain;
 }
