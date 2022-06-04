@@ -66,13 +66,15 @@ export default class Lenis extends EventEmitter {
 
   onVirtualScroll = ({ deltaY, originalEvent: e }) => {
     // detect potential nested scrollable elements
-    const isNestedScroll = e.path
+    const path = e.path || (e.composedPath && e.composedPath())
+    const isNestedScroll = path
       .filter((element) => element.tagName) // filter node elements
-      .filter(
-        (element) =>
-          ['auto', 'scroll'].includes(getComputedStyle(element).overflowY) // filter elements with overflow
-      )
-      .find((element) => element.scrollHeight > element.clientHeight) // filter scrollable elements
+      .find((element, i) => {
+        return (
+          ['auto', 'scroll'].includes(getComputedStyle(element).overflowY) &&
+          element.scrollHeight > element.clientHeight
+        )
+      }) // filter scrollable elements
 
     if (isNestedScroll) return
 
