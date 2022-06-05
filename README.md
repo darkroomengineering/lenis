@@ -1,8 +1,11 @@
 [![LENIS](https://assets.studiofreight.com/lenis/header.png)](https://github.com/studio-freight/lenis)
 
 ## Introduction
+🚧 Still in WIP, API might change with new releases 🚧
 
 This is our take on smooth scroll, lightweight, hard working, smooth as butter scroll. See [Demo](https://lenis.studiofreight.com/)
+
+
 
 <br>
 
@@ -45,10 +48,11 @@ requestAnimationFrame(raf)
 
 ### Features
 
-- Keeps scroll position on page refresh
-- Accessibility, keeps native features (CMD+F page search, Tab and arrow navigation, etc.)
-- External RAF
 - Performant
+- Lightweight [(~2Kb gzipped)](https://bundle.js.org/?q=@studio-freight/lenis) 
+- Run scroll in main thread
+- Accessibility (CMD+F page search, Tab and arrow navigation, keep scroll position on page refresh, etc.)
+- External RAF
 - SSR proof
 
 <br/>
