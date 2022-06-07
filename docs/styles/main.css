@@ -4,7 +4,6 @@ html,body {
 }
 
 html {
-    
     background: linear-gradient(#ffffff, red);
     font-family: Helvetica, sans-serif;
     font-size: 2.5vw;
@@ -25,7 +24,21 @@ section {
 }
 
 .overflow {
-    height: 250px;
+    height: 18vw;
     overflow-y: auto;
     overscroll-behavior: contain;
 }
+
+/* uncomment below to activate horizontal scroll */
+/* html,body {
+    display: flex;
+}
+
+html {
+    overflow-y: hidden;
+}
+
+section {
+    width: 100vw;
+    box-sizing: border-box;
+} */

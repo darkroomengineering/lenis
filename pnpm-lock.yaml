@@ -1,4 +1,4 @@
-lockfileVersion: 5.3
+lockfileVersion: 5.4
 
 specifiers:
   eslint: ^8.16.0
@@ -23,7 +23,7 @@ dependencies:
 devDependencies:
   eslint: 8.16.0
   eslint-config-prettier: 8.5.0_eslint@8.16.0
-  eslint-plugin-prettier: 4.0.0_4fe3201cd09a8826bbd8050f2348cb2f
+  eslint-plugin-prettier: 4.0.0_j7rsahgqtkecno6yauhsgsglf4
   husky: 8.0.1
   microbundle: 0.15.0
   prettier: 2.6.2
@@ -1402,7 +1402,7 @@ packages:
       slash: 3.0.0
     dev: true
 
-  /@rollup/plugin-babel/5.3.1_@babel+core@7.18.2+rollup@2.75.4:
+  /@rollup/plugin-babel/5.3.1_htuoz4qbte7ljizhfebtr3zcpy:
     resolution: {integrity: sha512-WFfdLWU/xVWKeRQnKmIAQULUI7Il0gZnBIH/ZFO069wYIfPu+8zrfp/KMW0atmELoRDq8FbiP3VCss9MhCut7Q==}
     engines: {node: '>= 10.0.0'}
     peerDependencies:
@@ -1522,7 +1522,7 @@ packages:
       '@types/node': 17.0.36
     dev: true
 
-  /@typescript-eslint/parser/5.27.0_eslint@8.16.0+typescript@4.7.2:
+  /@typescript-eslint/parser/5.27.0_xztl6dhthcahlo6akmb2bmjmle:
     resolution: {integrity: sha512-8oGjQF46c52l7fMiPPvX4It3u3V3JipssqDfHQ2hcR0AeR8Zge+OYyKUCm5b70X72N1qXt0qgHenwN6Gc2SXZA==}
     engines: {node: ^12.22.0 || ^14.17.0 || >=16.0.0}
     peerDependencies:
@@ -2433,7 +2433,7 @@ packages:
       eslint: 8.16.0
     dev: true
 
-  /eslint-plugin-prettier/4.0.0_4fe3201cd09a8826bbd8050f2348cb2f:
+  /eslint-plugin-prettier/4.0.0_j7rsahgqtkecno6yauhsgsglf4:
     resolution: {integrity: sha512-98MqmCJ7vJodoQK359bqQWaxOE0CS8paAz/GgjaZLyex4TTk3g9HugoO89EqWCrFiOqn9EVvcoo7gZzONCWVwQ==}
     engines: {node: '>=6.0.0'}
     peerDependencies:
@@ -3271,7 +3271,7 @@ packages:
       '@babel/preset-flow': 7.17.12_@babel+core@7.18.2
       '@babel/preset-react': 7.17.12_@babel+core@7.18.2
       '@rollup/plugin-alias': 3.1.9_rollup@2.75.4
-      '@rollup/plugin-babel': 5.3.1_@babel+core@7.18.2+rollup@2.75.4
+      '@rollup/plugin-babel': 5.3.1_htuoz4qbte7ljizhfebtr3zcpy
       '@rollup/plugin-commonjs': 17.1.0_rollup@2.75.4
       '@rollup/plugin-json': 4.1.0_rollup@2.75.4
       '@rollup/plugin-node-resolve': 11.2.1_rollup@2.75.4
@@ -3295,7 +3295,7 @@ packages:
       rollup-plugin-bundle-size: 1.0.3
       rollup-plugin-postcss: 4.0.2_postcss@8.4.14
       rollup-plugin-terser: 7.0.2_rollup@2.75.4
-      rollup-plugin-typescript2: 0.29.0_rollup@2.75.4+typescript@4.7.2
+      rollup-plugin-typescript2: 0.29.0_flgbp2mwh7cyq7tyxrigr47lze
       rollup-plugin-visualizer: 5.6.0_rollup@2.75.4
       sade: 1.8.1
       terser: 5.14.0
@@ -3920,7 +3920,7 @@ packages:
     dependencies:
       '@types/eslint': 8.4.2
       '@types/prettier': 2.6.3
-      '@typescript-eslint/parser': 5.27.0_eslint@8.16.0+typescript@4.7.2
+      '@typescript-eslint/parser': 5.27.0_xztl6dhthcahlo6akmb2bmjmle
       common-tags: 1.8.2
       dlv: 1.1.3
       eslint: 8.16.0
@@ -4140,7 +4140,7 @@ packages:
       terser: 5.14.0
     dev: true
 
-  /rollup-plugin-typescript2/0.29.0_rollup@2.75.4+typescript@4.7.2:
+  /rollup-plugin-typescript2/0.29.0_flgbp2mwh7cyq7tyxrigr47lze:
     resolution: {integrity: sha512-YytahBSZCIjn/elFugEGQR5qTsVhxhUwGZIsA9TmrSsC88qroGo65O5HZP/TTArH2dm0vUmYWhKchhwi2wL9bw==}
     peerDependencies:
       rollup: '>=1.26.3'

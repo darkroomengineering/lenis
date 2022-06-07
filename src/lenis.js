@@ -3,11 +3,12 @@ import VirtualScroll from 'virtual-scroll'
 import { clamp, lerp } from './maths.js'
 
 export default class Lenis extends EventEmitter {
-  constructor({ lerp = 0.1, smooth = true } = {}) {
+  constructor({ lerp = 0.1, smooth = true, direction = 'vertical' } = {}) {
     super()
 
     this.lerp = lerp
     this.smooth = smooth
+    this.direction = direction
 
     window.addEventListener('scroll', this.onScroll, false)
     window.addEventListener('resize', this.onWindowResize, false)
@@ -27,13 +28,17 @@ export default class Lenis extends EventEmitter {
     this.virtualScroll.on(this.onVirtualScroll)
 
     this.onWindowResize()
-    this.maxScroll = document.body.offsetHeight - this.windowHeight
+    this.limit =
+      this.direction === 'horizontal'
+        ? document.body.offsetWidth - this.windowWidth
+        : document.body.offsetHeight - this.windowHeight
 
     // recalculate maxScroll when body height changes
     this.resizeObserver = new ResizeObserver(this.onResize)
     this.resizeObserver.observe(document.body)
 
-    this.targetScroll = this.scroll = window.scrollY
+    this.targetScroll = this.scroll =
+      this.direction === 'horizontal' ? window.scrollX : window.scrollY
   }
 
   start() {
@@ -55,7 +60,10 @@ export default class Lenis extends EventEmitter {
     const entry = entries[0]
     if (entry) {
       const rect = entry.contentRect
-      this.maxScroll = rect.height - this.windowHeight
+      this.limit =
+        this.direction === 'horizontal'
+          ? rect.width - this.windowWidth
+          : rect.height - this.windowHeight
     }
   }
 
@@ -86,7 +94,7 @@ export default class Lenis extends EventEmitter {
     if (this.smooth && !e.ctrlKey) e.preventDefault()
 
     this.targetScroll -= deltaY
-    this.targetScroll = clamp(0, this.targetScroll, this.maxScroll)
+    this.targetScroll = clamp(0, this.targetScroll, this.limit)
   }
 
   raf() {
@@ -100,8 +108,10 @@ export default class Lenis extends EventEmitter {
 
     if (this.scrolling) {
       // scroll to lerped scroll value
-      window.scrollTo(0, this.scroll)
-      this.emit('scroll', { scroll: this.scroll })
+      this.direction === 'horizontal'
+        ? window.scrollTo(this.scroll, 0)
+        : window.scrollTo(0, this.scroll)
+      this.notify()
     }
 
     this.scrolling = this.scroll !== this.targetScroll
@@ -110,21 +120,26 @@ export default class Lenis extends EventEmitter {
   onScroll = (e) => {
     // if scrolling is false we can estimate you aren't scrolling with wheel (cmd+F, keyboard or whatever). So we must scroll to without any easing
     if (!this.scrolling || !this.smooth) {
-      this.targetScroll = this.scroll = window.scrollY
-      this.emit('scroll', { scroll: this.scroll })
+      this.targetScroll = this.scroll =
+        this.direction === 'horizontal' ? window.scrollX : window.scrollY
+      this.notify()
     }
   }
 
+  notify() {
+    this.emit('scroll', { scroll: this.scroll, limit: this.limit })
+  }
+
   scrollTo(target, { offset = 0 } = {}) {
-    let y
+    let value
 
     if (typeof target === 'number') {
       // Number
-      y = target
+      value = target
     } else if (target === '#top') {
-      y = 0
+      value = 0
     } else if (target === '#bottom') {
-      y = this.maxScroll
+      value = this.limit
     } else {
       let node
 
@@ -139,15 +154,17 @@ export default class Lenis extends EventEmitter {
       }
 
       if (!target) return
-      y = node.getBoundingClientRect().top + this.scroll
+      const rect = node.getBoundingClientRect()
+      value =
+        (this.direction === 'horizontal' ? rect.left : rect.top) + this.scroll
     }
 
-    y += offset
+    value += offset
 
-    this.targetScroll = y
+    this.targetScroll = value
     this.scrolling = true
     if (!this.smooth) {
-      this.scroll = y
+      this.scroll = value
     }
   }
 }
