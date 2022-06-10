@@ -11,7 +11,7 @@ lenis.on('scroll', ({ scroll, limit }) => {
 })
 
 const stats = new Stats()
-stats.showPanel(0) // 0: fps, 1: ms, 2: mb, 3+: custom
+stats.showPanel(0)
 document.body.appendChild(stats.dom)
 
 function raf() {
@@ -29,7 +29,6 @@ const button = document.querySelector('a[href="#top"]')
 button.addEventListener(
   'click',
   (e) => {
-    // e.preventDefault()
     lenis.scrollTo('#top')
   },
   false
