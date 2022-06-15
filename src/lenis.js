@@ -168,7 +168,7 @@ export default class Lenis extends EventEmitter {
       if (this.direction === 'horizontal') {
         window.scrollTo(this.scroll, 0)
       } else {
-        window.scrollTo(this.scroll, value)
+        window.scrollTo(0, this.scroll)
       }
     }
   }
