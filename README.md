@@ -5,11 +5,20 @@
 
 This is our take on smooth scroll, lightweight, hard working, smooth as butter scroll. See [Demo](https://lenis.studiofreight.com/)
 
+<br>
 
+## Features
+
+- Performant
+- Lightweight [(~2Kb gzipped)](https://bundle.js.org/?q=@studio-freight/lenis) 
+- Run scroll in main thread
+- Accessibility (CMD+F page search, Tab and arrow navigation, keep scroll position on page refresh, etc.)
+- External RAF
+- SSR proof
 
 <br>
 
-### Installing
+## Installing
 
 just the usual:
 
@@ -21,7 +30,7 @@ or replace `npm` with your package manager of choice :)
 
 <br>
 
-### Setup
+## Setup
 
 ```js
 import Lenis from '@studio-freight/lenis'
@@ -29,7 +38,7 @@ import Lenis from '@studio-freight/lenis'
 const lenis = new Lenis({
   lerp: 0.1,
   smooth: true,
-  direction:'vertical',
+  direction: 'vertical',
 })
 
 //get scroll value
@@ -45,16 +54,18 @@ function raf() {
 requestAnimationFrame(raf)
 ```
 
-<br>
+<br/>
 
-### Features
-
-- Performant
-- Lightweight [(~2Kb gzipped)](https://bundle.js.org/?q=@studio-freight/lenis) 
-- Run scroll in main thread
-- Accessibility (CMD+F page search, Tab and arrow navigation, keep scroll position on page refresh, etc.)
-- External RAF
-- SSR proof
+## Methods 
+- `raf()` : must be called every frame for internal function.
+- `scrollTo(target, {offset})` : scroll to a target.
+  - `target` : can be `Number`, `NodeElement` or `String` (CSS selector).
+  - `offset` : (Number) equivalent to [scroll-padding-top](https://developer.mozilla.org/en-US/docs/Web/CSS/scroll-padding-top)
+- `on(id, callback)` : execute a function on event
+  - `id` : event to listen
+    - `scroll` : return scroll position
+  - `callback({scroll, limit})` : function to execute
+- `destroy()` : destroy the instance, remove all events
 
 <br/>
 
