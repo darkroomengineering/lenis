@@ -1,5 +1,5 @@
 export function clamp(min, input, max) {
-  return input < min ? min : input > max ? max : input
+  return Math.max(min, Math.min(input, max))
 }
 
 export function mapRange(in_min, in_max, input, out_min, out_max) {

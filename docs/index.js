@@ -6,8 +6,8 @@ import Stats from 'stats.js'
 const lenis = new Lenis({ lerp: 0.1, smooth: true, direction: 'vertical' })
 window.lenis = lenis
 
-lenis.on('scroll', ({ scroll, limit }) => {
-  console.log({ scroll, limit })
+lenis.on('scroll', ({ scroll, limit, velocity }) => {
+  console.log({ scroll, limit, velocity })
 })
 
 const stats = new Stats()

@@ -39,6 +39,7 @@ export default class Lenis extends EventEmitter {
 
     this.targetScroll = this.scroll =
       this.direction === 'horizontal' ? window.scrollX : window.scrollY
+    this.velocity = 0
   }
 
   start() {
@@ -73,24 +74,12 @@ export default class Lenis extends EventEmitter {
   }
 
   onVirtualScroll = ({ deltaY, originalEvent: e }) => {
-    // detect potential nested scrollable elements
-    // const path = e.path || (e.composedPath && e.composedPath())
-    // const isNestedScroll = path
-    //   .filter((element) => element.tagName) // filter node elements
-    //   .find((element, i) => {
-    //     return (
-    //       ['auto', 'scroll'].includes(getComputedStyle(element).overflowY) &&
-    //       element.scrollHeight > element.clientHeight
-    //     )
-    //   }) // filter scrollable elements
-
-    // if (isNestedScroll) return
-
     if (this.stopped) {
       e.preventDefault()
       return
     }
 
+    // prevent native wheel scrolling
     if (this.smooth && !e.ctrlKey) e.preventDefault()
 
     this.targetScroll -= deltaY
@@ -98,13 +87,18 @@ export default class Lenis extends EventEmitter {
   }
 
   raf() {
-    if (!this.smooth || this.stopped) return
+    if (this.stopped || !this.smooth) return
+    // where smooth scroll happens
+
+    let lastScroll = this.scroll
 
     // lerp scroll value
     this.scroll = lerp(this.scroll, this.targetScroll, this.lerp)
     if (Math.round(this.scroll) === Math.round(this.targetScroll)) {
-      this.scroll = this.targetScroll
+      this.scroll = lastScroll = this.targetScroll
     }
+
+    this.velocity = this.scroll - lastScroll
 
     if (this.scrolling) {
       // scroll to lerped scroll value
@@ -118,16 +112,26 @@ export default class Lenis extends EventEmitter {
   }
 
   onScroll = (e) => {
-    // if scrolling is false we can estimate you aren't scrolling with wheel (cmd+F, keyboard or whatever). So we must scroll to without any easing
+    if (this.stopped) return
+
+    // if scrolling is false we can estimate use isn't scrolling with wheel (cmd+F, keyboard or whatever). So we must scroll to without any easing
     if (!this.scrolling || !this.smooth) {
+      // where native scroll happens
+
+      const lastScroll = this.scroll
       this.targetScroll = this.scroll =
         this.direction === 'horizontal' ? window.scrollX : window.scrollY
+      this.velocity = this.scroll - lastScroll
       this.notify()
     }
   }
 
   notify() {
-    this.emit('scroll', { scroll: this.scroll, limit: this.limit })
+    this.emit('scroll', {
+      scroll: this.scroll,
+      limit: this.limit,
+      velocity: this.velocity,
+    })
   }
 
   scrollTo(target, { offset = 0 } = {}) {
