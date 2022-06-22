@@ -131,6 +131,7 @@ export default class Lenis extends EventEmitter {
       scroll: this.scroll,
       limit: this.limit,
       velocity: this.velocity,
+      direction: this.direction,
     })
   }
 
@@ -140,9 +141,9 @@ export default class Lenis extends EventEmitter {
     if (typeof target === 'number') {
       // Number
       value = target
-    } else if (target === '#top') {
+    } else if (target === 'top') {
       value = 0
-    } else if (target === '#bottom') {
+    } else if (target === 'bottom') {
       value = this.limit
     } else {
       let node
