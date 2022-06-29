@@ -65,6 +65,8 @@ requestAnimationFrame(raf)
   - `id` : event to listen.
     - `scroll` : return scroll position.
   - `callback({scroll, limit})` : function to execute.
+- `stop()` : pause the scroll
+- `start()` : resume the scroll
 - `destroy()` : destroy the instance, remove all events.
 
 <br/>
