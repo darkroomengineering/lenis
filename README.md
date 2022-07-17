@@ -75,6 +75,7 @@ requestAnimationFrame(raf)
 - [Wyre](https://www.sendwyre.com/) by [Studio Freight](https://www.studiofreight.com/)
 - [Scroll Animation Ideas for Image Grids](https://tympanus.net/Development/ScrollAnimationsGrid/) by [Codrops](https://tympanus.net/codrops)
 - [Lunchbox](https://lunchbox.io/) by [Studio Freight](https://www.studiofreight.com/)
+- [EASOL](https://easol.com/) by [Studio Freight](https://www.studiofreight.com/)
 
 <br/>
 
