@@ -1,7 +1,7 @@
 // import Lenis from '../dist/lenis.modern'
+import Stats from 'stats.js'
 import Lenis from '../src/lenis'
 import './styles/main.css'
-import Stats from 'stats.js'
 
 const lenis = new Lenis({ lerp: 0.1, smooth: true, direction: 'vertical' })
 window.lenis = lenis

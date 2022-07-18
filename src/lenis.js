@@ -13,6 +13,8 @@ export default class Lenis extends EventEmitter {
     window.addEventListener('scroll', this.onScroll, false)
     window.addEventListener('resize', this.onWindowResize, false)
 
+    document.querySelector('html').style.scrollBehavior = 'initial'
+
     const platform =
       navigator?.userAgentData?.platform || navigator?.platform || 'unknown'
 

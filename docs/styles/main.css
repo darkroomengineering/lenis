@@ -1,32 +1,34 @@
-html,body {
-    overscroll-behavior: none;
-    min-height: 100%;
+html,
+body {
+  overscroll-behavior: none;
+  min-height: 100%;
+  scroll-behavior: smooth;
 }
 
 html {
-    background: linear-gradient(#ffffff, red);
-    font-family: Helvetica, sans-serif;
-    font-size: 2.5vw;
-    line-height: 120%;
+  background: linear-gradient(#ffffff, red);
+  font-family: Helvetica, sans-serif;
+  font-size: 2.5vw;
+  line-height: 120%;
 }
 
 body {
-    margin: 0;
+  margin: 0;
 }
 
 section {
-    height: 100vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 0 14vw;
-    flex-direction: column;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0 14vw;
+  flex-direction: column;
 }
 
 .overflow {
-    height: 18vw;
-    overflow-y: auto;
-    overscroll-behavior: contain;
+  height: 18vw;
+  overflow-y: auto;
+  overscroll-behavior: contain;
 }
 
 /* uncomment below to activate horizontal scroll */
