@@ -75,6 +75,7 @@ requestAnimationFrame(raf)
 - [Wyre](https://www.sendwyre.com/) by [Studio Freight](https://www.studiofreight.com/)
 - [Scroll Animation Ideas for Image Grids](https://tympanus.net/Development/ScrollAnimationsGrid/) by [Codrops](https://tympanus.net/codrops)
 - [Lunchbox](https://lunchbox.io/) by [Studio Freight](https://www.studiofreight.com/)
+- [How to Animate SVG Shapes on Scroll](https://tympanus.net/codrops/2022/06/08/how-to-animate-svg-shapes-on-scroll) by [Codrops](https://tympanus.net/codrops)
 - [EASOL](https://easol.com/) by [Studio Freight](https://www.studiofreight.com/)
 
 <br/>
