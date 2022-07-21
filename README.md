@@ -1,6 +1,7 @@
 [![LENIS](https://assets.studiofreight.com/lenis/header.png)](https://github.com/studio-freight/lenis)
 
 ## Introduction
+
 🚧 Still in WIP, API might change with new releases 🚧
 
 This is our take on smooth scroll, lightweight, hard working, smooth as butter scroll. See [Demo](https://lenis.studiofreight.com/)
@@ -10,7 +11,7 @@ This is our take on smooth scroll, lightweight, hard working, smooth as butter s
 ## Features
 
 - Performant
-- Lightweight [(~2Kb gzipped)](https://bundle.js.org/?q=@studio-freight/lenis) 
+- Lightweight [(~2Kb gzipped)](https://bundle.js.org/?q=@studio-freight/lenis)
 - Run scroll in main thread
 - Accessibility (CMD+F page search, Tab and arrow navigation, keep scroll position on page refresh, etc.)
 - External RAF
@@ -56,7 +57,8 @@ requestAnimationFrame(raf)
 
 <br/>
 
-## Methods 
+## Methods
+
 - `raf()` : must be called every frame for internal function.
 - `scrollTo(target, {offset})` : scroll to a target.
   - `target` : can be `Number`, `NodeElement` or `String` (CSS selector).
@@ -71,7 +73,22 @@ requestAnimationFrame(raf)
 
 <br/>
 
+## Considerations
+
+### Things to consider if you want to add Lenis to your codebase will be listed here.
+
+#### Make sure `scroll-behavior` is set to initial or not set at all (thanks [@thagxt](https://github.com/thagxt))
+
+```
+html {
+  scroll-behaviour: initial;
+}
+```
+
+<br>
+
 ## Lenis in use
+
 - [Wyre](https://www.sendwyre.com/) by [Studio Freight](https://www.studiofreight.com/)
 - [Scroll Animation Ideas for Image Grids](https://tympanus.net/Development/ScrollAnimationsGrid/) by [Codrops](https://tympanus.net/codrops)
 - [Lunchbox](https://lunchbox.io/) by [Studio Freight](https://www.studiofreight.com/)
