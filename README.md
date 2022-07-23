@@ -81,7 +81,7 @@ requestAnimationFrame(raf)
 
 ```
 html {
-  scroll-behaviour: initial;
+  scroll-behavior: initial;
 }
 ```
 
