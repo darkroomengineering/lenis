@@ -79,9 +79,17 @@ requestAnimationFrame(raf)
 
 #### Make sure `scroll-behavior` is set to initial or not set at all (thanks [@thagxt](https://github.com/thagxt))
 
-```
+```css
 html {
   scroll-behavior: initial;
+}
+```
+
+#### Keep html and body elements default sized ([see this issue](https://github.com/studio-freight/lenis/issues/10))
+```css
+html, body{
+  width: 100%;
+  min-height: 100%;
 }
 ```
 
