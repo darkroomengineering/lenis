@@ -102,6 +102,8 @@ html, body{
 - [Lunchbox](https://lunchbox.io/) by [Studio Freight](https://www.studiofreight.com/)
 - [How to Animate SVG Shapes on Scroll](https://tympanus.net/codrops/2022/06/08/how-to-animate-svg-shapes-on-scroll) by [Codrops](https://tympanus.net/codrops)
 - [EASOL](https://easol.com/) by [Studio Freight](https://www.studiofreight.com/)
+- [Repeat](https://getrepeat.io/) by [Studio Freight](https://www.studiofreight.com/)
+- [Dragonfly](https://dragonfly.xyz/) by [Studio Freight](https://www.studiofreight.com/)
 
 <br/>
 
