@@ -164,7 +164,7 @@ export default class Lenis extends EventEmitter {
     })
   }
 
-  scrollTo (target, { offset = 0 } = {}) {
+  scrollTo(target, { offset = 0, immediate= false } = {}) {
     let value
 
     if (typeof target === 'number') {
@@ -197,7 +197,8 @@ export default class Lenis extends EventEmitter {
 
     this.targetScroll = value
     this.scrolling = true
-    if (!this.smooth) {
+    
+    if (!this.smooth || immediate) {
       this.scroll = value
       if (this.direction === 'horizontal') {
         this.container.scrollTo(this.scroll, 0)
