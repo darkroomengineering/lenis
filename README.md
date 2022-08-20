@@ -33,6 +33,8 @@ or replace `npm` with your package manager of choice :)
 
 ## Setup
 
+Basic setup
+
 ```js
 import Lenis from '@studio-freight/lenis'
 
@@ -43,8 +45,8 @@ const lenis = new Lenis({
 })
 
 //get scroll value
-lenis.on('scroll', ({ scroll, limit }) => {
-  console.log({ scroll, limit })
+lenis.on('scroll', ({ scroll, limit, velocity, direction, progress }) => {
+  console.log({ scroll, limit, velocity, direction, progress })
 })
 
 function raf() {
@@ -53,6 +55,19 @@ function raf() {
 }
 
 requestAnimationFrame(raf)
+```
+
+<br/>
+
+Using custom scroll container
+```js
+const lenis = new Lenis({
+  lerp: 0.1,
+  smooth: true,
+  direction: 'vertical',
+  wrapper: NodeElement, // element that has overflow
+  content: NodeElement, // usually wrapper's direct child
+})
 ```
 
 <br/>
