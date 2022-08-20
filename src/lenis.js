@@ -3,21 +3,30 @@ import VirtualScroll from 'virtual-scroll'
 import { clamp, lerp } from './maths.js'
 
 export default class Lenis extends EventEmitter {
-  constructor({ lerp = 0.1, smooth = true, direction = 'vertical' } = {}) {
+  constructor({
+    lerp = 0.1,
+    smooth = true,
+    direction = 'vertical',
+    wrapper = window,
+    content = document.body,
+  } = {}) {
     super()
+
+    this.wrapperNode = wrapper
+    this.contentNode = content
 
     this.lerp = lerp
     this.smooth = smooth
     this.direction = direction
 
-    window.addEventListener('scroll', this.onScroll, false)
-    window.addEventListener('resize', this.onWindowResize, false)
+    this.wrapperNode.addEventListener('scroll', this.onScroll, false)
 
     const platform =
       navigator?.userAgentData?.platform || navigator?.platform || 'unknown'
 
     // listen and normalize wheel event cross-browser
     this.virtualScroll = new VirtualScroll({
+      el: this.wrapperNode,
       firefoxMultiplier: 50,
       mouseMultiplier: platform.indexOf('Win') > -1 ? 1 : 0.4,
       useKeyboard: false,
@@ -27,19 +36,40 @@ export default class Lenis extends EventEmitter {
 
     this.virtualScroll.on(this.onVirtualScroll)
 
-    this.onWindowResize()
-    this.limit =
-      this.direction === 'horizontal'
-        ? document.body.offsetWidth - this.windowWidth
-        : document.body.offsetHeight - this.windowHeight
+    //observe wrapper node size
+    if (this.wrapperNode === window) {
+      this.wrapperNode.addEventListener('resize', this.onWindowResize, false)
+      this.onWindowResize()
+    } else {
+      this.wrapperHeight = this.wrapperNode.offsetHeight
+      this.wrapperWidth = this.wrapperNode.offsetWidth
 
-    // recalculate maxScroll when body height changes
-    this.resizeObserver = new ResizeObserver(this.onResize)
-    this.resizeObserver.observe(document.body)
+      //observe wrapper node size
+      this.wrapperObserver = new ResizeObserver(this.onWrapperResize)
+      this.wrapperObserver.observe(this.wrapperNode)
+    }
 
-    this.targetScroll = this.scroll =
-      this.direction === 'horizontal' ? window.scrollX : window.scrollY
+    this.contentHeight = this.contentNode.offsetHeight
+    this.contentWidth = this.contentNode.offsetWidth
+
+    //observe content node size
+    this.contentObserver = new ResizeObserver(this.onContentResize)
+    this.contentObserver.observe(this.contentNode)
+
+    //set initial scroll position
+    this.targetScroll = this.scroll = this.wrapperNode[this.scrollProperty]
+
     this.velocity = 0
+  }
+
+  get scrollProperty() {
+    let property
+    if (this.wrapperNode === window) {
+      property = this.direction === 'horizontal' ? 'scrollX' : 'scrollY'
+    } else {
+      property = this.direction === 'horizontal' ? 'scrollLeft' : 'scrollTop'
+    }
+    return property
   }
 
   start() {
@@ -51,26 +81,43 @@ export default class Lenis extends EventEmitter {
   }
 
   destroy() {
-    window.removeEventListener('scroll', this.onScroll, false)
-    window.removeEventListener('resize', this.onWindowResize, false)
-    this.virtualScroll.destroy()
-    this.resizeObserver.disconnect()
-  }
-
-  onResize = (entries) => {
-    const entry = entries[0]
-    if (entry) {
-      const rect = entry.contentRect
-      this.limit =
-        this.direction === 'horizontal'
-          ? rect.width - this.windowWidth
-          : rect.height - this.windowHeight
+    if (this.wrapperNode === window) {
+      this.wrapperNode.removeEventListener('resize', this.onWindowResize, false)
     }
+    this.wrapperNode.removeEventListener('scroll', this.onScroll, false)
+
+    this.virtualScroll.destroy()
+    this.wrapperObserver?.disconnect()
+    this.contentObserver.disconnect()
   }
 
   onWindowResize = () => {
-    this.windowHeight = window.innerHeight
-    this.windowWidth = window.innerWidth
+    this.wrapperWidth = window.innerWidth
+    this.wrapperHeight = window.innerHeight
+  }
+
+  onWrapperResize = (entries) => {
+    const entry = entries[0]
+    if (entry) {
+      const rect = entry.contentRect
+      this.wrapperWidth = rect.width
+      this.wrapperHeight = rect.height
+    }
+  }
+
+  onContentResize = (entries) => {
+    const entry = entries[0]
+    if (entry) {
+      const rect = entry.contentRect
+      this.contentWidth = rect.width
+      this.contentHeight = rect.height
+    }
+  }
+
+  get limit() {
+    return this.direction === 'horizontal'
+      ? this.contentWidth - this.wrapperWidth
+      : this.contentHeight - this.wrapperHeight
   }
 
   onVirtualScroll = ({ deltaY, originalEvent: e }) => {
@@ -102,13 +149,17 @@ export default class Lenis extends EventEmitter {
 
     if (this.scrolling) {
       // scroll to lerped scroll value
-      this.direction === 'horizontal'
-        ? window.scrollTo(this.scroll, 0)
-        : window.scrollTo(0, this.scroll)
+      this._scrollTo(this.scroll)
       this.notify()
     }
 
     this.scrolling = this.scroll !== this.targetScroll
+  }
+
+  _scrollTo(value) {
+    this.direction === 'horizontal'
+      ? this.wrapperNode.scrollTo(value, 0)
+      : this.wrapperNode.scrollTo(0, value)
   }
 
   onScroll = (e) => {
@@ -119,8 +170,7 @@ export default class Lenis extends EventEmitter {
       // where native scroll happens
 
       const lastScroll = this.scroll
-      this.targetScroll = this.scroll =
-        this.direction === 'horizontal' ? window.scrollX : window.scrollY
+      this.targetScroll = this.scroll = this.wrapperNode[this.scrollProperty]
       this.velocity = this.scroll - lastScroll
       this.notify()
     }
@@ -132,10 +182,11 @@ export default class Lenis extends EventEmitter {
       limit: this.limit,
       velocity: this.velocity,
       direction: this.direction,
+      progress: this.scroll / this.limit,
     })
   }
 
-  scrollTo(target, { offset = 0, immediate= false } = {}) {
+  scrollTo(target, { offset = 0, immediate = false } = {}) {
     let value
 
     if (typeof target === 'number') {
@@ -159,23 +210,29 @@ export default class Lenis extends EventEmitter {
       }
 
       if (!target) return
+      let wrapperOffset = 0
+
+      if (this.wrapperNode !== window) {
+        const wrapperRect = this.wrapperNode.getBoundingClientRect()
+        wrapperOffset =
+          this.direction === 'horizontal' ? wrapperRect.left : wrapperRect.top
+      }
       const rect = node.getBoundingClientRect()
+
       value =
-        (this.direction === 'horizontal' ? rect.left : rect.top) + this.scroll
+        (this.direction === 'horizontal' ? rect.left : rect.top) +
+        this.scroll -
+        wrapperOffset
     }
 
     value += offset
 
     this.targetScroll = value
     this.scrolling = true
-    
+
     if (!this.smooth || immediate) {
       this.scroll = value
-      if (this.direction === 'horizontal') {
-        window.scrollTo(this.scroll, 0)
-      } else {
-        window.scrollTo(0, this.scroll)
-      }
+      this._scrollTo(this.scroll)
     }
   }
 }

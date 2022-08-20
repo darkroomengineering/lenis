@@ -1,0 +1,20 @@
+body {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+}
+
+#scroll-wrapper {
+    height: 72vh;
+    width: 72vw;
+    overflow: auto;
+}
+
+section {
+    height: auto !important;
+}
+
+section:not(:last-child) {
+    margin-bottom: 200px;
+}
