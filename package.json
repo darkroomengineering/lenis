@@ -1,52 +1,70 @@
 {
   "name": "@studio-freight/lenis",
-  "version": "0.1.14",
+  "version": "0.1.15",
   "description": "Lenis is a smooth scroll library to normalize the scrolling experience across devices",
+  "files": [
+    "dist"
+  ],
+  "sideEffects": true,
+  "source": "src/lenis.js",
+  "main": "dist/lenis.js",
+  "umd:main": "dist/lenis.umd.js",
+  "module": "dist/lenis.mjs",
+  "exports": {
+    "require": "./dist/lenis.js",
+    "default": "./dist/lenis.modern.mjs"
+  },
+  "devDependencies": {
+    "microbundle": "^0.15.1",
+    "path": "^0.12.7",
+    "stats.js": "^0.17.0",
+    "@size-limit/preset-small-lib": "^8.0.1",
+    "rimraf": "^3.0.2",
+    "size-limit": "^8.0.1",
+    "vite": "^3.0.9"
+  },
+  "dependencies": {
+    "tiny-emitter": "^2.1.0",
+    "virtual-scroll": "^2.2.1"
+  },
   "author": "studio-freight",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/studio-freight/lenis.git"
   },
-  "source": "src/lenis.js",
-  "module": "dist/lenis.esm.js",
-  "type": "module",
-  "sideEffects": false,
   "scripts": {
     "dev": "vite docs",
-    "docs:build": "vite build",
-    "package:build": "microbundle src/lenis.js",
-    "build": "npm run package:build && npm run docs:build",
-    "prepublishOnly": "npm run build"
-  },
-  "devDependencies": {
-    "eslint": "^8.22.0",
-    "eslint-config-prettier": "^8.5.0",
-    "eslint-plugin-prettier": "^4.2.1",
-    "husky": "^8.0.1",
-    "microbundle": "^0.15.1",
-    "prettier": "^2.7.1",
-    "prettier-eslint": "^15.0.1",
-    "vite": "^3.0.7"
-  },
-  "dependencies": {
-    "path": "^0.12.7",
-    "stats.js": "^0.17.0",
-    "tiny-emitter": "^2.1.0",
-    "virtual-scroll": "^2.2.1"
-  },
-  "lint-staged": {
-    "*.js": "eslint --cache --fix",
-    "*.{js,css,md}": "prettier --write"
+    "size": "size-limit",
+    "clean": "rimraf dist",
+    "build": "microbundle",
+    "prebuild": "npm run clean",
+    "preversion": "npm run build",
+    "postversion": "git push --follow-tags"
   },
   "bugs": {
     "url": "https://github.com/studio-freight/lenis/issues"
   },
   "homepage": "https://github.com/studio-freight/lenis#readme",
-  "directories": {
-    "doc": "docs"
-  },
   "keywords": [
     "smooth",
     "scroll"
+  ],
+  "size-limit": [
+    {
+      "limit": "4 kB",
+      "path": "dist/lenis.js"
+    },
+    {
+      "limit": "4 kB",
+      "path": "dist/lenis.mjs"
+    },
+    {
+      "limit": "4 kB",
+      "path": "dist/lenis.modern.mjs"
+    },
+    {
+      "limit": "4 kB",
+      "path": "dist/lenis.umd.js"
+    }
   ]
 }
