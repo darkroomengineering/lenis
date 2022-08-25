@@ -37,6 +37,7 @@
     "size": "size-limit",
     "clean": "rimraf dist",
     "build": "microbundle",
+    "build:docs": "vite build",
     "prebuild": "npm run clean",
     "preversion": "npm run build",
     "postversion": "git push --follow-tags"
