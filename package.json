@@ -35,8 +35,10 @@
   "scripts": {
     "dev": "vite docs",
     "size": "size-limit",
-    "clean": "rimraf dist",
-    "build": "microbundle",
+    "clean": "rimraf dist && rimraf bundled",
+    "build": "npm run clean && npm run build:light && npm run build:bundle",
+    "build:light": "microbundle",
+    "build:bundle": "microbundle --external none --output './bundled'",
     "build:docs": "vite build",
     "prebuild": "npm run clean",
     "preversion": "npm run build",
