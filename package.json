@@ -38,7 +38,7 @@
     "clean": "rimraf dist && rimraf bundled",
     "build": "npm run clean && npm run build:light && npm run build:bundle",
     "build:light": "microbundle",
-    "build:bundle": "microbundle --external none --output './bundled'",
+    "build:bundle": "microbundle --external none --output './bundled' --name 'Lenis'",
     "build:docs": "vite build",
     "prebuild": "npm run clean",
     "preversion": "npm run build",
