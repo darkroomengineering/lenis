@@ -121,13 +121,15 @@ export default class Lenis extends EventEmitter {
   }
 
   onVirtualScroll = ({ deltaY, originalEvent: e }) => {
+    if (e.ctrlKey) return
+
     if (this.stopped) {
       e.preventDefault()
       return
     }
 
     // prevent native wheel scrolling
-    if (this.smooth && !e.ctrlKey) e.preventDefault()
+    if (this.smooth) e.preventDefault()
 
     this.targetScroll -= deltaY
     this.targetScroll = clamp(0, this.targetScroll, this.limit)
