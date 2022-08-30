@@ -119,6 +119,7 @@ html, body{
 - [EASOL](https://easol.com/) by [Studio Freight](https://www.studiofreight.com/)
 - [Repeat](https://getrepeat.io/) by [Studio Freight](https://www.studiofreight.com/)
 - [Dragonfly](https://dragonfly.xyz/) by [Studio Freight](https://www.studiofreight.com/)
+- [Yuga Labs](https://yuga.com/) by [Antinomy Studio](https://antinomy.studio/)
 
 <br/>
 
