@@ -38,7 +38,7 @@
     "clean": "rimraf dist && rimraf bundled",
     "build": "npm run clean && npm run build:light && npm run build:bundle",
     "build:light": "microbundle",
-    "build:bundle": "microbundle build -i src/lenis.js --format umd --compress --no-sourcemap --no-pkg-main --external none --output './bundled' --name 'Lenis'",
+    "build:bundle": "microbundle build -i src/lenis.js --format umd --compress --no-sourcemap --no-pkg-main --external none --output ./bundled --name 'Lenis'",
     "build:docs": "vite build",
     "prebuild": "npm run clean",
     "preversion": "npm run build",
