@@ -19,7 +19,7 @@ export default class Lenis extends EventEmitter {
     this.smooth = smooth
     this.direction = direction
 
-    this.wrapperNode.addEventListener('scroll', this.onScroll, false)
+    this.wrapperNode.addEventListener('scroll', this.onScroll)
 
     const platform =
       navigator?.userAgentData?.platform || navigator?.platform || 'unknown'
@@ -38,7 +38,7 @@ export default class Lenis extends EventEmitter {
 
     //observe wrapper node size
     if (this.wrapperNode === window) {
-      this.wrapperNode.addEventListener('resize', this.onWindowResize, false)
+      this.wrapperNode.addEventListener('resize', this.onWindowResize)
       this.onWindowResize()
     } else {
       this.wrapperHeight = this.wrapperNode.offsetHeight
@@ -82,9 +82,9 @@ export default class Lenis extends EventEmitter {
 
   destroy() {
     if (this.wrapperNode === window) {
-      this.wrapperNode.removeEventListener('resize', this.onWindowResize, false)
+      this.wrapperNode.removeEventListener('resize', this.onWindowResize)
     }
-    this.wrapperNode.removeEventListener('scroll', this.onScroll, false)
+    this.wrapperNode.removeEventListener('scroll', this.onScroll)
 
     this.virtualScroll.destroy()
     this.wrapperObserver?.disconnect()
@@ -96,8 +96,7 @@ export default class Lenis extends EventEmitter {
     this.wrapperHeight = window.innerHeight
   }
 
-  onWrapperResize = (entries) => {
-    const entry = entries[0]
+  onWrapperResize = ([entry]) => {
     if (entry) {
       const rect = entry.contentRect
       this.wrapperWidth = rect.width
@@ -105,8 +104,7 @@ export default class Lenis extends EventEmitter {
     }
   }
 
-  onContentResize = (entries) => {
-    const entry = entries[0]
+  onContentResize = ([entry]) => {
     if (entry) {
       const rect = entry.contentRect
       this.contentWidth = rect.width
@@ -149,31 +147,29 @@ export default class Lenis extends EventEmitter {
 
     this.velocity = this.scroll - lastScroll
 
-    if (this.scrolling) {
+    if (this.isScrolling) {
       // scroll to lerped scroll value
-      this._scrollTo(this.scroll)
+      this.setScroll(this.scroll)
       this.notify()
     }
 
-    this.scrolling = this.scroll !== this.targetScroll
+    this.isScrolling = this.scroll !== this.targetScroll
   }
 
-  _scrollTo(value) {
+  setScroll(value) {
     this.direction === 'horizontal'
       ? this.wrapperNode.scrollTo(value, 0)
       : this.wrapperNode.scrollTo(0, value)
   }
 
-  onScroll = (e) => {
-    if (this.stopped) return
-
-    // if scrolling is false we can estimate use isn't scrolling with wheel (cmd+F, keyboard or whatever). So we must scroll to without any easing
-    if (!this.scrolling || !this.smooth) {
+  onScroll = () => {
+    // if scrolling is false we can estimate user isn't scrolling with wheel (cmd+F, keyboard or whatever). So we must scroll to without any easing
+    if (!this.isScrolling || !this.smooth) {
       // where native scroll happens
-
-      const lastScroll = this.scroll
       this.targetScroll = this.scroll = this.wrapperNode[this.scrollProperty]
-      this.velocity = this.scroll - lastScroll
+      // velocity is not reliable in this context
+      this.velocity = 0
+
       this.notify()
     }
   }
@@ -230,11 +226,11 @@ export default class Lenis extends EventEmitter {
     value += offset
 
     this.targetScroll = value
-    this.scrolling = true
+    this.isScrolling = true
 
     if (!this.smooth || immediate) {
       this.scroll = value
-      this._scrollTo(this.scroll)
+      this.setScroll(this.scroll)
     }
   }
 }
