@@ -20,7 +20,7 @@ jobs:
         with:
           # find project id here: https://vercel.com/studio-freight/satus/settings
           vercel_team_id: 'studio-freight'
-          vercel_project_id: ${{ secrets.VERCEL_PROJECT_ID }}
+          vercel_project_id: prj_GNzV5Jq8gnOAr2BF2xcDbiL22oWb
       - uses: actions/checkout@v3.0.2
       - name: Audit preview URL with Lighthouse
         id: lighthouse_audit
