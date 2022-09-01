@@ -1,0 +1,37 @@
+.marquee {
+  display: flex;
+  overflow: hidden;
+  will-change: transform;
+
+  .inner {
+    display: flex;
+    white-space: nowrap;
+    animation: marquee var(--duration) linear infinite;
+  }
+
+  &.inverted {
+    .inner {
+      animation: marquee-inverted var(--duration) linear infinite;
+    }
+  }
+
+  @keyframes marquee {
+    0% {
+      transform: translate3d(calc(var(--offset) * -1), 0, 0);
+    }
+
+    100% {
+      transform: translate3d(calc(-100% - var(--offset)), 0, 0);
+    }
+  }
+
+  @keyframes marquee-inverted {
+    0% {
+      transform: translate3d(calc(-100% - var(--offset)), 0, 0);
+    }
+
+    100% {
+      transform: translate3d(calc(var(--offset) * -1), 0, 0);
+    }
+  }
+}

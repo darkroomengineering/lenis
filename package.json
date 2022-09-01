@@ -15,12 +15,15 @@
     "default": "./dist/lenis.modern.mjs"
   },
   "devDependencies": {
+    "@size-limit/preset-small-lib": "^8.0.1",
+    "husky": "^8.0.0",
+    "lint-staged": "^13.0.3",
     "microbundle": "^0.15.1",
     "path": "^0.12.7",
-    "stats.js": "^0.17.0",
-    "@size-limit/preset-small-lib": "^8.0.1",
+    "prettier": "^2.7.1",
     "rimraf": "^3.0.2",
     "size-limit": "^8.0.1",
+    "stats.js": "^0.17.0",
     "vite": "^3.0.9"
   },
   "dependencies": {
@@ -33,17 +36,18 @@
     "url": "git+https://github.com/studio-freight/lenis.git"
   },
   "scripts": {
-    "dev": "vite docs",
+    "dev": "microbundle watch & npm run dev --prefix ./website",
     "size": "size-limit",
     "clean": "rimraf dist && rimraf bundled",
     "build": "npm run clean && npm run build:light && npm run build:bundle",
     "build:light": "microbundle",
     "build:bundle": "microbundle build -i src/lenis.js --format umd --compress --no-sourcemap --no-pkg-main --external none --output ./bundled --name 'Lenis'",
-    "build:docs": "vite build",
+    "build:website": "vite build",
     "prebuild": "npm run clean",
     "preversion": "npm run build",
     "postversion": "git push --follow-tags",
-    "prepublishOnly": "npm run build"
+    "prepublishOnly": "npm run build",
+    "prepare": "husky install"
   },
   "bugs": {
     "url": "https://github.com/studio-freight/lenis/issues"
@@ -70,5 +74,9 @@
       "limit": "4 kB",
       "path": "dist/lenis.umd.js"
     }
-  ]
+  ],
+  "lint-staged": {
+    "*.js": "eslint --cache --fix",
+    "*.{js,css,scss,md}": "prettier --write"
+  }
 }

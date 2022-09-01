@@ -1,0 +1,22 @@
+.navigation {
+  height: 0;
+  background-color: green;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  transition: 1s height var(--ease-out-expo);
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+
+  &.closed {
+    pointer-events: none;
+    height: 0;
+
+    > * {
+      opacity: 0;
+    }
+  }
+}

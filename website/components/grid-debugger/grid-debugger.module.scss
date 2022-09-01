@@ -1,0 +1,26 @@
+.grid {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100vh;
+  pointer-events: none;
+  z-index: 10000;
+
+  button {
+    pointer-events: all;
+    font-size: 50px;
+    right: 0;
+    position: absolute;
+  }
+}
+
+.debugger {
+  position: absolute;
+  inset: 0;
+
+  span {
+    background: pink;
+    opacity: 0.3;
+  }
+}

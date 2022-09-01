@@ -1,0 +1,54 @@
+// https://github.com/elad2412/the-new-css-reset/blob/main/css/reset.css
+
+/*** The new CSS Reset - version 1.2.0 (last updated 23.7.2021) ***/
+
+/**
+ * 1. Correct the line height in all browsers.
+ * 2. Prevent adjustments of font size after orientation changes in iOS.
+ * 3. Improve font rendering.
+ */
+
+html {
+  line-height: 1.15; /* 1 */
+  -webkit-text-size-adjust: 100%; /* 2 */
+  text-rendering: geometricPrecision; /* 2 */
+  -webkit-font-smoothing: antialiased; /* 3 */
+  -webkit-font-smoothing: subpixel-antialiased; /* 3 */
+  -moz-font-smoothing: antialiased; /* 3 */
+  font-smoothing: antialiased; /* 3 */
+  -moz-osx-font-smoothing: grayscale; /* 3 */
+}
+
+/* Remove all the styles of the "User-Agent-Stylesheet", except for the 'display' property */
+*:not(iframe, canvas, img, svg, video, svg *) {
+  all: unset;
+  display: revert;
+}
+
+/* Preferred box-sizing value */
+*,
+*::before,
+*::after {
+  box-sizing: border-box !important;
+}
+
+/* Remove list styles (bullets/numbers) */
+ol,
+ul {
+  list-style: none;
+}
+
+/* For images to not be able to exceed their container */
+img {
+  max-width: 100%;
+}
+
+/* removes spacing between cells in tables */
+table {
+  border-collapse: collapse;
+}
+
+/* revert the 'white-space' property for textarea elements on Safari */
+textarea {
+  white-space: revert;
+}

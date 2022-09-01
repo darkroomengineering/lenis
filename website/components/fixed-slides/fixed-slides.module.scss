@@ -1,0 +1,39 @@
+@import 'styles/_functions';
+
+.fixed-slides {
+  height: var(--length);
+  position: relative;
+  z-index: 2;
+
+  .sticky-wrapper {
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+
+    .sticky {
+      position: sticky;
+      height: 100vh;
+      width: 100%;
+      top: 0;
+      left: 0;
+    }
+  }
+}
+
+.progress-bar {
+  position: fixed;
+  z-index: 3;
+  bottom: 0;
+  width: 100%;
+  height: desktop-vh(4px);
+  background: linear-gradient(90deg, #2159ff 0%, #32f3ff 100%);
+  left: -100%;
+  transform: translate3d(var(--progress), 0, 0);
+  transition: 300ms transform var((--ease-out-expo));
+
+  @include mobile {
+    display: none;
+  }
+}

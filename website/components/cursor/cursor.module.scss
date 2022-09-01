@@ -1,0 +1,27 @@
+@import 'styles/_functions';
+
+.container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100vh;
+  width: 100%;
+  z-index: 10000;
+  pointer-events: none;
+  overflow: hidden;
+
+  .cursor {
+    position: absolute;
+    transform: translate(-50%, -50%);
+    border-radius: 100%;
+    width: 40px;
+    height: 40px;
+    background-color: var(--black);
+    opacity: 0.4;
+    transition: transform 600ms var(--ease-out-expo);
+
+    &.pointer {
+      transform: translate(-50%, -50%) scale(0.5);
+    }
+  }
+}

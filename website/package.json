@@ -1,0 +1,66 @@
+{
+  "name": "lenis-website",
+  "version": "1.0.0",
+  "description": "Lenis is a smooth scroll library to normalize the scrolling experience across devices",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint --cache --fix",
+    "postbuild": "next-sitemap",
+    "analyze": "cross-env ANALYZE=true next build",
+    "analyze:server": "cross-env BUNDLE_ANALYZE=server next build",
+    "analyze:browser": "cross-env BUNDLE_ANALYZE=browser next build"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@radix-ui/react-accordion": "^1.0.0",
+    "@radix-ui/react-select": "^1.0.0",
+    "@studio-freight/hamo": "^0.4.42",
+    "@studio-freight/lenis": "link:..",
+    "@studio-freight/tempus": "^0.0.30",
+    "clsx": "^1.2.1",
+    "embla-carousel": "7.0.1",
+    "embla-carousel-autoplay": "7.0.1",
+    "embla-carousel-react": "7.0.1",
+    "gsap": "^3.11.0",
+    "lottie-web": "^5.9.6",
+    "nanoid": "^4.0.0",
+    "next": "^12.2.5",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-use": "^17.4.0",
+    "react-use-measure": "^2.1.1",
+    "use-dark-mode": "^2.3.1",
+    "zustand": "4.1.1"
+  },
+  "devDependencies": {
+    "@builder.io/partytown": "^0.7.0",
+    "@next/bundle-analyzer": "^12.2.5",
+    "@size-limit/preset-app": "^8.0.1",
+    "@svgr/webpack": "^6.3.1",
+    "critters": "^0.0.16",
+    "cross-env": "^7.0.3",
+    "duplicate-package-checker-webpack-plugin": "^3.0.0",
+    "eslint": "8.22.0",
+    "eslint-config-next": "12.2.5",
+    "eslint-config-prettier": "^8.5.0",
+    "eslint-import-resolver-alias": "^1.1.2",
+    "eslint-plugin-import": "^2.26.0",
+    "next-pwa": "5.6.0",
+    "next-seo": "^5.5.0",
+    "next-sitemap": "^3.1.21",
+    "next-transpile-modules": "^9.0.0",
+    "prettier": "^2.7.1",
+    "prettier-eslint": "^15.0.1",
+    "sass": "^1.54.8",
+    "stats.js": "^0.17.0"
+  },
+  "pnpm": {
+    "overrides": {
+      "throttle-debounce": "5.0.0"
+    }
+  }
+}

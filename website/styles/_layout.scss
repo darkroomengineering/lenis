@@ -1,0 +1,81 @@
+// inspiration: https://material.io/design/layout/responsive-layout-grid.html#columns-gutters-and-margins
+
+// css variables exposed globally:
+// --layout-columns-count: columns count in the layout
+// --layout-columns-gap: gap size between columns
+// --layout-margin: layout margin size (left or right)
+// --layout-width: 100vw minus 2 * --layout-margin
+// --layout-column-width: size of a single column
+
+// css classes exposed globally:
+// .layout-block: element takes the whole layout width
+// .layout-block-inner: same as .layout-block but using padding instead of margin
+// .layout-grid: extends .layout-block with grid behaviour using layout settings
+// .layout-grid-inner: same as .layout-grid but using padding instead of margin
+
+@use 'sass:map';
+
+// config to fill
+// 'variable': (mobile, desktop)
+$layout: (
+  'columns-count': (
+    4,
+    12,
+  ),
+  'columns-gap': (
+    10px,
+    25px,
+  ),
+  'margin': (
+    20px,
+    50px,
+  ),
+);
+
+//internal process, do not touch
+:root {
+  --layout-columns-count: #{nth(map.get($layout, 'columns-count'), 1)};
+  --layout-columns-gap: #{mobile-vw(nth(map.get($layout, 'columns-gap'), 1))};
+  --layout-margin: #{mobile-vw(nth(map.get($layout, 'margin'), 1))};
+
+  @include desktop {
+    --layout-columns-count: #{nth(map.get($layout, 'columns-count'), 2)};
+    --layout-columns-gap: #{desktop-vw(nth(map.get($layout, 'columns-gap'), 2))};
+    --layout-margin: #{desktop-vw(nth(map.get($layout, 'margin'), 2))};
+  }
+
+  --layout-width: calc(100vw - (2 * var(--layout-margin)));
+  --layout-column-width: calc(
+    (
+        var(--layout-width) -
+          ((var(--layout-columns-count) - 1) * var(--layout-columns-gap))
+      ) / var(--layout-columns-count)
+  );
+}
+
+.layout-block {
+  max-width: var(--layout-width);
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.layout-block-inner {
+  padding-left: var(--layout-margin);
+  padding-right: var(--layout-margin);
+}
+
+.layout-grid {
+  @extend .layout-block;
+
+  display: grid;
+  grid-template-columns: repeat(var(--layout-columns-count), minmax(0, 1fr));
+  grid-gap: var(--layout-columns-gap);
+}
+
+.layout-grid-inner {
+  @extend .layout-block-inner;
+
+  display: grid;
+  grid-template-columns: repeat(var(--layout-columns-count), minmax(0, 1fr));
+  grid-gap: var(--layout-columns-gap);
+}

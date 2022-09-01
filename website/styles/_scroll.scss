@@ -1,0 +1,13 @@
+html {
+  &:not(.dev) {
+    scrollbar-width: none !important;
+
+    body {
+      -ms-overflow-style: none;
+    }
+    body::-webkit-scrollbar {
+      width: 0 !important;
+      height: 0 !important;
+    }
+  }
+}

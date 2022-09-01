@@ -1,0 +1,17 @@
+@import 'styles/_functions';
+
+.slider {
+  // width: 100%;
+
+  &:global(.is-draggable) {
+    cursor: grab;
+  }
+
+  &:global(.is-dragging) {
+    cursor: grabbing;
+  }
+}
+
+.container {
+  display: flex;
+}

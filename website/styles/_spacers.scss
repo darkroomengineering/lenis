@@ -1,0 +1,45 @@
+@use 'sass:map';
+
+// css custom properties exposed globally:
+// --spacer-{name}: creates spacer variables based on the grid and multipiers
+
+// config:
+$grid-base: 8px;
+$spacer-multipliers: (
+  xl: (
+    24,
+    10,
+  ),
+  lg: (
+    16,
+    8,
+  ),
+  md: (
+    10,
+    6,
+  ),
+  sm: (
+    8,
+    4,
+  ),
+  xs: (
+    6,
+    4,
+  ),
+);
+
+// internal process, do not touch
+:root {
+  @each $name, $value in $spacer-multipliers {
+    --spacer-#{$name}: #{mobile-vw(
+        (nth(map.get($spacer-multipliers, $name), 2) * $grid-base)
+      )};
+  }
+  @include desktop {
+    @each $name, $value in $spacer-multipliers {
+      --spacer-#{$name}: #{desktop-vw(
+          (nth(map.get($spacer-multipliers, $name), 1) * $grid-base)
+        )};
+    }
+  }
+}

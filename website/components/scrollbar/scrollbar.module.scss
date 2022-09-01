@@ -1,0 +1,28 @@
+@import 'styles/_functions';
+
+// hide native scrollbar
+
+.scrollbar {
+  position: fixed;
+  right: 0;
+  bottom: 0;
+  top: 0;
+  z-index: 10;
+  padding: desktop-vw(24px) 0;
+
+  .inner {
+    height: 100%;
+    position: relative;
+  }
+
+  .thumb {
+    min-height: desktop-vw(48px);
+    width: desktop-vw(8px);
+    background-color: var(--red);
+    position: absolute;
+    right: desktop-vw(8px);
+    border-radius: desktop-vw(4px);
+    border: desktop-vw(1px) solid var(--black);
+    cursor: grab;
+  }
+}

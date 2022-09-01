@@ -1,0 +1,30 @@
+@use 'sass:map';
+@use 'sass:color';
+
+// css classes exposed globally:
+// --theme-{name}: applies css variables from theme
+
+// config:
+// you must use colors filled in _colors.scss but any other colors could works
+$themes: (
+  'light': (
+    'primary': map.get($colors, 'white'),
+    'secondary': map.get($colors, 'black'),
+    'contrast': map.get($colors, 'red'),
+  ),
+  'dark': (
+    'primary': map.get($colors, 'black'),
+    'secondary': map.get($colors, 'white'),
+    'contrast': map.get($colors, 'red'),
+  ),
+);
+
+// internal process, do not touch
+@each $name, $theme in $themes {
+  .theme-#{$name} {
+    @each $name, $color in $theme {
+      --theme-#{$name}: #{$color};
+      --theme-#{$name}-transparent: #{color.change($color, $alpha: 0)};
+    }
+  }
+}

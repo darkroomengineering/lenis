@@ -1,0 +1,80 @@
+@import './_reset.scss';
+@import './_fonts.scss';
+@import './_colors.scss';
+@import './_easings.scss';
+@import './_functions.scss';
+@import './_layout.scss';
+@import './_utils.scss';
+@import './_font-style.scss';
+@import './_themes.scss';
+@import './_scroll.scss';
+
+:root {
+  --header-height: #{mobile-vw(58px)};
+
+  @include desktop {
+    --header-height: #{desktop-vw(98px)};
+  }
+}
+
+html {
+  font-weight: bolder;
+  font-family: Arial, Helvetica, sans-serif;
+  background-color: var(--white);
+  color: var(--black);
+  scrollbar-width: thin;
+
+  &.nav {
+    overflow: hidden;
+  }
+}
+
+html,
+body {
+  overscroll-behavior: none;
+}
+
+body {
+  min-height: 100vh;
+}
+
+// custom cursor
+// html.has-custom-cursor {
+//   &,
+//   * {
+//     &,
+//     &::before,
+//     &::after {
+//       cursor: none !important;
+//     }
+//   }
+// }
+
+a,
+button,
+input,
+label,
+textarea,
+select {
+  color: inherit;
+  cursor: pointer;
+}
+
+*::selection {
+  background-color: var(--black);
+  color: var(--white);
+}
+
+svg.icon {
+  path[fill],
+  rect[fill],
+  circle[fill] {
+    fill: currentColor;
+  }
+
+  path[stroke],
+  rect[stroke],
+  circle[stroke] {
+    stroke: currentColor;
+  }
+}

@@ -1,0 +1,14 @@
+@import 'styles/_functions';
+
+.layout {
+  background-color: var(--theme-primary);
+  color: var(--theme-secondary);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+
+  .main {
+    // if content is empty, footer will remains sticky to bottom
+    flex-grow: 1;
+  }
+}
