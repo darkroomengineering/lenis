@@ -58,6 +58,10 @@
     "sass": "^1.54.8",
     "stats.js": "^0.17.0"
   },
+  "peerDependencies": {
+    "tiny-emitter": "^2.1.0",
+    "virtual-scroll": "^2.2.1"
+  },
   "pnpm": {
     "overrides": {
       "throttle-debounce": "5.0.0"
