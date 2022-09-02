@@ -93,7 +93,6 @@ const lenis = new Lenis({
 ### Things to consider if you want to add Lenis to your codebase will be listed here.
 
 #### Make sure `scroll-behavior` is set to initial or not set at all (thanks [@thagxt](https://github.com/thagxt))
-
 ```css
 html {
   scroll-behavior: initial;
@@ -106,6 +105,13 @@ html, body{
   width: 100%;
   min-height: 100%;
 }
+```
+
+#### If a children element scroll is blocked, you must stop wheel event propagation ([see this issue](https://github.com/studio-freight/lenis/issues/14))
+```html
+<div onwheel="event.stopPropagation()">
+  // scroll content
+</div>
 ```
 
 <br>
