@@ -36,7 +36,7 @@
     "url": "git+https://github.com/studio-freight/lenis.git"
   },
   "scripts": {
-    "dev": "microbundle watch -i src/lenis.js --format umd --compress --no-sourcemap --no-pkg-main --external none --output ./bundled --name 'Lenis' & npm run dev --prefix ./website",
+    "dev": "microbundle watch -i src/lenis.js --format umd --compress --no-sourcemap --no-pkg-main --external none --output ./bundled --name 'Lenis' & npm run dev:website --prefix ./website",
     "size": "size-limit",
     "clean": "rimraf dist && rimraf bundled",
     "build": "npm run clean && npm run build:light && npm run build:bundle",
