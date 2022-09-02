@@ -10,7 +10,6 @@ specifiers:
   '@radix-ui/react-select': ^1.0.0
   '@size-limit/preset-app': ^8.0.1
   '@studio-freight/hamo': ^0.4.42
-  '@studio-freight/lenis': link:..
   '@studio-freight/tempus': ^0.0.30
   '@svgr/webpack': ^6.3.1
   clsx: ^1.2.1
@@ -41,16 +40,13 @@ specifiers:
   react-use-measure: ^2.1.1
   sass: ^1.54.8
   stats.js: ^0.17.0
-  tiny-emitter: ^2.1.0
   use-dark-mode: ^2.3.1
-  virtual-scroll: ^2.2.1
   zustand: 4.1.1
 
 dependencies:
   '@radix-ui/react-accordion': 1.0.0_biqbaboplfbrettd7655fr4n2y
   '@radix-ui/react-select': 1.0.0_biqbaboplfbrettd7655fr4n2y
   '@studio-freight/hamo': 0.4.42_biqbaboplfbrettd7655fr4n2y
-  '@studio-freight/lenis': link:..
   '@studio-freight/tempus': 0.0.30
   clsx: 1.2.1
   embla-carousel: 7.0.1
@@ -64,9 +60,7 @@ dependencies:
   react-dom: 18.2.0_react@18.2.0
   react-use: 17.4.0_biqbaboplfbrettd7655fr4n2y
   react-use-measure: 2.1.1_biqbaboplfbrettd7655fr4n2y
-  tiny-emitter: 2.1.0
   use-dark-mode: 2.3.1_react@18.2.0
-  virtual-scroll: 2.2.1
   zustand: 4.1.1_react@18.2.0
 
 devDependencies:
@@ -2183,7 +2177,7 @@ packages:
     resolution: {integrity: sha512-9K4zoImiZc3HlIp6AVUDE4CWYx22a+lhSZMYNpbjW04+YF0KWj4pJXnEMjdnFTiQibFFmElcsasJXDbdI/EPhA==}
     dependencies:
       '@types/eslint': 8.4.6
-      '@types/estree': 0.0.51
+      '@types/estree': 1.0.0
     dev: true
 
   /@types/eslint/8.4.6:
@@ -2580,7 +2574,7 @@ packages:
     dependencies:
       call-bind: 1.0.2
       define-properties: 1.1.4
-      es-abstract: 1.20.1
+      es-abstract: 1.20.2
       get-intrinsic: 1.1.2
       is-string: 1.0.7
     dev: true
@@ -2608,7 +2602,7 @@ packages:
     dependencies:
       call-bind: 1.0.2
       define-properties: 1.1.4
-      es-abstract: 1.20.1
+      es-abstract: 1.20.2
       es-shim-unscopables: 1.0.0
     dev: true
 
@@ -2618,7 +2612,7 @@ packages:
     dependencies:
       call-bind: 1.0.2
       define-properties: 1.1.4
-      es-abstract: 1.20.1
+      es-abstract: 1.20.2
       es-shim-unscopables: 1.0.0
     dev: true
 
@@ -2753,10 +2747,10 @@ packages:
     engines: {node: ^6 || ^7 || ^8 || ^9 || ^10 || ^11 || ^12 || >=13.7}
     hasBin: true
     dependencies:
-      caniuse-lite: 1.0.30001387
+      caniuse-lite: 1.0.30001388
       electron-to-chromium: 1.4.240
       node-releases: 2.0.6
-      update-browserslist-db: 1.0.6_browserslist@4.21.3
+      update-browserslist-db: 1.0.7_browserslist@4.21.3
 
   /buffer-crc32/0.2.13:
     resolution: {integrity: sha512-VO9Ht/+p3SN7SKWqcrgEzjGbRSJYTx+Q1pTQC0wrWqHx0vpJraQ6GtHx8tvcg1rlK1byhU5gccxgOgj7B0TDkQ==}
@@ -2800,8 +2794,8 @@ packages:
     engines: {node: '>=10'}
     dev: true
 
-  /caniuse-lite/1.0.30001387:
-    resolution: {integrity: sha512-fKDH0F1KOJvR+mWSOvhj8lVRr/Q/mc5u5nabU2vi1/sgvlSqEsE8dOq0Hy/BqVbDkCYQPRRHB1WRjW6PGB/7PA==}
+  /caniuse-lite/1.0.30001388:
+    resolution: {integrity: sha512-znVbq4OUjqgLxMxoNX2ZeeLR0d7lcDiE5uJ4eUiWdml1J1EkxbnQq6opT9jb9SMfJxB0XA16/ziHwni4u1I3GQ==}
 
   /chalk/1.1.3:
     resolution: {integrity: sha512-U3lRVLMSlsCfjqYPbLyVv11M9CPW4I728d6TCKMAOJueEeB9/8o+eSsMnxPJD+Q+K909sdESg7C+tIkoH6on1A==}
@@ -3258,8 +3252,8 @@ packages:
       stackframe: 1.3.4
     dev: false
 
-  /es-abstract/1.20.1:
-    resolution: {integrity: sha512-WEm2oBhfoI2sImeM4OF2zE2V3BYdSF+KnSi9Sidz51fQHd7+JuF8Xgcj9/0o+OWeIeIS/MiuNnlruQrJf16GQA==}
+  /es-abstract/1.20.2:
+    resolution: {integrity: sha512-XxXQuVNrySBNlEkTYJoDNFe5+s2yIOpzq80sUHEdPdQr0S5nTLz4ZPPPswNIpKseDDUS5yghX1gfLIHQZ1iNuQ==}
     engines: {node: '>= 0.4'}
     dependencies:
       call-bind: 1.0.2
@@ -3866,7 +3860,7 @@ packages:
     dependencies:
       call-bind: 1.0.2
       define-properties: 1.1.4
-      es-abstract: 1.20.1
+      es-abstract: 1.20.2
       functions-have-names: 1.2.3
     dev: true
 
@@ -4697,7 +4691,7 @@ packages:
     dependencies:
       '@next/env': 12.2.5
       '@swc/helpers': 0.4.3
-      caniuse-lite: 1.0.30001387
+      caniuse-lite: 1.0.30001388
       postcss: 8.4.14
       react: 18.2.0
       react-dom: 18.2.0_react@18.2.0
@@ -4777,7 +4771,7 @@ packages:
     dependencies:
       call-bind: 1.0.2
       define-properties: 1.1.4
-      es-abstract: 1.20.1
+      es-abstract: 1.20.2
     dev: true
 
   /object.fromentries/2.0.5:
@@ -4786,14 +4780,14 @@ packages:
     dependencies:
       call-bind: 1.0.2
       define-properties: 1.1.4
-      es-abstract: 1.20.1
+      es-abstract: 1.20.2
     dev: true
 
   /object.hasown/1.1.1:
     resolution: {integrity: sha512-LYLe4tivNQzq4JdaWW6WO3HMZZJWzkkH8fnI6EebWl0VZth2wL2Lovm74ep2/gZzlaTdV62JZHEqHQ2yVn8Q/A==}
     dependencies:
       define-properties: 1.1.4
-      es-abstract: 1.20.1
+      es-abstract: 1.20.2
     dev: true
 
   /object.values/1.1.5:
@@ -4802,7 +4796,7 @@ packages:
     dependencies:
       call-bind: 1.0.2
       define-properties: 1.1.4
-      es-abstract: 1.20.1
+      es-abstract: 1.20.2
     dev: true
 
   /once/1.4.0:
@@ -5570,7 +5564,7 @@ packages:
     dependencies:
       call-bind: 1.0.2
       define-properties: 1.1.4
-      es-abstract: 1.20.1
+      es-abstract: 1.20.2
       get-intrinsic: 1.1.2
       has-symbols: 1.0.3
       internal-slot: 1.0.3
@@ -5583,7 +5577,7 @@ packages:
     dependencies:
       call-bind: 1.0.2
       define-properties: 1.1.4
-      es-abstract: 1.20.1
+      es-abstract: 1.20.2
     dev: true
 
   /string.prototype.trimstart/1.0.5:
@@ -5591,7 +5585,7 @@ packages:
     dependencies:
       call-bind: 1.0.2
       define-properties: 1.1.4
-      es-abstract: 1.20.1
+      es-abstract: 1.20.2
     dev: true
 
   /string_decoder/1.3.0:
@@ -5794,10 +5788,6 @@ packages:
     resolution: {integrity: sha512-w89qg7PI8wAdvX60bMDP+bFoD5Dvhm9oLheFp5O4a2QF0cSBGsBX4qZmadPMvVqlLJBBci+WqGGOAPvcDeNSVg==}
     dev: true
 
-  /tiny-emitter/2.1.0:
-    resolution: {integrity: sha512-NB6Dk1A9xgQPMoGqC5CVXn123gWyte215ONT5Pp5a0yt4nlEoO1ZWeCwpncaekPHXO60i47ihFnZPiRPjRMq4Q==}
-    dev: false
-
   /to-fast-properties/2.0.0:
     resolution: {integrity: sha512-/OaKK0xYrs3DmxRYqL/yDc+FxFUVYhDlXMhRmv3z915w2HF1tnN1omB354j8VUGO/hbRzyD6Y3sA7v7GS/ceog==}
     engines: {node: '>=4'}
@@ -5936,8 +5926,8 @@ packages:
     engines: {node: '>=4'}
     dev: true
 
-  /update-browserslist-db/1.0.6_browserslist@4.21.3:
-    resolution: {integrity: sha512-We7BqM9XFlcW94Op93uW8+2LXvGezs7QA0WY+f1H7RR1q46B06W6hZF6LbmOlpCS1HU22q/6NOGTGW5sCm7NJQ==}
+  /update-browserslist-db/1.0.7_browserslist@4.21.3:
+    resolution: {integrity: sha512-iN/XYesmZ2RmmWAiI4Z5rq0YqSiv0brj9Ce9CfhNE4xIW2h+MFxcgkxIzZ+ShkFPUkjU3gQ+3oypadD3RAMtrg==}
     hasBin: true
     peerDependencies:
       browserslist: '>= 4.21.0'
@@ -6014,12 +6004,6 @@ packages:
   /v8-compile-cache/2.3.0:
     resolution: {integrity: sha512-l8lCEmLcLYZh4nbunNZvQCJc5pv7+RCwa8q/LdUx8u7lsWvPDKmpodJAJNwkAhJC//dFY48KuIEmjtd4RViDrA==}
     dev: true
-
-  /virtual-scroll/2.2.1:
-    resolution: {integrity: sha512-RvjcLxluh7B/6GPzLgQ9d0NYG4yqEguTc3MU7AvxyPVltuo2Cq5RokTL9RKUaZCMJ64in2hus0d03gTtoHp55g==}
-    dependencies:
-      tiny-emitter: 2.1.0
-    dev: false
 
   /vue-eslint-parser/8.3.0_eslint@8.22.0:
     resolution: {integrity: sha512-dzHGG3+sYwSf6zFBa0Gi9ZDshD7+ad14DGOdTLjruRVgZXe2J+DcZ9iUhyR48z5g1PqRa20yt3Njna/veLJL/g==}

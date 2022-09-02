@@ -3,10 +3,10 @@ import {
   useIsTouchDevice,
   useLayoutEffect,
 } from '@studio-freight/hamo'
-import Lenis from '@studio-freight/lenis'
 import cn from 'clsx'
 import { Cursor } from 'components/cursor'
 import { CustomHead } from 'components/custom-head'
+import Lenis from '../../../bundled/lenis'
 // import { Footer } from 'components/footer'
 import { Header } from 'components/header'
 import { Scrollbar } from 'components/scrollbar'

@@ -215,6 +215,7 @@ export default class Lenis extends EventEmitter {
         wrapperOffset =
           this.direction === 'horizontal' ? wrapperRect.left : wrapperRect.top
       }
+
       const rect = node.getBoundingClientRect()
 
       value =

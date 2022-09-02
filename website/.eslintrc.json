@@ -18,13 +18,5 @@
         ]
       }
     ]
-  },
-  "settings": {
-    "import/resolver": {
-      "alias": {
-        "map": [["@studio-freight/lenis", "../../dist/lenis.js"]],
-        "extensions": [".ts", ".js", ".jsx", ".json"]
-      }
-    }
   }
 }

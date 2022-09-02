@@ -19,7 +19,6 @@
     "@radix-ui/react-accordion": "^1.0.0",
     "@radix-ui/react-select": "^1.0.0",
     "@studio-freight/hamo": "^0.4.42",
-    "@studio-freight/lenis": "link:..",
     "@studio-freight/tempus": "^0.0.30",
     "clsx": "^1.2.1",
     "embla-carousel": "7.0.1",
@@ -57,10 +56,6 @@
     "prettier-eslint": "^15.0.1",
     "sass": "^1.54.8",
     "stats.js": "^0.17.0"
-  },
-  "peerDependencies": {
-    "tiny-emitter": "^2.1.0",
-    "virtual-scroll": "^2.2.1"
   },
   "pnpm": {
     "overrides": {

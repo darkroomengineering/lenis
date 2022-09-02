@@ -16,15 +16,15 @@ if (!self.define) {
       })
   )
   self.define = (a, i) => {
-    const t =
+    const c =
       e ||
       ('document' in self ? document.currentScript.src : '') ||
       location.href
-    if (s[t]) return
-    let c = {}
-    const r = (e) => n(e, t),
-      o = { module: { uri: t }, exports: c, require: r }
-    s[t] = Promise.all(a.map((e) => o[e] || r(e))).then((e) => (i(...e), c))
+    if (s[c]) return
+    let t = {}
+    const r = (e) => n(e, c),
+      o = { module: { uri: c }, exports: t, require: r }
+    s[c] = Promise.all(a.map((e) => o[e] || r(e))).then((e) => (i(...e), t))
   }
 }
 define(['./workbox-4d30eff7'], function (e) {
@@ -35,20 +35,28 @@ define(['./workbox-4d30eff7'], function (e) {
     e.precacheAndRoute(
       [
         {
+          url: '/_next/static/ZEucHvN9HUvshi8v8sk9c/_buildManifest.js',
+          revision: '69387dcd34534a7d97733b8c98d77bcf',
+        },
+        {
+          url: '/_next/static/ZEucHvN9HUvshi8v8sk9c/_ssgManifest.js',
+          revision: '5352cb582146311d1540f6075d1f265e',
+        },
+        {
+          url: '/_next/static/chunks/194-ce5f69f9a6e2dc15.js',
+          revision: 'ce5f69f9a6e2dc15',
+        },
+        {
+          url: '/_next/static/chunks/234-ce160b35505ea92c.js',
+          revision: 'ce160b35505ea92c',
+        },
+        {
           url: '/_next/static/chunks/326.5bb9d4924c9fc717.js',
           revision: '5bb9d4924c9fc717',
         },
         {
-          url: '/_next/static/chunks/370-974c85e0f9d7e053.js',
-          revision: '974c85e0f9d7e053',
-        },
-        {
           url: '/_next/static/chunks/502.edb44d6dc58002eb.js',
           revision: 'edb44d6dc58002eb',
-        },
-        {
-          url: '/_next/static/chunks/605-a13b330793ad6bfe.js',
-          revision: 'a13b330793ad6bfe',
         },
         {
           url: '/_next/static/chunks/framework-ba86d075c3365de8.js',
@@ -67,12 +75,12 @@ define(['./workbox-4d30eff7'], function (e) {
           revision: '239f60a629a92dd1',
         },
         {
-          url: '/_next/static/chunks/pages/home-18b94c24c2783ac5.js',
-          revision: '18b94c24c2783ac5',
+          url: '/_next/static/chunks/pages/home-78e06029566b61c5.js',
+          revision: '78e06029566b61c5',
         },
         {
-          url: '/_next/static/chunks/pages/index-575a1865b3fd8ba5.js',
-          revision: '575a1865b3fd8ba5',
+          url: '/_next/static/chunks/pages/index-fe54a7316287cf2d.js',
+          revision: 'fe54a7316287cf2d',
         },
         {
           url: '/_next/static/chunks/polyfills-c67a75d1b6f99dc8.js',
@@ -93,14 +101,6 @@ define(['./workbox-4d30eff7'], function (e) {
         {
           url: '/_next/static/css/fbbd0610535f144e.css',
           revision: 'fbbd0610535f144e',
-        },
-        {
-          url: '/_next/static/g55smwfP6QNP_V1oLWRJ0/_buildManifest.js',
-          revision: '67b1f9ddda16d6a10c235bef0aba0b26',
-        },
-        {
-          url: '/_next/static/g55smwfP6QNP_V1oLWRJ0/_ssgManifest.js',
-          revision: '5352cb582146311d1540f6075d1f265e',
         },
         {
           url: '/android-chrome-192x192.png',
