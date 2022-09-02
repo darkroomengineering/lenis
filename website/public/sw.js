@@ -1,8 +1,8 @@
 if (!self.define) {
   let e,
     s = {}
-  const n = (n, a) => (
-    (n = new URL(n + '.js', a).href),
+  const n = (n, i) => (
+    (n = new URL(n + '.js', i).href),
     s[n] ||
       new Promise((s) => {
         if ('document' in self) {
@@ -15,16 +15,16 @@ if (!self.define) {
         return e
       })
   )
-  self.define = (a, i) => {
-    const c =
+  self.define = (i, a) => {
+    const t =
       e ||
       ('document' in self ? document.currentScript.src : '') ||
       location.href
-    if (s[c]) return
-    let t = {}
-    const r = (e) => n(e, c),
-      o = { module: { uri: c }, exports: t, require: r }
-    s[c] = Promise.all(a.map((e) => o[e] || r(e))).then((e) => (i(...e), t))
+    if (s[t]) return
+    let c = {}
+    const r = (e) => n(e, t),
+      o = { module: { uri: t }, exports: c, require: r }
+    s[t] = Promise.all(i.map((e) => o[e] || r(e))).then((e) => (a(...e), c))
   }
 }
 define(['./workbox-4d30eff7'], function (e) {
@@ -35,20 +35,16 @@ define(['./workbox-4d30eff7'], function (e) {
     e.precacheAndRoute(
       [
         {
-          url: '/_next/static/ZEucHvN9HUvshi8v8sk9c/_buildManifest.js',
-          revision: '69387dcd34534a7d97733b8c98d77bcf',
+          url: '/_next/static/RXE1qZnqTRgpOv8aGTJBG/_buildManifest.js',
+          revision: '0f6af3429e96c0f488cbcd11e4a84ced',
         },
         {
-          url: '/_next/static/ZEucHvN9HUvshi8v8sk9c/_ssgManifest.js',
+          url: '/_next/static/RXE1qZnqTRgpOv8aGTJBG/_ssgManifest.js',
           revision: '5352cb582146311d1540f6075d1f265e',
         },
         {
-          url: '/_next/static/chunks/194-ce5f69f9a6e2dc15.js',
-          revision: 'ce5f69f9a6e2dc15',
-        },
-        {
-          url: '/_next/static/chunks/234-ce160b35505ea92c.js',
-          revision: 'ce160b35505ea92c',
+          url: '/_next/static/chunks/188.6993b57baa27f12e.js',
+          revision: '6993b57baa27f12e',
         },
         {
           url: '/_next/static/chunks/326.5bb9d4924c9fc717.js',
@@ -59,6 +55,18 @@ define(['./workbox-4d30eff7'], function (e) {
           revision: 'edb44d6dc58002eb',
         },
         {
+          url: '/_next/static/chunks/614.dbfe6d81ccb666d7.js',
+          revision: 'dbfe6d81ccb666d7',
+        },
+        {
+          url: '/_next/static/chunks/671-34ba9fdd985e3278.js',
+          revision: '34ba9fdd985e3278',
+        },
+        {
+          url: '/_next/static/chunks/856-28053615a6161962.js',
+          revision: '28053615a6161962',
+        },
+        {
           url: '/_next/static/chunks/framework-ba86d075c3365de8.js',
           revision: 'ba86d075c3365de8',
         },
@@ -67,40 +75,40 @@ define(['./workbox-4d30eff7'], function (e) {
           revision: 'f54931046ffcd8f4',
         },
         {
-          url: '/_next/static/chunks/pages/_app-8c7d0ac2632cf675.js',
-          revision: '8c7d0ac2632cf675',
+          url: '/_next/static/chunks/pages/_app-326a317de87ad85e.js',
+          revision: '326a317de87ad85e',
         },
         {
           url: '/_next/static/chunks/pages/_error-239f60a629a92dd1.js',
           revision: '239f60a629a92dd1',
         },
         {
-          url: '/_next/static/chunks/pages/home-78e06029566b61c5.js',
-          revision: '78e06029566b61c5',
+          url: '/_next/static/chunks/pages/home-8993e747556d49f5.js',
+          revision: '8993e747556d49f5',
         },
         {
-          url: '/_next/static/chunks/pages/index-fe54a7316287cf2d.js',
-          revision: 'fe54a7316287cf2d',
+          url: '/_next/static/chunks/pages/index-7fba21820947906f.js',
+          revision: '7fba21820947906f',
         },
         {
           url: '/_next/static/chunks/polyfills-c67a75d1b6f99dc8.js',
           revision: '837c0df77fd5009c9e46d446188ecfd0',
         },
         {
-          url: '/_next/static/chunks/webpack-cdb023f96e81577d.js',
-          revision: 'cdb023f96e81577d',
+          url: '/_next/static/chunks/webpack-ec07fcec31f3ebe2.js',
+          revision: 'ec07fcec31f3ebe2',
         },
         {
-          url: '/_next/static/css/7129874a6853f8ad.css',
-          revision: '7129874a6853f8ad',
+          url: '/_next/static/css/1363e7b8951a7756.css',
+          revision: '1363e7b8951a7756',
         },
         {
           url: '/_next/static/css/8a233b5df237aa85.css',
           revision: '8a233b5df237aa85',
         },
         {
-          url: '/_next/static/css/fbbd0610535f144e.css',
-          revision: 'fbbd0610535f144e',
+          url: '/_next/static/css/df94ed591972abbb.css',
+          revision: 'df94ed591972abbb',
         },
         {
           url: '/android-chrome-192x192.png',
@@ -123,7 +131,31 @@ define(['./workbox-4d30eff7'], function (e) {
           revision: '763611e9088074fe59b7bd8c1ff22752',
         },
         { url: '/favicon.ico', revision: '2f3cf1385f616e11c488c34579459116' },
-        { url: '/manifest.json', revision: '8edabb281c2a9ef2cea4a726ee1df74a' },
+        {
+          url: '/fonts/Slussen-Bold.woff2',
+          revision: 'e7763140521609dc25ea44f512606bd3',
+        },
+        {
+          url: '/fonts/Slussen-Compressed-Black.woff2',
+          revision: '03544e36539058c093dcd5dd9bb8196c',
+        },
+        {
+          url: '/fonts/Slussen-Expanded-Black.woff2',
+          revision: 'ec68f3582a4274fb58287f7a85173047',
+        },
+        {
+          url: '/fonts/Slussen-Medium.woff2',
+          revision: '58b3bab2301a6332846956924fb2717b',
+        },
+        {
+          url: '/fonts/Slussen-Regular.woff2',
+          revision: '607dbd3e6823789222434856623059de',
+        },
+        {
+          url: '/fonts/Slussen-Semibold.woff2',
+          revision: '7b17a1bc6619610d74bc39355860c796',
+        },
+        { url: '/manifest.json', revision: 'e8b501e9f3b68022ca64737b86338691' },
         {
           url: '/mstile-150x150.png',
           revision: 'bb18012a13596459a921563805ad1368',
@@ -135,7 +167,7 @@ define(['./workbox-4d30eff7'], function (e) {
         },
         {
           url: '/site.webmanifest',
-          revision: '8edabb281c2a9ef2cea4a726ee1df74a',
+          revision: 'e8b501e9f3b68022ca64737b86338691',
         },
         { url: '/sitemap-0.xml', revision: '77888a530e1008437efe82937198a99f' },
         { url: '/sitemap.xml', revision: 'f9be0e6d7fd6188cf1eec816e6c822f4' },
@@ -153,7 +185,7 @@ define(['./workbox-4d30eff7'], function (e) {
               request: e,
               response: s,
               event: n,
-              state: a,
+              state: i,
             }) =>
               s && 'opaqueredirect' === s.type
                 ? new Response(s.body, {

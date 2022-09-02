@@ -1,7 +1,7 @@
 {
-  "name": "Satus",
-  "short_name": "satus",
-  "description": "Our starting point",
+  "name": "Lenis",
+  "short_name": "Lenis Smooth Scroll",
+  "description": "How smooth scroll should be.",
   "icons": [
     {
       "src": "/android-chrome-192x192.png",
@@ -16,8 +16,8 @@
       "purpose": "any"
     }
   ],
-  "theme_color": "#336CFF",
-  "background_color": "#000000",
+  "theme_color": "#ff98a2",
+  "background_color": "#efefef",
   "start_url": "/",
   "scope": ".",
   "display": "standalone",

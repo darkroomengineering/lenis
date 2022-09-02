@@ -3,7 +3,7 @@ User-agent: *
 Allow: /
 
 # Host
-Host: https://example.com
+Host: https://lenis.studiofreight.com
 
 # Sitemaps
-Sitemap: https://example.com/sitemap.xml
+Sitemap: https://lenis.studiofreight.com/sitemap.xml

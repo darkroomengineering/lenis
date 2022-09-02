@@ -18,9 +18,9 @@ $themes: (
     'contrast': map.get($colors, 'pink'),
   ),
   'contrast': (
-    'primary': map.get($colors, 'black'),
-    'secondary': map.get($colors, 'white'),
-    'contrast': map.get($colors, 'pink'),
+    'primary': map.get($colors, 'pink'),
+    'secondary': map.get($colors, 'black'),
+    'contrast': map.get($colors, 'white'),
   ),
 );
 

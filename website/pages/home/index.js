@@ -11,7 +11,14 @@ const GitHub = dynamic(() => import('icons/github.svg'), { ssr: false })
 
 export default function Home() {
   return (
-    <Layout theme="light">
+    <Layout
+      theme="dark"
+      seo={{
+        title: 'Lenis',
+        description:
+          'A new smooth scroll library fresh out of the Studio Freight Darkroom',
+      }}
+    >
       <section className="layout-block">🚧</section>
       <section className={cn('layout-block', s.list)}>
         <h1 className="h2">List Component</h1>

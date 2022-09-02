@@ -5,7 +5,8 @@
   justify-content: space-between;
   border-bottom: 1px solid;
   transition: border-color 0.2s var(--ease-in-out-quad),
-    background-color 0.2s var(--ease-in-out-quad);
+    background-color 0.2s var(--ease-in-out-quad),
+    color 0.2s var(--ease-in-out-quad);
   padding: mobile-vw(16px) 0;
 
   @include mobile {
@@ -69,6 +70,7 @@
   @include hover {
     &:hover {
       background-color: var(--theme-contrast);
+      color: var(--black);
       border-color: transparent;
       .title {
         transform: translateX(desktop-vw(16px));

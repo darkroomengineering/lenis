@@ -10,6 +10,7 @@
   position: relative;
   line-height: 200%;
   font-size: mobile-vw(14px);
+  color: var(--black);
   padding: mobile-vw(10px) mobile-vw(24px);
 
   &.has-icon {
@@ -41,6 +42,7 @@
     }
 
     svg {
+      color: var(--theme-secondary);
       margin: auto;
       width: 50%;
       transition: color 0.2s var(--ease-in-out-quad);
@@ -60,10 +62,10 @@
 
   @include hover {
     &:hover {
-      background-color: var(--theme-primary);
+      background-color: var(--white);
 
       .icon {
-        border-color: var(--theme-primary);
+        border-color: var(--white);
 
         svg {
           color: var(--theme-contrast);
