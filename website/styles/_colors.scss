@@ -3,9 +3,10 @@
 // Each color filled here will create a css variable exposed globally
 
 $colors: (
-  'white': rgb(255, 255, 255),
-  'black': rgb(0, 0, 0),
-  'red': rgb(255, 0, 0),
+  'white': rgb(239, 239, 239),
+  'grey': rgb(176, 176, 176),
+  'black': rgb(14, 14, 14),
+  'pink': rgb(255, 152, 162),
 );
 
 :root {

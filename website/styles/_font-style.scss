@@ -1,0 +1,106 @@
+.h1 {
+  font-weight: 900;
+  letter-spacing: -0.02em;
+  text-transform: uppercase;
+  line-height: 86%;
+  font-size: mobile-vw(56px);
+
+  @include desktop {
+    font-size: desktop-vw(160px);
+    line-height: 85%;
+  }
+}
+
+.h2 {
+  font-weight: 900;
+  letter-spacing: -0.02em;
+  text-transform: uppercase;
+  line-height: 86%;
+  font-size: mobile-vw(56px);
+
+  @include desktop {
+    font-size: desktop-vw(96px);
+    line-height: 83%;
+  }
+}
+
+.h3 {
+  font-stretch: expanded;
+  font-weight: 900;
+  letter-spacing: -0.01em;
+  text-transform: uppercase;
+  line-height: 100%;
+  font-size: mobile-vw(20px);
+
+  @include desktop {
+    letter-spacing: 0.01em;
+    font-size: desktop-vw(52px);
+  }
+}
+
+.h4 {
+  font-stretch: expanded;
+  font-weight: 900;
+  letter-spacing: -0.03em;
+  text-transform: uppercase;
+  line-height: 100%;
+  font-size: mobile-vw(32px);
+
+  @include desktop {
+    font-size: desktop-vw(28px);
+    letter-spacing: -0.01em;
+  }
+}
+
+.p-l {
+  font-weight: 600;
+  line-height: 100%;
+  letter-spacing: -0.03em;
+  font-size: mobile-vw(32px);
+
+  @include desktop {
+    font-size: desktop-vw(64px);
+  }
+}
+
+.p {
+  font-weight: 400;
+  letter-spacing: -0.03em;
+  line-height: 125%;
+  font-size: mobile-vw(20px);
+
+  @include desktop {
+    font-size: desktop-vw(18px);
+    line-height: 133%;
+  }
+
+  &.bold {
+    font-weight: 600;
+    line-height: 125%;
+
+    @include desktop {
+      line-height: 133%;
+    }
+  }
+}
+
+.p-s {
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  text-transform: uppercase;
+  font-size: mobile-vw(14px);
+
+  @include desktop {
+    font-size: desktop-vw(14px);
+    line-height: 114%;
+    line-height: 85%;
+  }
+}
+
+.semi-bold {
+  font-weight: 600;
+}
+
+.bold {
+  font-weight: 700;
+}

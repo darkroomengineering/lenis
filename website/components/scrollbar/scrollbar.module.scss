@@ -8,7 +8,7 @@
   bottom: 0;
   top: 0;
   z-index: 10;
-  padding: desktop-vw(24px) 0;
+  padding: desktop-vw(8px) 0;
 
   .inner {
     height: 100%;
@@ -18,7 +18,7 @@
   .thumb {
     min-height: desktop-vw(48px);
     width: desktop-vw(8px);
-    background-color: var(--red);
+    background-color: var(--pink);
     position: absolute;
     right: desktop-vw(8px);
     border-radius: desktop-vw(4px);
