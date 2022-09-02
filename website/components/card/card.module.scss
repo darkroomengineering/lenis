@@ -4,11 +4,19 @@
   display: flex;
   justify-content: space-between;
   flex-direction: column;
+  color: var(--theme-secondary);
   border: 1px solid;
   aspect-ratio: 1 / 1;
   padding: mobile-vw(24px);
+  width: mobile-vw(343px);
+
+  &.inverted {
+    color: var(--theme-primary);
+    background-color: var(--theme-secondary);
+  }
 
   @include desktop {
+    width: desktop-vw(440px);
     padding: desktop-vw(24px);
   }
 
