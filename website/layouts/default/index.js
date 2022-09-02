@@ -8,6 +8,8 @@ import { Cursor } from 'components/cursor'
 import { CustomHead } from 'components/custom-head'
 import Lenis from '../../../bundled/lenis'
 // import { Footer } from 'components/footer'
+import { PageTransition } from 'components/page-transition'
+
 import { Header } from 'components/header'
 import { Scrollbar } from 'components/scrollbar'
 import { useStore } from 'lib/store'
@@ -92,6 +94,7 @@ export function Layout({
     <>
       <CustomHead {...seo} />
       <div className={cn(`theme-${theme}`, s.layout, className)}>
+        <PageTransition />
         {isTouchDevice === false && <Cursor />}
         {isTouchDevice === false && <Scrollbar />}
         <Header ref={ref} />
