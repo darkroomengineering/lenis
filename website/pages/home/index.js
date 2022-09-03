@@ -176,7 +176,8 @@ export default function Home() {
       </section>
       <section className={cn(s.solution, 'layout-block')}>
         <h2 className={cn(s.first, 'h1')}>
-          so we built <span className="contrast">web scrolling</span>
+          so we built <br />
+          <span className="contrast">web scrolling</span>
         </h2>
         <h2 className={cn(s.second, 'h1')}>As it should be</h2>
 
@@ -186,6 +187,10 @@ export default function Home() {
           </h2>
         </div>
       </section>
+      <section className="layout-block">
+        <p className="h1">🚧 under construction 🚧</p>
+      </section>
+
       {/* <section className={s.enter}> */}
       {/* <Zoom> */}
       {/* </Zoom> */}
