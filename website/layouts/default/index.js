@@ -10,12 +10,11 @@ import Lenis from '../../../bundled/lenis'
 // import { Footer } from 'components/footer'
 import { PageTransition } from 'components/page-transition'
 
-import { Header } from 'components/header'
+// import { Header } from 'components/header'
 import { Scrollbar } from 'components/scrollbar'
 import { useStore } from 'lib/store'
 import { useRouter } from 'next/router'
-import { useState } from 'react'
-import useMeasure from 'react-use-measure'
+// import { useState } from 'react'
 import s from './layout.module.scss'
 
 export function Layout({
@@ -27,7 +26,7 @@ export function Layout({
   const isTouchDevice = useIsTouchDevice()
   const [lenis, setLenis] = useStore((state) => [state.lenis, state.setLenis])
   const router = useRouter()
-  const [ref, { height }] = useMeasure({ debounce: 100 })
+  // const [ref, { height }] = useMeasure({ debounce: 100 })
 
   useLayoutEffect(() => {
     if (isTouchDevice === undefined) return
@@ -41,15 +40,15 @@ export function Layout({
     }
   }, [isTouchDevice])
 
-  const [hash, setHash] = useState()
+  // const [hash, setHash] = useState()
 
-  useLayoutEffect(() => {
-    if (lenis && hash) {
-      // scroll to on hash change
-      const target = document.querySelector(hash)
-      lenis.scrollTo(target, { offset: -1.1 * height })
-    }
-  }, [lenis, hash, height])
+  // useLayoutEffect(() => {
+  //   if (lenis && hash) {
+  //     // scroll to on hash change
+  //     const target = document.querySelector(hash)
+  //     lenis.scrollTo(target, { offset: -1.1 * height })
+  //   }
+  // }, [lenis, hash, height])
 
   useLayoutEffect(() => {
     // update scroll position on page refresh based on hash
@@ -97,7 +96,7 @@ export function Layout({
         <PageTransition />
         {isTouchDevice === false && <Cursor />}
         {isTouchDevice === false && <Scrollbar />}
-        <Header ref={ref} />
+        {/* <Header ref={ref} /> */}
         <main className={s.main}>{children}</main>
         {/* <Footer /> */}
       </div>

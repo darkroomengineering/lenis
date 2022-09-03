@@ -3,22 +3,16 @@ import { clamp, mapRange } from 'lib/maths'
 import { useStore } from 'lib/store'
 import { useEffect, useRef, useState } from 'react'
 import { useWindowSize } from 'react-use'
-import useMeasure from 'react-use-measure'
 import s from './scrollbar.module.scss'
 
 export function Scrollbar({}) {
-  const thumb = useRef()
+  const progressBar = useRef()
   const { width: windowWidth, height: windowHeight } = useWindowSize()
   const lenis = useStore(({ lenis }) => lenis)
-  const [innerMeasureRef, { height: innerHeight }] = useMeasure()
-  const [thumbMeasureRef, { height: thumbHeight }] = useMeasure()
 
   useScroll(({ scroll, limit }) => {
     const progress = scroll / limit
-
-    thumb.current.style.transform = `translate3d(0,${
-      progress * (innerHeight - thumbHeight)
-    }px,0)`
+    progressBar.current.style.transform = `scaleX(${progress})`
   })
 
   const [clicked, setClicked] = useState(false)
@@ -61,18 +55,7 @@ export function Scrollbar({}) {
 
   return (
     <div className={s.scrollbar}>
-      <div ref={innerMeasureRef} className={s.inner}>
-        <div
-          className={s.thumb}
-          ref={(node) => {
-            thumb.current = node
-            thumbMeasureRef(node)
-          }}
-          onPointerDown={() => {
-            setClicked(true)
-          }}
-        />
-      </div>
+      <div ref={progressBar} className={s.inner} />
     </div>
   )
 }

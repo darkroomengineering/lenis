@@ -27,10 +27,10 @@
 .h3 {
   font-stretch: expanded;
   font-weight: 900;
-  letter-spacing: -0.01em;
   text-transform: uppercase;
   line-height: 100%;
   font-size: mobile-vw(20px);
+  letter-spacing: -0.01em;
 
   @include desktop {
     letter-spacing: 0.01em;
@@ -44,7 +44,7 @@
   letter-spacing: -0.03em;
   text-transform: uppercase;
   line-height: 100%;
-  font-size: mobile-vw(32px);
+  font-size: mobile-vw(20px);
 
   @include desktop {
     font-size: desktop-vw(28px);
@@ -67,7 +67,7 @@
   font-weight: 400;
   letter-spacing: -0.03em;
   line-height: 125%;
-  font-size: mobile-vw(20px);
+  font-size: mobile-vw(16px);
 
   @include desktop {
     font-size: desktop-vw(18px);
@@ -93,7 +93,6 @@
   @include desktop {
     font-size: desktop-vw(14px);
     line-height: 114%;
-    line-height: 85%;
   }
 }
 
@@ -103,4 +102,8 @@
 
 .bold {
   font-weight: 700;
+}
+
+.contrast {
+  color: var(--theme-contrast);
 }
