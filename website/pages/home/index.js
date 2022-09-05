@@ -187,7 +187,7 @@ export default function Home() {
           </h2>
         </div>
       </section>
-      <section className="layout-block">
+      <section className={cn('layout-block', s.temp)}>
         <p className="h1">🚧 under construction 🚧</p>
       </section>
 

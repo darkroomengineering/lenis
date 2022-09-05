@@ -276,3 +276,11 @@
     }
   }
 }
+
+.temp {
+  height: 100vh;
+  background-color: var(--black);
+  opacity: 0.95;
+  display: flex;
+  align-items: center;
+}
