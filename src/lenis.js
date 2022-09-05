@@ -1,10 +1,58 @@
 import EventEmitter from 'tiny-emitter'
 import VirtualScroll from 'virtual-scroll'
-import { clamp, lerp } from './maths.js'
+import { version } from '../package.json'
+import { clamp } from './maths.js'
+
+// simple animation tool
+class Animate {
+  to(target, { duration = 1, easing = (t) => t, ...keys } = {}) {
+    this.target = target
+    this.fromKeys = { ...keys }
+    this.toKeys = { ...keys }
+    this.keys = Object.keys({ ...keys })
+
+    // get initial values
+    this.keys.forEach((key) => {
+      this.fromKeys[key] = target[key]
+    })
+
+    this.duration = duration
+    this.easing = easing
+    this.currentTime = 0
+    this.isRunning = true
+  }
+
+  raf(deltaTime) {
+    if (!this.isRunning) return
+
+    this.currentTime = Math.min(
+      this.currentTime + deltaTime * 0.001,
+      this.duration
+    )
+
+    const progress = this.easing(this.progress)
+
+    this.keys.forEach((key) => {
+      const from = this.fromKeys[key]
+      const to = this.toKeys[key]
+      const value = from + (to - from) * progress
+      this.target[key] = value
+    })
+
+    if (progress === 1) {
+      this.isRunning = false
+    }
+  }
+
+  get progress() {
+    return this.currentTime / this.duration
+  }
+}
 
 export default class Lenis extends EventEmitter {
   constructor({
-    lerp = 0.1,
+    duration = 1.2,
+    easing = (t) => (t === 1 ? 1 : 1 - Math.pow(2, -10 * t)), //expo.out
     smooth = true,
     direction = 'vertical',
     wrapper = window,
@@ -12,12 +60,17 @@ export default class Lenis extends EventEmitter {
   } = {}) {
     super()
 
+    window.lenisVersion = version
+
     this.wrapperNode = wrapper
     this.contentNode = content
 
-    this.lerp = lerp
+    this.duration = duration
+    this.easing = easing
     this.smooth = smooth
     this.direction = direction
+
+    this.animate = new Animate()
 
     this.wrapperNode.addEventListener('scroll', this.onScroll)
 
@@ -57,9 +110,10 @@ export default class Lenis extends EventEmitter {
     this.contentObserver.observe(this.contentNode)
 
     //set initial scroll position
-    this.targetScroll = this.scroll = this.wrapperNode[this.scrollProperty]
-
-    this.velocity = 0
+    this.targetScroll =
+      this.scroll =
+      this.lastScroll =
+        this.wrapperNode[this.scrollProperty]
   }
 
   get scrollProperty() {
@@ -131,29 +185,33 @@ export default class Lenis extends EventEmitter {
 
     this.targetScroll -= deltaY
     this.targetScroll = clamp(0, this.targetScroll, this.limit)
+
+    this.scrollTo(this.targetScroll)
   }
 
-  raf() {
+  raf(deltaTime) {
     if (this.stopped || !this.smooth) return
+
     // where smooth scroll happens
+    this.lastScroll = this.scroll
 
-    let lastScroll = this.scroll
+    this.animate.raf(deltaTime)
 
-    // lerp scroll value
-    this.scroll = lerp(this.scroll, this.targetScroll, this.lerp)
+    // fixes velocity when sometimes final native event is not notified
     if (Math.round(this.scroll) === Math.round(this.targetScroll)) {
-      this.scroll = lastScroll = this.targetScroll
+      this.lastScroll = this.targetScroll
     }
 
-    this.velocity = this.scroll - lastScroll
-
     if (this.isScrolling) {
-      // scroll to lerped scroll value
       this.setScroll(this.scroll)
       this.notify()
     }
 
     this.isScrolling = this.scroll !== this.targetScroll
+  }
+
+  get velocity() {
+    return this.scroll - this.lastScroll
   }
 
   setScroll(value) {
@@ -163,12 +221,13 @@ export default class Lenis extends EventEmitter {
   }
 
   onScroll = () => {
-    // if scrolling is false we can estimate user isn't scrolling with wheel (cmd+F, keyboard or whatever). So we must scroll to without any easing
+    // if isScrolling false we can consider user isn't scrolling with wheel (cmd+F, keyboard or whatever). So we must scroll to value immediately
     if (!this.isScrolling || !this.smooth) {
       // where native scroll happens
-      this.targetScroll = this.scroll = this.wrapperNode[this.scrollProperty]
-      // velocity is not reliable in this context
-      this.velocity = 0
+      this.targetScroll =
+        this.scroll =
+        this.lastScroll =
+          this.wrapperNode[this.scrollProperty]
 
       this.notify()
     }
@@ -184,13 +243,21 @@ export default class Lenis extends EventEmitter {
     })
   }
 
-  scrollTo(target, { offset = 0, immediate = false } = {}) {
+  scrollTo(
+    target,
+    {
+      offset = 0,
+      immediate = false,
+      duration = this.duration,
+      easing = this.easing,
+    } = {}
+  ) {
     let value
 
     if (typeof target === 'number') {
       // Number
       value = target
-    } else if (target === 'top') {
+    } else if (target === 'top' || '#top') {
       value = 0
     } else if (target === 'bottom') {
       value = this.limit
@@ -227,11 +294,15 @@ export default class Lenis extends EventEmitter {
     value += offset
 
     this.targetScroll = value
-    this.isScrolling = true
 
     if (!this.smooth || immediate) {
-      this.scroll = value
-      this.setScroll(this.scroll)
+      this.setScroll(this.targetScroll)
+    } else {
+      this.animate.to(this, {
+        duration,
+        easing,
+        scroll: this.targetScroll,
+      })
     }
   }
 }
