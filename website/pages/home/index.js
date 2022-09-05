@@ -1,13 +1,15 @@
+import { useRect } from '@studio-freight/hamo'
 import cn from 'clsx'
 import { Button } from 'components/button'
 import { Card } from 'components/card'
 import { HorizontalSlides } from 'components/horizontal-slides'
 import { Parallax } from 'components/parallax'
-import gsap from 'gsap'
 import { useScroll } from 'hooks/use-scroll'
 import { Layout } from 'layouts/default'
+import { clamp } from 'lib/maths'
 import dynamic from 'next/dynamic'
 import { useRef, useState } from 'react'
+// import { useWindowSize } from 'react-use'
 import s from './home.module.scss'
 
 const SFDR = dynamic(() => import('icons/sfdr.svg'), { ssr: false })
@@ -16,17 +18,23 @@ const GitHub = dynamic(() => import('icons/github.svg'), { ssr: false })
 export default function Home() {
   const [hasScrolled, setHasScrolled] = useState()
   const zoomRef = useRef(null)
+  const [zoomRectRef, zoomRect] = useRect()
+  const [zoomWrapperRectRef, zoomWrapperRect] = useRect()
+  // const { height: windowHeight } = useWindowSize()
 
   useScroll(({ scroll }) => {
     setHasScrolled(scroll > 10)
+    if (!zoomWrapperRect) return
 
-    console.log(scroll / 10000)
+    const start = zoomRect.top - zoomRect.height
+    // const end = zoomWrapperRect.height + windowHeight
 
-    gsap.to(zoomRef.current, {
-      scale: scroll / 10000,
-      ease: 'none',
-      duration: 0,
-    })
+    const progress = clamp(0, window.scrollY - start, 1500)
+
+    console.log('clamp', window.scrollY - start)
+    console.log({ progress })
+
+    zoomRef.current.style.transform = `scale(${progress})`
   })
 
   return (
@@ -174,23 +182,39 @@ export default function Home() {
           </HorizontalSlides>
         </div>
       </section>
-      <section className={cn(s.solution, 'layout-block')}>
-        <h2 className={cn(s.first, 'h1')}>
-          so we built <br />
-          <span className="contrast">web scrolling</span>
-        </h2>
-        <h2 className={cn(s.second, 'h1')}>As it should be</h2>
-
-        <div ref={zoomRef} className={s.enter}>
-          <h2 className={cn(s.zoom, 'h3')}>
+      <section ref={zoomWrapperRectRef} className={s.solution}>
+        <div className={s.inner}>
+          <h2 className={cn(s.first, 'h1')}>
+            so we built <br />
+            <span className="contrast">web scrolling</span>
+          </h2>
+          <h2 className={cn(s.second, 'h1')}>As it should be</h2>
+        </div>
+        <div className={s.enter}>
+          <h2
+            ref={(node) => {
+              zoomRectRef(node)
+              zoomRef.current = node
+            }}
+            className={cn(s.zoom, 'h3')}
+          >
             Enter <br /> Lenis
           </h2>
+        </div>
+      </section>
+      <section className={cn('theme-light', s.featuring)}>
+        <div className=" layout-block">
+          <p className="p-l">
+            Lenis is an <span className="contrast">open-source library</span>{' '}
+            built to standardize scroll experiences and sauce up websites with
+            butter-smooth navigation, all while using the platform and keeping
+            it accessible.
+          </p>
         </div>
       </section>
       <section className={cn('layout-block', s.temp)}>
         <p className="h1">🚧 under construction 🚧</p>
       </section>
-
       {/* <section className={s.enter}> */}
       {/* <Zoom> */}
       {/* </Zoom> */}
