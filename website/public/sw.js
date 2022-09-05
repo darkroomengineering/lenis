@@ -1,8 +1,8 @@
 if (!self.define) {
   let e,
     s = {}
-  const n = (n, i) => (
-    (n = new URL(n + '.js', i).href),
+  const n = (n, c) => (
+    (n = new URL(n + '.js', c).href),
     s[n] ||
       new Promise((s) => {
         if ('document' in self) {
@@ -15,16 +15,16 @@ if (!self.define) {
         return e
       })
   )
-  self.define = (i, a) => {
-    const t =
+  self.define = (c, a) => {
+    const i =
       e ||
       ('document' in self ? document.currentScript.src : '') ||
       location.href
-    if (s[t]) return
-    let c = {}
-    const r = (e) => n(e, t),
-      o = { module: { uri: t }, exports: c, require: r }
-    s[t] = Promise.all(i.map((e) => o[e] || r(e))).then((e) => (a(...e), c))
+    if (s[i]) return
+    let t = {}
+    const r = (e) => n(e, i),
+      f = { module: { uri: i }, exports: t, require: r }
+    s[i] = Promise.all(c.map((e) => f[e] || r(e))).then((e) => (a(...e), t))
   }
 }
 define(['./workbox-4d30eff7'], function (e) {
@@ -35,36 +35,44 @@ define(['./workbox-4d30eff7'], function (e) {
     e.precacheAndRoute(
       [
         {
-          url: '/_next/static/RXE1qZnqTRgpOv8aGTJBG/_buildManifest.js',
-          revision: '0f6af3429e96c0f488cbcd11e4a84ced',
+          url: '/_next/static/6uWkCIVLyeWIeXMrBcVQT/_buildManifest.js',
+          revision: '69f77b5c32e6fdc4cfe4eb4e95bb8224',
         },
         {
-          url: '/_next/static/RXE1qZnqTRgpOv8aGTJBG/_ssgManifest.js',
+          url: '/_next/static/6uWkCIVLyeWIeXMrBcVQT/_ssgManifest.js',
           revision: '5352cb582146311d1540f6075d1f265e',
+        },
+        {
+          url: '/_next/static/chunks/185-c5e7cc8c3a1f9f54.js',
+          revision: 'c5e7cc8c3a1f9f54',
         },
         {
           url: '/_next/static/chunks/188.6993b57baa27f12e.js',
           revision: '6993b57baa27f12e',
         },
         {
-          url: '/_next/static/chunks/326.5bb9d4924c9fc717.js',
-          revision: '5bb9d4924c9fc717',
+          url: '/_next/static/chunks/326.668354b4c4b7520a.js',
+          revision: '668354b4c4b7520a',
         },
         {
-          url: '/_next/static/chunks/502.edb44d6dc58002eb.js',
-          revision: 'edb44d6dc58002eb',
+          url: '/_next/static/chunks/340.aa941cb03bee9540.js',
+          revision: 'aa941cb03bee9540',
+        },
+        {
+          url: '/_next/static/chunks/502.c5da646068a4f924.js',
+          revision: 'c5da646068a4f924',
         },
         {
           url: '/_next/static/chunks/614.dbfe6d81ccb666d7.js',
           revision: 'dbfe6d81ccb666d7',
         },
         {
-          url: '/_next/static/chunks/671-34ba9fdd985e3278.js',
-          revision: '34ba9fdd985e3278',
+          url: '/_next/static/chunks/616-1368b0648ac4f98d.js',
+          revision: '1368b0648ac4f98d',
         },
         {
-          url: '/_next/static/chunks/856-28053615a6161962.js',
-          revision: '28053615a6161962',
+          url: '/_next/static/chunks/89-92ef279386592e5d.js',
+          revision: '92ef279386592e5d',
         },
         {
           url: '/_next/static/chunks/framework-ba86d075c3365de8.js',
@@ -75,40 +83,48 @@ define(['./workbox-4d30eff7'], function (e) {
           revision: 'f54931046ffcd8f4',
         },
         {
-          url: '/_next/static/chunks/pages/_app-326a317de87ad85e.js',
-          revision: '326a317de87ad85e',
+          url: '/_next/static/chunks/pages/_app-8238efdeae4e798f.js',
+          revision: '8238efdeae4e798f',
         },
         {
           url: '/_next/static/chunks/pages/_error-239f60a629a92dd1.js',
           revision: '239f60a629a92dd1',
         },
         {
-          url: '/_next/static/chunks/pages/home-8993e747556d49f5.js',
-          revision: '8993e747556d49f5',
+          url: '/_next/static/chunks/pages/components-b54889fd51ca9420.js',
+          revision: 'b54889fd51ca9420',
         },
         {
-          url: '/_next/static/chunks/pages/index-7fba21820947906f.js',
-          revision: '7fba21820947906f',
+          url: '/_next/static/chunks/pages/home-8e1fb8ec12ad1a61.js',
+          revision: '8e1fb8ec12ad1a61',
+        },
+        {
+          url: '/_next/static/chunks/pages/index-7cac408909b0c6cb.js',
+          revision: '7cac408909b0c6cb',
         },
         {
           url: '/_next/static/chunks/polyfills-c67a75d1b6f99dc8.js',
           revision: '837c0df77fd5009c9e46d446188ecfd0',
         },
         {
-          url: '/_next/static/chunks/webpack-ec07fcec31f3ebe2.js',
-          revision: 'ec07fcec31f3ebe2',
+          url: '/_next/static/chunks/webpack-5bc570fff6b0585f.js',
+          revision: '5bc570fff6b0585f',
         },
         {
-          url: '/_next/static/css/1363e7b8951a7756.css',
-          revision: '1363e7b8951a7756',
+          url: '/_next/static/css/2dc5f8f13818bd17.css',
+          revision: '2dc5f8f13818bd17',
+        },
+        {
+          url: '/_next/static/css/7fd3000a309cf79c.css',
+          revision: '7fd3000a309cf79c',
         },
         {
           url: '/_next/static/css/8a233b5df237aa85.css',
           revision: '8a233b5df237aa85',
         },
         {
-          url: '/_next/static/css/df94ed591972abbb.css',
-          revision: 'df94ed591972abbb',
+          url: '/_next/static/css/f2d0deb473fdd9cf.css',
+          revision: 'f2d0deb473fdd9cf',
         },
         {
           url: '/android-chrome-192x192.png',
@@ -131,6 +147,10 @@ define(['./workbox-4d30eff7'], function (e) {
           revision: '763611e9088074fe59b7bd8c1ff22752',
         },
         { url: '/favicon.ico', revision: '2f3cf1385f616e11c488c34579459116' },
+        {
+          url: '/fonts/Respira-Black.woff2',
+          revision: 'c15b472495f1d6d24f964f7fe869e092',
+        },
         {
           url: '/fonts/Slussen-Bold.woff2',
           revision: 'e7763140521609dc25ea44f512606bd3',
@@ -160,7 +180,7 @@ define(['./workbox-4d30eff7'], function (e) {
           url: '/mstile-150x150.png',
           revision: 'bb18012a13596459a921563805ad1368',
         },
-        { url: '/robots.txt', revision: 'be89723a86ffb628df65dec53ee6dbc6' },
+        { url: '/robots.txt', revision: '5e7cae9db7bf84d12429e5067e7098f0' },
         {
           url: '/safari-pinned-tab.svg',
           revision: 'c57399513e529cad8cfadf6538f2b376',
@@ -169,8 +189,8 @@ define(['./workbox-4d30eff7'], function (e) {
           url: '/site.webmanifest',
           revision: 'e8b501e9f3b68022ca64737b86338691',
         },
-        { url: '/sitemap-0.xml', revision: '77888a530e1008437efe82937198a99f' },
-        { url: '/sitemap.xml', revision: 'f9be0e6d7fd6188cf1eec816e6c822f4' },
+        { url: '/sitemap-0.xml', revision: '354272943d275db8b35c009b3346535f' },
+        { url: '/sitemap.xml', revision: '14d21a3d0435172dda6d8fff244cafe9' },
       ],
       { ignoreURLParametersMatching: [] }
     ),
@@ -185,7 +205,7 @@ define(['./workbox-4d30eff7'], function (e) {
               request: e,
               response: s,
               event: n,
-              state: i,
+              state: c,
             }) =>
               s && 'opaqueredirect' === s.type
                 ? new Response(s.body, {
