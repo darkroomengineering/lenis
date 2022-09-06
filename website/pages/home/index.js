@@ -3,6 +3,7 @@ import cn from 'clsx'
 import { Button } from 'components/button'
 import { Card } from 'components/card'
 import { HorizontalSlides } from 'components/horizontal-slides'
+import { ListItem } from 'components/list-item'
 import { Parallax } from 'components/parallax'
 import { useScroll } from 'hooks/use-scroll'
 import { Layout } from 'layouts/default'
@@ -10,7 +11,6 @@ import { clamp, mapRange } from 'lib/maths'
 import dynamic from 'next/dynamic'
 import { useRef, useState } from 'react'
 import { useWindowSize } from 'react-use'
-// import { useWindowSize } from 'react-use'
 import s from './home.module.scss'
 
 const SFDR = dynamic(() => import('icons/sfdr.svg'), { ssr: false })
@@ -19,16 +19,12 @@ const GitHub = dynamic(() => import('icons/github.svg'), { ssr: false })
 export default function Home() {
   const [hasScrolled, setHasScrolled] = useState()
   const zoomRef = useRef(null)
-  // const [zoomRectRef, zoomRect] = useRect()
   const [zoomWrapperRectRef, zoomWrapperRect] = useRect()
   const { height: windowHeight } = useWindowSize()
 
   useScroll(({ scroll }) => {
     setHasScrolled(scroll > 10)
     if (!zoomWrapperRect.top) return
-
-    // const start = zoomRect.top - zoomRect.height
-    // const end = zoomWrapperRect.height + windowHeight
 
     const start = zoomWrapperRect.top
     const end = start + zoomWrapperRect.height - windowHeight
@@ -37,6 +33,7 @@ export default function Home() {
     const center = 0.6
     const progress1 = clamp(0, mapRange(0, center, progress, 0, 1), 1)
     const progress2 = clamp(0, mapRange(center - 0.055, 1, progress, 0, 1), 1)
+
     zoomRef.current.style.setProperty('--progress1', progress1)
     zoomRef.current.style.setProperty('--progress2', progress2)
 
@@ -45,16 +42,6 @@ export default function Home() {
     } else {
       zoomRef.current.style.removeProperty('background-color')
     }
-    // zoomRef.current.style.setProperty('--progress', progress)
-
-    // const progress
-
-    // const progress = clamp(0, window.scrollY - start, 1500)
-
-    // console.log('clamp', window.scrollY - start)
-    // console.log({ progress })
-
-    // zoomRef.current.style.transform = `scale(${progress})`
   })
 
   return (
@@ -221,10 +208,9 @@ export default function Home() {
             <h2 className={cn(s.second, 'h1 vh')}>As it should be</h2>
           </div>
         </div>
-        {/* <div className={s.enter}></div> */}
       </section>
       <section className={cn('theme-light', s.featuring)}>
-        <div className=" layout-block">
+        <div className="layout-block">
           <p className="p-l">
             Lenis is an <span className="contrast">open-source library</span>{' '}
             built to standardize scroll experiences and sauce up websites with
@@ -233,13 +219,74 @@ export default function Home() {
           </p>
         </div>
       </section>
-      <section className={cn('layout-block', s.temp)}>
-        <p className="h1">🚧 under construction 🚧</p>
+      <section className={cn('theme-light', s['in-use'])}>
+        <div className="layout-grid">
+          <aside className={s.title}>
+            <p className="h3">
+              Lenis <br />
+              <span className="grey">in use</span>
+            </p>
+          </aside>
+          <ul className={s.list}>
+            <li>
+              <ListItem
+                title="Wyre"
+                source="Studio Freight"
+                href="https://sendwyre.com"
+              />
+            </li>
+            <li>
+              <ListItem
+                title="Lunchbox"
+                source="Studio Freight"
+                href="https://lunchbox.io"
+              />
+            </li>
+            <li>
+              <ListItem
+                title="Scroll Animation Ideas for Image Grids"
+                source="Codrops"
+                href="https://tympanus.net/Development/ScrollAnimationsGrid/"
+              />
+            </li>
+            <li>
+              <ListItem
+                title="Easol"
+                source="Studio Freight"
+                href="https://easol.com"
+              />
+            </li>
+            <li>
+              <ListItem
+                title="Repeat"
+                source="Studio Freight"
+                href="https://getrepeat.io"
+              />
+            </li>
+            <li>
+              <ListItem
+                title="How to Animate SVG Shapes on Scroll"
+                source="Codrops"
+                href="https://tympanus.net/codrops/2022/06/08/how-to-animate-svg-shapes-on-scroll"
+              />
+            </li>
+            <li>
+              <ListItem
+                title="Dragonfly"
+                source="Studio Freight"
+                href="https://dragonfly.xyz"
+              />
+            </li>
+            <li>
+              <ListItem
+                title="Yuga Labs"
+                source="Antinomy Studio"
+                href="https://yuga.com"
+              />
+            </li>
+          </ul>
+        </div>
       </section>
-      {/* <section className={s.enter}> */}
-      {/* <Zoom> */}
-      {/* </Zoom> */}
-      {/* </section> */}
     </Layout>
   )
 }

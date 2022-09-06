@@ -265,8 +265,6 @@
       left: 50%;
       transform: translateX(-50%) scaleX(var(--progress2));
       top: 0;
-      // opacity: 0;
-      // transform: translateX(-50%) scaleX(var(--progress));
     }
 
     @include desktop {
@@ -304,47 +302,10 @@
     opacity: calc(var(--progress1) * 2);
     transform-origin: 50% calc(50% - (var(--progress1) * 25%));
     text-align: center;
-
-    // &::after {
-    //   content: '';
-    //   background-color: currentColor;
-    //   position: absolute;
-    //   height: 100%;
-    //   width: 100vw;
-    //   left: 50%;
-    //   top: 0;
-    //   transform: translateX(-50%) scaleX(var(--progress));
-    // }
   }
-
-  // .enter {
-  //   position: sticky;
-  //   top: 0;
-  //   align-self: start;
-  //   display: flex;
-  //   align-items: center;
-  //   justify-content: center;
-  //   overflow: hidden;
-  //   width: 100%;
-
-  //   @include desktop {
-  //     height: 100vh;
-  //   }
-
-  //   .zoom {
-  //     text-align: center;
-  //     transform-origin: 50% 40%;
-
-  //     @include desktop {
-  //       font-size: desktop-vw(8px);
-  //     }
-  //   }
-  // }
 }
 
 .featuring {
-  background-color: var(--theme-primary);
-  color: var(--theme-secondary);
   position: relative;
 
   @include desktop {
@@ -353,9 +314,26 @@
   }
 }
 
+.in-use {
+  @include desktop {
+    padding-bottom: desktop-vw(400px);
+  }
+
+  .title {
+    @include desktop {
+      grid-column: 1 / span 5;
+    }
+  }
+
+  .list {
+    @include desktop {
+      grid-column: 6 / span 7;
+    }
+  }
+}
+
 .temp {
   height: 100vh;
-  background-color: var(--black);
   opacity: 0.95;
   display: flex;
   align-items: center;

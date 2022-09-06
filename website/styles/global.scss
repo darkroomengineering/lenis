@@ -20,8 +20,6 @@
 html {
   font-weight: bolder;
   font-family: var(--font-primary);
-  background-color: var(--white);
-  color: var(--black);
   scrollbar-width: thin;
 
   &.nav {
@@ -49,6 +47,11 @@ body {
 //     }
 //   }
 // }
+
+section {
+  background-color: var(--theme-primary);
+  color: var(--theme-secondary);
+}
 
 a,
 button,
