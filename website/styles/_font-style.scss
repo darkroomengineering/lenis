@@ -120,6 +120,18 @@
   }
 }
 
+.p-xs {
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  text-transform: uppercase;
+  font-size: mobile-vw(12px);
+
+  @include desktop {
+    font-size: desktop-vw(12px);
+    line-height: 113%;
+  }
+}
+
 .semi-bold {
   font-weight: 600;
 }

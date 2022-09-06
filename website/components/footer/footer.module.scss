@@ -25,6 +25,7 @@
     }
 
     .first-line {
+      align-self: start;
       grid-column: 1 / -1;
       @include desktop {
         grid-column: 1 / span 7;
@@ -32,6 +33,7 @@
     }
 
     .shameless-plug {
+      align-self: start;
       display: flex;
       flex-direction: column;
       text-align: end;

@@ -36,34 +36,34 @@ export const Footer = () => {
       <div className={s.bottom}>
         <div className={s.links}>
           <Link
-            className={cn(s.link, 'p-s')}
+            className={cn(s.link, 'p-xs')}
             href="https://twitter.com/studiofreight"
           >
             Twitter
           </Link>
           <Link
-            className={cn(s.link, 'p-s')}
+            className={cn(s.link, 'p-xs')}
             href="https://github.com/studio-freight"
           >
             GitHub
           </Link>
           <Link
-            className={cn(s.link, 'p-s')}
+            className={cn(s.link, 'p-xs')}
             href="https://awwwards.com/studio-freight"
           >
             Awwwards
           </Link>
-          <Link className={cn(s.link, 'p-s')} href="https://studiofreight.com">
+          <Link className={cn(s.link, 'p-xs')} href="https://studiofreight.com">
             Website
           </Link>
           <Link
-            className={cn(s.link, 'p-s')}
+            className={cn(s.link, 'p-xs')}
             href="https://darkroom.studiofreight.com"
           >
             Darkroom
           </Link>
         </div>
-        <p className={cn('p-s', s.tm)}>
+        <p className={cn('p-xs', s.tm)}>
           <span>©</span> {new Date().getFullYear()} Studio Freight
         </p>
       </div>

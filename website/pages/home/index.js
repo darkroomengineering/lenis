@@ -61,7 +61,7 @@ export default function Home() {
           <SFDR className={s.icon} />
           <span className={s.sub}>
             <h2 className={cn('h3', s.subtitle)}>Smooth Scroll</h2>
-            <h2 className={cn('p-s', s.tm)}>
+            <h2 className={cn('p-xs', s.tm)}>
               <span>©</span> {new Date().getFullYear()} Studio Freight
             </h2>
           </span>
