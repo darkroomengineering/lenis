@@ -243,14 +243,51 @@
 }
 
 .solution {
-  display: flex;
-  flex-direction: column;
-  justify-content: space-around;
-  position: sticky;
-  top: 0;
+  position: relative;
+  color: var(--white);
 
   @include desktop {
-    height: 100vh;
+    height: 500vh;
+  }
+
+  .inner {
+    position: sticky;
+    top: 0;
+    margin: 0 auto;
+    overflow: hidden;
+
+    &::after {
+      content: '';
+      background-color: currentColor;
+      position: absolute;
+      height: 100%;
+      width: 100%;
+      left: 50%;
+      transform: translateX(-50%) scaleX(var(--progress2));
+      top: 0;
+    }
+
+    @include desktop {
+      height: 100vh;
+    }
+
+    .zoom {
+      align-self: start;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: desktop-vh(40px);
+      height: 100%;
+      transform: scale(calc(1 + (var(--progress1)) * 3));
+    }
+  }
+
+  .first {
+    transform: translateY(calc(var(--progress1) * -100%));
+  }
+
+  .second {
+    // transform: translateY(calc(var(--progress1) * 100%));
   }
 
   .second {
@@ -259,20 +296,45 @@
 
   .enter {
     position: absolute;
-    width: 100%;
-    height: 100%;
-    top: 0;
-    left: 0;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(calc(1 + (var(--progress1)) * 7.5));
+    opacity: calc(var(--progress1) * 2);
+    transform-origin: 50% calc(50% - (var(--progress1) * 25%));
+    text-align: center;
+  }
+}
 
+.featuring {
+  position: relative;
+
+  @include desktop {
+    padding: desktop-vw(40px) 0;
+    padding-bottom: desktop-vw(2440px);
+  }
+}
+
+.in-use {
+  @include desktop {
+    padding-bottom: desktop-vw(400px);
+  }
+
+  .title {
     @include desktop {
-      margin-bottom: desktop-vw(1000px);
-    }
-
-    .zoom {
-      text-align: center;
+      grid-column: 1 / span 5;
     }
   }
+
+  .list {
+    @include desktop {
+      grid-column: 6 / span 7;
+    }
+  }
+}
+
+.temp {
+  height: 100vh;
+  opacity: 0.95;
+  display: flex;
+  align-items: center;
 }

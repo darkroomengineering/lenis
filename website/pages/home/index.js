@@ -1,13 +1,16 @@
+import { useRect } from '@studio-freight/hamo'
 import cn from 'clsx'
 import { Button } from 'components/button'
 import { Card } from 'components/card'
 import { HorizontalSlides } from 'components/horizontal-slides'
+import { ListItem } from 'components/list-item'
 import { Parallax } from 'components/parallax'
-import gsap from 'gsap'
 import { useScroll } from 'hooks/use-scroll'
 import { Layout } from 'layouts/default'
+import { clamp, mapRange } from 'lib/maths'
 import dynamic from 'next/dynamic'
 import { useRef, useState } from 'react'
+import { useWindowSize } from 'react-use'
 import s from './home.module.scss'
 
 const SFDR = dynamic(() => import('icons/sfdr.svg'), { ssr: false })
@@ -16,15 +19,29 @@ const GitHub = dynamic(() => import('icons/github.svg'), { ssr: false })
 export default function Home() {
   const [hasScrolled, setHasScrolled] = useState()
   const zoomRef = useRef(null)
+  const [zoomWrapperRectRef, zoomWrapperRect] = useRect()
+  const { height: windowHeight } = useWindowSize()
 
   useScroll(({ scroll }) => {
     setHasScrolled(scroll > 10)
+    if (!zoomWrapperRect.top) return
 
-    gsap.to(zoomRef.current, {
-      scale: scroll / 10000,
-      ease: 'none',
-      duration: 0,
-    })
+    const start = zoomWrapperRect.top
+    const end = start + zoomWrapperRect.height - windowHeight
+
+    const progress = clamp(0, mapRange(start, end, scroll, 0, 1), 1)
+    const center = 0.6
+    const progress1 = clamp(0, mapRange(0, center, progress, 0, 1), 1)
+    const progress2 = clamp(0, mapRange(center - 0.055, 1, progress, 0, 1), 1)
+
+    zoomRef.current.style.setProperty('--progress1', progress1)
+    zoomRef.current.style.setProperty('--progress2', progress2)
+
+    if (progress === 1) {
+      zoomRef.current.style.setProperty('background-color', 'currentColor')
+    } else {
+      zoomRef.current.style.removeProperty('background-color')
+    }
   })
 
   return (
@@ -174,27 +191,104 @@ export default function Home() {
           </HorizontalSlides>
         </div>
       </section>
-      <section className={cn(s.solution, 'layout-block')}>
-        <h2 className={cn(s.first, 'h1')}>
-          so we built <br />
-          <span className="contrast">web scrolling</span>
-        </h2>
-        <h2 className={cn(s.second, 'h1')}>As it should be</h2>
-
-        <div ref={zoomRef} className={s.enter}>
-          <h2 className={cn(s.zoom, 'h3')}>
-            Enter <br /> Lenis
-          </h2>
+      <section
+        ref={(node) => {
+          zoomWrapperRectRef(node)
+          zoomRef.current = node
+        }}
+        className={s.solution}
+      >
+        <div className={s.inner}>
+          <div className={s.zoom}>
+            <h2 className={cn(s.first, 'h1 vh')}>
+              so we built <br />
+              <span className="contrast">web scrolling</span>
+            </h2>
+            <h2 className={cn(s.enter, 'h3 vh')}>
+              Enter <br /> Lenis
+            </h2>
+            <h2 className={cn(s.second, 'h1 vh')}>As it should be</h2>
+          </div>
         </div>
       </section>
-      <section className="layout-block">
-        <p className="h1">🚧 under construction 🚧</p>
+      <section className={cn('theme-light', s.featuring)}>
+        <div className="layout-block">
+          <p className="p-l">
+            Lenis is an <span className="contrast">open-source library</span>{' '}
+            built to standardize scroll experiences and sauce up websites with
+            butter-smooth navigation, all while using the platform and keeping
+            it accessible.
+          </p>
+        </div>
       </section>
-
-      {/* <section className={s.enter}> */}
-      {/* <Zoom> */}
-      {/* </Zoom> */}
-      {/* </section> */}
+      <section className={cn('theme-light', s['in-use'])}>
+        <div className="layout-grid">
+          <aside className={s.title}>
+            <p className="h3">
+              Lenis <br />
+              <span className="grey">in use</span>
+            </p>
+          </aside>
+          <ul className={s.list}>
+            <li>
+              <ListItem
+                title="Wyre"
+                source="Studio Freight"
+                href="https://sendwyre.com"
+              />
+            </li>
+            <li>
+              <ListItem
+                title="Lunchbox"
+                source="Studio Freight"
+                href="https://lunchbox.io"
+              />
+            </li>
+            <li>
+              <ListItem
+                title="Scroll Animation Ideas for Image Grids"
+                source="Codrops"
+                href="https://tympanus.net/Development/ScrollAnimationsGrid/"
+              />
+            </li>
+            <li>
+              <ListItem
+                title="Easol"
+                source="Studio Freight"
+                href="https://easol.com"
+              />
+            </li>
+            <li>
+              <ListItem
+                title="Repeat"
+                source="Studio Freight"
+                href="https://getrepeat.io"
+              />
+            </li>
+            <li>
+              <ListItem
+                title="How to Animate SVG Shapes on Scroll"
+                source="Codrops"
+                href="https://tympanus.net/codrops/2022/06/08/how-to-animate-svg-shapes-on-scroll"
+              />
+            </li>
+            <li>
+              <ListItem
+                title="Dragonfly"
+                source="Studio Freight"
+                href="https://dragonfly.xyz"
+              />
+            </li>
+            <li>
+              <ListItem
+                title="Yuga Labs"
+                source="Antinomy Studio"
+                href="https://yuga.com"
+              />
+            </li>
+          </ul>
+        </div>
+      </section>
     </Layout>
   )
 }

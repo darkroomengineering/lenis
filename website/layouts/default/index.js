@@ -6,9 +6,9 @@ import {
 import cn from 'clsx'
 import { Cursor } from 'components/cursor'
 import { CustomHead } from 'components/custom-head'
-import Lenis from '../../../bundled/lenis'
-// import { Footer } from 'components/footer'
+import { Footer } from 'components/footer'
 import { PageTransition } from 'components/page-transition'
+import Lenis from '../../../bundled/lenis'
 
 // import { Header } from 'components/header'
 import { Scrollbar } from 'components/scrollbar'
@@ -117,7 +117,7 @@ export function Layout({
         {isTouchDevice === false && <Scrollbar />}
         {/* <Header ref={ref} /> */}
         <main className={s.main}>{children}</main>
-        {/* <Footer /> */}
+        <Footer />
       </div>
     </>
   )
