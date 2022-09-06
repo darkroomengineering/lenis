@@ -195,7 +195,10 @@ export default class Lenis extends EventEmitter {
     this.scrollTo(this.targetScroll)
   }
 
-  raf(deltaTime) {
+  raf(now) {
+    const deltaTime = now - this.now
+    this.now = now
+
     if (this.stopped || !this.smooth) return
 
     // where smooth scroll happens
