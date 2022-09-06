@@ -14,7 +14,7 @@ import Lenis from '../../../bundled/lenis'
 import { Scrollbar } from 'components/scrollbar'
 import { useStore } from 'lib/store'
 import { useRouter } from 'next/router'
-// import { useState } from 'react'
+import { useState } from 'react'
 import s from './layout.module.scss'
 
 export function Layout({
@@ -31,7 +31,12 @@ export function Layout({
   useLayoutEffect(() => {
     if (isTouchDevice === undefined) return
     window.scrollTo(0, 0)
-    const lenis = new Lenis({ lerp: 0.1, smooth: !isTouchDevice })
+    const lenis = new Lenis({
+      duration: 1.2,
+      easing: (t) => (t === 1 ? 1 : 1 - Math.pow(2, -10 * t)),
+      smooth: !isTouchDevice,
+    })
+    window.lenis = lenis
     setLenis(lenis)
 
     return () => {
@@ -40,15 +45,15 @@ export function Layout({
     }
   }, [isTouchDevice])
 
-  // const [hash, setHash] = useState()
+  const [hash, setHash] = useState()
 
-  // useLayoutEffect(() => {
-  //   if (lenis && hash) {
-  //     // scroll to on hash change
-  //     const target = document.querySelector(hash)
-  //     lenis.scrollTo(target, { offset: -1.1 * height })
-  //   }
-  // }, [lenis, hash, height])
+  useLayoutEffect(() => {
+    if (lenis && hash) {
+      // scroll to on hash change
+      const target = document.querySelector(hash)
+      lenis.scrollTo(target, { offset: 0 })
+    }
+  }, [lenis, hash])
 
   useLayoutEffect(() => {
     // update scroll position on page refresh based on hash
@@ -57,6 +62,20 @@ export function Layout({
       setHash('#' + hash)
     }
   }, [router])
+
+  useLayoutEffect(() => {
+    if (!lenis) return
+
+    function onScroll(e) {
+      console.log(e)
+    }
+
+    lenis.on('scroll', onScroll)
+
+    return () => {
+      lenis.off('scroll', onScroll)
+    }
+  }, [lenis])
 
   useLayoutEffect(() => {
     // catch anchor links clicks
@@ -85,8 +104,8 @@ export function Layout({
     }
   }, [])
 
-  useFrame(() => {
-    lenis?.raf()
+  useFrame((_, deltaTime) => {
+    lenis?.raf(deltaTime)
   }, [])
 
   return (
