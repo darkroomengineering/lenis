@@ -7,6 +7,13 @@ export default function Document() {
       <Head>
         <meta charSet="UTF-8" />
         <link
+          href="/fonts/Respira-Black.woff2"
+          as="font"
+          rel="preload prefetch"
+          type="font/woff2"
+          crossOrigin="anonymous"
+        />
+        <link
           href="/fonts/Slussen-Bold.woff2"
           as="font"
           rel="preload prefetch"
@@ -43,13 +50,6 @@ export default function Document() {
         />
         <link
           href="/fonts/Slussen-Semibold.woff2"
-          as="font"
-          rel="preload prefetch"
-          type="font/woff2"
-          crossOrigin="anonymous"
-        />
-        <link
-          href="/fonts/Respira-Black.woff2"
           as="font"
           rel="preload prefetch"
           type="font/woff2"

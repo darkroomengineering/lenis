@@ -6,7 +6,9 @@
   user-select: none;
   text-transform: uppercase;
   background-color: var(--theme-contrast);
-  transition: background 0.2s var(--ease-in-out-quad);
+  transition-duration: 600ms;
+  transition-timing-function: var(--ease-out-expo);
+  transition-property: background, color, border;
   position: relative;
   line-height: 200%;
   font-size: mobile-vw(14px);
@@ -34,7 +36,7 @@
     aspect-ratio: 1 / 1;
     border: 1px solid var(--theme-contrast);
     transform: translateX(-100%);
-    transition: border-color 0.2s var(--ease-in-out-quad);
+    transition: border-color 600ms var(--ease-out-expo);
     width: mobile-vw(48px);
 
     @include desktop {
@@ -45,7 +47,7 @@
       color: var(--theme-secondary);
       margin: auto;
       width: 50%;
-      transition: color 0.2s var(--ease-in-out-quad);
+      transition: color 600ms var(--ease-out-expo);
     }
   }
 
@@ -62,14 +64,15 @@
 
   @include hover {
     &:hover {
-      background-color: var(--white);
+      background-color: var(--theme-secondary);
+      color: var(--theme-primary);
 
       .icon {
-        border-color: var(--white);
+        border-color: var(--theme-secondary);
 
-        svg {
-          color: var(--theme-contrast);
-        }
+        // svg {
+        //   color: var(--theme-contrast);
+        // }
       }
     }
   }

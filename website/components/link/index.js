@@ -74,6 +74,7 @@ export const Link = forwardRef(
         <a
           {...attributes}
           onClick={(e) => {
+            if (isExternal || isAnchor) return
             if (!noTransition(href)) {
               e.preventDefault()
               setTriggerTransition(href)
