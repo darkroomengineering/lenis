@@ -244,6 +244,7 @@
 
 .solution {
   position: relative;
+  color: var(--white);
 
   @include desktop {
     height: 500vh;
@@ -252,15 +253,34 @@
   .inner {
     position: sticky;
     top: 0;
-    width: var(--layout-width);
     margin: 0 auto;
-    align-self: start;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-around;
+    overflow: hidden;
+
+    &::after {
+      content: '';
+      background-color: currentColor;
+      position: absolute;
+      height: 100%;
+      width: 100%;
+      left: 50%;
+      transform: translateX(-50%) scaleX(var(--progress2));
+      top: 0;
+      // opacity: 0;
+      // transform: translateX(-50%) scaleX(var(--progress));
+    }
 
     @include desktop {
       height: 100vh;
+    }
+
+    .zoom {
+      align-self: start;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: desktop-vw(40px);
+      height: 100%;
+      transform: scale(calc(1 + (var(--progress1)) * 3));
     }
   }
 
@@ -269,28 +289,48 @@
   }
 
   .enter {
-    position: sticky;
-    top: 0;
-    align-self: start;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    overflow: hidden;
-    width: 100%;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(calc(1 + (var(--progress1)) * 7.5));
+    opacity: calc(var(--progress1) * 2);
+    transform-origin: 50% calc(50% - (var(--progress1) * 25%));
 
-    @include desktop {
-      height: 100vh;
-    }
-
-    .zoom {
-      text-align: center;
-      transform-origin: 50% 40%;
-
-      @include desktop {
-        font-size: desktop-vw(8px);
-      }
-    }
+    // &::after {
+    //   content: '';
+    //   background-color: currentColor;
+    //   position: absolute;
+    //   height: 100%;
+    //   width: 100vw;
+    //   left: 50%;
+    //   top: 0;
+    //   transform: translateX(-50%) scaleX(var(--progress));
+    // }
   }
+
+  // .enter {
+  //   position: sticky;
+  //   top: 0;
+  //   align-self: start;
+  //   display: flex;
+  //   align-items: center;
+  //   justify-content: center;
+  //   overflow: hidden;
+  //   width: 100%;
+
+  //   @include desktop {
+  //     height: 100vh;
+  //   }
+
+  //   .zoom {
+  //     text-align: center;
+  //     transform-origin: 50% 40%;
+
+  //     @include desktop {
+  //       font-size: desktop-vw(8px);
+  //     }
+  //   }
+  // }
 }
 
 .featuring {

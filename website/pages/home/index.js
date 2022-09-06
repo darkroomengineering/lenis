@@ -6,9 +6,10 @@ import { HorizontalSlides } from 'components/horizontal-slides'
 import { Parallax } from 'components/parallax'
 import { useScroll } from 'hooks/use-scroll'
 import { Layout } from 'layouts/default'
-import { clamp } from 'lib/maths'
+import { clamp, mapRange } from 'lib/maths'
 import dynamic from 'next/dynamic'
 import { useRef, useState } from 'react'
+import { useWindowSize } from 'react-use'
 // import { useWindowSize } from 'react-use'
 import s from './home.module.scss'
 
@@ -18,23 +19,42 @@ const GitHub = dynamic(() => import('icons/github.svg'), { ssr: false })
 export default function Home() {
   const [hasScrolled, setHasScrolled] = useState()
   const zoomRef = useRef(null)
-  const [zoomRectRef, zoomRect] = useRect()
+  // const [zoomRectRef, zoomRect] = useRect()
   const [zoomWrapperRectRef, zoomWrapperRect] = useRect()
-  // const { height: windowHeight } = useWindowSize()
+  const { height: windowHeight } = useWindowSize()
 
   useScroll(({ scroll }) => {
     setHasScrolled(scroll > 10)
-    if (!zoomWrapperRect) return
+    if (!zoomWrapperRect.top) return
 
-    const start = zoomRect.top - zoomRect.height
+    // const start = zoomRect.top - zoomRect.height
     // const end = zoomWrapperRect.height + windowHeight
 
-    const progress = clamp(0, window.scrollY - start, 1500)
+    const start = zoomWrapperRect.top
+    const end = start + zoomWrapperRect.height - windowHeight
 
-    console.log('clamp', window.scrollY - start)
-    console.log({ progress })
+    const progress = clamp(0, mapRange(start, end, scroll, 0, 1), 1)
+    const center = 0.6
+    const progress1 = clamp(0, mapRange(0, center, progress, 0, 1), 1)
+    const progress2 = clamp(0, mapRange(center - 0.055, 1, progress, 0, 1), 1)
+    zoomRef.current.style.setProperty('--progress1', progress1)
+    zoomRef.current.style.setProperty('--progress2', progress2)
 
-    zoomRef.current.style.transform = `scale(${progress})`
+    if (progress === 1) {
+      zoomRef.current.style.setProperty('background-color', 'currentColor')
+    } else {
+      zoomRef.current.style.removeProperty('background-color')
+    }
+    // zoomRef.current.style.setProperty('--progress', progress)
+
+    // const progress
+
+    // const progress = clamp(0, window.scrollY - start, 1500)
+
+    // console.log('clamp', window.scrollY - start)
+    // console.log({ progress })
+
+    // zoomRef.current.style.transform = `scale(${progress})`
   })
 
   return (
@@ -182,25 +202,26 @@ export default function Home() {
           </HorizontalSlides>
         </div>
       </section>
-      <section ref={zoomWrapperRectRef} className={s.solution}>
+      <section
+        ref={(node) => {
+          zoomWrapperRectRef(node)
+          zoomRef.current = node
+        }}
+        className={s.solution}
+      >
         <div className={s.inner}>
-          <h2 className={cn(s.first, 'h1')}>
-            so we built <br />
-            <span className="contrast">web scrolling</span>
-          </h2>
-          <h2 className={cn(s.second, 'h1')}>As it should be</h2>
+          <div className={s.zoom}>
+            <h2 className={cn(s.first, 'h1')}>
+              so we built <br />
+              <span className="contrast">web scrolling</span>
+            </h2>
+            <h2 className={cn(s.enter, 'h3')}>
+              Enter <br /> Lenis
+            </h2>
+            <h2 className={cn(s.second, 'h1')}>As it should be</h2>
+          </div>
         </div>
-        <div className={s.enter}>
-          <h2
-            ref={(node) => {
-              zoomRectRef(node)
-              zoomRef.current = node
-            }}
-            className={cn(s.zoom, 'h3')}
-          >
-            Enter <br /> Lenis
-          </h2>
-        </div>
+        {/* <div className={s.enter}></div> */}
       </section>
       <section className={cn('theme-light', s.featuring)}>
         <div className=" layout-block">
