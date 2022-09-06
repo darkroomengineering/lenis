@@ -60,7 +60,7 @@ export const Link = forwardRef(
     }
 
     const noTransition = (href) => {
-      // Add hrefs that use page transition
+      // Add hrefs that don't use page transition
       const urlsTransition = ['gsap']
       return !!urlsTransition.find((url) => href.includes(url))
     }
