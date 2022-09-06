@@ -4,12 +4,13 @@
   background-color: var(--theme-primary);
   color: var(--theme-secondary);
   padding: mobile-vw(20px) 0;
-  height: 100vh;
+  height: 90vh;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
 
   @include desktop {
+    height: 100vh;
     padding: desktop-vw(40px) 0;
   }
 
@@ -99,7 +100,7 @@
       @include mobile {
         .link:not(:last-child) {
           display: block;
-          margin-bottom: mobile-vw(32px);
+          margin-bottom: mobile-vw(16px);
         }
       }
     }
