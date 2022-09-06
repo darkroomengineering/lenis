@@ -272,9 +272,13 @@
       display: flex;
       flex-direction: column;
       justify-content: space-between;
-      padding: desktop-vh(40px);
       height: 100%;
       transform: scale(calc(1 + (var(--progress1)) * 3));
+      padding: mobile-vh(16px);
+
+      @include desktop {
+        padding: desktop-vh(40px);
+      }
     }
   }
 
@@ -308,6 +312,8 @@
 }
 
 .in-use {
+  padding-bottom: mobile-vw(160px);
+
   @include desktop {
     padding-bottom: desktop-vw(400px);
   }
