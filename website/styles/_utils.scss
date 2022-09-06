@@ -32,24 +32,24 @@
 
 .hide-on-desktop {
   @include desktop {
-    display: none;
+    display: none !important;
   }
 }
 
 .hide-on-mobile {
   @include mobile {
-    display: none;
+    display: none !important;
   }
 }
 
 html:not(.has-scroll-smooth) {
   .hide-on-native-scroll {
-    display: none;
+    display: none !important;
   }
 }
 
 html.has-scroll-smooth {
   .hide-on-smooth-scroll {
-    display: none;
+    display: none !important;
   }
 }

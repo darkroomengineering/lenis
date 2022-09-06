@@ -20,14 +20,21 @@
     padding-bottom: mobile-vw(20px);
     align-items: center;
 
+    @include mobile {
+      display: flex;
+      flex-direction: column;
+    }
+
     @include desktop {
       padding-bottom: desktop-vw(40px);
     }
 
     .first-line {
-      align-self: start;
-      grid-column: 1 / -1;
+      margin: auto 0;
+
       @include desktop {
+        margin: 0;
+        align-self: start;
         grid-column: 1 / span 7;
       }
     }
@@ -36,11 +43,9 @@
       align-self: start;
       display: flex;
       flex-direction: column;
-      text-align: end;
-      display: none;
 
       @include desktop {
-        display: block;
+        text-align: end;
         grid-column: 9 / span 4;
       }
 
@@ -54,35 +59,33 @@
     }
 
     .cta {
-      grid-column: 1 / -1;
-
-      @include desktop {
-        position: absolute;
-        left: 0;
-        bottom: desktop-vw(40px);
-      }
+      // this CTA is only rendered on desktop
+      position: absolute;
+      left: 0;
+      bottom: desktop-vw(40px);
     }
 
     .last-line {
+      // this line is only rendered on desktop
       text-align: end;
       align-self: end;
-      grid-column: 1 / -1;
-
-      @include desktop {
-        grid-column: 2 / -1;
-      }
+      grid-column: 2 / -1;
     }
   }
 
   .bottom {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
     width: var(--layout-width);
     margin: 0 auto;
 
     @include mobile {
-      flex-direction: column;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+    }
+
+    @include desktop {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
     }
 
     .links {
@@ -94,7 +97,7 @@
       }
 
       @include mobile {
-        .link {
+        .link:not(:last-child) {
           display: block;
           margin-bottom: mobile-vw(32px);
         }
@@ -102,9 +105,20 @@
     }
 
     .tm {
+      @include mobile {
+        text-align: end;
+        align-self: end;
+      }
+
       span {
         vertical-align: text-top;
       }
+    }
+
+    .cta {
+      // this CTA is only rendered on mobile
+      grid-column: 1 / -1;
+      margin-top: mobile-vw(24px);
     }
   }
 }

@@ -3,7 +3,7 @@ import { Link } from 'components/link'
 import dynamic from 'next/dynamic'
 import s from './button.module.scss'
 
-const Arrow = dynamic(() => import('icons/arrow-diagonal.svg'), { ssr: false })
+const Arrow = dynamic(() => import('icons/arrow-buttons.svg'), { ssr: false })
 
 export const Button = ({
   icon,
