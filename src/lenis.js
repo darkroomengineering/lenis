@@ -179,7 +179,7 @@ export default class Lenis extends EventEmitter {
   }
 
   onVirtualScroll = ({ deltaY, originalEvent: e }) => {
-    if (e.ctrlKey) return
+    if (e.ctrlKey || !this.smooth) return
 
     if (this.stopped) {
       e.preventDefault()
