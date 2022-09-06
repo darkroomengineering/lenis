@@ -15,6 +15,7 @@ import { useWindowSize } from 'react-use'
 import s from './home.module.scss'
 
 const SFDR = dynamic(() => import('icons/sfdr.svg'), { ssr: false })
+const Lenis = dynamic(() => import('icons/lenis.svg'), { ssr: false })
 const GitHub = dynamic(() => import('icons/github.svg'), { ssr: false })
 
 export default function Home() {
@@ -56,12 +57,12 @@ export default function Home() {
     >
       <section className={s.hero}>
         <div className="layout-grid">
-          <h1 className={s.title}>Lenis</h1>
+          <Lenis className={s.title} />
           <SFDR className={s.icon} />
           <span className={s.sub}>
             <h2 className={cn('h3', s.subtitle)}>Smooth Scroll</h2>
             <h2 className={cn('p-s', s.tm)}>
-              <span>©</span> {new Date().getFullYear()} sTUDIO FREIGHT
+              <span>©</span> {new Date().getFullYear()} Studio Freight
             </h2>
           </span>
         </div>
@@ -78,10 +79,10 @@ export default function Home() {
               scroll <br /> to explore
             </p>
           </div>
-          <p className={cn(s.description, 'p-s')}>
+          <h1 className={cn(s.description, 'p-s')}>
             A new smooth scroll library <br /> fresh out of the <br /> Studio
             Freight Darkroom
-          </p>
+          </h1>
           <Button
             className={s.cta}
             arrow

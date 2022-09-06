@@ -14,17 +14,11 @@
 
   .title {
     grid-column: 1 / -1;
-    font-family: 'Respira';
-    text-transform: uppercase;
-    letter-spacing: -0.03em;
-    line-height: 85%;
-    color: var(--theme-contrast);
-    font-size: mobile-vw(94px);
     margin-top: mobile-vw(30px);
+    width: var(--layout-width);
 
     @include desktop {
-      font-size: desktop-vw(376px);
-      margin-top: desktop-vw(56px);
+      margin-top: desktop-vw(30px);
     }
   }
 
