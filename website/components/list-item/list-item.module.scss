@@ -41,7 +41,7 @@
 
     .arrow {
       aspect-ratio: 1 / 1;
-      margin-left: mobile-vw(24px);
+      margin-left: auto;
       width: mobile-vw(19px);
 
       @include desktop {

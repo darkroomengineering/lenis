@@ -8,6 +8,10 @@
       display: inline-flex;
     }
 
+    @include mobile {
+      width: mobile-vw(375px);
+    }
+
     @include desktop {
       position: sticky;
       --height: min(

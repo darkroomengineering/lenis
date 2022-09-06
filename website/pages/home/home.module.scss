@@ -239,6 +239,7 @@
 .solution {
   position: relative;
   color: var(--white);
+  height: 500vh;
 
   @include desktop {
     height: 500vh;
@@ -249,6 +250,7 @@
     top: 0;
     margin: 0 auto;
     overflow: hidden;
+    height: 100vh;
 
     &::after {
       content: '';
@@ -281,10 +283,6 @@
   }
 
   .second {
-    // transform: translateY(calc(var(--progress1) * 100%));
-  }
-
-  .second {
     text-align: end;
   }
 
@@ -301,6 +299,7 @@
 
 .featuring {
   position: relative;
+  padding-bottom: mobile-vw(160px);
 
   @include desktop {
     padding: desktop-vw(40px) 0;
@@ -314,12 +313,15 @@
   }
 
   .title {
+    grid-column: 1 / -1;
     @include desktop {
       grid-column: 1 / span 5;
     }
   }
 
   .list {
+    grid-column: 1 / -1;
+
     @include desktop {
       grid-column: 6 / span 7;
     }

@@ -18,20 +18,29 @@
     height: 100%;
     width: 100%;
     padding-bottom: mobile-vw(20px);
+    align-items: center;
 
     @include desktop {
       padding-bottom: desktop-vw(40px);
     }
 
     .first-line {
-      grid-column: 1 / span 7;
+      grid-column: 1 / -1;
+      @include desktop {
+        grid-column: 1 / span 7;
+      }
     }
 
     .shameless-plug {
-      grid-column: 9 / span 4;
       display: flex;
       flex-direction: column;
       text-align: end;
+      display: none;
+
+      @include desktop {
+        display: block;
+        grid-column: 9 / span 4;
+      }
 
       p:first-child {
         margin-bottom: mobile-vw(8px);
@@ -43,19 +52,23 @@
     }
 
     .cta {
-      position: absolute;
-      left: 0;
-      bottom: mobile-vw(20px);
+      grid-column: 1 / -1;
 
       @include desktop {
+        position: absolute;
+        left: 0;
         bottom: desktop-vw(40px);
       }
     }
 
     .last-line {
       text-align: end;
-      grid-column: 2 / -1;
       align-self: end;
+      grid-column: 1 / -1;
+
+      @include desktop {
+        grid-column: 2 / -1;
+      }
     }
   }
 
@@ -66,12 +79,22 @@
     width: var(--layout-width);
     margin: 0 auto;
 
-    .links {
-      .link:not(:first-child) {
-        margin-left: mobile-vw(20px);
+    @include mobile {
+      flex-direction: column;
+    }
 
-        @include desktop {
+    .links {
+      @include desktop {
+        .link:not(:first-child) {
+          margin: 0;
           margin-left: desktop-vw(32px);
+        }
+      }
+
+      @include mobile {
+        .link {
+          display: block;
+          margin-bottom: mobile-vw(32px);
         }
       }
     }

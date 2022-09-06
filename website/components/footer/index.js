@@ -21,7 +21,8 @@ export const Footer = () => {
           </p>
         </div>
         <p className={cn(s['last-line'], 'h1')}>
-          & open to features, <br /> forks or prs &nbsp;
+          & open to <span className="hide-on-desktop">&nbsp;</span> features,{' '}
+          <br /> forks or prs &nbsp;
         </p>
         <Button
           className={s.cta}
