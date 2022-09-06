@@ -48,7 +48,7 @@ export default function Home() {
     <Layout
       theme="dark"
       seo={{
-        title: 'Lenis',
+        title: 'Lenis – Get smooth or die trying',
         description:
           'A new smooth scroll library fresh out of the Studio Freight Darkroom',
       }}

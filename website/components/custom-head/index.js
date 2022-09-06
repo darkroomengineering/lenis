@@ -6,7 +6,9 @@ export function CustomHead({ title = '', description, image, keywords }) {
     <>
       <NextHead>
         <meta httpEquiv="x-ua-compatible" content="ie=edge" />
-
+        <meta httpEquiv="x-dns-prefetch-control" content="off" />
+        <meta httpEquiv="Window-Target" content="_value" />
+        <title>{title}</title>
         <meta
           name="robots"
           content={
@@ -31,8 +33,6 @@ export function CustomHead({ title = '', description, image, keywords }) {
         <meta name="author" content="Studio Freight" />
         <meta name="referrer" content="no-referrer" />
         <meta name="format-detection" content="telephone=no" />
-        <meta httpEquiv="x-dns-prefetch-control" content="off" />
-        <meta httpEquiv="Window-Target" content="_value" />
         <meta name="geo.region" content="US" />
 
         {/* START FAVICON */}
@@ -55,13 +55,11 @@ export function CustomHead({ title = '', description, image, keywords }) {
           href="/favicon-16x16.png"
         />
         <link rel="manifest" href="/site.webmanifest" />
-        <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#336cff" />
-        <meta name="msapplication-TileColor" content="#336cff" />
-        <meta name="theme-color" content="#336CFF" />
+        <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#ff98a2" />
+        <meta name="msapplication-TileColor" content="#000000" />
+        <meta name="theme-color" content="#ffffff" />
         <link rel="icon" href="/favicon.ico" />
         {/* END FAVICON */}
-
-        <title>{title}</title>
       </NextHead>
       <NextSeo
         title={title}
@@ -73,7 +71,7 @@ export function CustomHead({ title = '', description, image, keywords }) {
           locale: 'en_US',
           images: [
             {
-              url: image ? image.url : 'https://website.com/og-image.jpg',
+              url: image ? image.url : 'https://lenis.studiofreight.com/og.jpg',
               width: image ? image.width : 1200,
               height: image ? image.height : 630,
               alt: title,
