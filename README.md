@@ -39,7 +39,8 @@ Basic setup
 import Lenis from '@studio-freight/lenis'
 
 const lenis = new Lenis({
-  lerp: 0.1,
+  duration: 1.2,
+  easing: (t) => (t === 1 ? 1 : 1 - Math.pow(2, -10 * t)), // https://easings.net/
   smooth: true,
   direction: 'vertical',
 })
@@ -60,9 +61,11 @@ requestAnimationFrame(raf)
 <br/>
 
 Using custom scroll container
+
 ```js
 const lenis = new Lenis({
-  lerp: 0.1,
+  duration: 1.2,
+  easing: (t) => (t === 1 ? 1 : 1 - Math.pow(2, -10 * t)), // https://easings.net/
   smooth: true,
   direction: 'vertical',
   wrapper: NodeElement, // element that has overflow
@@ -75,7 +78,7 @@ const lenis = new Lenis({
 ## Methods
 
 - `raf()` : must be called every frame for internal function.
-- `scrollTo(target, {offset})` : scroll to a target.
+- `scrollTo(target, {offset, immediate, duration, easing})` : scroll to a target.
   - `target` : can be `Number`, `NodeElement` or `String` (CSS selector).
   - `offset` : (Number) equivalent to [scroll-padding-top](https://developer.mozilla.org/en-US/docs/Web/CSS/scroll-padding-top).
 - `on(id, callback)` : execute a function on event.
@@ -93,6 +96,7 @@ const lenis = new Lenis({
 ### Things to consider if you want to add Lenis to your codebase will be listed here.
 
 #### Make sure `scroll-behavior` is set to initial or not set at all (thanks [@thagxt](https://github.com/thagxt))
+
 ```css
 html {
   scroll-behavior: initial;
@@ -100,18 +104,19 @@ html {
 ```
 
 #### Keep html and body elements default sized ([see this issue](https://github.com/studio-freight/lenis/issues/10))
+
 ```css
-html, body{
+html,
+body {
   width: 100%;
   min-height: 100%;
 }
 ```
 
 #### If a children element scroll is blocked, you must stop wheel event propagation ([see this issue](https://github.com/studio-freight/lenis/issues/14))
+
 ```html
-<div onwheel="event.stopPropagation()">
-  // scroll content
-</div>
+<div onwheel="event.stopPropagation()">// scroll content</div>
 ```
 
 <br>
