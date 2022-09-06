@@ -19,6 +19,10 @@
     margin-left: mobile-vw(48px);
   }
 
+  @include mobile {
+    justify-content: center;
+  }
+
   @include desktop {
     font-size: desktop-vw(14px);
     letter-spacing: -0.01em;
@@ -69,10 +73,6 @@
 
       .icon {
         border-color: var(--theme-secondary);
-
-        // svg {
-        //   color: var(--theme-contrast);
-        // }
       }
     }
   }
