@@ -9,6 +9,14 @@
     font-size: desktop-vw(160px);
     line-height: 85%;
   }
+
+  &.vh {
+    font-size: mobile-vh(56px);
+
+    @include desktop {
+      font-size: desktop-vh(160px);
+    }
+  }
 }
 
 .h2 {
@@ -21,6 +29,14 @@
   @include desktop {
     font-size: desktop-vw(96px);
     line-height: 83%;
+  }
+
+  &.vh {
+    font-size: mobile-vh(56px);
+
+    @include desktop {
+      font-size: desktop-vh(96px);
+    }
   }
 }
 
@@ -35,6 +51,14 @@
   @include desktop {
     letter-spacing: 0.01em;
     font-size: desktop-vw(52px);
+  }
+
+  &.vh {
+    font-size: mobile-vh(20px);
+
+    @include desktop {
+      font-size: desktop-vh(52px);
+    }
   }
 }
 
