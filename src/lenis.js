@@ -60,6 +60,12 @@ export default class Lenis extends EventEmitter {
   } = {}) {
     super()
 
+    if (arguments[0].lerp !== undefined) {
+      console.warn(
+        'Lenis: lerp option is deprecated, you must use duration and easing options instead. See documentation https://github.com/studio-freight/lenis'
+      )
+    }
+
     window.lenisVersion = version
 
     this.wrapperNode = wrapper
