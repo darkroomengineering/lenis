@@ -145,7 +145,7 @@
   margin-bottom: mobile-vw(160px);
 
   @include desktop {
-    margin-bottom: desktop-vw(320px);
+    margin-bottom: desktop-vw(400px);
   }
 
   .sticky {
@@ -153,10 +153,10 @@
 
     @include desktop {
       position: sticky;
+      top: 33%;
       align-self: start;
       border-left: 4px solid var(--theme-contrast);
       grid-column: 3 / span 4;
-      top: desktop-vw(64px);
       padding: desktop-vw(24px) desktop-vw(32px);
     }
   }

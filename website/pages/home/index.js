@@ -3,6 +3,7 @@ import cn from 'clsx'
 import { Button } from 'components/button'
 import { Card } from 'components/card'
 import { HorizontalSlides } from 'components/horizontal-slides'
+import { Link } from 'components/link'
 import { ListItem } from 'components/list-item'
 import { Parallax } from 'components/parallax'
 import { useScroll } from 'hooks/use-scroll'
@@ -153,10 +154,22 @@ export default function Home() {
             <Parallax speed={0.5}>
               <p className="p">
                 We have to give props to libraries like{' '}
-                <span className="contrast">Locomotive Scroll</span> and{' '}
-                <span className="contrast">GSAP SmoothScroller</span>. They’re
-                well built and well documented – and we’ve used them a lot. But
-                they still have issues that keep them from being bulletproof.
+                <Link
+                  className="contrast semi-bold"
+                  href="https://github.com/locomotivemtl/locomotive-scroll"
+                >
+                  Locomotive Scroll
+                </Link>{' '}
+                and{' '}
+                <Link
+                  className="contrast semi-bold"
+                  href="https://greensock.com/docs/v3/Plugins/ScrollSmoother"
+                >
+                  GSAP ScrollSmoother
+                </Link>
+                . They’re well built and well documented – and we’ve used them a
+                lot. But they still have issues that keep them from being
+                bulletproof.
               </p>
             </Parallax>
           </div>
@@ -214,7 +227,13 @@ export default function Home() {
       <section className={cn('theme-light', s.featuring)}>
         <div className="layout-block">
           <p className="p-l">
-            Lenis is an <span className="contrast">open-source library</span>{' '}
+            Lenis is an{' '}
+            <Link
+              className="contrast semi-bold"
+              href="https://github.com/studio-freight/lenis"
+            >
+              open-source library
+            </Link>{' '}
             built to standardize scroll experiences and sauce up websites with
             butter-smooth navigation, all while using the platform and keeping
             it accessible.

@@ -14,11 +14,15 @@
     position: absolute;
     transform: translate(-50%, -50%);
     border-radius: 100%;
+    border: mobile-vw(2px) solid var(--pink);
     width: 40px;
     height: 40px;
-    border: 1px solid var(--pink);
     opacity: 0.4;
     transition: transform 600ms var(--ease-out-expo);
+
+    @include desktop {
+      border: desktop-vw(2px) solid var(--pink);
+    }
 
     &.pointer {
       transform: translate(-50%, -50%) scale(0.5);
