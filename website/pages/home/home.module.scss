@@ -234,7 +234,7 @@
 
         &:first-child {
           @include desktop {
-            margin-left: calc((var(--layout-columns-gap) * 2) + columns(2));
+            margin-left: calc((var(--layout-columns-gap) * 4) + columns(5));
           }
         }
       }
