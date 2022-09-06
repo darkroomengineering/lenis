@@ -26,8 +26,8 @@ export default function Home() {
     setHasScrolled(scroll > 10)
     if (!zoomWrapperRect.top) return
 
-    const start = zoomWrapperRect.top
-    const end = start + zoomWrapperRect.height - windowHeight
+    const start = zoomWrapperRect.top + windowHeight * 0.5
+    const end = zoomWrapperRect.top + zoomWrapperRect.height - windowHeight
 
     const progress = clamp(0, mapRange(start, end, scroll, 0, 1), 1)
     const center = 0.6

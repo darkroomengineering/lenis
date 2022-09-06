@@ -31,7 +31,7 @@ export const HorizontalSlides = ({ children }) => {
 
     gsap.to(cards, {
       x: -x,
-      stagger: 0.025,
+      stagger: 0.033,
       ease: 'none',
       duration: 0,
     })

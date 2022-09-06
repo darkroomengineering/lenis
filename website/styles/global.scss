@@ -64,8 +64,8 @@ select {
 }
 
 *::selection {
-  background-color: var(--black);
-  color: var(--white);
+  background-color: var(--theme-secondary);
+  color: var(--theme-primary);
 }
 
 svg.icon {
