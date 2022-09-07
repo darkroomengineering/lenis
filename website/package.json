@@ -34,7 +34,12 @@
     "react-use": "^17.4.0",
     "react-use-measure": "^2.1.1",
     "use-dark-mode": "^2.3.1",
-    "zustand": "4.1.1"
+    "zustand": "4.1.1",
+    "@react-three/drei": "^9.28.3",
+    "@react-three/fiber": "^8.7.2",
+    "glslify-loader": "^2.0.0",
+    "raw-loader": "^4.0.2",
+    "three": "^0.144.0"
   },
   "devDependencies": {
     "@builder.io/partytown": "^0.7.0",
