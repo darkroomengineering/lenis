@@ -27,11 +27,6 @@
     "vite": "^3.1.0"
   },
   "dependencies": {
-    "@react-three/drei": "^9.28.3",
-    "@react-three/fiber": "^8.7.2",
-    "glslify-loader": "^2.0.0",
-    "raw-loader": "^4.0.2",
-    "three": "^0.144.0",
     "tiny-emitter": "^2.1.0",
     "virtual-scroll": "^2.2.1"
   },
