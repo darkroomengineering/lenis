@@ -66,8 +66,9 @@ export function Layout({
   useLayoutEffect(() => {
     if (!lenis) return
 
+    // eslint-disable-next-line no-unused-vars
     function onScroll(e) {
-      console.log(e)
+      // console.log(e)
     }
 
     lenis.on('scroll', onScroll)

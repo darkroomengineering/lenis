@@ -1,3 +1,4 @@
+import { useGLTF } from '@react-three/drei'
 import { Canvas, useFrame, useThree } from '@react-three/fiber'
 import { useFrame as useRaf } from '@studio-freight/hamo'
 import { useScroll } from 'hooks/use-scroll'
@@ -123,6 +124,23 @@ function Particles({
   )
 }
 
+export function Hand(props) {
+  const { nodes } = useGLTF('/models/hand.glb')
+
+  return (
+    <group {...props} dispose={null}>
+      <mesh
+        receiveShadow
+        geometry={nodes.Idle.geometry}
+        material={nodes.Idle.material}
+        position={[9, 17, -15]}
+        rotation={[-2, 0.5, 2]}
+        scale={[25, 25, 25]}
+      />
+    </group>
+  )
+}
+
 function Content() {
   const { viewport } = useThree()
 
@@ -137,7 +155,7 @@ function Content() {
         scale={500}
       />
       <mesh scale={[100, 100, 100]}>
-        <boxGeometry />
+        <Hand />
         <meshNormalMaterial />
       </mesh>
     </>
