@@ -6,6 +6,7 @@ import { HorizontalSlides } from 'components/horizontal-slides'
 import { Link } from 'components/link'
 import { ListItem } from 'components/list-item'
 import { Parallax } from 'components/parallax'
+// import { WebGL } from 'components/webgl'
 import { useScroll } from 'hooks/use-scroll'
 import { Layout } from 'layouts/default'
 import { clamp, mapRange } from 'lib/maths'
@@ -14,9 +15,14 @@ import { useRef, useState } from 'react'
 import { useWindowSize } from 'react-use'
 import s from './home.module.scss'
 
-const SFDR = dynamic(() => import('icons/sfdr.svg'), { ssr: false })
+const SFDR = dynamic(() => import('icons/sfdr.svg'))
 const Lenis = dynamic(() => import('icons/lenis.svg'), { ssr: false })
 const GitHub = dynamic(() => import('icons/github.svg'), { ssr: false })
+
+const WebGL = dynamic(
+  () => import('components/webgl').then(({ WebGL }) => WebGL),
+  { ssr: false }
+)
 
 export default function Home() {
   const [hasScrolled, setHasScrolled] = useState()
@@ -54,7 +60,12 @@ export default function Home() {
         description:
           'A new smooth scroll library fresh out of the Studio Freight Darkroom',
       }}
+      className={s.home}
     >
+      <div className={s.canvas}>
+        <WebGL />
+      </div>
+
       <section className={s.hero}>
         <div className="layout-grid">
           <Lenis className={s.title} />

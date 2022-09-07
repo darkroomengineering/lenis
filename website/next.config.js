@@ -101,6 +101,11 @@ const nextConfig = {
       }
     )
 
+    config.module.rules.push({
+      test: /\.(glsl|vs|fs|vert|frag)$/,
+      use: ['raw-loader', 'glslify-loader'],
+    })
+
     config.plugins.push(new DuplicatePackageCheckerPlugin())
 
     return config

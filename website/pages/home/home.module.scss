@@ -1,5 +1,19 @@
 @import 'styles/_functions';
 
+.home main {
+  > *:not(.canvas) {
+    position: relative;
+  }
+}
+
+.canvas {
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+}
+
 .hero {
   display: flex;
   flex-direction: column;
@@ -238,6 +252,7 @@
 
 .solution {
   position: relative;
+
   color: var(--white);
   height: 500vh;
 
@@ -304,6 +319,8 @@
 .featuring {
   position: relative;
   padding-bottom: mobile-vw(160px);
+  background-color: var(--theme-primary);
+  color: var(--theme-secondary);
 
   @include desktop {
     padding: desktop-vw(40px) 0;
@@ -313,6 +330,8 @@
 
 .in-use {
   padding-bottom: mobile-vw(160px);
+  background-color: var(--theme-primary);
+  color: var(--theme-secondary);
 
   @include desktop {
     padding-bottom: desktop-vw(400px);
