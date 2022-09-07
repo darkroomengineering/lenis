@@ -77,7 +77,9 @@ function Particles({
         value: 0,
       },
       uColor: {
-        value: new Color('rgb(255, 152, 162)'),
+        // value: new Color('rgb(255, 152, 162)'),
+        value: new Color('rgb(255, 207, 206)'),
+        // value: new Color('rgb(255, 236, 234)'),
       },
       uScroll: {
         value: 0,
