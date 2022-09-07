@@ -1,4 +1,5 @@
 import { useMediaQuery, useRect } from '@studio-freight/hamo'
+import { Image } from 'components/image'
 import gsap from 'gsap'
 import { useScroll } from 'hooks/use-scroll'
 import { clamp } from 'lib/maths'
@@ -58,6 +59,9 @@ export const HorizontalSlides = ({ children }) => {
       ref={wrapperRectRef}
       style={elementRect && { height: elementRect.width + 'px' }}
     >
+      <div className={s['tmp-img']}>
+        <Image width={100} height={100} src="/tmp/1.jpg" alt="noise" />
+      </div>
       <div className={s.inner}>
         {isMobile === false ? (
           <div
