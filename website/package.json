@@ -17,6 +17,11 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@react-three/drei": "^9.28.3",
+    "@react-three/fiber": "^8.7.2",
+    "glslify-loader": "^2.0.0",
+    "raw-loader": "^4.0.2",
+    "three": "^0.144.0",
     "@radix-ui/react-accordion": "^1.0.0",
     "@radix-ui/react-select": "^1.0.0",
     "@studio-freight/hamo": "^0.4.42",
