@@ -9,6 +9,8 @@
   aspect-ratio: 1 / 1;
   padding: mobile-vw(24px);
   width: mobile-vw(343px);
+  background-color: rgba(0, 0, 0, 0.15);
+  backdrop-filter: blur(5px);
 
   &.inverted {
     color: var(--theme-primary);
