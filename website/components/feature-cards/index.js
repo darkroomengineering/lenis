@@ -57,6 +57,13 @@ export const FeatureCards = () => {
   return (
     <div ref={setRef} className={s.features}>
       <div className={cn('layout-block-inner', s.sticky)}>
+        <aside className={s.title}>
+          <p className="h3">
+            Lenis brings
+            <br />
+            <span className="grey">the heat</span>
+          </p>
+        </aside>
         <div>
           {cards.map((card, index) => (
             <SingleCard
@@ -73,20 +80,6 @@ export const FeatureCards = () => {
 }
 
 const SingleCard = ({ text, number, current }) => {
-  // useScroll(
-  //   ({ scroll }) => {
-  //     const start = rect.top - windowHeight
-  //     const end = start + windowHeight / 2 + rect.height / 2
-
-  //     const progress = clamp(0, mapRange(start, end, scroll, 0, 1), 1)
-  //     el.current.style.setProperty('--progress', progress)
-
-  //     // const progress = start
-  //     // setInView(scroll > rect.top - windowHeight / 2)
-  //   },
-  //   [rect]
-  // )
-
   return (
     <div className={cn(s.card, current && s.reset)}>
       <Card background="rgba(239, 239, 239, 0.8)" number={number} text={text} />
