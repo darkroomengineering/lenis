@@ -21,8 +21,14 @@ export const Button = ({
       style={style}
     >
       {icon && <span className={s.icon}>{icon}</span>}
-      {children}
-      {arrow && <Arrow className={s.arrow} />}
+      <span className={s.text}>
+        <span className={s.visible}>
+          {children} {arrow && <Arrow className={s.arrow} />}
+        </span>
+        <span aria-hidden="true" className={s.hidden}>
+          {children} {arrow && <Arrow className={s.arrow} />}
+        </span>
+      </span>
     </Link>
   ) : (
     <button
@@ -31,8 +37,14 @@ export const Button = ({
       onClick={onClick}
     >
       {icon && <span className={s.icon}>{icon}</span>}
-      {children}
-      {arrow && <Arrow className={s.arrow} />}
+      <span className={s.text}>
+        <span className={s.visible}>
+          {children} {arrow && <Arrow className={s.arrow} />}
+        </span>
+        <span aria-hidden="true" className={s.hidden}>
+          {children} {arrow && <Arrow className={s.arrow} />}
+        </span>
+      </span>
     </button>
   )
 }

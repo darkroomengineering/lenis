@@ -1,47 +1,83 @@
 @import 'styles/_functions';
 
 .button {
-  display: flex;
+  display: grid;
+  grid-template-columns: desktop-vw(48px) 1fr;
   align-items: center;
+  justify-content: space-between;
   user-select: none;
   text-transform: uppercase;
-  background-color: var(--theme-contrast);
-  transition-duration: 600ms;
-  transition-timing-function: var(--ease-out-expo);
-  transition-property: background, color, border;
   position: relative;
   line-height: 200%;
   font-size: mobile-vw(14px);
   color: var(--black);
-  padding: mobile-vw(10px) mobile-vw(24px);
-
-  &.has-icon {
-    margin-left: mobile-vw(48px);
-  }
-
-  @include mobile {
-    justify-content: center;
-  }
+  overflow: hidden;
 
   @include desktop {
     font-size: desktop-vw(14px);
     letter-spacing: -0.01em;
-    padding: desktop-vw(10px) desktop-vw(24px);
+  }
 
-    &.has-icon {
-      margin-left: desktop-vw(48px);
+  .text {
+    position: relative;
+    z-index: 10;
+    margin-left: mobile-vw(24px);
+
+    @include desktop {
+      margin-left: desktop-vw(24px);
     }
+
+    .visible {
+      display: block;
+      position: relative;
+      transition: transform 600ms var(--ease-out-expo),
+        opacity 600ms var(--ease-out-expo);
+    }
+
+    .hidden {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 100%;
+      transform: translateY(30%);
+      opacity: 0;
+      transition: transform 600ms var(--ease-out-expo),
+        opacity 400ms var(--ease-out-expo);
+
+      .arrow {
+        transform: translate(-50%, 50%);
+      }
+    }
+  }
+
+  &::after,
+  &::before {
+    position: absolute;
+    left: 0;
+    top: 0;
+    content: '';
+    width: 100%;
+    height: 100%;
+  }
+
+  &:before {
+    background-color: var(--theme-contrast);
+  }
+
+  &:after {
+    transform: translateY(100%);
+    background-color: var(--theme-secondary);
+    z-index: 0;
+    transition: transform 600ms var(--ease-out-expo);
   }
 
   .icon {
     display: flex;
-    position: absolute;
-    left: 0;
     aspect-ratio: 1 / 1;
-    border: 1px solid var(--theme-contrast);
-    transform: translateX(-100%);
+    padding: 1px;
     transition: border-color 600ms var(--ease-out-expo);
     width: mobile-vw(48px);
+    z-index: 10;
 
     @include desktop {
       width: desktop-vw(48px);
@@ -50,29 +86,63 @@
     svg {
       color: var(--theme-secondary);
       margin: auto;
-      width: 50%;
       transition: color 600ms var(--ease-out-expo);
+      background-color: var(--theme-primary);
+
+      @include desktop {
+        padding: desktop-vw(12px);
+      }
     }
   }
 
   .arrow {
+    position: relative;
+    z-index: 10;
     aspect-ratio: 1 / 1;
     width: mobile-vw(10px);
     margin-left: mobile-vw(16px);
+    margin-right: mobile-vw(25px);
+    transition: transform 600ms var(--ease-out-expo);
 
     @include desktop {
       width: desktop-vw(10px);
       margin-left: desktop-vw(16px);
+      margin-right: desktop-vw(25px);
     }
   }
 
   @include hover {
     &:hover {
-      background-color: var(--theme-secondary);
       color: var(--theme-primary);
 
+      &::after {
+        transform: translateY(0);
+      }
+
+      .text {
+        .visible {
+          transform: translateY(-100%);
+          opacity: 0;
+
+          .arrow {
+            transform: translate(50%, -50%);
+          }
+        }
+
+        .hidden {
+          transform: translateY(0%);
+          opacity: 1;
+
+          .arrow {
+            transform: translate(0, 0);
+          }
+        }
+      }
+
       .icon {
-        border-color: var(--theme-secondary);
+        svg {
+          color: var(--theme-contrast);
+        }
       }
     }
   }
