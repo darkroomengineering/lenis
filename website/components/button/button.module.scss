@@ -32,14 +32,18 @@
       position: relative;
       transition: transform 600ms var(--ease-out-expo),
         opacity 600ms var(--ease-out-expo);
+      transform: scaleY(1);
+      transform-origin: bottom;
     }
 
     .hidden {
+      transform-origin: top;
       position: absolute;
       left: 0;
       top: 0;
       width: 100%;
-      transform: translateY(30%);
+      // transform: translateY(30%);
+      transform: scaleY(0);
       opacity: 0;
       transition: transform 600ms var(--ease-out-expo),
         opacity 400ms var(--ease-out-expo);
@@ -65,10 +69,11 @@
   }
 
   &:after {
-    transform: translateY(100%);
+    transform: scaleY(0);
     background-color: var(--theme-secondary);
     z-index: 0;
     transition: transform 600ms var(--ease-out-expo);
+    transform-origin: top;
   }
 
   .icon {
@@ -116,13 +121,16 @@
       color: var(--theme-primary);
 
       &::after {
-        transform: translateY(0);
+        transform: scaleY(1);
+        transform-origin: bottom;
       }
 
       .text {
         .visible {
-          transform: translateY(-100%);
+          // transform: translateY(-100%);
+          transform: scaleY(0);
           opacity: 0;
+          transform-origin: top;
 
           .arrow {
             transform: translate(50%, -50%);
@@ -130,7 +138,9 @@
         }
 
         .hidden {
-          transform: translateY(0%);
+          // transform: translateY(0%);
+          transform: scaleY(1);
+          transform-origin: bottom;
           opacity: 1;
 
           .arrow {
