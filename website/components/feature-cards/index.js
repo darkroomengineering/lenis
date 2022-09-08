@@ -73,17 +73,6 @@ export const FeatureCards = () => {
 }
 
 const SingleCard = ({ text, number, current }) => {
-  // const { setRef, inView } = useIsVisible({
-  //   threshold: 1,
-  //   // rootMargin: '50px',
-  //   once: true,
-  // })
-
-  // const [setRef, rect] = useRect()
-  // const [inView, setInView] = useState()
-  // const { height: windowHeight } = useWindowSize()
-  // const el = useRef()
-
   // useScroll(
   //   ({ scroll }) => {
   //     const start = rect.top - windowHeight
