@@ -18,12 +18,13 @@
     content: '';
     position: absolute;
     top: 0;
-    left: 0;
-    height: 100vh;
-    width: 100vw;
-    // background: radial-gradient(var(--pink), var(--pink-transparent) 80%);
-    background: linear-gradient(to top, var(--pink), var(--pink-transparent));
-    transform: translateY(75%);
+    left: 50%;
+    height: 100vw;
+    width: 200vw;
+    background: radial-gradient(var(--pink), var(--pink-transparent) 70%);
+    // background: linear-gradient(to top, var(--pink), var(--pink-transparent));
+    transform: translateX(-50%) translateY(50vh);
+    opacity: 0.5;
   }
 }
 
