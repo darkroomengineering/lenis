@@ -73,7 +73,9 @@ export default function Home() {
 
   useEffect(() => {
     const top = cardsRect.top - windowHeight / 2
-    addThreshold({ id: 'cards', value: top })
+    addThreshold({ id: 'cards-start', value: top })
+    addThreshold({ id: 'cards-end', value: top + cardsRect.height })
+    addThreshold({ id: 'end', value: top + cardsRect.height + windowHeight })
   }, [cardsRect])
 
   return (

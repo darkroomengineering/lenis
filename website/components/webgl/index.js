@@ -169,6 +169,24 @@ const steps = [
       MathUtils.degToRad(-45),
     ],
   },
+  {
+    position: [-0.8, -0.6, 0],
+    scale: 0.05,
+    rotation: [
+      MathUtils.degToRad(-90),
+      MathUtils.degToRad(-45),
+      MathUtils.degToRad(-45),
+    ],
+  },
+  {
+    position: [-1.6, -0.6, 0],
+    scale: 0.05,
+    rotation: [
+      MathUtils.degToRad(-90),
+      MathUtils.degToRad(-45),
+      MathUtils.degToRad(-45),
+    ],
+  },
 ]
 
 // const thresholds = [0, 1000, 2000, 3000, 4000, 5000]
@@ -206,7 +224,7 @@ export function Arm() {
     []
   )
 
-  const [{ lightsColor, light1, light2 }] = useControls(
+  const [{ lightsColor, light1, light2, ambientColor }] = useControls(
     'lights',
     () => ({
       light1: {
@@ -218,6 +236,7 @@ export function Arm() {
         value: [300, -100, 150],
       },
       lightsColor: '#FF98A2',
+      ambientColor: '#0E0E0E',
     }),
     []
   )
@@ -290,12 +309,13 @@ export function Arm() {
 
   return (
     <>
+      <ambientLight args={[new Color(ambientColor)]} />
       <group position={light1}>
         {/* <mesh scale={25}>
           <boxGeometry />
           <meshBasicMaterial color={'red'} />
         </mesh> */}
-        <directionalLight args={[new Color(lightsColor), 0.5]} />
+        <directionalLight args={[new Color(lightsColor), 1]} />
       </group>
       <group position={light2}>
         {/* <mesh scale={25}>
