@@ -264,7 +264,7 @@ export default function Home() {
         </div>
       </section>
       <section className={cn('theme-light', s.featuring)}>
-        <div className="layout-block">
+        <div className={cn('layout-block', s.intro)}>
           <p className="p-l">
             Lenis is an{' '}
             <Link

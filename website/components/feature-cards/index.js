@@ -43,7 +43,8 @@ export const FeatureCards = () => {
 
 const SingleCard = ({ text, number }) => {
   const { setRef, inView } = useIsVisible({
-    threshold: 0.5,
+    threshold: 1,
+    // rootMargin: '50px',
     once: true,
   })
 

@@ -325,7 +325,15 @@
 
   @include desktop {
     padding: desktop-vw(40px) 0;
-    padding-bottom: desktop-vw(2440px);
+    padding-bottom: desktop-vw(440px);
+  }
+
+  .intro {
+    padding-bottom: mobile-vw(160px);
+
+    @include desktop {
+      padding-bottom: desktop-vw(440px);
+    }
   }
 }
 

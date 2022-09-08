@@ -5,7 +5,7 @@
   overflow: hidden;
 
   @include desktop {
-    min-height: desktop-vw(1200px);
+    min-height: desktop-vw(1210px);
     margin-bottom: desktop-vw(320px);
   }
 
@@ -16,11 +16,14 @@
       &:nth-child(#{$i + 1}) {
         top: desktop-vw($i * 96px);
         left: desktop-vw($i * 115px);
+        > div {
+          transition-delay: ($i + 1) * 0.2s;
+        }
       }
     }
 
     > div {
-      transition: transform 1s var(--ease-in-out-quad);
+      transition: transform 0.8s var(--ease-in-out-quad);
       transform: translate(500%, 500%);
     }
 
