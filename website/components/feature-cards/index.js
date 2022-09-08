@@ -45,12 +45,6 @@ export const FeatureCards = () => {
 }
 
 const SingleCard = ({ text, number }) => {
-  // const { setRef, inView } = useIsVisible({
-  //   threshold: 1,
-  //   // rootMargin: '50px',
-  //   once: true,
-  // })
-
   const [setRef, rect] = useRect()
   const [inView, setInView] = useState()
   const { height: windowHeight } = useWindowSize()
