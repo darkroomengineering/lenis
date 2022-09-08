@@ -27,6 +27,7 @@
     "vite": "^3.1.0"
   },
   "dependencies": {
+    "leva": "^0.9.31",
     "tiny-emitter": "^2.1.0",
     "virtual-scroll": "^2.2.1"
   },

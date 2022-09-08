@@ -2,6 +2,7 @@ import { useGLTF } from '@react-three/drei'
 import { Canvas, useFrame, useThree } from '@react-three/fiber'
 import { useFrame as useRaf } from '@studio-freight/hamo'
 import { useScroll } from 'hooks/use-scroll'
+import { useControls } from 'leva'
 import { mapRange } from 'lib/maths'
 import { useStore } from 'lib/store'
 import { Suspense, useEffect, useMemo, useRef } from 'react'
@@ -174,18 +175,49 @@ const steps = [
 export function Arm() {
   const { scene } = useGLTF('/models/arm.glb')
 
+  const material = useMemo(
+    () =>
+      new MeshStandardMaterial({
+        color: new Color('rgb(255, 152, 162)'),
+        metalness: 1,
+        roughness: 0.4,
+        wireframe: true,
+      }),
+    []
+  )
+
+  const [{ color, roughness, metalness, wireframe }] = useControls(
+    () => ({
+      color: '#FF98A2',
+      roughness: {
+        min: 0,
+        value: 0.4,
+        max: 1,
+      },
+      metalness: {
+        min: 0,
+        value: 1,
+        max: 1,
+      },
+      wireframe: false,
+    }),
+    []
+  )
+
   useEffect(() => {
-    const material = new MeshStandardMaterial({
-      color: new Color('rgb(255, 152, 162)'),
-      metalness: 1,
-      roughness: 0.4,
-    })
+    material.color = new Color(color)
+    material.roughness = roughness
+    material.metalness = metalness
+    material.wireframe = wireframe
+  }, [color, roughness, metalness, wireframe, material])
+
+  useEffect(() => {
     if (scene) {
       scene.traverse((node) => {
         if (node.material) node.material = material
       })
     }
-  }, [scene])
+  }, [scene, material])
 
   const parent = useRef()
 
