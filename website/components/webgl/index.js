@@ -2,8 +2,18 @@ import { useGLTF } from '@react-three/drei'
 import { Canvas, useFrame, useThree } from '@react-three/fiber'
 import { useFrame as useRaf } from '@studio-freight/hamo'
 import { useScroll } from 'hooks/use-scroll'
+import { mapRange } from 'lib/maths'
+import { useStore } from 'lib/store'
 import { Suspense, useEffect, useMemo, useRef } from 'react'
-import { Color, MathUtils, Vector2 } from 'three'
+import {
+  Color,
+  Euler,
+  MathUtils,
+  MeshStandardMaterial,
+  Quaternion,
+  Vector2,
+  Vector3,
+} from 'three'
 import fragmentShader from './particles/fragment.glsl'
 import vertexShader from './particles/vertex.glsl'
 
@@ -124,20 +134,146 @@ function Particles({
   )
 }
 
-export function Hand(props) {
-  const { nodes } = useGLTF('/models/hand.glb')
+const steps = [
+  {
+    position: [-0.1, -1.75, 0],
+    scale: 0.045,
+    rotation: [0, Math.PI * 0.5, 0],
+  },
+  {
+    position: [0.15, -0.4, 0],
+    scale: 0.02,
+    rotation: [
+      MathUtils.degToRad(-45),
+      MathUtils.degToRad(-135),
+      MathUtils.degToRad(-45),
+    ],
+  },
+  {
+    position: [0.15, -0.4, 0],
+    scale: 0.02,
+    rotation: [
+      MathUtils.degToRad(45),
+      MathUtils.degToRad(45),
+      MathUtils.degToRad(-45),
+    ],
+  },
+  {
+    position: [-0.2, -0.35, 0],
+    scale: 0.02,
+    rotation: [
+      MathUtils.degToRad(-90),
+      MathUtils.degToRad(-45),
+      MathUtils.degToRad(-45),
+    ],
+  },
+]
+
+// const thresholds = [0, 1000, 2000, 3000, 4000, 5000]
+
+export function Arm() {
+  const { scene } = useGLTF('/models/arm.glb')
+
+  useEffect(() => {
+    const material = new MeshStandardMaterial({
+      color: new Color('rgb(255, 152, 162)'),
+      metalness: 1,
+      roughness: 0.4,
+    })
+    if (scene) {
+      scene.traverse((node) => {
+        if (node.material) node.material = material
+      })
+    }
+  }, [scene])
+
+  const parent = useRef()
+
+  const { viewport } = useThree()
+
+  const _thresholds = useStore(({ thresholds }) => thresholds)
+  const thresholds = useMemo(() => {
+    return Object.values(_thresholds).sort((a, b) => a - b)
+  }, [_thresholds])
+
+  useScroll(({ scroll }) => {
+    const current = thresholds.findIndex((v) => scroll < v) - 1
+
+    const start = thresholds[current]
+    const end = thresholds[current + 1]
+    const progress = mapRange(start, end, scroll, 0, 1)
+
+    const from = steps[current]
+    const to = steps[current + 1]
+
+    // return
+
+    if (!to) return
+
+    const scale = mapRange(0, 1, progress, from.scale, to.scale)
+    const position = new Vector3(
+      viewport.width *
+        mapRange(0, 1, progress, from.position[0], to.position[0]),
+      viewport.height *
+        mapRange(0, 1, progress, from.position[1], to.position[1]),
+      0
+    )
+    const rotation = new Euler().fromArray(
+      new Array(3)
+        .fill(0)
+        .map((_, i) =>
+          mapRange(0, 1, progress, from.rotation[i], to.rotation[i])
+        )
+    )
+
+    parent.current.scale.setScalar(viewport.height * scale)
+    parent.current.position.copy(position)
+    const target = new Quaternion().setFromEuler(rotation)
+    parent.current.quaternion.rotateTowards(target, 16)
+  })
+
+  // const light1 = useRef()
+
+  // useHelper(light1, DirectionalLightHelper, 'green')
+
+  // const [target, setTarget] = useState()
 
   return (
-    <group {...props} dispose={null}>
-      <mesh
-        receiveShadow
-        geometry={nodes.Idle.geometry}
-        material={nodes.Idle.material}
-        position={[9, 17, -15]}
-        rotation={[-2, 0.5, 2]}
-        scale={[25, 25, 25]}
-      />
-    </group>
+    <>
+      <group position={[-200, 150, 50]}>
+        {/* <mesh scale={25}>
+          <boxGeometry />
+          <meshBasicMaterial color={'red'} />
+        </mesh> */}
+        <directionalLight />
+      </group>
+      <group position={[300, -100, 150]}>
+        {/* <mesh scale={25}>
+          <boxGeometry />
+          <meshBasicMaterial color={'red'} />
+        </mesh> */}
+        <directionalLight />
+      </group>
+
+      <group
+        ref={parent}
+        // position={[viewport.width * 0.155, viewport.height * -0.6, 0]}
+        // scale={viewport.height * 0.023}
+        // rotation={[
+        //   MathUtils.degToRad(125),
+        //   MathUtils.degToRad(-57),
+        //   MathUtils.degToRad(140),
+        // ]}
+      >
+        {/* <TransformControls mode="rotate"> */}
+        <primitive object={scene} scale={[1, 1, 1]} />
+        {/* </TransformControls> */}
+      </group>
+      {/* {target && (
+        <TransformControls mode="translate" object={target} makeDefault />
+      )} */}
+      {/* <OrbitControls makeDefault /> */}
+    </>
   )
 }
 
@@ -154,10 +290,8 @@ function Content() {
         count={100}
         scale={500}
       />
-      <mesh scale={[100, 100, 100]}>
-        <Hand />
-        <meshNormalMaterial />
-      </mesh>
+
+      <Arm />
     </>
   )
 }
@@ -167,15 +301,15 @@ export function WebGL({ render = true }) {
     <Canvas
       gl={{
         powerPreference: 'high-performance',
-        antialias: false,
-        stencil: false,
-        depth: false,
+        antialias: true,
+        // stencil: false,
+        // depth: false,
         alpha: true,
       }}
       dpr={[1, 2]}
       frameloop="never"
       orthographic
-      camera={{ near: 0.01, far: 1000, position: [0, 0, 500] }}
+      camera={{ near: 0.01, far: 10000, position: [0, 0, 1000] }}
     >
       <Raf render={render} />
       <Suspense>

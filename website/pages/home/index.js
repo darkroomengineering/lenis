@@ -10,13 +10,14 @@ import { Parallax } from 'components/parallax'
 import { useScroll } from 'hooks/use-scroll'
 import { Layout } from 'layouts/default'
 import { clamp, mapRange } from 'lib/maths'
+import { useStore } from 'lib/store'
 import dynamic from 'next/dynamic'
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useWindowSize } from 'react-use'
 import s from './home.module.scss'
 
-const SFDR = dynamic(() => import('icons/sfdr.svg'))
-const Lenis = dynamic(() => import('icons/lenis.svg'), { ssr: false })
+const SFDR = dynamic(() => import('icons/sfdr.svg'), { ssr: false })
+const Lenis = dynamic(() => import('icons/lenis.svg'))
 const GitHub = dynamic(() => import('icons/github.svg'), { ssr: false })
 
 const WebGL = dynamic(
@@ -51,6 +52,29 @@ export default function Home() {
       zoomRef.current.style.removeProperty('background-color')
     }
   })
+
+  const [featuresRectRef, featuresRect] = useRect()
+  const [cardsRectRef, cardsRect] = useRect()
+
+  const addThreshold = useStore(({ addThreshold }) => addThreshold)
+
+  useEffect(() => {
+    addThreshold({ id: 'top', value: 0 })
+  }, [])
+
+  useEffect(() => {
+    const top = featuresRect.top - windowHeight / 2
+    addThreshold({ id: 'features-start', value: top })
+    addThreshold({
+      id: 'features-end',
+      value: top + featuresRect.height,
+    })
+  }, [featuresRect])
+
+  useEffect(() => {
+    const top = cardsRect.top - windowHeight / 2
+    addThreshold({ id: 'cards', value: top })
+  }, [cardsRect])
 
   return (
     <Layout
@@ -109,7 +133,7 @@ export default function Home() {
           <p className={cn(s.sticky, 'h2')}>
             <a href="#top">Why smooth scroll?</a>
           </p>
-          <aside className={s.features}>
+          <aside className={s.features} ref={featuresRectRef}>
             <div className={s.feature}>
               <p className="p">
                 We’ve heard all the reasons to not use smooth scroll. It feels
@@ -186,7 +210,7 @@ export default function Home() {
             </Parallax>
           </div>
         </div>
-        <div className={s.cards}>
+        <div className={s.cards} ref={cardsRectRef}>
           <HorizontalSlides>
             <Card
               className={s.card}

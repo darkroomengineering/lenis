@@ -3,6 +3,7 @@
 .home main {
   > *:not(.canvas) {
     position: relative;
+    // pointer-events: none;
   }
 }
 

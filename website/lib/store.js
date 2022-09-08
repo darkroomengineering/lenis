@@ -1,6 +1,6 @@
 import create from 'zustand'
 
-export const useStore = create((set) => ({
+export const useStore = create((set, get) => ({
   headerData: undefined,
   setHeaderData: (headerData) => set({ headerData }),
   footerData: undefined,
@@ -13,4 +13,16 @@ export const useStore = create((set) => ({
   setOverflow: (overflow) => set({ overflow }),
   triggerTransition: '',
   setTriggerTransition: (triggerTransition) => set({ triggerTransition }),
+  thresholds: {},
+  addThreshold: ({ id, value }) => {
+    let thresholds = { ...get().thresholds }
+    thresholds[id] = value
+
+    console.log(thresholds)
+
+    set({ thresholds })
+  },
+  // removeThreshold: (threshold) => {
+  //   set({ threshold })
+  // },
 }))
