@@ -16,8 +16,9 @@
     width: 100%;
     height: 100%;
     background-color: var(--theme-contrast);
-    transform: translate(0, 101%);
-    will-change: transform;
+    transform: scaleY(0);
+    transform-origin: top;
+    transition: transform 600ms var(--ease-out-expo);
   }
 
   @include mobile {
@@ -87,8 +88,8 @@
   @include hover {
     &:hover {
       &::before {
-        transform: translate(0, 0);
-        transition: transform 600ms var(--ease-out-expo);
+        transform: scaleY(1);
+        transform-origin: bottom;
       }
 
       .title {
@@ -99,7 +100,7 @@
             transform 600ms var(--ease-out-expo);
           opacity: 1;
           transform: translate(0, 0);
-          transition-delay: 300ms;
+          transition-delay: 100ms;
         }
       }
 
