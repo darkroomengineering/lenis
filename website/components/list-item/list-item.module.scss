@@ -4,13 +4,28 @@
   display: flex;
   justify-content: space-between;
   border-bottom: 1px solid var(--grey);
-  transition: border-color 0.2s var(--ease-in-out-quad),
-    background-color 0.2s var(--ease-in-out-quad),
-    color 0.2s var(--ease-in-out-quad);
   padding: mobile-vw(16px) 0;
+  position: relative;
+  overflow: hidden;
+
+  &::before {
+    position: absolute;
+    left: 0;
+    top: 0;
+    content: '';
+    width: 100%;
+    height: 100%;
+    background-color: var(--theme-contrast);
+    transform: translate(0, 101%);
+    will-change: transform;
+  }
 
   @include mobile {
     flex-direction: column;
+
+    &::before {
+      content: none;
+    }
   }
 
   @include desktop {
@@ -21,7 +36,8 @@
   .title {
     display: flex;
     align-items: center;
-    transition: transform 200ms var(--ease-in-out-quad);
+    transition: transform 600ms var(--ease-out-expo);
+    will-change: transform;
 
     .text {
       font-weight: 500;
@@ -45,7 +61,7 @@
       width: mobile-vw(19px);
 
       @include desktop {
-        transform: rotate(25deg);
+        transform: translate(-20%, 20%);
         opacity: 0;
         margin-left: desktop-vw(24px);
         width: desktop-vw(19px);
@@ -55,10 +71,11 @@
 
   .source {
     font-weight: 700;
-    transition: transform 200ms var(--ease-in-out-quad);
+    transition: transform 600ms var(--ease-out-expo);
     line-height: 100%;
     letter-spacing: -0.03em;
     font-size: mobile-vw(20px);
+    will-change: transform;
 
     @include desktop {
       text-align: end;
@@ -69,17 +86,20 @@
 
   @include hover {
     &:hover {
-      background-color: var(--theme-contrast);
-      color: var(--black);
-      border-color: transparent;
+      &::before {
+        transform: translate(0, 0);
+        transition: transform 600ms var(--ease-out-expo);
+      }
+
       .title {
         transform: translateX(desktop-vw(16px));
 
         .arrow {
-          transition: opacity 0.3s var(--ease-in-quad),
-            transform 0.2s var(--ease-in-circ);
+          transition: opacity 600ms var(--ease-out-expo),
+            transform 600ms var(--ease-out-expo);
           opacity: 1;
-          transform: rotate(0deg);
+          transform: translate(0, 0);
+          transition-delay: 300ms;
         }
       }
 
