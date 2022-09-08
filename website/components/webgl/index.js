@@ -1,4 +1,4 @@
-import { useGLTF } from '@react-three/drei'
+import { Float, useGLTF } from '@react-three/drei'
 import { Canvas, useFrame, useThree } from '@react-three/fiber'
 import { useFrame as useRaf } from '@studio-freight/hamo'
 import { useScroll } from 'hooks/use-scroll'
@@ -336,9 +336,12 @@ function Content() {
         depth={500}
         count={100}
         scale={500}
+        size={150}
       />
 
-      <Arm />
+      <Float>
+        <Arm />
+      </Float>
     </>
   )
 }
