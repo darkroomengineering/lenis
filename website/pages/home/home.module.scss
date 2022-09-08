@@ -13,6 +13,18 @@
   left: 0;
   bottom: 0;
   right: 0;
+
+  &::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    width: 100vw;
+    // background: radial-gradient(var(--pink), var(--pink-transparent) 80%);
+    background: linear-gradient(to top, var(--pink), var(--pink-transparent));
+    transform: translateY(75%);
+  }
 }
 
 .hero {

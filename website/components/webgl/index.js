@@ -208,7 +208,7 @@ export function Arm() {
 
   const [{ color, roughness, metalness, wireframe }] = useControls(
     () => ({
-      color: '#ffffff',
+      color: '#b0b0b0',
       roughness: {
         min: 0,
         value: 0.4,
@@ -246,12 +246,12 @@ export function Arm() {
       },
       light1Intensity: {
         min: 0,
-        value: 1,
+        value: 0.4,
         max: 1,
       },
       light2Intensity: {
         min: 0,
-        value: 1,
+        value: 0.69,
         max: 1,
       },
       lightsColor: '#FF98A2',
