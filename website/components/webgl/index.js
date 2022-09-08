@@ -8,9 +8,10 @@ import { useStore } from 'lib/store'
 import { Suspense, useEffect, useMemo, useRef } from 'react'
 import {
   Color,
+  DoubleSide,
   Euler,
   MathUtils,
-  MeshStandardMaterial,
+  MeshPhysicalMaterial,
   Quaternion,
   Vector2,
   Vector3,
@@ -177,18 +178,19 @@ export function Arm() {
 
   const material = useMemo(
     () =>
-      new MeshStandardMaterial({
-        color: new Color('rgb(255, 152, 162)'),
+      new MeshPhysicalMaterial({
+        color: new Color('#FF98A2'),
         metalness: 1,
         roughness: 0.4,
         wireframe: true,
+        side: DoubleSide,
       }),
     []
   )
 
   const [{ color, roughness, metalness, wireframe }] = useControls(
     () => ({
-      color: '#FF98A2',
+      color: '#ffffff',
       roughness: {
         min: 0,
         value: 0.4,
@@ -204,7 +206,7 @@ export function Arm() {
     []
   )
 
-  const [{ light1, light2 }] = useControls(
+  const [{ lightsColor, light1, light2 }] = useControls(
     'lights',
     () => ({
       light1: {
@@ -215,6 +217,7 @@ export function Arm() {
         step: 1,
         value: [300, -100, 150],
       },
+      lightsColor: '#FF98A2',
     }),
     []
   )
@@ -292,14 +295,14 @@ export function Arm() {
           <boxGeometry />
           <meshBasicMaterial color={'red'} />
         </mesh> */}
-        <directionalLight />
+        <directionalLight args={[new Color(lightsColor), 0.5]} />
       </group>
       <group position={light2}>
         {/* <mesh scale={25}>
           <boxGeometry />
           <meshBasicMaterial color={'red'} />
         </mesh> */}
-        <directionalLight />
+        <directionalLight args={[new Color(lightsColor), 1]} />
       </group>
 
       <group
