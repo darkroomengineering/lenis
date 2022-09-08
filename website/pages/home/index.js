@@ -2,6 +2,7 @@ import { useRect } from '@studio-freight/hamo'
 import cn from 'clsx'
 import { Button } from 'components/button'
 import { Card } from 'components/card'
+import { FeatureCards } from 'components/feature-cards'
 import { HorizontalSlides } from 'components/horizontal-slides'
 import { Link } from 'components/link'
 import { ListItem } from 'components/list-item'
@@ -277,6 +278,7 @@ export default function Home() {
             it accessible.
           </p>
         </div>
+        <FeatureCards />
       </section>
       <section className={cn('theme-light', s['in-use'])}>
         <div className="layout-grid">

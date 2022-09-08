@@ -1,0 +1,33 @@
+@import 'styles/_functions';
+
+.features {
+  position: relative;
+  overflow: hidden;
+
+  @include desktop {
+    min-height: desktop-vw(1200px);
+    margin-bottom: desktop-vw(320px);
+  }
+
+  .card {
+    position: absolute;
+
+    @for $i from 1 through 9 {
+      &:nth-child(#{$i + 1}) {
+        top: desktop-vw($i * 96px);
+        left: desktop-vw($i * 115px);
+      }
+    }
+
+    > div {
+      transition: transform 1s var(--ease-in-out-quad);
+      transform: translate(500%, 500%);
+    }
+
+    &.reset {
+      > div {
+        transform: translate(0, 0);
+      }
+    }
+  }
+}
