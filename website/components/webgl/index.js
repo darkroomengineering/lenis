@@ -204,6 +204,21 @@ export function Arm() {
     []
   )
 
+  const [{ light1, light2 }] = useControls(
+    'lights',
+    () => ({
+      light1: {
+        step: 1,
+        value: [-200, 150, 50],
+      },
+      light2: {
+        step: 1,
+        value: [300, -100, 150],
+      },
+    }),
+    []
+  )
+
   useEffect(() => {
     material.color = new Color(color)
     material.roughness = roughness
@@ -272,14 +287,14 @@ export function Arm() {
 
   return (
     <>
-      <group position={[-200, 150, 50]}>
+      <group position={light1}>
         {/* <mesh scale={25}>
           <boxGeometry />
           <meshBasicMaterial color={'red'} />
         </mesh> */}
         <directionalLight />
       </group>
-      <group position={[300, -100, 150]}>
+      <group position={light2}>
         {/* <mesh scale={25}>
           <boxGeometry />
           <meshBasicMaterial color={'red'} />

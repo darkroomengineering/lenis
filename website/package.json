@@ -39,7 +39,8 @@
     "@react-three/fiber": "^8.7.2",
     "glslify-loader": "^2.0.0",
     "raw-loader": "^4.0.2",
-    "three": "^0.144.0"
+    "three": "^0.144.0",
+    "leva": "^0.9.31"
   },
   "devDependencies": {
     "@builder.io/partytown": "^0.7.0",
