@@ -16,9 +16,9 @@
       &:nth-child(#{$i + 1}) {
         top: desktop-vw($i * 96px);
         left: desktop-vw($i * 115px);
-        > div {
-          transition-delay: ($i + 1) * 0.2s;
-        }
+        // > div {
+        //   transition-delay: ($i + 1) * 0.2s;
+        // }
       }
     }
 

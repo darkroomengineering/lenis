@@ -1,6 +1,9 @@
-import { useIsVisible } from '@studio-freight/hamo'
+import { useRect } from '@studio-freight/hamo'
 import cn from 'clsx'
 import { Card } from 'components/card'
+import { useScroll } from 'hooks/use-scroll'
+import { useState } from 'react'
+import { useWindowSize } from 'react-use'
 
 import s from './feature-cards.module.scss'
 
@@ -42,10 +45,18 @@ export const FeatureCards = () => {
 }
 
 const SingleCard = ({ text, number }) => {
-  const { setRef, inView } = useIsVisible({
-    threshold: 1,
-    // rootMargin: '50px',
-    once: true,
+  // const { setRef, inView } = useIsVisible({
+  //   threshold: 1,
+  //   // rootMargin: '50px',
+  //   once: true,
+  // })
+
+  const [setRef, rect] = useRect()
+  const [inView, setInView] = useState()
+  const { height: windowHeight } = useWindowSize()
+
+  useScroll(({ scroll }) => {
+    setInView(scroll > rect.top - windowHeight / 2)
   })
 
   return (

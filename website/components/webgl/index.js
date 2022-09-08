@@ -224,7 +224,16 @@ export function Arm() {
     []
   )
 
-  const [{ lightsColor, light1, light2, ambientColor }] = useControls(
+  const [
+    {
+      lightsColor,
+      light1,
+      light2,
+      light1Intensity,
+      light2Intensity,
+      ambientColor,
+    },
+  ] = useControls(
     'lights',
     () => ({
       light1: {
@@ -234,6 +243,16 @@ export function Arm() {
       light2: {
         step: 1,
         value: [300, -100, 150],
+      },
+      light1Intensity: {
+        min: 0,
+        value: 1,
+        max: 1,
+      },
+      light2Intensity: {
+        min: 0,
+        value: 1,
+        max: 1,
       },
       lightsColor: '#FF98A2',
       ambientColor: '#0E0E0E',
@@ -315,14 +334,14 @@ export function Arm() {
           <boxGeometry />
           <meshBasicMaterial color={'red'} />
         </mesh> */}
-        <directionalLight args={[new Color(lightsColor), 1]} />
+        <directionalLight args={[new Color(lightsColor), light1Intensity]} />
       </group>
       <group position={light2}>
         {/* <mesh scale={25}>
           <boxGeometry />
           <meshBasicMaterial color={'red'} />
         </mesh> */}
-        <directionalLight args={[new Color(lightsColor), 1]} />
+        <directionalLight args={[new Color(lightsColor), light2Intensity]} />
       </group>
 
       <group
