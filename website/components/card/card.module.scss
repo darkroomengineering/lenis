@@ -9,7 +9,7 @@
   aspect-ratio: 1 / 1;
   padding: mobile-vw(24px);
   width: mobile-vw(343px);
-  background-color: rgba(0, 0, 0, 0.15);
+  background-color: var(--background);
   backdrop-filter: blur(5px);
 
   &.inverted {
@@ -43,7 +43,12 @@
     font-size: mobile-vw(20px);
 
     @include desktop {
-      font-size: desktop-vw(20px);
+      font-size: desktop-vw(28px);
+    }
+
+    span {
+      font-stretch: normal;
+      font-weight: 600;
     }
   }
 }
