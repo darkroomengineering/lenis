@@ -1,8 +1,8 @@
 @import 'styles/_functions';
 
 .features {
-  position: relative;
-  overflow: hidden;
+  // position: relative;
+  height: 800vh;
 
   @include desktop {
     min-height: desktop-vw(1210px);
@@ -10,26 +10,45 @@
 
   .card {
     position: absolute;
+    // will-change: transform, opacity;
+    transition-duration: 600ms;
+    transition-property: opacity, transform;
+    transition-timing-function: var(--ease-out-expo);
 
-    @for $i from 1 through 9 {
+    @for $i from 0 through 9 {
       &:nth-child(#{$i + 1}) {
-        top: desktop-vw($i * 96px);
-        left: desktop-vw($i * 115px);
+        top: calc(
+          ((100vh - #{desktop-vw(440px)} - (2 * var(--layout-margin))) / 8) * $i
+        );
+        left: calc(
+          ((100vw - #{desktop-vw(440px)} - (2 * var(--layout-margin))) / 8) * $i
+        );
         // > div {
         //   transition-delay: ($i + 1) * 0.2s;
         // }
       }
     }
 
-    > div {
-      transition: transform 0.8s var(--ease-in-out-quad);
-      transform: translate(500%, 500%);
-    }
+    // > div {
+    //   transition: transform 0.8s var(--ease-in-out-quad);
+    //   transform: translate(500%, 500%);
+    // }
 
-    &.reset {
-      > div {
-        transform: translate(0, 0);
-      }
+    &:not(.reset) {
+      transform: translate3d(50%, 50%, 0);
+      opacity: 0;
     }
+  }
+}
+
+.sticky {
+  overflow: hidden;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  padding: var(--layout-margin);
+
+  > * {
+    position: relative;
   }
 }
