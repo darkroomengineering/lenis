@@ -66,6 +66,10 @@
   },
   "pnpm": {
     "overrides": {
+      "@radix-ui/react-portal": "0.1.4",
+      "@radix-ui/react-primitive": "0.1.4",
+      "extend-shallow": "3.0.2",
+      "is-extendable": "1.0.1",
       "throttle-debounce": "5.0.0",
       "scheduler": "0.23.0",
       "zustand": "4.1.1",

@@ -3,6 +3,7 @@
   "ignorePatterns": ["**/public/*.js"],
   "rules": {
     "no-unused-vars": "error",
+    "react/no-unknown-property": "off",
     "react/no-unescaped-entities": "off",
     "@next/next/no-img-element": "off",
     "react-hooks/exhaustive-deps": "off",
