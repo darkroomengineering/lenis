@@ -144,7 +144,6 @@
     }
 
     .description {
-      color: var(--grey);
       grid-column: 1 / -1;
 
       @include desktop {
