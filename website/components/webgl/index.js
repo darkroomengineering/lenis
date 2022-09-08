@@ -244,14 +244,24 @@ export function Arm() {
         step: 1,
         value: [300, -100, 150],
       },
+      // light1Intensity: {
+      //   min: 0,
+      //   value: 0.4,
+      //   max: 1,
+      // },
+      // light2Intensity: {
+      //   min: 0,
+      //   value: 0.69,
+      //   max: 1,
+      // },
       light1Intensity: {
         min: 0,
-        value: 0.4,
+        value: 0.14,
         max: 1,
       },
       light2Intensity: {
         min: 0,
-        value: 0.69,
+        value: 0.05,
         max: 1,
       },
       lightsColor: '#FF98A2',
