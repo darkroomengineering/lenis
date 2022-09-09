@@ -332,12 +332,30 @@
 .featuring {
   position: relative;
   padding-bottom: mobile-vw(160px);
-  background-color: var(--theme-primary);
+  // background-color: var(--theme-primary);
   color: var(--theme-secondary);
 
   @include desktop {
     padding: desktop-vw(40px) 0;
     padding-bottom: desktop-vw(440px);
+
+    &::before {
+      content: '';
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: desktop-vw(150px);
+      position: absolute;
+      background: linear-gradient(
+        to bottom,
+        var(--theme-primary),
+        var(--theme-primary-transparent)
+      );
+    }
+  }
+
+  .inner {
+    position: relative;
   }
 
   .intro {
@@ -351,7 +369,7 @@
 
 .in-use {
   padding-bottom: mobile-vw(160px);
-  background-color: var(--theme-primary);
+  // background-color: var(--theme-primary);
   color: var(--theme-secondary);
 
   @include desktop {

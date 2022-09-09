@@ -48,7 +48,6 @@ export const FeatureCards = () => {
 
       const progress = clamp(-1, mapRange(start, end, scroll, 0, 1), 1)
       const step = Math.floor(progress * 8)
-      console.log(step)
       setCurrent(step)
     },
     [rect]

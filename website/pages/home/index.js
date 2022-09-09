@@ -32,6 +32,8 @@ export default function Home() {
   const [zoomWrapperRectRef, zoomWrapperRect] = useRect()
   const { height: windowHeight } = useWindowSize()
 
+  const [theme, setTheme] = useState('dark')
+
   useScroll(({ scroll }) => {
     setHasScrolled(scroll > 10)
     if (!zoomWrapperRect.top) return
@@ -43,6 +45,7 @@ export default function Home() {
     const center = 0.6
     const progress1 = clamp(0, mapRange(0, center, progress, 0, 1), 1)
     const progress2 = clamp(0, mapRange(center - 0.055, 1, progress, 0, 1), 1)
+    setTheme(progress2 === 1 ? 'light' : 'dark')
 
     zoomRef.current.style.setProperty('--progress1', progress1)
     zoomRef.current.style.setProperty('--progress2', progress2)
@@ -81,7 +84,7 @@ export default function Home() {
 
   return (
     <Layout
-      theme="dark"
+      theme={theme}
       seo={{
         title: 'Lenis – Get smooth or die trying',
         description:
@@ -264,19 +267,21 @@ export default function Home() {
         </div>
       </section>
       <section className={cn('theme-light', s.featuring)}>
-        <div className={cn('layout-block', s.intro)}>
-          <p className="p-l">
-            Lenis is an{' '}
-            <Link
-              className="contrast semi-bold"
-              href="https://github.com/studio-freight/lenis"
-            >
-              open-source library
-            </Link>{' '}
-            built to standardize scroll experiences and sauce up websites with
-            butter-smooth navigation, all while using the platform and keeping
-            it accessible.
-          </p>
+        <div className={s.inner}>
+          <div className={cn('layout-block', s.intro)}>
+            <p className="p-l">
+              Lenis is an{' '}
+              <Link
+                className="contrast semi-bold"
+                href="https://github.com/studio-freight/lenis"
+              >
+                open-source library
+              </Link>{' '}
+              built to standardize scroll experiences and sauce up websites with
+              butter-smooth navigation, all while using the platform and keeping
+              it accessible.
+            </p>
+          </div>
         </div>
         <FeatureCards />
       </section>
