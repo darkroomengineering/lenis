@@ -2,7 +2,7 @@ import { Float, useGLTF } from '@react-three/drei'
 import { Canvas, useFrame, useThree } from '@react-three/fiber'
 import { useFrame as useRaf } from '@studio-freight/hamo'
 import { useScroll } from 'hooks/use-scroll'
-import { useControls } from 'leva'
+import { button, useControls } from 'leva'
 import { mapRange } from 'lib/maths'
 import { useStore } from 'lib/store'
 import { Suspense, useEffect, useMemo, useRef, useState } from 'react'
@@ -217,6 +217,7 @@ const material = new MeshPhysicalMaterial({
 export function Arm() {
   const { scene: arm1 } = useGLTF('/models/arm.glb')
   const { scene: arm2 } = useGLTF('/models/arm2.glb')
+  const [type, setType] = useState(1)
 
   const [{ color, roughness, metalness, wireframe }] = useControls(
     () => ({
@@ -268,18 +269,42 @@ export function Arm() {
       // },
       light1Intensity: {
         min: 0,
-        value: 0.14,
+        value: 1,
         max: 1,
       },
       light2Intensity: {
         min: 0,
-        value: 0.05,
+        value: 1,
         max: 1,
       },
       lightsColor: '#FF98A2',
       ambientColor: '#0E0E0E',
     }),
     []
+  )
+
+  const [{ custom, scale, position, rotation }] = useControls('model', () => ({
+    custom: false,
+    scale: {
+      min: 0,
+      value: 0.05,
+      max: 0.06,
+      step: 0.001,
+    },
+    position: { value: [0, 0, 0] },
+    rotation: { step: 1, min: -360, value: [0, 0, 0], max: 360 },
+  }))
+
+  useControls(
+    'model',
+    () => ({
+      export: button(() => {
+        alert(
+          JSON.stringify({ scale: scale.toFixed(3), position, rotation, type })
+        )
+      }),
+    }),
+    [scale, position, rotation, type]
   )
 
   useEffect(() => {
@@ -314,9 +339,20 @@ export function Arm() {
     return Object.values(_thresholds).sort((a, b) => a - b)
   }, [_thresholds])
 
-  const [type, setType] = useState(1)
-
   useScroll(({ scroll }) => {
+    if (custom) {
+      parent.current.scale.setScalar(viewport.height * scale)
+      parent.current.position.set(
+        viewport.width * position[0],
+        viewport.height * position[1],
+        0
+      )
+      parent.current.rotation.fromArray(
+        rotation.map((v) => MathUtils.degToRad(v))
+      )
+      return
+    }
+
     const current = thresholds.findIndex((v) => scroll < v) - 1
 
     const start = thresholds[current]
@@ -332,15 +368,15 @@ export function Arm() {
 
     if (!to) return
 
-    const scale = mapRange(0, 1, progress, from.scale, to.scale)
-    const position = new Vector3(
+    const _scale = mapRange(0, 1, progress, from.scale, to.scale)
+    const _position = new Vector3(
       viewport.width *
         mapRange(0, 1, progress, from.position[0], to.position[0]),
       viewport.height *
         mapRange(0, 1, progress, from.position[1], to.position[1]),
       0
     )
-    const rotation = new Euler().fromArray(
+    const _rotation = new Euler().fromArray(
       new Array(3)
         .fill(0)
         .map((_, i) =>
@@ -348,9 +384,9 @@ export function Arm() {
         )
     )
 
-    parent.current.scale.setScalar(viewport.height * scale)
-    parent.current.position.copy(position)
-    parent.current.rotation.copy(rotation)
+    parent.current.scale.setScalar(viewport.height * _scale)
+    parent.current.position.copy(_position)
+    parent.current.rotation.copy(_rotation)
 
     setType(to.type)
     // const target = new Quaternion().setFromEuler(rotation)
