@@ -1,0 +1,43 @@
+@import 'styles/_functions';
+
+$intro-in: 1000ms;
+$intro-out: 2500ms;
+
+.wrapper {
+  height: 100vh;
+  width: 100%;
+  background-color: var(--pink);
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 1000;
+  overflow: hidden;
+
+  &.out {
+    transition: transform $intro-out var(--ease-out-expo);
+    transform: translate3d(0, -100%, 0);
+    transition-delay: $intro-in;
+  }
+
+  .start {
+    transform: translate3d(0, 100%, 0);
+  }
+
+  .relative {
+    padding: 0 desktop-vw(32.5px);
+    margin-top: desktop-vw(30px);
+    transition: transform $intro-out var(--ease-out-expo);
+    transform: translate3d(0, desktop-vh(850px), 0);
+    transition-delay: $intro-in;
+  }
+
+  .show {
+    transition: transform $intro-in var(--ease-out-expo);
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+.translate {
+  transform: translate3d(0, -100%, 0);
+  transition: transform $intro-out var(--ease-out-expo);
+}

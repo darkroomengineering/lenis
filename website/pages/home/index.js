@@ -4,6 +4,7 @@ import { Button } from 'components/button'
 import { Card } from 'components/card'
 import { FeatureCards } from 'components/feature-cards'
 import { HorizontalSlides } from 'components/horizontal-slides'
+import { Title } from 'components/intro'
 import { Link } from 'components/link'
 import { ListItem } from 'components/list-item'
 import { Parallax } from 'components/parallax'
@@ -18,7 +19,7 @@ import { useWindowSize } from 'react-use'
 import s from './home.module.scss'
 
 const SFDR = dynamic(() => import('icons/sfdr.svg'), { ssr: false })
-const Lenis = dynamic(() => import('icons/lenis.svg'))
+// const Lenis = dynamic(() => import('icons/lenis.svg'))
 const GitHub = dynamic(() => import('icons/github.svg'), { ssr: false })
 
 const WebGL = dynamic(
@@ -95,7 +96,8 @@ export default function Home() {
 
       <section className={s.hero}>
         <div className="layout-grid">
-          <Lenis className={s.title} />
+          {/* <Lenis className={s.title} /> */}
+          <Title className={s.title} />
           <SFDR className={s.icon} />
           <span className={s.sub}>
             <h2 className={cn('h3', s.subtitle)}>Smooth Scroll</h2>

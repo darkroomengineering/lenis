@@ -34,6 +34,7 @@
   justify-content: space-between;
   height: mobile-vw(580px);
   margin-bottom: mobile-vw(160px);
+  position: relative;
 
   @include desktop {
     height: 100vh;
