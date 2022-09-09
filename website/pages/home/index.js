@@ -57,8 +57,9 @@ export default function Home() {
     }
   })
 
-  const [featuresRectRef, featuresRect] = useRect()
+  const [whyRectRef, whyRect] = useRect()
   const [cardsRectRef, cardsRect] = useRect()
+  const [featuresRectRef, featuresRect] = useRect()
 
   const addThreshold = useStore(({ addThreshold }) => addThreshold)
 
@@ -67,13 +68,13 @@ export default function Home() {
   }, [])
 
   useEffect(() => {
-    const top = featuresRect.top - windowHeight / 2
-    addThreshold({ id: 'features-start', value: top })
+    const top = whyRect.top - windowHeight / 2
+    addThreshold({ id: 'why-start', value: top })
     addThreshold({
-      id: 'features-end',
-      value: top + featuresRect.height,
+      id: 'why-end',
+      value: top + whyRect.height,
     })
-  }, [featuresRect])
+  }, [whyRect])
 
   useEffect(() => {
     const top = cardsRect.top - windowHeight / 2
@@ -81,6 +82,11 @@ export default function Home() {
     addThreshold({ id: 'cards-end', value: top + cardsRect.height })
     addThreshold({ id: 'end', value: top + cardsRect.height + windowHeight })
   }, [cardsRect])
+
+  useEffect(() => {
+    const top = featuresRect.top - windowHeight
+    addThreshold({ id: 'features-start', value: top })
+  }, [featuresRect])
 
   return (
     <Layout
@@ -139,7 +145,7 @@ export default function Home() {
           <p className={cn(s.sticky, 'h2')}>
             <a href="#top">Why smooth scroll?</a>
           </p>
-          <aside className={s.features} ref={featuresRectRef}>
+          <aside className={s.features} ref={whyRectRef}>
             <div className={s.feature}>
               <p className="p">
                 We’ve heard all the reasons to not use smooth scroll. It feels
@@ -266,7 +272,7 @@ export default function Home() {
           </div>
         </div>
       </section>
-      <section className={cn('theme-light', s.featuring)}>
+      <section className={cn('theme-light', s.featuring)} ref={featuresRectRef}>
         <div className={s.inner}>
           <div className={cn('layout-block', s.intro)}>
             <p className="p-l">

@@ -5,14 +5,13 @@ import { useScroll } from 'hooks/use-scroll'
 import { useControls } from 'leva'
 import { mapRange } from 'lib/maths'
 import { useStore } from 'lib/store'
-import { Suspense, useEffect, useMemo, useRef } from 'react'
+import { Suspense, useEffect, useMemo, useRef, useState } from 'react'
 import {
   Color,
   DoubleSide,
   Euler,
   MathUtils,
   MeshPhysicalMaterial,
-  Quaternion,
   Vector2,
   Vector3,
 } from 'three'
@@ -141,6 +140,7 @@ const steps = [
     position: [-0.1, -1.75, 0],
     scale: 0.045,
     rotation: [0, Math.PI * 0.5, 0],
+    type: 1,
   },
   {
     position: [0.15, -0.4, 0],
@@ -150,6 +150,7 @@ const steps = [
       MathUtils.degToRad(-135),
       MathUtils.degToRad(-45),
     ],
+    type: 1,
   },
   {
     position: [0.15, -0.4, 0],
@@ -159,6 +160,7 @@ const steps = [
       MathUtils.degToRad(45),
       MathUtils.degToRad(-45),
     ],
+    type: 1,
   },
   {
     position: [-0.2, -0.35, 0],
@@ -168,6 +170,7 @@ const steps = [
       MathUtils.degToRad(-45),
       MathUtils.degToRad(-45),
     ],
+    type: 1,
   },
   {
     position: [-0.8, -0.6, 0],
@@ -177,6 +180,7 @@ const steps = [
       MathUtils.degToRad(-45),
       MathUtils.degToRad(-45),
     ],
+    type: 1,
   },
   {
     position: [-1.6, -0.6, 0],
@@ -186,25 +190,33 @@ const steps = [
       MathUtils.degToRad(-45),
       MathUtils.degToRad(-45),
     ],
+    type: 1,
+  },
+  {
+    position: [-0.2, -0.35, 0],
+    scale: 0.02,
+    rotation: [
+      MathUtils.degToRad(-90),
+      MathUtils.degToRad(-45),
+      MathUtils.degToRad(-45),
+    ],
+    type: 2,
   },
 ]
 
 // const thresholds = [0, 1000, 2000, 3000, 4000, 5000]
 
-export function Arm() {
-  const { scene } = useGLTF('/models/arm.glb')
+const material = new MeshPhysicalMaterial({
+  color: new Color('#FF98A2'),
+  metalness: 1,
+  roughness: 0.4,
+  wireframe: true,
+  side: DoubleSide,
+})
 
-  const material = useMemo(
-    () =>
-      new MeshPhysicalMaterial({
-        color: new Color('#FF98A2'),
-        metalness: 1,
-        roughness: 0.4,
-        wireframe: true,
-        side: DoubleSide,
-      }),
-    []
-  )
+export function Arm() {
+  const { scene: arm1 } = useGLTF('/models/arm.glb')
+  const { scene: arm2 } = useGLTF('/models/arm2.glb')
 
   const [{ color, roughness, metalness, wireframe }] = useControls(
     () => ({
@@ -278,12 +290,20 @@ export function Arm() {
   }, [color, roughness, metalness, wireframe, material])
 
   useEffect(() => {
-    if (scene) {
-      scene.traverse((node) => {
+    if (arm1) {
+      arm1.traverse((node) => {
         if (node.material) node.material = material
       })
     }
-  }, [scene, material])
+  }, [arm1, material])
+
+  useEffect(() => {
+    if (arm2) {
+      arm2.traverse((node) => {
+        if (node.material) node.material = material
+      })
+    }
+  }, [arm2, material])
 
   const parent = useRef()
 
@@ -293,6 +313,8 @@ export function Arm() {
   const thresholds = useMemo(() => {
     return Object.values(_thresholds).sort((a, b) => a - b)
   }, [_thresholds])
+
+  const [type, setType] = useState(1)
 
   useScroll(({ scroll }) => {
     const current = thresholds.findIndex((v) => scroll < v) - 1
@@ -305,6 +327,8 @@ export function Arm() {
     const to = steps[current + 1]
 
     // return
+
+    parent.current.visible = from?.type === to?.type
 
     if (!to) return
 
@@ -326,8 +350,11 @@ export function Arm() {
 
     parent.current.scale.setScalar(viewport.height * scale)
     parent.current.position.copy(position)
-    const target = new Quaternion().setFromEuler(rotation)
-    parent.current.quaternion.rotateTowards(target, 16)
+    parent.current.rotation.copy(rotation)
+
+    setType(to.type)
+    // const target = new Quaternion().setFromEuler(rotation)
+    // parent.current.quaternion.rotateTowards(target, 16)
   })
 
   // const light1 = useRef()
@@ -365,7 +392,8 @@ export function Arm() {
         // ]}
       >
         {/* <TransformControls mode="rotate"> */}
-        <primitive object={scene} scale={[1, 1, 1]} />
+        {type === 1 && <primitive object={arm1} scale={[1, 1, 1]} />}
+        {type === 2 && <primitive object={arm2} scale={[1, 1, 1]} />}
         {/* </TransformControls> */}
       </group>
       {/* {target && (
