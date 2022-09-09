@@ -48,6 +48,9 @@
 
     @include desktop {
       margin-top: desktop-vw(30px);
+      position: absolute;
+      top: 0;
+      left: 2.5%;
     }
   }
 
@@ -56,9 +59,19 @@
     height: mobile-vw(39px);
 
     @include desktop {
+      margin-top: desktop-vw(395px);
       width: desktop-vw(44px);
       height: desktop-vw(39px);
+      // transform: translate3d(0, 200%, 0);
     }
+
+    // &.show {
+    //   @include desktop {
+    //     transition: transform 1000ms var(--ease-out-expo);
+    //     transition-delay: 2000ms;
+    //     transform: translate3d(0, 0, 0);
+    //   }
+    // }
   }
 
   .sub {
@@ -68,6 +81,7 @@
     grid-column: 2 / -1;
 
     @include desktop {
+      margin-top: desktop-vw(395px);
       grid-column: 6 / span 7;
     }
 

@@ -19,7 +19,6 @@ import { useWindowSize } from 'react-use'
 import s from './home.module.scss'
 
 const SFDR = dynamic(() => import('icons/sfdr.svg'), { ssr: false })
-// const Lenis = dynamic(() => import('icons/lenis.svg'))
 const GitHub = dynamic(() => import('icons/github.svg'), { ssr: false })
 
 const WebGL = dynamic(
@@ -32,6 +31,7 @@ export default function Home() {
   const zoomRef = useRef(null)
   const [zoomWrapperRectRef, zoomWrapperRect] = useRect()
   const { height: windowHeight } = useWindowSize()
+  const introOut = useStore(({ introOut }) => introOut)
 
   useScroll(({ scroll }) => {
     setHasScrolled(scroll > 10)
@@ -95,10 +95,9 @@ export default function Home() {
       </div>
 
       <section className={s.hero}>
-        <div className="layout-grid">
-          {/* <Lenis className={s.title} /> */}
+        <div className="layout-grid-inner">
           <Title className={s.title} />
-          <SFDR className={s.icon} />
+          <SFDR className={cn(s.icon, introOut && s.show)} />
           <span className={s.sub}>
             <h2 className={cn('h3', s.subtitle)}>Smooth Scroll</h2>
             <h2 className={cn('p-xs', s.tm)}>

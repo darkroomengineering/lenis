@@ -25,7 +25,7 @@ export const Intro = () => {
     }
 
     if (!scroll) {
-      document.documentElement.classList.add('intro')
+      document.documentElement.classList.add('intro', true)
     }
 
     if (lenis) {
