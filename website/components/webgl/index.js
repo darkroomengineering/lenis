@@ -157,7 +157,7 @@ const steps = [
     scale: 0.02,
     rotation: [
       MathUtils.degToRad(45),
-      MathUtils.degToRad(45),
+      MathUtils.degToRad(-315),
       MathUtils.degToRad(-45),
     ],
     type: 1,
