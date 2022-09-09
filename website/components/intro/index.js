@@ -1,15 +1,15 @@
+import { useMediaQuery } from '@studio-freight/hamo'
 import cn from 'clsx'
 import { useStore } from 'lib/store'
 import { useEffect, useState } from 'react'
 import s from './intro.module.scss'
 
 export const Intro = () => {
+  const isMobile = useMediaQuery('(max-width: 800px)')
   const [isLoaded, setIsLoaded] = useState(false)
   const [scroll, setScroll] = useState(false)
-  const [introOut, setIntroOut] = useStore((state) => [
-    state.introOut,
-    state.setIntroOut,
-  ])
+  const introOut = useStore(({ introOut }) => introOut)
+  const setIntroOut = useStore(({ setIntroOut }) => setIntroOut)
   const lenis = useStore(({ lenis }) => lenis)
 
   useEffect(() => {
@@ -19,6 +19,11 @@ export const Intro = () => {
   }, [])
 
   useEffect(() => {
+    if (isMobile) {
+      document.documentElement.classList.toggle('intro', false)
+      return
+    }
+
     if (!scroll) {
       document.documentElement.classList.add('intro')
     }
@@ -32,7 +37,7 @@ export const Intro = () => {
         document.documentElement.classList.toggle('intro', true)
       }
     }
-  }, [scroll, lenis])
+  }, [scroll, lenis, isMobile])
 
   return (
     <div
@@ -66,7 +71,10 @@ export const Title = ({ className }) => {
   return (
     <div className={className}>
       <LNS fill={'var(--pink)'} />
-      <EI fill={'var(--pink)'} className={introOut && s.translate} />
+      <EI
+        fill={'var(--pink)'}
+        className={cn(introOut && s.translate, s.mobile)}
+      />
     </div>
   )
 }

@@ -13,6 +13,10 @@ $intro-out: 2500ms;
   z-index: 1000;
   overflow: hidden;
 
+  @include mobile {
+    display: none;
+  }
+
   &.out {
     transition: transform $intro-out var(--ease-out-expo);
     transform: translate3d(0, -100%, 0);
@@ -38,6 +42,14 @@ $intro-out: 2500ms;
 }
 
 .translate {
-  transform: translate3d(0, -100%, 0);
-  transition: transform $intro-out var(--ease-out-expo);
+  @include desktop {
+    transform: translate3d(0, -100%, 0);
+    transition: transform $intro-out var(--ease-out-expo);
+  }
+}
+
+.mobile {
+  @include mobile {
+    transform: translate3d(0, -105%, 0);
+  }
 }
