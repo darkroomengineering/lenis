@@ -77,10 +77,10 @@ const lenis = new Lenis({
 
 ## Methods
 
-- `raf()` : must be called every frame for internal function.
+- `raf(time)` : must be called every frame for internal function.
 - `scrollTo(target, {offset, immediate, duration, easing})` : scroll to a target.
   - `target` : can be `Number`, `NodeElement` or `String` (CSS selector).
-  - `offset` : (Number) equivalent to [scroll-padding-top](https://developer.mozilla.org/en-US/docs/Web/CSS/scroll-padding-top).
+  - `offset` : `Number` equivalent to [scroll-padding-top](https://developer.mozilla.org/en-US/docs/Web/CSS/scroll-padding-top).
 - `on(id, callback)` : execute a function on event.
   - `id` : event to listen.
     - `scroll` : return scroll position.
