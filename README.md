@@ -40,7 +40,7 @@ import Lenis from '@studio-freight/lenis'
 
 const lenis = new Lenis({
   duration: 1.2,
-  easing: (t) => (t === 1 ? 1 : 1 - Math.pow(2, -10 * t)), // https://easings.net/
+  easing: (t) => (t === 1 ? 1 : 1 - Math.pow(2, -10 * t)), // https://easings.net
   smooth: true,
   direction: 'vertical',
 })
@@ -65,7 +65,7 @@ Using custom scroll container
 ```js
 const lenis = new Lenis({
   duration: 1.2,
-  easing: (t) => (t === 1 ? 1 : 1 - Math.pow(2, -10 * t)), // https://easings.net/
+  easing: (t) => (t === 1 ? 1 : 1 - Math.pow(2, -10 * t)), // https://easings.net
   smooth: true,
   direction: 'vertical',
   wrapper: NodeElement, // element that has overflow
@@ -96,7 +96,6 @@ const lenis = new Lenis({
 ### Things to consider if you want to add Lenis to your codebase will be listed here.
 
 #### Make sure `scroll-behavior` is set to initial or not set at all (thanks [@thagxt](https://github.com/thagxt))
-
 ```css
 html {
   scroll-behavior: initial;
@@ -104,7 +103,6 @@ html {
 ```
 
 #### Keep html and body elements default sized ([see this issue](https://github.com/studio-freight/lenis/issues/10))
-
 ```css
 html,
 body {
@@ -113,10 +111,14 @@ body {
 }
 ```
 
-#### If a children element scroll is blocked, you must stop wheel event propagation ([see this issue](https://github.com/studio-freight/lenis/issues/14))
-
+#### Stop wheel event propagation on elements with overflow ([see this issue](https://github.com/studio-freight/lenis/issues/14))
 ```html
-<div onwheel="event.stopPropagation()">// scroll content</div>
+<div onwheel="event.stopPropagation()">scroll content</div>
+```
+
+#### Manually use `lenis.scrollTo('#anchor')` on anchor link click ([see this issue](https://github.com/studio-freight/lenis/issues/19))
+```html
+<a href="#anchor" onclick="lenis.scrollTo('#anchor')">scroll to anchor</a>
 ```
 
 <br>
