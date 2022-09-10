@@ -416,22 +416,23 @@ export function Arm() {
         </mesh> */}
         <directionalLight args={[new Color(lightsColor), light2Intensity]} />
       </group>
-
-      <group
-        ref={parent}
-        // position={[viewport.width * 0.155, viewport.height * -0.6, 0]}
-        // scale={viewport.height * 0.023}
-        // rotation={[
-        //   MathUtils.degToRad(125),
-        //   MathUtils.degToRad(-57),
-        //   MathUtils.degToRad(140),
-        // ]}
-      >
-        {/* <TransformControls mode="rotate"> */}
-        {type === 1 && <primitive object={arm1} scale={[1, 1, 1]} />}
-        {type === 2 && <primitive object={arm2} scale={[1, 1, 1]} />}
-        {/* </TransformControls> */}
-      </group>
+      <Float floatIntensity={custom ? 0 : 1} rotationIntensity={custom ? 0 : 1}>
+        <group
+          ref={parent}
+          // position={[viewport.width * 0.155, viewport.height * -0.6, 0]}
+          // scale={viewport.height * 0.023}
+          // rotation={[
+          //   MathUtils.degToRad(125),
+          //   MathUtils.degToRad(-57),
+          //   MathUtils.degToRad(140),
+          // ]}
+        >
+          {/* <TransformControls mode="rotate"> */}
+          {type === 1 && <primitive object={arm1} scale={[1, 1, 1]} />}
+          {type === 2 && <primitive object={arm2} scale={[1, 1, 1]} />}
+          {/* </TransformControls> */}
+        </group>
+      </Float>
       {/* {target && (
         <TransformControls mode="translate" object={target} makeDefault />
       )} */}
@@ -455,9 +456,7 @@ function Content() {
         size={150}
       />
 
-      <Float>
-        <Arm />
-      </Float>
+      <Arm />
     </>
   )
 }
