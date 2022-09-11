@@ -35,11 +35,11 @@ define(['./workbox-4d30eff7'], function (e) {
     e.precacheAndRoute(
       [
         {
-          url: '/_next/static/JBNxHFcYdPdeUrkZXD4Xt/_buildManifest.js',
-          revision: 'a67b09ba1d280a6f8266767e64cbaa81',
+          url: '/_next/static/Y_HDW3k8P9E6Ua6eojUOa/_buildManifest.js',
+          revision: '0530c1b8c9c11437067e10f3f16f9492',
         },
         {
-          url: '/_next/static/JBNxHFcYdPdeUrkZXD4Xt/_ssgManifest.js',
+          url: '/_next/static/Y_HDW3k8P9E6Ua6eojUOa/_ssgManifest.js',
           revision: 'b6652df95db52feb4daf4eca35380933',
         },
         {
@@ -63,8 +63,8 @@ define(['./workbox-4d30eff7'], function (e) {
           revision: 'e789bfbc8d6f1a8f',
         },
         {
-          url: '/_next/static/chunks/594-3d5ad8247f29c963.js',
-          revision: '3d5ad8247f29c963',
+          url: '/_next/static/chunks/594-1bc4a1bc5b8f64d5.js',
+          revision: '1bc4a1bc5b8f64d5',
         },
         {
           url: '/_next/static/chunks/614.eac2d85c3c1afacb.js',
@@ -115,20 +115,20 @@ define(['./workbox-4d30eff7'], function (e) {
           revision: '837c0df77fd5009c9e46d446188ecfd0',
         },
         {
-          url: '/_next/static/chunks/webpack-82cca489fbeac84e.js',
-          revision: '82cca489fbeac84e',
+          url: '/_next/static/chunks/webpack-5296448aced6a67d.js',
+          revision: '5296448aced6a67d',
         },
         {
-          url: '/_next/static/css/39d44c7f6b1781d4.css',
-          revision: '39d44c7f6b1781d4',
+          url: '/_next/static/css/57d7fc4352487ffc.css',
+          revision: '57d7fc4352487ffc',
+        },
+        {
+          url: '/_next/static/css/719318096eace446.css',
+          revision: '719318096eace446',
         },
         {
           url: '/_next/static/css/8a233b5df237aa85.css',
           revision: '8a233b5df237aa85',
-        },
-        {
-          url: '/_next/static/css/fcdd31bc5c7a03cd.css',
-          revision: 'fcdd31bc5c7a03cd',
         },
         {
           url: '/android-chrome-192x192.png',

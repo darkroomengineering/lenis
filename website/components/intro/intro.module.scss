@@ -1,6 +1,6 @@
 @import 'styles/_functions';
 
-$intro-in: 1000ms;
+$intro-in: 1500ms;
 $intro-out: 2500ms;
 
 .wrapper {
@@ -20,23 +20,29 @@ $intro-out: 2500ms;
   &.out {
     transition: transform $intro-out var(--ease-out-expo);
     transform: translate3d(0, -100%, 0);
-    transition-delay: $intro-in;
+    transition-delay: calc($intro-in + 0ms);
   }
 
   .start {
-    transform: translate3d(0, 100%, 0);
+    transform: translate3d(0, calc(var(--index) * 5% + 100%), 0);
   }
 
   .relative {
-    padding: 0 desktop-vw(32.5px);
-    margin-top: desktop-vw(30px);
+    padding: desktop-vw(30px) desktop-vw(32.5px);
+
     transition: transform $intro-out var(--ease-out-expo);
     transform: translate3d(0, desktop-vh(850px), 0);
-    transition-delay: $intro-in;
+    transition-delay: calc($intro-in + 0ms);
+
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
   }
 
   .show {
     transition: transform $intro-in var(--ease-out-expo);
+    transition-delay: calc(var(--index) * 75ms);
     transform: translate3d(0, 0, 0);
   }
 }

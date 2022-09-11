@@ -98,9 +98,11 @@ export default function Home() {
         <div className="layout-grid-inner">
           <Title className={s.title} />
           <SFDR className={cn(s.icon, introOut && s.show)} />
-          <span className={s.sub}>
-            <h2 className={cn('h3', s.subtitle)}>Smooth Scroll</h2>
-            <h2 className={cn('p-xs', s.tm)}>
+          <span className={cn(s.sub)}>
+            <h2 className={cn('h3', s.subtitle, introOut && s['text-appear'])}>
+              Smooth Scroll
+            </h2>
+            <h2 className={cn('p-xs', s.tm, introOut && s['text-appear'])}>
               <span>©</span> {new Date().getFullYear()} Studio Freight
             </h2>
           </span>
@@ -111,19 +113,22 @@ export default function Home() {
             className={cn(
               'hide-on-mobile',
               s['scroll-hint'],
-              hasScrolled && s.hide
+              hasScrolled && s.hide,
+              introOut && s.show
             )}
           >
             <p className={s.text}>
               scroll <br /> to explore
             </p>
           </div>
-          <h1 className={cn(s.description, 'p-s')}>
+          <h1
+            className={cn(s.description, 'p-s', introOut && s['text-appear'])}
+          >
             A new smooth scroll library <br /> fresh out of the <br /> Studio
             Freight Darkroom
           </h1>
           <Button
-            className={s.cta}
+            className={cn(s.cta, introOut && s['text-appear'])}
             arrow
             icon={<GitHub />}
             href="https://github.com/studio-freight/lenis"
