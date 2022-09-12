@@ -35,8 +35,13 @@ class Animate {
     this.keys.forEach((key) => {
       const from = this.fromKeys[key]
       const to = this.toKeys[key]
+
       const value = from + (to - from) * progress
+
+      //hot fix https://github.com/studio-freight/lenis/issues/21
+      // if (!isNaN(value)) {
       this.target[key] = value
+      // }
     })
 
     if (progress === 1) {
@@ -76,24 +81,10 @@ export default class Lenis extends EventEmitter {
     this.smooth = smooth
     this.direction = direction
 
-    this.animate = new Animate()
-
     this.wrapperNode.addEventListener('scroll', this.onScroll)
 
     const platform =
       navigator?.userAgentData?.platform || navigator?.platform || 'unknown'
-
-    // listen and normalize wheel event cross-browser
-    this.virtualScroll = new VirtualScroll({
-      el: this.wrapperNode,
-      firefoxMultiplier: 50,
-      mouseMultiplier: platform.indexOf('Win') > -1 ? 1 : 0.4,
-      useKeyboard: false,
-      useTouch: false,
-      passive: false,
-    })
-
-    this.virtualScroll.on(this.onVirtualScroll)
 
     //observe wrapper node size
     if (this.wrapperNode === window) {
@@ -120,6 +111,20 @@ export default class Lenis extends EventEmitter {
       this.scroll =
       this.lastScroll =
         this.wrapperNode[this.scrollProperty]
+
+    this.animate = new Animate()
+
+    // listen and normalize wheel event cross-browser
+    this.virtualScroll = new VirtualScroll({
+      el: this.wrapperNode,
+      firefoxMultiplier: 50,
+      mouseMultiplier: platform.indexOf('Win') > -1 ? 1 : 0.4,
+      useKeyboard: false,
+      useTouch: false,
+      passive: false,
+    })
+
+    this.virtualScroll.on(this.onVirtualScroll)
   }
 
   get scrollProperty() {
@@ -196,7 +201,7 @@ export default class Lenis extends EventEmitter {
   }
 
   raf(now) {
-    const deltaTime = now - this.now
+    const deltaTime = now - (this.now || 0)
     this.now = now
 
     if (this.stopped || !this.smooth) return
