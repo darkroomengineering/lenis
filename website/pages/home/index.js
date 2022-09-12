@@ -26,6 +26,14 @@ const WebGL = dynamic(
   { ssr: false }
 )
 
+const HeroTextIn = ({ children, introOut }) => {
+  return (
+    <div className={cn(s['hide-text'], introOut && s['show-text'])}>
+      {children}
+    </div>
+  )
+}
+
 export default function Home() {
   const [hasScrolled, setHasScrolled] = useState()
   const zoomRef = useRef(null)
@@ -99,12 +107,14 @@ export default function Home() {
           <Title className={s.title} />
           <SFDR className={cn(s.icon, introOut && s.show)} />
           <span className={cn(s.sub)}>
-            <h2 className={cn('h3', s.subtitle, introOut && s['text-appear'])}>
-              Smooth Scroll
-            </h2>
-            <h2 className={cn('p-xs', s.tm, introOut && s['text-appear'])}>
-              <span>©</span> {new Date().getFullYear()} Studio Freight
-            </h2>
+            <HeroTextIn introOut={introOut}>
+              <h2 className={cn('h3', s.subtitle)}>Smooth Scroll</h2>
+            </HeroTextIn>
+            <HeroTextIn introOut={introOut}>
+              <h2 className={cn('p-xs', s.tm)}>
+                <span>©</span> {new Date().getFullYear()} Studio Freight
+              </h2>
+            </HeroTextIn>
           </span>
         </div>
 
@@ -117,18 +127,28 @@ export default function Home() {
               introOut && s.show
             )}
           >
-            <p className={s.text}>
-              scroll <br /> to explore
-            </p>
+            <div className={s.text}>
+              <HeroTextIn introOut={introOut}>
+                <p>scroll</p>
+              </HeroTextIn>
+              <HeroTextIn introOut={introOut}>
+                <p> to explore</p>
+              </HeroTextIn>
+            </div>
           </div>
-          <h1
-            className={cn(s.description, 'p-s', introOut && s['text-appear'])}
-          >
-            A new smooth scroll library <br /> fresh out of the <br /> Studio
-            Freight Darkroom
+          <h1 className={cn(s.description, 'p-s')}>
+            <HeroTextIn introOut={introOut}>
+              <p className="p-s"> A new smooth scroll library</p>
+            </HeroTextIn>
+            <HeroTextIn introOut={introOut}>
+              <p className="p-s">fresh out of the</p>
+            </HeroTextIn>
+            <HeroTextIn introOut={introOut}>
+              <p className="p-s">Studio Freight Darkroom</p>
+            </HeroTextIn>
           </h1>
           <Button
-            className={cn(s.cta, introOut && s['text-appear'])}
+            className={cn(s.cta, introOut && s.in)}
             arrow
             icon={<GitHub />}
             href="https://github.com/studio-freight/lenis"

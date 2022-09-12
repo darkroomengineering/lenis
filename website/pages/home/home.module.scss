@@ -28,9 +28,27 @@
   }
 }
 
-$delay-intro-bottom: 750ms;
-$delay-intro-top: 1250ms;
+$delay-intro-bottom: 150ms;
+$delay-intro-top: 450ms;
 $intro-duration: 2050ms;
+
+.hide-text {
+  overflow: hidden;
+
+  > * {
+    transform: translate3d(0, 200%, 0);
+  }
+}
+
+.show-text {
+  @include desktop {
+    > * {
+      transform: translate3d(0, 0, 0);
+      transition: transform $intro-duration var(--ease-out-expo);
+      transition-delay: $delay-intro-top;
+    }
+  }
+}
 
 .hero {
   display: flex;
@@ -87,7 +105,6 @@ $intro-duration: 2050ms;
     flex-direction: column;
     text-align: end;
     grid-column: 2 / -1;
-    overflow: hidden;
 
     @include desktop {
       position: relative;
@@ -99,8 +116,6 @@ $intro-duration: 2050ms;
       margin-bottom: mobile-vw(8px);
 
       @include desktop {
-        transform: translate3d(0, 200%, 0);
-        opacity: 0.5;
         margin-bottom: desktop-vw(12px);
       }
     }
@@ -108,23 +123,8 @@ $intro-duration: 2050ms;
     .tm {
       color: var(--grey);
 
-      @include desktop {
-        transform: translate3d(0, 200%, 0);
-        opacity: 0.5;
-      }
-
       span {
         vertical-align: text-top;
-      }
-    }
-
-    .text-appear {
-      @include desktop {
-        transition: transform $intro-duration var(--ease-out-expo),
-          opacity $intro-duration var(--ease-out-expo);
-        transition-delay: $delay-intro-top;
-        opacity: 1;
-        transform: translate3d(0, 0, 0);
       }
     }
   }
@@ -132,16 +132,6 @@ $intro-duration: 2050ms;
   .bottom {
     width: 100%;
     overflow: hidden;
-
-    &.show {
-      @include desktop {
-        transition: transform $intro-duration var(--ease-out-expo),
-          opacity $intro-duration var(--ease-out-expo);
-        transition-delay: $delay-intro-bottom;
-        opacity: 1;
-        transform: translate3d(0, 0, 0) scaleY(1);
-      }
-    }
 
     @include desktop {
       padding-bottom: desktop-vw(40px);
@@ -165,8 +155,6 @@ $intro-duration: 2050ms;
         @include desktop {
           padding-left: desktop-vw(16px);
           font-size: desktop-vw(24px);
-          transform: translate3d(0, 200%, 0);
-          opacity: 0.5;
         }
       }
 
@@ -179,6 +167,7 @@ $intro-duration: 2050ms;
         width: desktop-vw(2px);
         background-color: var(--pink);
         animation: scale 4s infinite;
+        animation-play-state: paused;
         transform-origin: 50% 0;
         transform: scale(0);
       }
@@ -191,17 +180,7 @@ $intro-duration: 2050ms;
 
       &.show {
         &::before {
-          transform: scale(0);
-        }
-
-        .text {
-          @include desktop {
-            transition: transform $intro-duration var(--ease-out-expo),
-              opacity $intro-duration var(--ease-out-expo);
-            transition-delay: $delay-intro-bottom;
-            opacity: 1;
-            transform: translate3d(0, 0, 0);
-          }
+          animation-play-state: running;
         }
       }
 
@@ -220,8 +199,6 @@ $intro-duration: 2050ms;
 
       @include desktop {
         grid-column: 3 / span 3;
-        transform: translate3d(0, 200%, 0);
-        opacity: 0.5;
       }
     }
 
@@ -229,19 +206,17 @@ $intro-duration: 2050ms;
       grid-column: 1 / -1;
       text-align: end;
 
-      @include desktop {
-        grid-column: 10 / -1;
-        opacity: 0;
-      }
-    }
-
-    .text-appear {
-      @include desktop {
-        transition: transform $intro-duration var(--ease-out-expo),
-          opacity $intro-duration var(--ease-out-expo);
-        transition-delay: $delay-intro-bottom;
+      &.in {
         opacity: 1;
         transform: translate3d(0, 0, 0);
+      }
+
+      @include desktop {
+        transition: transform calc($intro-duration - 200ms) var(--ease-out-expo),
+          opacity $intro-duration var(--ease-out-expo);
+        grid-column: 10 / -1;
+        opacity: 0.5;
+        transform: translate3d(0, 100%, 0);
       }
     }
   }

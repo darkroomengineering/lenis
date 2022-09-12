@@ -35,14 +35,6 @@ define(['./workbox-4d30eff7'], function (e) {
     e.precacheAndRoute(
       [
         {
-          url: '/_next/static/Y_HDW3k8P9E6Ua6eojUOa/_buildManifest.js',
-          revision: '0530c1b8c9c11437067e10f3f16f9492',
-        },
-        {
-          url: '/_next/static/Y_HDW3k8P9E6Ua6eojUOa/_ssgManifest.js',
-          revision: 'b6652df95db52feb4daf4eca35380933',
-        },
-        {
           url: '/_next/static/chunks/142dd345.1cfa895bc0a444be.js',
           revision: '1cfa895bc0a444be',
         },
@@ -63,8 +55,8 @@ define(['./workbox-4d30eff7'], function (e) {
           revision: 'e789bfbc8d6f1a8f',
         },
         {
-          url: '/_next/static/chunks/594-1bc4a1bc5b8f64d5.js',
-          revision: '1bc4a1bc5b8f64d5',
+          url: '/_next/static/chunks/594-434e3c28889bf31a.js',
+          revision: '434e3c28889bf31a',
         },
         {
           url: '/_next/static/chunks/614.eac2d85c3c1afacb.js',
@@ -115,20 +107,28 @@ define(['./workbox-4d30eff7'], function (e) {
           revision: '837c0df77fd5009c9e46d446188ecfd0',
         },
         {
-          url: '/_next/static/chunks/webpack-5296448aced6a67d.js',
-          revision: '5296448aced6a67d',
+          url: '/_next/static/chunks/webpack-d37fa37a1b95f159.js',
+          revision: 'd37fa37a1b95f159',
         },
         {
           url: '/_next/static/css/57d7fc4352487ffc.css',
           revision: '57d7fc4352487ffc',
         },
         {
-          url: '/_next/static/css/719318096eace446.css',
-          revision: '719318096eace446',
+          url: '/_next/static/css/86c6ec40b2dd6caa.css',
+          revision: '86c6ec40b2dd6caa',
         },
         {
           url: '/_next/static/css/8a233b5df237aa85.css',
           revision: '8a233b5df237aa85',
+        },
+        {
+          url: '/_next/static/joVXaR1DWNr5fp9NztYav/_buildManifest.js',
+          revision: 'c25266106722ac70089c5107d9a75dcc',
+        },
+        {
+          url: '/_next/static/joVXaR1DWNr5fp9NztYav/_ssgManifest.js',
+          revision: 'b6652df95db52feb4daf4eca35380933',
         },
         {
           url: '/android-chrome-192x192.png',
