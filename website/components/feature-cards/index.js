@@ -3,7 +3,7 @@ import cn from 'clsx'
 import { Card } from 'components/card'
 import { useScroll } from 'hooks/use-scroll'
 import { clamp, mapRange } from 'lib/maths'
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { useWindowSize } from 'react-use'
 
 import s from './feature-cards.module.scss'
@@ -36,6 +36,7 @@ const cards = [
 ]
 
 export const FeatureCards = () => {
+  const element = useRef()
   const [setRef, rect] = useRect()
   const { height: windowHeight } = useWindowSize()
 
@@ -46,16 +47,26 @@ export const FeatureCards = () => {
       const start = rect.top - windowHeight / 2
       const end = rect.top + rect.height - windowHeight
 
-      const progress = clamp(-1, mapRange(start, end, scroll, 0, 1), 1)
-      const step = Math.floor(progress * 8)
-      console.log(step)
+      const progress = clamp(0, mapRange(start, end, scroll, 0, 1), 1) * 9
+      const cards = [...element.current.children]
+      cards.forEach((node, i) => {
+        node.style.setProperty('--progress', clamp(i, progress, i + 1) - i)
+      })
+
+      // element.current.style.setProperty('--progress', progress * 8)
+      const step = Math.floor(progress)
       setCurrent(step)
     },
     [rect]
   )
 
   return (
-    <div ref={setRef} className={s.features}>
+    <div
+      ref={(node) => {
+        setRef(node)
+      }}
+      className={s.features}
+    >
       <div className={cn('layout-block-inner', s.sticky)}>
         <aside className={s.title}>
           <p className="h3">
@@ -64,10 +75,11 @@ export const FeatureCards = () => {
             <span className="grey">the heat</span>
           </p>
         </aside>
-        <div>
+        <div ref={element}>
           {cards.map((card, index) => (
             <SingleCard
               key={index}
+              index={index}
               text={card.text}
               number={index + 1}
               current={index <= current}
@@ -79,9 +91,9 @@ export const FeatureCards = () => {
   )
 }
 
-const SingleCard = ({ text, number, current }) => {
+const SingleCard = ({ text, number, index }) => {
   return (
-    <div className={cn(s.card, current && s.reset)}>
+    <div className={cn(s.card)} style={{ '--i': index }}>
       <Card background="rgba(239, 239, 239, 0.8)" number={number} text={text} />
     </div>
   )

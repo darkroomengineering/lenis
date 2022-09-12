@@ -9,9 +9,15 @@
 
   .card {
     position: absolute;
-    transition-duration: 600ms;
-    transition-property: opacity, transform;
-    transition-timing-function: var(--ease-out-expo);
+    // transition-duration: 600ms;
+    // transition-property: opacity, transform;
+    // transition-timing-function: var(--ease-out-expo);
+
+    // @debug var(--progress) % var(--i);
+    --p: calc(1 - var(--progress));
+    --t: calc(var(--p) * 100%);
+    transform: translate3d(var(--t), var(--t), 0);
+    opacity: var(--progress);
 
     @include mobile {
       @for $i from 0 through 9 {
@@ -38,10 +44,10 @@
       }
     }
 
-    &:not(.reset) {
-      transform: translate3d(50%, 50%, 0);
-      opacity: 0;
-    }
+    // &:not(.reset) {
+    //   transform: translate3d(50%, 50%, 0);
+    //   opacity: 0;
+    // }
   }
 
   .title {

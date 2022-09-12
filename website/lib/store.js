@@ -18,8 +18,6 @@ export const useStore = create((set, get) => ({
     let thresholds = { ...get().thresholds }
     thresholds[id] = value
 
-    console.log(thresholds)
-
     set({ thresholds })
   },
   // removeThreshold: (threshold) => {

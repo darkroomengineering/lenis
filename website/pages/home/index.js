@@ -41,6 +41,8 @@ export default function Home() {
   const { height: windowHeight } = useWindowSize()
   const introOut = useStore(({ introOut }) => introOut)
 
+  const [theme, setTheme] = useState('dark')
+
   useScroll(({ scroll }) => {
     setHasScrolled(scroll > 10)
     if (!zoomWrapperRect.top) return
@@ -52,6 +54,7 @@ export default function Home() {
     const center = 0.6
     const progress1 = clamp(0, mapRange(0, center, progress, 0, 1), 1)
     const progress2 = clamp(0, mapRange(center - 0.055, 1, progress, 0, 1), 1)
+    setTheme(progress2 === 1 ? 'light' : 'dark')
 
     zoomRef.current.style.setProperty('--progress1', progress1)
     zoomRef.current.style.setProperty('--progress2', progress2)
@@ -63,8 +66,9 @@ export default function Home() {
     }
   })
 
-  const [featuresRectRef, featuresRect] = useRect()
+  const [whyRectRef, whyRect] = useRect()
   const [cardsRectRef, cardsRect] = useRect()
+  const [featuresRectRef, featuresRect] = useRect()
 
   const addThreshold = useStore(({ addThreshold }) => addThreshold)
 
@@ -73,13 +77,13 @@ export default function Home() {
   }, [])
 
   useEffect(() => {
-    const top = featuresRect.top - windowHeight / 2
-    addThreshold({ id: 'features-start', value: top })
+    const top = whyRect.top - windowHeight / 2
+    addThreshold({ id: 'why-start', value: top })
     addThreshold({
-      id: 'features-end',
-      value: top + featuresRect.height,
+      id: 'why-end',
+      value: top + whyRect.height,
     })
-  }, [featuresRect])
+  }, [whyRect])
 
   useEffect(() => {
     const top = cardsRect.top - windowHeight / 2
@@ -88,9 +92,14 @@ export default function Home() {
     addThreshold({ id: 'end', value: top + cardsRect.height + windowHeight })
   }, [cardsRect])
 
+  useEffect(() => {
+    const top = featuresRect.top - windowHeight
+    addThreshold({ id: 'features-start', value: top })
+  }, [featuresRect])
+
   return (
     <Layout
-      theme="dark"
+      theme={theme}
       seo={{
         title: 'Lenis – Get smooth or die trying',
         description:
@@ -162,7 +171,7 @@ export default function Home() {
           <p className={cn(s.sticky, 'h2')}>
             <a href="#top">Why smooth scroll?</a>
           </p>
-          <aside className={s.features} ref={featuresRectRef}>
+          <aside className={s.features} ref={whyRectRef}>
             <div className={s.feature}>
               <p className="p">
                 We’ve heard all the reasons to not use smooth scroll. It feels
@@ -289,20 +298,22 @@ export default function Home() {
           </div>
         </div>
       </section>
-      <section className={cn('theme-light', s.featuring)}>
-        <div className={cn('layout-block', s.intro)}>
-          <p className="p-l">
-            Lenis is an{' '}
-            <Link
-              className="contrast semi-bold"
-              href="https://github.com/studio-freight/lenis"
-            >
-              open-source library
-            </Link>{' '}
-            built to standardize scroll experiences and sauce up websites with
-            butter-smooth navigation, all while using the platform and keeping
-            it accessible.
-          </p>
+      <section className={cn('theme-light', s.featuring)} ref={featuresRectRef}>
+        <div className={s.inner}>
+          <div className={cn('layout-block', s.intro)}>
+            <p className="p-l">
+              Lenis is an{' '}
+              <Link
+                className="contrast semi-bold"
+                href="https://github.com/studio-freight/lenis"
+              >
+                open-source library
+              </Link>{' '}
+              built to standardize scroll experiences and sauce up websites with
+              butter-smooth navigation, all while using the platform and keeping
+              it accessible.
+            </p>
+          </div>
         </div>
         <FeatureCards />
       </section>
