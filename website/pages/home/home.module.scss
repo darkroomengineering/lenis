@@ -35,8 +35,10 @@ $intro-duration: 2050ms;
 .hide-text {
   overflow: hidden;
 
-  > * {
-    transform: translate3d(0, 200%, 0);
+  @include desktop {
+    > * {
+      transform: translate3d(0, 200%, 0);
+    }
   }
 }
 
@@ -58,6 +60,12 @@ $intro-duration: 2050ms;
   margin-bottom: mobile-vw(160px);
   position: relative;
 
+  @include mobile {
+    > div {
+      grid-gap: mobile-vw(11px);
+    }
+  }
+
   @include desktop {
     height: 100vh;
     margin-bottom: desktop-vw(320px);
@@ -67,6 +75,10 @@ $intro-duration: 2050ms;
     grid-column: 1 / -1;
     margin-top: mobile-vw(30px);
     width: var(--layout-width);
+
+    @include mobile {
+      height: mobile-vw(85px);
+    }
 
     @include desktop {
       margin-top: desktop-vw(30px);
