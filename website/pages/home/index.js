@@ -90,7 +90,7 @@ export default function Home() {
 
   useEffect(() => {
     const top = whiteRect.top - windowHeight
-    addThreshold({ id: 'white-start', value: top })
+    addThreshold({ id: 'light-start', value: top })
   }, [whiteRect])
 
   useEffect(() => {
@@ -107,8 +107,9 @@ export default function Home() {
 
   useEffect(() => {
     const top = lenis?.limit
+    console.log(top)
     addThreshold({ id: 'end', value: top })
-  }, [lenis])
+  }, [lenis?.limit])
 
   return (
     <Layout
