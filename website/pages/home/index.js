@@ -59,7 +59,9 @@ export default function Home() {
 
   const [whyRectRef, whyRect] = useRect()
   const [cardsRectRef, cardsRect] = useRect()
+  const [whiteRectRef, whiteRect] = useRect()
   const [featuresRectRef, featuresRect] = useRect()
+  const [inuseRectRef, inuseRect] = useRect()
 
   const addThreshold = useStore(({ addThreshold }) => addThreshold)
 
@@ -80,13 +82,33 @@ export default function Home() {
     const top = cardsRect.top - windowHeight / 2
     addThreshold({ id: 'cards-start', value: top })
     addThreshold({ id: 'cards-end', value: top + cardsRect.height })
-    addThreshold({ id: 'end', value: top + cardsRect.height + windowHeight })
+    addThreshold({
+      id: 'red-end',
+      value: top + cardsRect.height + windowHeight,
+    })
   }, [cardsRect])
 
   useEffect(() => {
-    const top = featuresRect.top - windowHeight
-    addThreshold({ id: 'features-start', value: top })
+    const top = whiteRect.top - windowHeight
+    addThreshold({ id: 'white-start', value: top })
+  }, [whiteRect])
+
+  useEffect(() => {
+    const top = featuresRect.top
+    addThreshold({ id: 'features', value: top })
   }, [featuresRect])
+
+  useEffect(() => {
+    const top = inuseRect.top
+    addThreshold({ id: 'in-use', value: top })
+  }, [inuseRect])
+
+  const lenis = useStore(({ lenis }) => lenis)
+
+  useEffect(() => {
+    const top = lenis?.limit
+    addThreshold({ id: 'end', value: top })
+  }, [lenis])
 
   return (
     <Layout
@@ -272,7 +294,7 @@ export default function Home() {
           </div>
         </div>
       </section>
-      <section className={cn('theme-light', s.featuring)} ref={featuresRectRef}>
+      <section className={cn('theme-light', s.featuring)} ref={whiteRectRef}>
         <div className={s.inner}>
           <div className={cn('layout-block', s.intro)}>
             <p className="p-l">
@@ -289,9 +311,11 @@ export default function Home() {
             </p>
           </div>
         </div>
-        <FeatureCards />
+        <section ref={featuresRectRef}>
+          <FeatureCards />
+        </section>
       </section>
-      <section className={cn('theme-light', s['in-use'])}>
+      <section ref={inuseRectRef} className={cn('theme-light', s['in-use'])}>
         <div className="layout-grid">
           <aside className={s.title}>
             <p className="h3">

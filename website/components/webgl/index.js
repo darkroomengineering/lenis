@@ -193,12 +193,42 @@ const steps = [
     type: 1,
   },
   {
-    position: [-0.2, -0.35, 0],
-    scale: 0.02,
+    position: [0.16, -1.38, 0],
+    scale: 0.05,
     rotation: [
-      MathUtils.degToRad(-90),
-      MathUtils.degToRad(-45),
-      MathUtils.degToRad(-45),
+      MathUtils.degToRad(0),
+      MathUtils.degToRad(200),
+      MathUtils.degToRad(-16),
+    ],
+    type: 2,
+  },
+  {
+    position: [0, -0.68, 0],
+    scale: 0.04,
+    rotation: [
+      MathUtils.degToRad(0),
+      MathUtils.degToRad(-14),
+      MathUtils.degToRad(-16),
+    ],
+    type: 2,
+  },
+  {
+    position: [-0.22, -0.61, 0],
+    scale: 0.03,
+    rotation: [
+      MathUtils.degToRad(0),
+      MathUtils.degToRad(-157),
+      MathUtils.degToRad(-16),
+    ],
+    type: 2,
+  },
+  {
+    position: [0.2, -0.46, 0],
+    scale: 0.03,
+    rotation: [
+      MathUtils.degToRad(0),
+      MathUtils.degToRad(-340),
+      MathUtils.degToRad(-16),
     ],
     type: 2,
   },
