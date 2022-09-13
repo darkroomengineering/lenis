@@ -29,6 +29,10 @@ const GridDebugger = dynamic(
   { ssr: false }
 )
 
+const Leva = dynamic(() => import('leva').then(({ Leva }) => Leva), {
+  ssr: false,
+})
+
 function MyApp({ Component, pageProps }) {
   const debug = useDebug()
   const lenis = useStore(({ lenis }) => lenis)
@@ -68,12 +72,14 @@ function MyApp({ Component, pageProps }) {
 
   return (
     <>
+      <Leva hidden={!debug} />
       {debug && (
         <>
           <GridDebugger />
           <Stats />
         </>
       )}
+
       {/* Google Tag Manager - Global base code */}
       {process.env.NODE_ENV !== 'development' && (
         <>
