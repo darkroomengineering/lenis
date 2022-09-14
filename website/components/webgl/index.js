@@ -167,7 +167,7 @@ const steps = [
     scale: 0.02,
     rotation: [
       MathUtils.degToRad(-90),
-      MathUtils.degToRad(-45),
+      MathUtils.degToRad(-405),
       MathUtils.degToRad(-45),
     ],
     type: 1,
@@ -177,7 +177,7 @@ const steps = [
     scale: 0.05,
     rotation: [
       MathUtils.degToRad(-90),
-      MathUtils.degToRad(-45),
+      MathUtils.degToRad(-405),
       MathUtils.degToRad(-45),
     ],
     type: 1,
@@ -187,18 +187,48 @@ const steps = [
     scale: 0.05,
     rotation: [
       MathUtils.degToRad(-90),
-      MathUtils.degToRad(-45),
+      MathUtils.degToRad(-405),
       MathUtils.degToRad(-45),
     ],
     type: 1,
   },
   {
-    position: [-0.2, -0.35, 0],
-    scale: 0.02,
+    position: [0.16, -1.38, 0],
+    scale: 0.05,
     rotation: [
-      MathUtils.degToRad(-90),
-      MathUtils.degToRad(-45),
-      MathUtils.degToRad(-45),
+      MathUtils.degToRad(0),
+      MathUtils.degToRad(200),
+      MathUtils.degToRad(-16),
+    ],
+    type: 2,
+  },
+  {
+    position: [0, -0.68, 0],
+    scale: 0.04,
+    rotation: [
+      MathUtils.degToRad(0),
+      MathUtils.degToRad(-14),
+      MathUtils.degToRad(-16),
+    ],
+    type: 2,
+  },
+  {
+    position: [-0.22, -0.61, 0],
+    scale: 0.03,
+    rotation: [
+      MathUtils.degToRad(0),
+      MathUtils.degToRad(-157),
+      MathUtils.degToRad(-16),
+    ],
+    type: 2,
+  },
+  {
+    position: [0.2, -0.46, 0],
+    scale: 0.03,
+    rotation: [
+      MathUtils.degToRad(0),
+      MathUtils.degToRad(-340),
+      MathUtils.degToRad(-16),
     ],
     type: 2,
   },
@@ -219,7 +249,7 @@ export function Arm() {
   const { scene: arm2 } = useGLTF('/models/arm2.glb')
   const [type, setType] = useState(1)
 
-  const [{ color, roughness, metalness, wireframe }] = useControls(
+  const [{ color, roughness, metalness, wireframe }, setMaterial] = useControls(
     () => ({
       color: '#b0b0b0',
       roughness: {
@@ -246,6 +276,7 @@ export function Arm() {
       light2Intensity,
       ambientColor,
     },
+    setLights,
   ] = useControls(
     'lights',
     () => ({
@@ -338,6 +369,40 @@ export function Arm() {
   const thresholds = useMemo(() => {
     return Object.values(_thresholds).sort((a, b) => a - b)
   }, [_thresholds])
+
+  useScroll(
+    ({ scroll }) => {
+      if (scroll < _thresholds['light-start']) {
+        setLights({
+          light1Intensity: 0.35,
+          light2Intensity: 0.15,
+          lightsColor: '#FF98A2',
+          ambientColor: '#FF98A2',
+        })
+        setMaterial({
+          color: '#b0b0b0',
+          roughness: 0.4,
+          metalness: 1,
+        })
+        // console.log('dark')
+      } else {
+        // console.log('light')
+
+        setLights({
+          light1Intensity: 1,
+          light2Intensity: 1,
+          lightsColor: '#efefef',
+          ambientColor: '#b0B0B0',
+        })
+        setMaterial({
+          color: '#efefef',
+          roughness: 0.4,
+          metalness: 0.6,
+        })
+      }
+    },
+    [_thresholds]
+  )
 
   useScroll(({ scroll }) => {
     if (custom) {

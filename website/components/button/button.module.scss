@@ -1,7 +1,7 @@
 @import 'styles/_functions';
 
 .button {
-  display: grid;
+  display: flex;
   grid-template-columns: desktop-vw(48px) 1fr;
   align-items: center;
   justify-content: space-between;
@@ -12,6 +12,7 @@
   font-size: mobile-vw(14px);
   color: var(--black);
   overflow: hidden;
+  text-align: center;
 
   @include desktop {
     font-size: desktop-vw(14px);
@@ -21,14 +22,23 @@
   .text {
     position: relative;
     z-index: 10;
-    margin-left: mobile-vw(24px);
+    flex-grow: 1;
+    // margin-left: mobile-vw(48px);
 
-    @include desktop {
-      margin-left: desktop-vw(24px);
+    .visible,
+    .hidden {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100%;
+
+      @include desktop {
+        padding: 0 desktop-vw(24px);
+        //   margin-left: desktop-vw(24px);
+      }
     }
 
     .visible {
-      display: block;
       position: relative;
       transition: transform 600ms var(--ease-out-expo),
         opacity 600ms var(--ease-out-expo);
@@ -79,7 +89,7 @@
   .icon {
     display: flex;
     aspect-ratio: 1 / 1;
-    padding: 1px;
+    // padding: 1px;
     transition: border-color 600ms var(--ease-out-expo);
     width: mobile-vw(48px);
     z-index: 10;
@@ -93,6 +103,7 @@
       margin: auto;
       transition: color 600ms var(--ease-out-expo);
       background-color: var(--theme-primary);
+      padding: mobile-vw(12px);
 
       @include desktop {
         padding: desktop-vw(12px);
@@ -106,13 +117,13 @@
     aspect-ratio: 1 / 1;
     width: mobile-vw(10px);
     margin-left: mobile-vw(16px);
-    margin-right: mobile-vw(25px);
+    // margin-right: mobile-vw(25px);
     transition: transform 600ms var(--ease-out-expo);
 
     @include desktop {
       width: desktop-vw(10px);
       margin-left: desktop-vw(16px);
-      margin-right: desktop-vw(25px);
+      // margin-right: desktop-vw(25px);
     }
   }
 
