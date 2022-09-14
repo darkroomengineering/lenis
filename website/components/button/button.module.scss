@@ -89,13 +89,16 @@
   .icon {
     display: flex;
     aspect-ratio: 1 / 1;
-    // padding: 1px;
     transition: border-color 600ms var(--ease-out-expo);
     width: mobile-vw(48px);
     z-index: 10;
+    padding: mobile-vw(12px);
+    background-color: var(--theme-primary);
+    // border: 1px solid var(--pink);
 
     @include desktop {
       width: desktop-vw(48px);
+      padding: desktop-vw(12px);
     }
 
     svg {
@@ -103,10 +106,12 @@
       margin: auto;
       transition: color 600ms var(--ease-out-expo);
       background-color: var(--theme-primary);
-      padding: mobile-vw(12px);
+      width: mobile-vw(24px);
+      height: mobile-vw(24px);
 
       @include desktop {
-        padding: desktop-vw(12px);
+        width: desktop-vw(24px);
+        height: desktop-vw(24px);
       }
     }
   }
