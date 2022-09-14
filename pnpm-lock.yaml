@@ -1,4 +1,4 @@
-lockfileVersion: 5.3
+lockfileVersion: 5.4
 
 specifiers:
   '@size-limit/preset-small-lib': ^8.1.0
@@ -1389,7 +1389,7 @@ packages:
       slash: 3.0.0
     dev: true
 
-  /@rollup/plugin-babel/5.3.1_@babel+core@7.19.0+rollup@2.79.0:
+  /@rollup/plugin-babel/5.3.1_b6woseefyuugm6lsnk4tw7iz2e:
     resolution: {integrity: sha512-WFfdLWU/xVWKeRQnKmIAQULUI7Il0gZnBIH/ZFO069wYIfPu+8zrfp/KMW0atmELoRDq8FbiP3VCss9MhCut7Q==}
     engines: {node: '>= 10.0.0'}
     peerDependencies:
@@ -3163,7 +3163,7 @@ packages:
       '@babel/preset-flow': 7.18.6_@babel+core@7.19.0
       '@babel/preset-react': 7.18.6_@babel+core@7.19.0
       '@rollup/plugin-alias': 3.1.9_rollup@2.79.0
-      '@rollup/plugin-babel': 5.3.1_@babel+core@7.19.0+rollup@2.79.0
+      '@rollup/plugin-babel': 5.3.1_b6woseefyuugm6lsnk4tw7iz2e
       '@rollup/plugin-commonjs': 17.1.0_rollup@2.79.0
       '@rollup/plugin-json': 4.1.0_rollup@2.79.0
       '@rollup/plugin-node-resolve': 11.2.1_rollup@2.79.0
@@ -3187,7 +3187,7 @@ packages:
       rollup-plugin-bundle-size: 1.0.3
       rollup-plugin-postcss: 4.0.2_postcss@8.4.16
       rollup-plugin-terser: 7.0.2_rollup@2.79.0
-      rollup-plugin-typescript2: 0.32.1_rollup@2.79.0+typescript@4.8.2
+      rollup-plugin-typescript2: 0.32.1_id3sp2lbl4kx3dskm7teaj32um
       rollup-plugin-visualizer: 5.8.1_rollup@2.79.0
       sade: 1.8.1
       terser: 5.15.0
@@ -4040,7 +4040,7 @@ packages:
       terser: 5.15.0
     dev: true
 
-  /rollup-plugin-typescript2/0.32.1_rollup@2.79.0+typescript@4.8.2:
+  /rollup-plugin-typescript2/0.32.1_id3sp2lbl4kx3dskm7teaj32um:
     resolution: {integrity: sha512-RanO8bp1WbeMv0bVlgcbsFNCn+Y3rX7wF97SQLDxf0fMLsg0B/QFF005t4AsGUcDgF3aKJHoqt4JF2xVaABeKw==}
     peerDependencies:
       rollup: '>=1.26.3'
