@@ -23,4 +23,6 @@ export const useStore = create((set, get) => ({
   // removeThreshold: (threshold) => {
   //   set({ threshold })
   // },
+  introOut: false,
+  setIntroOut: (introOut) => set({ introOut }),
 }))

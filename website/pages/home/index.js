@@ -4,6 +4,7 @@ import { Button } from 'components/button'
 import { Card } from 'components/card'
 import { FeatureCards } from 'components/feature-cards'
 import { HorizontalSlides } from 'components/horizontal-slides'
+import { Title } from 'components/intro'
 import { Link } from 'components/link'
 import { ListItem } from 'components/list-item'
 import { Parallax } from 'components/parallax'
@@ -18,7 +19,6 @@ import { useWindowSize } from 'react-use'
 import s from './home.module.scss'
 
 const SFDR = dynamic(() => import('icons/sfdr.svg'), { ssr: false })
-const Lenis = dynamic(() => import('icons/lenis.svg'))
 const GitHub = dynamic(() => import('icons/github.svg'), { ssr: false })
 
 const WebGL = dynamic(
@@ -26,11 +26,20 @@ const WebGL = dynamic(
   { ssr: false }
 )
 
+const HeroTextIn = ({ children, introOut }) => {
+  return (
+    <div className={cn(s['hide-text'], introOut && s['show-text'])}>
+      {children}
+    </div>
+  )
+}
+
 export default function Home() {
   const [hasScrolled, setHasScrolled] = useState()
   const zoomRef = useRef(null)
   const [zoomWrapperRectRef, zoomWrapperRect] = useRect()
   const { height: windowHeight } = useWindowSize()
+  const introOut = useStore(({ introOut }) => introOut)
 
   const [theme, setTheme] = useState('dark')
 
@@ -126,14 +135,18 @@ export default function Home() {
       </div>
 
       <section className={s.hero}>
-        <div className="layout-grid">
-          <Lenis className={s.title} />
-          <SFDR className={s.icon} />
-          <span className={s.sub}>
-            <h2 className={cn('h3', s.subtitle)}>Smooth Scroll</h2>
-            <h2 className={cn('p-xs', s.tm)}>
-              <span>©</span> {new Date().getFullYear()} Studio Freight
-            </h2>
+        <div className="layout-grid-inner">
+          <Title className={s.title} />
+          <SFDR className={cn(s.icon, introOut && s.show)} />
+          <span className={cn(s.sub)}>
+            <HeroTextIn introOut={introOut}>
+              <h2 className={cn('h3', s.subtitle)}>Smooth Scroll</h2>
+            </HeroTextIn>
+            <HeroTextIn introOut={introOut}>
+              <h2 className={cn('p-xs', s.tm)}>
+                <span>©</span> {new Date().getFullYear()} Studio Freight
+              </h2>
+            </HeroTextIn>
           </span>
         </div>
 
@@ -142,19 +155,32 @@ export default function Home() {
             className={cn(
               'hide-on-mobile',
               s['scroll-hint'],
-              hasScrolled && s.hide
+              hasScrolled && s.hide,
+              introOut && s.show
             )}
           >
-            <p className={s.text}>
-              scroll <br /> to explore
-            </p>
+            <div className={s.text}>
+              <HeroTextIn introOut={introOut}>
+                <p>scroll</p>
+              </HeroTextIn>
+              <HeroTextIn introOut={introOut}>
+                <p> to explore</p>
+              </HeroTextIn>
+            </div>
           </div>
           <h1 className={cn(s.description, 'p-s')}>
-            A new smooth scroll library <br /> fresh out of the <br /> Studio
-            Freight Darkroom
+            <HeroTextIn introOut={introOut}>
+              <p className="p-s"> A new smooth scroll library</p>
+            </HeroTextIn>
+            <HeroTextIn introOut={introOut}>
+              <p className="p-s">fresh out of the</p>
+            </HeroTextIn>
+            <HeroTextIn introOut={introOut}>
+              <p className="p-s">Studio Freight Darkroom</p>
+            </HeroTextIn>
           </h1>
           <Button
-            className={s.cta}
+            className={cn(s.cta, introOut && s.in)}
             arrow
             icon={<GitHub />}
             href="https://github.com/studio-freight/lenis"

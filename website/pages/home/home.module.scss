@@ -28,12 +28,43 @@
   }
 }
 
+$delay-intro-bottom: 150ms;
+$delay-intro-top: 450ms;
+$intro-duration: 2050ms;
+
+.hide-text {
+  overflow: hidden;
+
+  @include desktop {
+    > * {
+      transform: translate3d(0, 200%, 0);
+    }
+  }
+}
+
+.show-text {
+  @include desktop {
+    > * {
+      transform: translate3d(0, 0, 0);
+      transition: transform $intro-duration var(--ease-out-expo);
+      transition-delay: $delay-intro-top;
+    }
+  }
+}
+
 .hero {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   height: mobile-vw(580px);
   margin-bottom: mobile-vw(160px);
+  position: relative;
+
+  @include mobile {
+    > div {
+      grid-gap: mobile-vw(11px);
+    }
+  }
 
   @include desktop {
     height: 100vh;
@@ -45,8 +76,15 @@
     margin-top: mobile-vw(30px);
     width: var(--layout-width);
 
+    @include mobile {
+      height: mobile-vw(85px);
+    }
+
     @include desktop {
       margin-top: desktop-vw(30px);
+      position: absolute;
+      top: 0;
+      left: 2.5%;
     }
   }
 
@@ -55,8 +93,22 @@
     height: mobile-vw(39px);
 
     @include desktop {
+      position: relative;
+      top: desktop-vw(395px);
       width: desktop-vw(44px);
       height: desktop-vw(39px);
+      transform: translate3d(0, 100%, 0);
+      opacity: 0;
+    }
+
+    &.show {
+      @include desktop {
+        transition: transform $intro-duration var(--ease-out-expo),
+          opacity $intro-duration var(--ease-out-expo);
+        transition-delay: $delay-intro-top;
+        opacity: 1;
+        transform: translate3d(0, 0, 0);
+      }
     }
   }
 
@@ -67,6 +119,8 @@
     grid-column: 2 / -1;
 
     @include desktop {
+      position: relative;
+      top: desktop-vw(395px);
       grid-column: 6 / span 7;
     }
 
@@ -89,6 +143,7 @@
 
   .bottom {
     width: 100%;
+    overflow: hidden;
 
     @include desktop {
       padding-bottom: desktop-vw(40px);
@@ -124,12 +179,20 @@
         width: desktop-vw(2px);
         background-color: var(--pink);
         animation: scale 4s infinite;
+        animation-play-state: paused;
         transform-origin: 50% 0;
+        transform: scale(0);
       }
 
       @keyframes scale {
         50% {
           transform: scaleY(1.5);
+        }
+      }
+
+      &.show {
+        &::before {
+          animation-play-state: running;
         }
       }
 
@@ -155,8 +218,17 @@
       grid-column: 1 / -1;
       text-align: end;
 
+      &.in {
+        opacity: 1;
+        transform: translate3d(0, 0, 0);
+      }
+
       @include desktop {
+        transition: transform calc($intro-duration - 200ms) var(--ease-out-expo),
+          opacity $intro-duration var(--ease-out-expo);
         grid-column: 10 / -1;
+        opacity: 0.5;
+        transform: translate3d(0, 100%, 0);
       }
     }
   }

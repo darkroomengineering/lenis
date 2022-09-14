@@ -11,6 +11,7 @@ import { PageTransition } from 'components/page-transition'
 import Lenis from '../../../bundled/lenis'
 
 // import { Header } from 'components/header'
+import { Intro } from 'components/intro'
 import { Scrollbar } from 'components/scrollbar'
 import { useStore } from 'lib/store'
 import { useRouter } from 'next/router'
@@ -114,6 +115,7 @@ export function Layout({
       <CustomHead {...seo} />
       <div className={cn(`theme-${theme}`, s.layout, className)}>
         <PageTransition />
+        <Intro />
         {isTouchDevice === false && <Cursor />}
         {isTouchDevice === false && <Scrollbar />}
         {/* <Header ref={ref} /> */}
