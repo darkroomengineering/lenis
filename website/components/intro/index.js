@@ -29,11 +29,15 @@ export const Intro = () => {
     }
 
     if (lenis) {
+      console.log(scroll)
       if (scroll) {
         lenis.start()
         document.documentElement.classList.toggle('intro', false)
       } else {
-        lenis.stop()
+        setTimeout(() => {
+          lenis.stop()
+        }, 0)
+
         document.documentElement.classList.toggle('intro', true)
       }
     }
