@@ -1,18 +1,18 @@
 export default class Lenis {
     constructor({ duration, easing, smooth, direction, wrapper, content, }?: {
         duration?: number;
-        easing?: (t: any) => number;
+        easing?: (t: number) => number;
         smooth?: boolean;
-        direction?: string;
-        wrapper?: Window & typeof globalThis;
+        direction?: "vertical" | "horizontal";
+        wrapper?: Window | HTMLElement;
         content?: HTMLElement;
     }, ...args: any[]);
-    wrapperNode: Window & typeof globalThis;
+    wrapperNode: HTMLElement | Window;
     contentNode: HTMLElement;
     duration: number;
-    easing: (t: any) => number;
+    easing: (t: number) => number;
     smooth: boolean;
-    direction: string;
+    direction: "vertical" | "horizontal";
     wrapperHeight: any;
     wrapperWidth: any;
     wrapperObserver: ResizeObserver;
@@ -48,7 +48,7 @@ export default class Lenis {
         offset?: number;
         immediate?: boolean;
         duration?: number;
-        easing?: (t: any) => number;
+        easing?: (t: number) => number;
     }): void;
 }
 declare class Animate {

@@ -42,7 +42,7 @@
     "size": "size-limit",
     "clean": "rimraf dist && rimraf bundled",
     "build": "npm run clean && npm run build:light && npm run build:bundle && npm run build:types",
-    "build:types": "tsc --allowJs -d --emitDeclarationOnly --declarationDir dist ./src/*.js",
+    "build:types": "tsc --allowJs -d --emitDeclarationOnly --declarationDir dist --removeComments ./src/*.js",
     "build:light": "microbundle",
     "build:bundle": "microbundle build -i src/lenis.js --format umd --compress --no-sourcemap --no-pkg-main --external none --output ./bundled --name 'Lenis'",
     "build:website": "vite build",

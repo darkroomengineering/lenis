@@ -55,6 +55,20 @@ class Animate {
 }
 
 export default class Lenis extends EventEmitter {
+  /**
+   * @typedef {(t: number) => number} EasingFunction
+   * @typedef {'vertical' | 'horizontal'} Direction
+   *
+   * @typedef LenisOptions
+   * @property {number} [duration]
+   * @property {EasingFunction} [easing]
+   * @property {boolean} [smooth]
+   * @property {Direction} [direction]
+   * @property {Window | HTMLElement} [wrapper]
+   * @property {HTMLElement} [content]
+   *
+   * @param {LenisOptions}
+   */
   constructor({
     duration = 1.2,
     easing = (t) => (t === 1 ? 1 : 1 - Math.pow(2, -10 * t)), //expo.out
