@@ -11,6 +11,7 @@ specifiers:
   size-limit: ^8.1.0
   stats.js: ^0.17.0
   tiny-emitter: ^2.1.0
+  typescript: ^4.8.3
   virtual-scroll: ^2.2.1
   vite: ^3.1.0
 
@@ -28,6 +29,7 @@ devDependencies:
   rimraf: 3.0.2
   size-limit: 8.1.0
   stats.js: 0.17.0
+  typescript: 4.8.3
   vite: 3.1.0
 
 packages:
@@ -3187,13 +3189,13 @@ packages:
       rollup-plugin-bundle-size: 1.0.3
       rollup-plugin-postcss: 4.0.2_postcss@8.4.16
       rollup-plugin-terser: 7.0.2_rollup@2.79.0
-      rollup-plugin-typescript2: 0.32.1_id3sp2lbl4kx3dskm7teaj32um
+      rollup-plugin-typescript2: 0.32.1_ihkqvyh37tzxtjmovjyy2yrv7m
       rollup-plugin-visualizer: 5.8.1_rollup@2.79.0
       sade: 1.8.1
       terser: 5.15.0
       tiny-glob: 0.2.9
       tslib: 2.4.0
-      typescript: 4.8.2
+      typescript: 4.8.3
     transitivePeerDependencies:
       - '@types/babel__core'
       - supports-color
@@ -4040,7 +4042,7 @@ packages:
       terser: 5.15.0
     dev: true
 
-  /rollup-plugin-typescript2/0.32.1_id3sp2lbl4kx3dskm7teaj32um:
+  /rollup-plugin-typescript2/0.32.1_ihkqvyh37tzxtjmovjyy2yrv7m:
     resolution: {integrity: sha512-RanO8bp1WbeMv0bVlgcbsFNCn+Y3rX7wF97SQLDxf0fMLsg0B/QFF005t4AsGUcDgF3aKJHoqt4JF2xVaABeKw==}
     peerDependencies:
       rollup: '>=1.26.3'
@@ -4052,7 +4054,7 @@ packages:
       resolve: 1.22.1
       rollup: 2.79.0
       tslib: 2.4.0
-      typescript: 4.8.2
+      typescript: 4.8.3
     dev: true
 
   /rollup-plugin-visualizer/5.8.1_rollup@2.79.0:
@@ -4431,8 +4433,8 @@ packages:
     engines: {node: '>=10'}
     dev: true
 
-  /typescript/4.8.2:
-    resolution: {integrity: sha512-C0I1UsrrDHo2fYI5oaCGbSejwX4ch+9Y5jTQELvovfmFkK3HHSZJB8MSJcWLmCUBzQBchCrZ9rMRV6GuNrvGtw==}
+  /typescript/4.8.3:
+    resolution: {integrity: sha512-goMHfm00nWPa8UvR/CPSvykqf6dVV8x/dp0c5mFTMTIu0u0FlGWRioyy7Nn0PGAdHxpJZnuO/ut+PpQ8UiHAig==}
     engines: {node: '>=4.2.0'}
     hasBin: true
     dev: true
