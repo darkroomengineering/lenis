@@ -94,7 +94,7 @@
     z-index: 10;
     padding: mobile-vw(12px);
     background-color: var(--theme-primary);
-    // border: 1px solid var(--pink);
+    border: 1px solid var(--pink);
 
     @include desktop {
       width: desktop-vw(48px);
@@ -166,9 +166,11 @@
       }
 
       .icon {
-        svg {
-          color: var(--theme-contrast);
-        }
+        border: 1px solid var(--theme-secondary);
+
+        // svg {
+        //   color: var(--theme-contrast);
+        // }
       }
     }
   }
