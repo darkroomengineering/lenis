@@ -83,9 +83,6 @@ export default class Lenis extends EventEmitter {
 
     this.wrapperNode.addEventListener('scroll', this.onScroll)
 
-    const platform =
-      navigator?.userAgentData?.platform || navigator?.platform || 'unknown'
-
     //observe wrapper node size
     if (this.wrapperNode === window) {
       this.wrapperNode.addEventListener('resize', this.onWindowResize)
@@ -114,11 +111,14 @@ export default class Lenis extends EventEmitter {
 
     this.animate = new Animate()
 
+    const platform =
+      navigator?.userAgentData?.platform || navigator?.platform || 'unknown'
+
     // listen and normalize wheel event cross-browser
     this.virtualScroll = new VirtualScroll({
       el: this.wrapperNode,
       firefoxMultiplier: 50,
-      mouseMultiplier: platform.indexOf('Win') > -1 ? 1 : 0.4,
+      mouseMultiplier: platform.includes('Win') ? 1 : 0.4,
       useKeyboard: false,
       useTouch: false,
       passive: false,
@@ -184,12 +184,17 @@ export default class Lenis extends EventEmitter {
   }
 
   onVirtualScroll = ({ deltaY, originalEvent: e }) => {
-    if (e.ctrlKey || !this.smooth) return
+    if (e.ctrlKey) return
 
     if (this.stopped) {
       e.preventDefault()
       return
     }
+
+    if (!this.smooth) return
+
+    // fix wheel holding scroll https://developer.mozilla.org/en-US/docs/Web/API/MouseEvent/buttons
+    if (e.buttons === 4) return
 
     // prevent native wheel scrolling
     if (this.smooth) e.preventDefault()
@@ -204,7 +209,7 @@ export default class Lenis extends EventEmitter {
     const deltaTime = now - (this.now || 0)
     this.now = now
 
-    if (this.stopped || !this.smooth) return
+    if (this.stopped || !this.smooth || this.holdWheelScrolling) return
 
     // where smooth scroll happens
     this.lastScroll = this.scroll
@@ -234,9 +239,9 @@ export default class Lenis extends EventEmitter {
       : this.wrapperNode.scrollTo(0, value)
   }
 
-  onScroll = () => {
+  onScroll = (e) => {
     // if isScrolling false we can consider user isn't scrolling with wheel (cmd+F, keyboard or whatever). So we must scroll to value immediately
-    if (!this.isScrolling || !this.smooth) {
+    if (!this.isScrolling || !this.smooth || this.holdWheelScrolling) {
       // where native scroll happens
       this.targetScroll =
         this.scroll =

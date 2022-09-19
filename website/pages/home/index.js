@@ -116,7 +116,6 @@ export default function Home() {
 
   useEffect(() => {
     const top = lenis?.limit
-    console.log(top)
     addThreshold({ id: 'end', value: top })
   }, [lenis?.limit])
 
