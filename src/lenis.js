@@ -274,9 +274,8 @@ export default class Lenis extends EventEmitter {
     let value
 
     if (typeof target === 'number') {
-      // Number
       value = target
-    } else if (target === 'top' || '#top') {
+    } else if (target === 'top' || target === '#top') {
       value = 0
     } else if (target === 'bottom') {
       value = this.limit
