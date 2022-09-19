@@ -209,7 +209,7 @@ export default class Lenis extends EventEmitter {
     const deltaTime = now - (this.now || 0)
     this.now = now
 
-    if (this.stopped || !this.smooth || this.holdWheelScrolling) return
+    if (this.stopped || !this.smooth) return
 
     // where smooth scroll happens
     this.lastScroll = this.scroll
@@ -241,7 +241,7 @@ export default class Lenis extends EventEmitter {
 
   onScroll = (e) => {
     // if isScrolling false we can consider user isn't scrolling with wheel (cmd+F, keyboard or whatever). So we must scroll to value immediately
-    if (!this.isScrolling || !this.smooth || this.holdWheelScrolling) {
+    if (!this.isScrolling || !this.smooth) {
       // where native scroll happens
       this.targetScroll =
         this.scroll =
