@@ -11,23 +11,32 @@ This is our take on smooth scroll, lightweight, hard working, smooth as butter s
 ## Features
 
 - Performant
-- Lightweight [(~2Kb gzipped)](https://bundle.js.org/?q=@studio-freight/lenis)
+- Lightweight [(~2Kb gzipped)](https://bundlejs.com/?q=%40studio-freight%2Flenis)
 - Run scroll in main thread
 - Accessibility (CMD+F page search, Tab and arrow navigation, keep scroll position on page refresh, etc.)
 - External RAF
 - SSR proof
+- Not opiniated
+- Tree-shakable
+- Custom scroll easing/duration
 
 <br>
 
 ## Installing
 
-just the usual:
-
+using package manager:
 ```bash
 $ npm i @studio-freight/lenis
 ```
 
-or replace `npm` with your package manager of choice :)
+<br/>
+
+using scripts:
+```html
+<script src="https://cdn.jsdelivr.net/gh/studio-freight/lenis@0.2.6/bundled/lenis.js"></script>
+```
+
+
 
 <br>
 
