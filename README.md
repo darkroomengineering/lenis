@@ -16,7 +16,7 @@ This is our take on smooth scroll, lightweight, hard working, smooth as butter s
 - Accessibility (CMD+F page search, Tab and arrow navigation, keep scroll position on page refresh, etc.)
 - External RAF
 - SSR proof
-- Not opiniated
+- Not opinionated
 - Tree-shakable
 - Custom scroll easing/duration
 
