@@ -30,12 +30,15 @@ export function Layout({
   // const [ref, { height }] = useMeasure({ debounce: 100 })
 
   useLayoutEffect(() => {
-    if (isTouchDevice === undefined) return
+    // if (isTouchDevice === undefined) return
     window.scrollTo(0, 0)
     const lenis = new Lenis({
       duration: 1.2,
       easing: (t) => (t === 1 ? 1 : 1 - Math.pow(2, -10 * t)),
-      smooth: !isTouchDevice,
+      direction: 'vertical',
+      smooth: true,
+      smoothTouch: false,
+      touchMultiplier: 2,
     })
     window.lenis = lenis
     setLenis(lenis)
@@ -44,7 +47,7 @@ export function Layout({
       lenis.destroy()
       setLenis(null)
     }
-  }, [isTouchDevice])
+  }, [])
 
   const [hash, setHash] = useState()
 

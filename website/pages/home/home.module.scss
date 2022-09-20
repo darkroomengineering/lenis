@@ -56,6 +56,7 @@ $intro-duration: 2050ms;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+  height: 100vh;
   height: calc(100 * var(--vh));
   margin-bottom: mobile-vw(160px);
   position: relative;

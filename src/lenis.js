@@ -38,10 +38,7 @@ class Animate {
 
       const value = from + (to - from) * progress
 
-      //hot fix https://github.com/studio-freight/lenis/issues/21
-      // if (!isNaN(value)) {
       this.target[key] = value
-      // }
     })
 
     if (progress === 1) {
@@ -57,8 +54,10 @@ class Animate {
 export default class Lenis extends EventEmitter {
   constructor({
     duration = 1.2,
-    easing = (t) => (t === 1 ? 1 : 1 - Math.pow(2, -10 * t)), //expo.out
+    easing = (t) => (t === 1 ? 1 : 1 - Math.pow(2, -10 * t)), // https://easings.net/en#easeOutExpo
     smooth = true,
+    smoothTouch = false,
+    touchMultiplier = 2,
     direction = 'vertical',
     wrapper = window,
     content = document.body,
@@ -73,12 +72,25 @@ export default class Lenis extends EventEmitter {
 
     window.lenisVersion = version
 
+    this.options = {
+      duration,
+      easing,
+      smooth,
+      smoothTouch,
+      touchMultiplier,
+      direction,
+      wrapper,
+      content,
+    }
+
     this.wrapperNode = wrapper
     this.contentNode = content
 
     this.duration = duration
     this.easing = easing
     this.smooth = smooth
+    this.smoothTouch = smoothTouch
+    this.touchMultiplier = touchMultiplier
     this.direction = direction
 
     this.wrapperNode.addEventListener('scroll', this.onScroll)
@@ -120,7 +132,8 @@ export default class Lenis extends EventEmitter {
       firefoxMultiplier: 50,
       mouseMultiplier: platform.includes('Win') ? 1 : 0.4,
       useKeyboard: false,
-      useTouch: false,
+      touchMultiplier: this.touchMultiplier,
+      useTouch: true,
       passive: false,
     })
 
@@ -185,6 +198,9 @@ export default class Lenis extends EventEmitter {
 
   onVirtualScroll = ({ deltaY, originalEvent: e }) => {
     if (e.ctrlKey) return
+
+    // switch to smooth if event is touch and touch is true
+    this.smooth = !!e.changedTouches ? this.smoothTouch : this.options.smooth
 
     if (this.stopped) {
       e.preventDefault()
