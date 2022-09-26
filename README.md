@@ -22,7 +22,7 @@ This is our take on smooth scroll, lightweight, hard working, smooth as butter s
 
 <br>
 
-| Feature                     | [Locomotive-scroll](https://github.com/locomotivemtl/locomotive-scroll) | [GSAP ScrollSmoother](https://greensock.com/scrollsmoother/) | [Lenis](https://github.com/studio-freight)  |
+| Feature                     | [Locomotive-scroll](https://github.com/locomotivemtl/locomotive-scroll) | [GSAP ScrollSmoother](https://greensock.com/scrollsmoother/) | [Lenis](https://github.com/studio-freight/lenis)  |
 |-----------------------------|-------------------|---------------------|--------|
 | Native scrollbar            | ❌               | ✅                   | ✅      |
 | Native scroll inputs        | ❌               | ✅                   | ❌      |
