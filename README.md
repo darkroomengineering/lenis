@@ -22,6 +22,20 @@ This is our take on smooth scroll, lightweight, hard working, smooth as butter s
 
 <br>
 
+| Feature                     | [Locomotive-scroll](https://github.com/locomotivemtl/locomotive-scroll) | [GSAP ScrollSmoother](https://greensock.com/scrollsmoother/) | [Lenis](https://github.com/studio-freight)  |
+|-----------------------------|-------------------|---------------------|--------|
+| Native scrollbar            | ❌               | ✅                   | ✅      |
+| Native scroll inputs        | ❌               | ✅                   | ❌      |
+| Normalize scroll experience | ✅                 | ❌                   | ✅      |
+| Accessibility               | ❌                 | ❌                   | ✅      |
+| CSS Sticky                  | ❌                 | ❌                   | ✅      |
+| IntsersectionObserver       | ❌                 | ❌                   | ✅      |
+| Open source                 | ✅                 | ❌                   | ✅      |
+| Built-in animation system   | ✅                 | ✅                   | ❌      |
+| Size (gzip)                 | [12.33KB](https://bundlejs.com/?q=locomotive-scroll)           | [26.08KB](https://bundlejs.com/?q=gsap%2FScrollSmoother&treeshake=%5B%7BScrollSmoother%7D%5D)             | [2.13kb](https://bundlejs.com/?q=%40studio-freight%2Flenis) |
+
+<br>
+
 ## Installing
 
 using package manager:
