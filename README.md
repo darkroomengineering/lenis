@@ -165,6 +165,7 @@ body {
 - [Dragonfly](https://dragonfly.xyz/) by [Studio Freight](https://www.studiofreight.com/)
 - [Yuga Labs](https://yuga.com/) by [Antinomy Studio](https://antinomy.studio/)
 - [Quentin Hocde's Portfolio](https://quentinhocde.com) by [Quentin Hocde](https://twitter.com/QuentinHocde)
+- [Houses Of](https://housesof.world) by [Félix P.](https://flayks.com/) & [Shelby Kay](https://shelbykay.dev/)
 
 <br/>
 
