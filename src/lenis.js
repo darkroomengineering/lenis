@@ -3,7 +3,6 @@ import VirtualScroll from 'virtual-scroll'
 import { version } from '../package.json'
 import { clamp } from './maths.js'
 
-// simple animation tool
 class Animate {
   to(target, { duration = 1, easing = (t) => t, ...keys } = {}) {
     this.target = target

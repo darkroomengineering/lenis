@@ -11,23 +11,46 @@ This is our take on smooth scroll, lightweight, hard working, smooth as butter s
 ## Features
 
 - Performant
-- Lightweight [(~2Kb gzipped)](https://bundle.js.org/?q=@studio-freight/lenis)
+- Lightweight [(~2Kb gzipped)](https://bundlejs.com/?q=%40studio-freight%2Flenis)
 - Run scroll in main thread
 - Accessibility (CMD+F page search, Tab and arrow navigation, keep scroll position on page refresh, etc.)
 - External RAF
 - SSR proof
+- Not opinionated
+- Tree-shakable
+- Custom scroll easing/duration
+
+<br>
+
+| Feature                     | [Locomotive-scroll](https://github.com/locomotivemtl/locomotive-scroll) | [GSAP ScrollSmoother](https://greensock.com/scrollsmoother/) | [Lenis](https://github.com/studio-freight/lenis)  |
+|-----------------------------|-------------------|---------------------|--------|
+| Native scrollbar            | ❌               | ✅                   | ✅      |
+| Native scroll inputs        | ❌               | ✅                   | ❌      |
+| Normalize scroll experience | ✅                 | ❌                   | ✅      |
+| Accessibility               | ❌                 | ❌                   | ✅      |
+| CSS Sticky                  | ❌                 | ❌                   | ✅      |
+| IntsersectionObserver       | ❌                 | ❌                   | ✅      |
+| Open source                 | ✅                 | ❌                   | ✅      |
+| Built-in animation system   | ✅                 | ✅                   | ❌      |
+| Size (gzip)                 | [12.33KB](https://bundlejs.com/?q=locomotive-scroll)           | [26.08KB](https://bundlejs.com/?q=gsap%2FScrollSmoother&treeshake=%5B%7BScrollSmoother%7D%5D)             | [2.13kb](https://bundlejs.com/?q=%40studio-freight%2Flenis) |
 
 <br>
 
 ## Installing
 
-just the usual:
-
+using package manager:
 ```bash
 $ npm i @studio-freight/lenis
 ```
 
-or replace `npm` with your package manager of choice :)
+<br/>
+
+using scripts:
+```html
+<script src="https://cdn.jsdelivr.net/gh/studio-freight/lenis@latest/bundled/lenis.js"></script>
+```
+
+
 
 <br>
 
@@ -141,6 +164,9 @@ body {
 - [Repeat](https://getrepeat.io/) by [Studio Freight](https://www.studiofreight.com/)
 - [Dragonfly](https://dragonfly.xyz/) by [Studio Freight](https://www.studiofreight.com/)
 - [Yuga Labs](https://yuga.com/) by [Antinomy Studio](https://antinomy.studio/)
+- [Quentin Hocde's Portfolio](https://quentinhocde.com) by [Quentin Hocde](https://twitter.com/QuentinHocde)
+- [Houses Of](https://housesof.world) by [Félix P.](https://flayks.com/) & [Shelby Kay](https://shelbykay.dev/)
+- [Shelby Kay's Portfolio](https://shelbykay.dev) by [Shelby Kay](https://shelbykay.dev/)
 
 <br/>
 
