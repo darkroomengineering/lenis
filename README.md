@@ -47,7 +47,7 @@ $ npm i @studio-freight/lenis
 
 using scripts:
 ```html
-<script src="https://cdn.jsdelivr.net/gh/studio-freight/lenis@0.2.6/bundled/lenis.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/studio-freight/lenis@latest/bundled/lenis.js"></script>
 ```
 
 
