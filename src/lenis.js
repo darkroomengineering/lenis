@@ -22,6 +22,10 @@ class Animate {
     this.isRunning = true
   }
 
+  stop() {
+    this.isRunning = false
+  }
+
   raf(deltaTime) {
     if (!this.isRunning) return
 
@@ -63,12 +67,6 @@ export default class Lenis extends EventEmitter {
     content = document.body,
   } = {}) {
     super()
-
-    if (arguments[0].lerp !== undefined) {
-      console.warn(
-        'Lenis: lerp option is deprecated, you must use duration and easing options instead. See documentation https://github.com/studio-freight/lenis'
-      )
-    }
 
     window.lenisVersion = version
 
@@ -156,6 +154,8 @@ export default class Lenis extends EventEmitter {
 
   stop() {
     this.stopped = true
+    // TODO: stop scroll animation
+    this.animate.stop()
   }
 
   destroy() {
@@ -227,14 +227,14 @@ export default class Lenis extends EventEmitter {
 
     if (this.stopped || !this.smooth) return
 
-    // where smooth scroll happens
     this.lastScroll = this.scroll
 
+    // where this.scroll is updated
     this.animate.raf(deltaTime)
 
-    // fixes velocity when sometimes final native event is not notified
-    if (Math.round(this.scroll) === Math.round(this.targetScroll)) {
-      this.lastScroll = this.targetScroll
+    if (this.scroll === this.targetScroll) {
+      // if target reached velocity should be 0
+      this.lastScroll = this.scroll
     }
 
     if (this.isScrolling) {
