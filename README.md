@@ -17,7 +17,7 @@ This is our take on smooth scroll, lightweight, hard working, smooth as butter s
 - External RAF
 - SSR proof
 - Not opinionated
-- Tree-shakable
+- Tree-shakeable
 - Custom scroll easing/duration
 
 <br>
