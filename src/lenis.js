@@ -286,6 +286,7 @@ export default class Lenis extends EventEmitter {
       easing = this.easing,
     } = {}
   ) {
+    if (target === undefined || target === null) return
     let value
 
     if (typeof target === 'number') {
@@ -307,7 +308,7 @@ export default class Lenis extends EventEmitter {
         return
       }
 
-      if (!target) return
+      if (!node) return
       let wrapperOffset = 0
 
       if (this.wrapperNode !== window) {
