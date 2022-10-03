@@ -61,7 +61,8 @@ export default class Lenis extends EventEmitter {
     smooth = true,
     smoothTouch = false,
     touchMultiplier = 2,
-    direction = 'vertical',
+    direction = 'vertical', // vertical, horizontal
+    gestureDirection = 'vertical', // vertical, horizontal, both
     wrapper = window,
     content = document.body,
   } = {}) {
@@ -76,12 +77,10 @@ export default class Lenis extends EventEmitter {
       smoothTouch,
       touchMultiplier,
       direction,
+      gestureDirection,
       wrapper,
       content,
     }
-
-    this.wrapperNode = wrapper
-    this.contentNode = content
 
     this.duration = duration
     this.easing = easing
@@ -89,6 +88,9 @@ export default class Lenis extends EventEmitter {
     this.smoothTouch = smoothTouch
     this.touchMultiplier = touchMultiplier
     this.direction = direction
+    this.gestureDirection = gestureDirection
+    this.wrapperNode = wrapper
+    this.contentNode = content
 
     this.wrapperNode.addEventListener('scroll', this.onScroll)
 
@@ -153,7 +155,6 @@ export default class Lenis extends EventEmitter {
 
   stop() {
     this.stopped = true
-    // TODO: stop scroll animation
     this.animate.stop()
   }
 
@@ -195,7 +196,7 @@ export default class Lenis extends EventEmitter {
       : this.contentHeight - this.wrapperHeight
   }
 
-  onVirtualScroll = ({ deltaY, originalEvent: e }) => {
+  onVirtualScroll = ({ deltaY, deltaX, originalEvent: e }) => {
     if (e.ctrlKey) return
 
     // switch to smooth if event is touch and touch is true
@@ -214,7 +215,17 @@ export default class Lenis extends EventEmitter {
     // prevent native wheel scrolling
     if (this.smooth) e.preventDefault()
 
-    this.targetScroll -= deltaY
+    let delta = 0
+    if (this.gestureDirection === 'both') {
+      delta = deltaX + deltaY
+    } else if (this.gestureDirection === 'horizontal') {
+      delta = deltaX
+    } else {
+      // vertical
+      delta = deltaY
+    }
+
+    this.targetScroll -= delta
     this.targetScroll = clamp(0, this.targetScroll, this.limit)
 
     this.scrollTo(this.targetScroll)
