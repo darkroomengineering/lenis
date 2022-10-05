@@ -63,8 +63,9 @@ import Lenis from '@studio-freight/lenis'
 
 const lenis = new Lenis({
   duration: 1.2,
-  easing: (t) => (t === 1 ? 1 : 1 - Math.pow(2, -10 * t)), // https://easings.net
-  direction: 'vertical',
+  easing: (t) => (t === 1 ? 1 : 1 - Math.pow(2, -10 * t)), // https://easings.net/en#easeOutExpo
+  direction: 'vertical', // vertical, horizontal
+  gestureDirection: 'vertical', // vertical, horizontal, both
   smooth: true,
   smoothTouch: false,
   touchMultiplier: 2,
@@ -92,8 +93,9 @@ const lenis = new Lenis({
   wrapper: NodeElement, // element that has overflow
   content: NodeElement, // usually wrapper's direct child
   duration: 1.2,
-  easing: (t) => (t === 1 ? 1 : 1 - Math.pow(2, -10 * t)), // https://easings.net
+  easing: (t) => (t === 1 ? 1 : 1 - Math.pow(2, -10 * t)),
   direction: 'vertical',
+  gestureDirection: 'vertical',
   smooth: true,
   smoothTouch: false,
   touchMultiplier: 2,
