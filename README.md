@@ -13,7 +13,7 @@ This is our take on smooth scroll, lightweight, hard working, smooth as butter s
 - Performant
 - Lightweight [(~2Kb gzipped)](https://bundlejs.com/?q=%40studio-freight%2Flenis)
 - Run scroll in main thread
-- Accessibility (CMD+F page search, Tab and arrow navigation, keep scroll position on page refresh, etc.)
+- Accessibility (CMD+F page search, keyboard navigation, keep scroll position on page refresh, etc.)
 - External RAF
 - SSR proof
 - Not opinionated
@@ -107,9 +107,12 @@ const lenis = new Lenis({
 ## Methods
 
 - `raf(time)` : must be called every frame for internal function.
-- `scrollTo(target, {offset, immediate, duration, easing})` : scroll to a target.
+- `scrollTo(target, {offset, duration, easing, immediate})` : scroll to a target.
   - `target` : can be `Number`, `NodeElement` or `String` (CSS selector).
   - `offset` : `Number` equivalent to [scroll-padding-top](https://developer.mozilla.org/en-US/docs/Web/CSS/scroll-padding-top).
+  - `duration` : `Number` scroll duration in seconds.
+  - `easing` : `Function`.
+  - `immediate` : ignore duration and easing.
 - `on(id, callback)` : execute a function on event.
   - `id` : event to listen.
     - `scroll` : return scroll position.
