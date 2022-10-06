@@ -159,6 +159,11 @@ body {
 
 <br>
 
+## Plugins
+- [Loconative-scroll](https://github.com/quentinhocde/loconative-scroll#how-to-switch-from-locomotive-scroll-to-loconative-scroll) by [Quentin Hocde](https://twitter.com/QuentinHocde)
+
+<br>
+
 ## Lenis in use
 
 - [Wyre](https://www.sendwyre.com/) by [Studio Freight](https://www.studiofreight.com/)
