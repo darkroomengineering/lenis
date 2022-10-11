@@ -30,7 +30,6 @@ export function Layout({
   // const [ref, { height }] = useMeasure({ debounce: 100 })
 
   useLayoutEffect(() => {
-    // if (isTouchDevice === undefined) return
     window.scrollTo(0, 0)
     const lenis = new Lenis({
       duration: 1.2,

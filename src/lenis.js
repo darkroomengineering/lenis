@@ -28,10 +28,7 @@ class Animate {
   raf(deltaTime) {
     if (!this.isRunning) return
 
-    this.currentTime = Math.min(
-      this.currentTime + deltaTime * 0.001,
-      this.duration
-    )
+    this.currentTime = Math.min(this.currentTime + deltaTime, this.duration)
 
     const progress = this.easing(this.progress)
 
@@ -45,7 +42,7 @@ class Animate {
     })
 
     if (progress === 1) {
-      this.isRunning = false
+      this.stop()
     }
   }
 
@@ -240,7 +237,7 @@ export default class Lenis extends EventEmitter {
     this.lastScroll = this.scroll
 
     // where this.scroll is updated
-    this.animate.raf(deltaTime)
+    this.animate.raf(deltaTime * 0.001)
 
     if (this.scroll === this.targetScroll) {
       // if target reached velocity should be 0
@@ -338,7 +335,7 @@ export default class Lenis extends EventEmitter {
 
     value += offset
 
-    this.targetScroll = value
+    this.targetScroll = clamp(0, value, this.limit)
 
     if (!this.smooth || immediate) {
       this.setScroll(this.targetScroll)

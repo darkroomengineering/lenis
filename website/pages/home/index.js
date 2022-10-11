@@ -194,9 +194,7 @@ export default function Home() {
       </section>
       <section className={s.why}>
         <div className="layout-grid">
-          <p className={cn(s.sticky, 'h2')}>
-            <a href="#top">Why smooth scroll?</a>
-          </p>
+          <p className={cn(s.sticky, 'h2')}>Why smooth scroll?</p>
           <aside className={s.features} ref={whyRectRef}>
             <div className={s.feature}>
               <p className="p">
