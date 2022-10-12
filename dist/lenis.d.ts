@@ -1,23 +1,4 @@
 export default class Lenis {
-    /**
-     * @typedef {(t: number) => number} EasingFunction
-     * @typedef {'vertical' | 'horizontal'} Direction
-     * @typedef {'vertical' | 'horizontal' | 'both'} GestureDirection
-     *
-     * @typedef LenisOptions
-     * @property {number} [duration]
-     * @property {EasingFunction} [easing]
-     * @property {boolean} [smooth]
-     * @property {boolean} [smoothTouch]
-     * @property {number} [touchMultiplier]
-     * @property {Direction} [direction]
-     * @property {GestureDirection} [gestureDirection]
-     * @property {boolean} [infinite]
-     * @property {Window | HTMLElement} [wrapper]
-     * @property {HTMLElement} [content]
-     *
-     * @param {LenisOptions}
-     */
     constructor({ duration, easing, smooth, smoothTouch, touchMultiplier, direction, gestureDirection, infinite, wrapper, content, }?: {
         duration?: number;
         easing?: (t: number) => number;
@@ -25,7 +6,7 @@ export default class Lenis {
         smoothTouch?: boolean;
         touchMultiplier?: number;
         direction?: "vertical" | "horizontal";
-        gestureDirection?: "vertical" | "horizontal" | "both";
+        gestureDirection?: "both" | "vertical" | "horizontal";
         infinite?: boolean;
         wrapper?: Window | HTMLElement;
         content?: HTMLElement;
@@ -37,9 +18,9 @@ export default class Lenis {
         smoothTouch: boolean;
         touchMultiplier: number;
         direction: "vertical" | "horizontal";
-        gestureDirection: "vertical" | "horizontal" | "both";
+        gestureDirection: "both" | "vertical" | "horizontal";
         infinite: boolean;
-        wrapper: Window | HTMLElement;
+        wrapper: HTMLElement | Window;
         content: HTMLElement;
     };
     duration: number;
@@ -48,9 +29,9 @@ export default class Lenis {
     smoothTouch: boolean;
     touchMultiplier: number;
     direction: "vertical" | "horizontal";
-    gestureDirection: "vertical" | "horizontal" | "both";
+    gestureDirection: "both" | "vertical" | "horizontal";
     infinite: boolean;
-    wrapperNode: Window | HTMLElement;
+    wrapperNode: HTMLElement | Window;
     contentNode: HTMLElement;
     wrapperHeight: any;
     wrapperWidth: any;
