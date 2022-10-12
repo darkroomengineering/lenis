@@ -13,3 +13,12 @@ export function lerp(start, end, amt) {
 export function truncate(value, decimals) {
   return parseFloat(value.toFixed(decimals))
 }
+
+export function modulo(value, max) {
+  let v = value % max
+  if (v < 0) {
+    v += max
+  }
+
+  return v
+}

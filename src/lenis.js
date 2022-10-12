@@ -1,7 +1,7 @@
 import EventEmitter from 'tiny-emitter'
 import VirtualScroll from 'virtual-scroll'
 import { version } from '../package.json'
-import { clamp } from './maths.js'
+import { clamp, modulo } from './maths'
 
 class Animate {
   to(target, { duration = 1, easing = (t) => t, ...keys } = {}) {
@@ -65,6 +65,7 @@ export default class Lenis extends EventEmitter {
    * @property {number} [touchMultiplier]
    * @property {Direction} [direction]
    * @property {GestureDirection} [gestureDirection]
+   * @property {boolean} [infinite]
    * @property {Window | HTMLElement} [wrapper]
    * @property {HTMLElement} [content]
    *
@@ -78,6 +79,7 @@ export default class Lenis extends EventEmitter {
     touchMultiplier = 2,
     direction = 'vertical', // vertical, horizontal
     gestureDirection = 'vertical', // vertical, horizontal, both
+    infinite = false,
     wrapper = window,
     content = document.body,
   } = {}) {
@@ -93,6 +95,7 @@ export default class Lenis extends EventEmitter {
       touchMultiplier,
       direction,
       gestureDirection,
+      infinite,
       wrapper,
       content,
     }
@@ -104,6 +107,7 @@ export default class Lenis extends EventEmitter {
     this.touchMultiplier = touchMultiplier
     this.direction = direction
     this.gestureDirection = gestureDirection
+    this.infinite = infinite
     this.wrapperNode = wrapper
     this.contentNode = content
 
@@ -241,7 +245,7 @@ export default class Lenis extends EventEmitter {
     }
 
     this.targetScroll -= delta
-    this.targetScroll = clamp(0, this.targetScroll, this.limit)
+    // this.targetScroll = clamp(0, this.targetScroll, this.limit)
 
     this.scrollTo(this.targetScroll)
   }
@@ -275,9 +279,11 @@ export default class Lenis extends EventEmitter {
   }
 
   setScroll(value) {
+    let scroll = this.infinite ? modulo(value, this.limit) : value
+
     this.direction === 'horizontal'
-      ? this.wrapperNode.scrollTo(value, 0)
-      : this.wrapperNode.scrollTo(0, value)
+      ? this.wrapperNode.scrollTo(scroll, 0)
+      : this.wrapperNode.scrollTo(0, scroll)
   }
 
   onScroll = (e) => {
@@ -294,12 +300,14 @@ export default class Lenis extends EventEmitter {
   }
 
   notify() {
+    let scroll = this.infinite ? modulo(this.scroll, this.limit) : this.scroll
+
     this.emit('scroll', {
-      scroll: this.scroll,
+      scroll,
       limit: this.limit,
       velocity: this.velocity,
       direction: this.direction,
-      progress: this.scroll / this.limit,
+      progress: scroll / this.limit,
     })
   }
 
@@ -353,7 +361,11 @@ export default class Lenis extends EventEmitter {
 
     value += offset
 
-    this.targetScroll = clamp(0, value, this.limit)
+    if (this.infinite) {
+      this.targetScroll = value
+    } else {
+      this.targetScroll = clamp(0, value, this.limit)
+    }
 
     if (!this.smooth || immediate) {
       this.setScroll(this.targetScroll)

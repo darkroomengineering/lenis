@@ -38,6 +38,7 @@ export function Layout({
       gestureDirection: 'vertical',
       smooth: true,
       smoothTouch: false,
+      infinite: false,
       touchMultiplier: 2,
     })
     window.lenis = lenis
