@@ -10,6 +10,7 @@
   "main": "dist/lenis.js",
   "umd:main": "dist/lenis.umd.js",
   "module": "dist/lenis.mjs",
+  "types": "dist/lenis.d.ts",
   "exports": {
     "require": "./dist/lenis.js",
     "default": "./dist/lenis.modern.mjs"
@@ -24,6 +25,7 @@
     "rimraf": "^3.0.2",
     "size-limit": "^8.1.0",
     "stats.js": "^0.17.0",
+    "typescript": "^4.8.3",
     "vite": "^3.1.0"
   },
   "dependencies": {
@@ -39,7 +41,8 @@
     "dev": "microbundle watch -i src/lenis.js --format umd --compress --no-sourcemap --no-pkg-main --external none --output ./bundled --name 'Lenis' & npm run dev:website --prefix ./website",
     "size": "size-limit",
     "clean": "rimraf dist && rimraf bundled",
-    "build": "npm run clean && npm run build:light && npm run build:bundle",
+    "build": "npm run clean && npm run build:light && npm run build:bundle && npm run build:types",
+    "build:types": "tsc --allowJs -d --emitDeclarationOnly --declarationDir dist --removeComments ./src/*.js",
     "build:light": "microbundle",
     "build:bundle": "microbundle build -i src/lenis.js --format umd --compress --no-sourcemap --no-pkg-main --external none --output ./bundled --name Lenis",
     "build:website": "vite build",
