@@ -1,18 +1,35 @@
 export default class Lenis {
-    constructor({ duration, easing, smooth, direction, wrapper, content, }?: {
+    constructor({ duration, easing, smooth, smoothTouch, touchMultiplier, direction, gestureDirection, wrapper, content, }?: {
         duration?: number;
         easing?: (t: number) => number;
         smooth?: boolean;
+        smoothTouch?: boolean;
+        touchMultiplier?: number;
         direction?: "vertical" | "horizontal";
+        gestureDirection?: "both" | "vertical" | "horizontal";
         wrapper?: Window | HTMLElement;
         content?: HTMLElement;
-    }, ...args: any[]);
-    wrapperNode: HTMLElement | Window;
-    contentNode: HTMLElement;
+    });
+    options: {
+        duration: number;
+        easing: (t: number) => number;
+        smooth: boolean;
+        smoothTouch: boolean;
+        touchMultiplier: number;
+        direction: "vertical" | "horizontal";
+        gestureDirection: "both" | "vertical" | "horizontal";
+        wrapper: HTMLElement | Window;
+        content: HTMLElement;
+    };
     duration: number;
     easing: (t: number) => number;
     smooth: boolean;
+    smoothTouch: boolean;
+    touchMultiplier: number;
     direction: "vertical" | "horizontal";
+    gestureDirection: "both" | "vertical" | "horizontal";
+    wrapperNode: HTMLElement | Window;
+    contentNode: HTMLElement;
     wrapperHeight: any;
     wrapperWidth: any;
     wrapperObserver: ResizeObserver;
@@ -33,8 +50,9 @@ export default class Lenis {
     onWrapperResize: ([entry]: [any]) => void;
     onContentResize: ([entry]: [any]) => void;
     get limit(): number;
-    onVirtualScroll: ({ deltaY, originalEvent }: {
+    onVirtualScroll: ({ deltaY, deltaX, originalEvent: e }: {
         deltaY: any;
+        deltaX: any;
         originalEvent: any;
     }) => void;
     raf(now: any): void;
@@ -42,7 +60,7 @@ export default class Lenis {
     isScrolling: boolean;
     get velocity(): number;
     setScroll(value: any): void;
-    onScroll: () => void;
+    onScroll: (e: any) => void;
     notify(): void;
     scrollTo(target: any, { offset, immediate, duration, easing, }?: {
         offset?: number;
@@ -64,6 +82,7 @@ declare class Animate {
     easing: (t: any) => any;
     currentTime: any;
     isRunning: boolean;
+    stop(): void;
     raf(deltaTime: any): void;
     get progress(): number;
 }
