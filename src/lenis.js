@@ -52,6 +52,24 @@ class Animate {
 }
 
 export default class Lenis extends EventEmitter {
+  /**
+   * @typedef {(t: number) => number} EasingFunction
+   * @typedef {'vertical' | 'horizontal'} Direction
+   * @typedef {'vertical' | 'horizontal' | 'both'} GestureDirection
+   *
+   * @typedef LenisOptions
+   * @property {number} [duration]
+   * @property {EasingFunction} [easing]
+   * @property {boolean} [smooth]
+   * @property {boolean} [smoothTouch]
+   * @property {number} [touchMultiplier]
+   * @property {Direction} [direction]
+   * @property {GestureDirection} [gestureDirection]
+   * @property {Window | HTMLElement} [wrapper]
+   * @property {HTMLElement} [content]
+   *
+   * @param {LenisOptions}
+   */
   constructor({
     duration = 1.2,
     easing = (t) => (t === 1 ? 1 : 1 - Math.pow(2, -10 * t)), // https://easings.net/en#easeOutExpo
