@@ -90,7 +90,7 @@ Using custom scroll container
 
 ```js
 const lenis = new Lenis({
-  wrapper: NodeElement, // element that has overflow
+  wrapper: NodeElement, // element which has overflow
   content: NodeElement, // usually wrapper's direct child
   duration: 1.2,
   easing: (t) => (t === 1 ? 1 : 1 - Math.pow(2, -10 * t)),
