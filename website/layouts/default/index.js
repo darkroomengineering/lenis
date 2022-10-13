@@ -32,7 +32,7 @@ export function Layout({
   useLayoutEffect(() => {
     window.scrollTo(0, 0)
     const lenis = new Lenis({
-      duration: 5,
+      duration: 1.2,
       easing: (t) => (t === 1 ? 1 : 1 - Math.pow(2, -10 * t)),
       direction: 'vertical',
       gestureDirection: 'vertical',
