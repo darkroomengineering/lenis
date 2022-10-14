@@ -73,7 +73,7 @@ export default class Lenis extends EventEmitter {
    */
   constructor({
     duration = 1.2,
-    easing = (t) => Math.min(1, 1.00098 - Math.pow(2, -10 * t)), // https://www.desmos.com/calculator/qsbe9zydsz
+    easing = (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)), // https://www.desmos.com/calculator/k2tgx2kn8t
     smooth = true,
     smoothTouch = false,
     touchMultiplier = 2,
