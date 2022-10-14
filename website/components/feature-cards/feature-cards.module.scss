@@ -1,7 +1,7 @@
 @import 'styles/_functions';
 
 .features {
-  height: 800vh;
+  height: 1600vh;
 
   @include desktop {
     min-height: desktop-vw(1310px);
@@ -9,21 +9,30 @@
 
   .card {
     position: absolute;
-    // transition-duration: 600ms;
-    // transition-property: opacity, transform;
-    // transition-timing-function: var(--ease-out-expo);
+    will-change: transform;
+    transition-duration: 1.2s;
+    transition-property: opacity, transform;
+    transition-timing-function: var(--ease-out-expo);
 
     // @debug var(--progress) % var(--i);
-    --p: calc(1 - var(--progress));
-    --t: calc(var(--p) * 100%);
-    transform: translate3d(var(--t), var(--t), 0);
-    opacity: var(--progress);
+    // --p: calc(1 - var(--progress));
+    // --t: calc(var(--p) * 100%);
+    // transform: translate3d(var(--t), var(--t), 0);
+    // opacity: var(--progress);
 
     @include mobile {
       @for $i from 0 through 9 {
         &:nth-child(#{$i + 1}) {
           top: calc(
-            ((90vh - #{mobile-vw(440px)} - (2 * var(--layout-margin))) / 8) * $i
+            (
+                (
+                    (100 * var(--vh, 1vh)) -
+                      #{mobile-vw(440px)} -
+                      (var(--layout-margin))
+                  ) /
+                  8
+              ) *
+              $i
           );
         }
       }
@@ -44,10 +53,10 @@
       }
     }
 
-    // &:not(.reset) {
-    //   transform: translate3d(50%, 50%, 0);
-    //   opacity: 0;
-    // }
+    &:not(.current) {
+      transform: translate3d(100%, 100%, 0);
+      opacity: 0;
+    }
   }
 
   .title {

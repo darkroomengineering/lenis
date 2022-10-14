@@ -1,7 +1,8 @@
 import { useMediaQuery, useRect } from '@studio-freight/hamo'
+import cn from 'clsx'
 import gsap from 'gsap'
 import { useScroll } from 'hooks/use-scroll'
-import { clamp } from 'lib/maths'
+import { clamp, mapRange } from 'lib/maths'
 import { useEffect, useRef, useState } from 'react'
 import { useWindowSize } from 'react-use'
 
@@ -17,14 +18,15 @@ export const HorizontalSlides = ({ children }) => {
 
   const [windowWidth, setWindowWidth] = useState()
 
-  useScroll(({}) => {
+  useScroll(({ scroll }) => {
     if (!elementRect || !elementRef.current) return
-    const headerHeight = 0
-    const start =
-      wrapperRect.top - (windowHeight + headerHeight - elementRect.height) / 2
-    const end = elementRect.width - elementRect.height
 
-    const progress = clamp(0, window.scrollY - start, end) / end
+    const start = wrapperRect.top - windowHeight
+    const end = wrapperRect.top + wrapperRect.height - windowHeight
+
+    let progress = mapRange(start, end, scroll, 0, 1)
+    progress = clamp(0, progress, 1)
+
     const x = progress * (elementRect.width - windowWidth)
 
     const cards = [...elementRef.current.children]
@@ -56,22 +58,26 @@ export const HorizontalSlides = ({ children }) => {
     <div
       className={s.wrapper}
       ref={wrapperRectRef}
-      style={elementRect && { height: elementRect.width + 'px' }}
+      style={
+        elementRect && isMobile === false
+          ? { height: elementRect.width + 'px' }
+          : {}
+      }
     >
       <div className={s.inner}>
-        {isMobile === false ? (
-          <div
-            ref={(node) => {
-              elementRef.current = node
-              elementRectRef(node)
-            }}
-            className={s.overflow}
-          >
-            {children}
-          </div>
-        ) : (
-          <div className={s.cards}>{children}</div>
-        )}
+        {/* {isMobile === false ? ( */}
+        <div
+          ref={(node) => {
+            elementRef.current = node
+            elementRectRef(node)
+          }}
+          className={cn(s.overflow, 'hide-on-mobile')}
+        >
+          {children}
+        </div>
+        {/* ) : ( */}
+        <div className={cn(s.cards, 'hide-on-desktop')}>{children}</div>
+        {/* )} */}
       </div>
     </div>
   )

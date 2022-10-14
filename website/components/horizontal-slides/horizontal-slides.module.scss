@@ -3,9 +3,14 @@
 .wrapper {
   .inner {
     overflow: hidden;
+    display: flex;
 
     .overflow {
-      display: inline-flex;
+      display: flex;
+
+      > * {
+        flex-shrink: 0;
+      }
     }
 
     @include mobile {
@@ -14,11 +19,8 @@
 
     @include desktop {
       position: sticky;
-      --height: min(
-        #{desktop-vw(632px)},
-        calc(100vh - var(--header-height) - #{desktop-vw(80px)})
-      );
-      top: calc((100vh + var(--header-height) - var(--height)) / 2);
+      --height: #{desktop-vw(440px)};
+      top: calc((100vh - var(--height)) / 2);
     }
 
     @include mobile {
@@ -27,6 +29,7 @@
         flex-direction: column;
         align-items: center;
         justify-content: center;
+        width: 100%;
 
         > * {
           margin-bottom: mobile-vw(32px);

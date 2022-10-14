@@ -218,7 +218,7 @@ export default class Lenis extends EventEmitter {
   onVirtualScroll = ({ deltaY, deltaX, originalEvent: e }) => {
     if (e.ctrlKey) return
 
-    // switch to smooth if event is touch and touch is true
+    // switch to smooth if event is touch and if smoothTouch=true
     this.smooth = !!e.changedTouches ? this.smoothTouch : this.options.smooth
 
     if (this.stopped) {

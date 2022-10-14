@@ -326,12 +326,25 @@ $intro-duration: 2050ms;
 
     .card {
       @include desktop {
-        margin-right: desktop-vw(160px);
-
         &:first-child {
-          @include desktop {
-            margin-left: calc((var(--layout-columns-gap) * 4) + columns(5));
-          }
+          // margin-left: var(--layout-margin);
+          // margin-left: 100vw;
+          // margin-left: calc((var(--layout-columns-gap) * 4) + columns(5));
+          margin-left: calc(
+            columns(6) + var(--layout-margin) + var(--layout-columns-gap)
+          );
+        }
+
+        &:not(:last-child) {
+          margin-right: calc(
+            var(--layout-columns-gap) * 2 + var(--layout-column-width)
+          );
+        }
+
+        &:last-child {
+          margin-right: calc(
+            columns(2) + var(--layout-margin) + var(--layout-columns-gap)
+          );
         }
       }
     }
@@ -345,7 +358,7 @@ $intro-duration: 2050ms;
   height: 500vh;
 
   @include desktop {
-    height: 500vh;
+    height: 1000vh;
   }
 
   .inner {
@@ -353,7 +366,7 @@ $intro-duration: 2050ms;
     top: 0;
     margin: 0 auto;
     overflow: hidden;
-    height: 100vh;
+    height: calc(100 * var(--vh, 1vh));
 
     &::after {
       content: '';
@@ -380,7 +393,7 @@ $intro-duration: 2050ms;
       padding: mobile-vh(16px);
 
       @include desktop {
-        padding: desktop-vh(40px);
+        padding: desktop-vh(40px) var(--layout-margin);
       }
     }
   }
@@ -397,10 +410,15 @@ $intro-duration: 2050ms;
     position: absolute;
     top: 50%;
     left: 50%;
-    transform: translate(-50%, -50%) scale(calc(1 + (var(--progress1)) * 7.5));
+    transform: translate(-54.2%, -50%) scale(calc((var(--progress1) * 18.2)));
+    transform-origin: 50% calc(50% - (var(--progress1) * 27%));
     opacity: calc(var(--progress1) * 2);
-    transform-origin: 50% calc(50% - (var(--progress1) * 25%));
     text-align: center;
+
+    @include desktop {
+      transform: translate(-50%, -50%) scale(calc((var(--progress1) * 8.5)));
+      transform-origin: 50% calc(50% - (var(--progress1) * 25.5%));
+    }
   }
 }
 
@@ -410,23 +428,27 @@ $intro-duration: 2050ms;
   // background-color: var(--theme-primary);
   color: var(--theme-secondary);
 
+  &::before {
+    content: '';
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: mobile-vw(150px);
+    position: absolute;
+    background: linear-gradient(
+      to bottom,
+      var(--theme-primary),
+      var(--theme-primary-transparent)
+    );
+
+    @include desktop {
+      height: desktop-vw(150px);
+    }
+  }
+
   @include desktop {
     padding: desktop-vw(40px) 0;
     padding-bottom: desktop-vw(440px);
-
-    &::before {
-      content: '';
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: desktop-vw(150px);
-      position: absolute;
-      background: linear-gradient(
-        to bottom,
-        var(--theme-primary),
-        var(--theme-primary-transparent)
-      );
-    }
   }
 
   .inner {

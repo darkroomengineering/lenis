@@ -9,9 +9,8 @@ import { useWindowSize } from 'react-use'
 import s from './feature-cards.module.scss'
 
 const cards = [
-  {
-    text: 'No polyfills needed',
-  },
+  { text: 'Run scroll in the main thread' },
+
   {
     text: (
       <>
@@ -22,17 +21,14 @@ const cards = [
   { text: 'Made for 2022+' },
   { text: 'Bring your own animation library' },
   {
-    text: (
-      <>
-        Built on top of solid ground <br />
-        <span className="p-s">(Virtual Scroll)</span>
-      </>
-    ),
+    text: <>Custom scroll easing</>,
   },
   { text: 'Use any element as scroller' },
   { text: 'Enjoy horizontal + vertical support' },
   { text: 'Feel free to use “position: sticky” again' },
-  { text: 'Run scroll in the main thread' },
+  {
+    text: 'touch support',
+  },
 ]
 
 export const FeatureCards = () => {
@@ -44,17 +40,17 @@ export const FeatureCards = () => {
 
   useScroll(
     ({ scroll }) => {
-      const start = rect.top - windowHeight / 2
+      const start = rect.top - windowHeight * 2
       const end = rect.top + rect.height - windowHeight
 
-      const progress = clamp(0, mapRange(start, end, scroll, 0, 1), 1) * 9
-      const cards = [...element.current.children]
-      cards.forEach((node, i) => {
-        node.style.setProperty('--progress', clamp(i, progress, i + 1) - i)
-      })
+      const progress = clamp(0, mapRange(start, end, scroll, 0, 1), 1)
+      // const cards = [...element.current.children]
+      // cards.forEach((node, i) => {
+      //   node.style.setProperty('--progress', clamp(i, progress, i + 1) - i)
+      // })
 
       // element.current.style.setProperty('--progress', progress * 8)
-      const step = Math.floor(progress)
+      const step = Math.floor(progress * 10)
       setCurrent(step)
     },
     [rect]
@@ -82,7 +78,7 @@ export const FeatureCards = () => {
               index={index}
               text={card.text}
               number={index + 1}
-              current={index <= current}
+              current={index <= current - 1}
             />
           ))}
         </div>
@@ -91,9 +87,9 @@ export const FeatureCards = () => {
   )
 }
 
-const SingleCard = ({ text, number, index }) => {
+const SingleCard = ({ text, number, index, current }) => {
   return (
-    <div className={cn(s.card)} style={{ '--i': index }}>
+    <div className={cn(s.card, current && s.current)} style={{ '--i': index }}>
       <Card background="rgba(239, 239, 239, 0.8)" number={number} text={text} />
     </div>
   )

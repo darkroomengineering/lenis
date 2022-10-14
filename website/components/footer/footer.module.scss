@@ -4,7 +4,7 @@
   // background-color: var(--theme-primary);
   color: var(--theme-secondary);
   padding: mobile-vw(20px) 0;
-  height: 90vh;
+  height: calc(100 * var(--vh, 1vh));
   display: flex;
   flex-direction: column;
   justify-content: space-between;

@@ -18,7 +18,7 @@
   }
 
   @include desktop {
-    width: desktop-vw(440px);
+    width: columns(4);
     padding: desktop-vw(24px);
   }
 
@@ -31,7 +31,7 @@
     font-size: mobile-vw(56px);
 
     @include desktop {
-      font-size: desktop-vw(56px);
+      font-size: desktop-vw(96px);
     }
   }
 
