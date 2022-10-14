@@ -266,7 +266,9 @@ export default function Home() {
         <div className={cn('layout-grid', s.pre)}>
           <div className={s.highlight}>
             <Parallax speed={-0.5}>
-              <p className="h2">Rethinking smooth scroll</p>
+              <p className="h2">
+                <AppearTitle>Rethinking smooth scroll</AppearTitle>
+              </p>
             </Parallax>
           </div>
           <div className={s.comparison}>
@@ -374,13 +376,11 @@ export default function Home() {
         <div className="layout-grid">
           <aside className={s.title}>
             <p className="h3">
-              <span className={s.line} style={{ '--i': 0 }}>
-                <span>Lenis</span>
-              </span>
-              <br />
-              <span className={cn('grey', s.line)} style={{ '--i': 1 }}>
-                <span>in use</span>
-              </span>
+              <AppearTitle>
+                Lenis
+                <br />
+                <span className="grey">in use</span>
+              </AppearTitle>
             </p>
           </aside>
           <ul className={s.list}>

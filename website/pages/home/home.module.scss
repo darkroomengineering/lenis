@@ -303,7 +303,7 @@ $intro-duration: 2050ms;
         border-left: 4px solid var(--theme-contrast);
         grid-column: 3 / span 4;
         top: desktop-vw(64px);
-        padding: desktop-vw(24px) desktop-vw(32px);
+        padding: desktop-vw(24px) 0 desktop-vw(24px) desktop-vw(32px);
       }
     }
 
@@ -477,27 +477,6 @@ $intro-duration: 2050ms;
     grid-column: 1 / -1;
     @include desktop {
       grid-column: 1 / span 5;
-    }
-
-    .line {
-      display: inline-block;
-      overflow: hidden;
-
-      > * {
-        display: inline-block;
-        transition: 1.2s var(--ease-out-expo) transform;
-        transition-delay: calc(var(--i) * 100ms);
-      }
-    }
-  }
-
-  @include desktop {
-    &:not(.visible) {
-      .line {
-        > * {
-          transform: translateY(100%);
-        }
-      }
     }
   }
 

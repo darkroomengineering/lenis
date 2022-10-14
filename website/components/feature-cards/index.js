@@ -1,5 +1,6 @@
 import { useRect } from '@studio-freight/hamo'
 import cn from 'clsx'
+import { AppearTitle } from 'components/appear-title'
 import { Card } from 'components/card'
 import { useScroll } from 'hooks/use-scroll'
 import { clamp, mapRange } from 'lib/maths'
@@ -66,9 +67,11 @@ export const FeatureCards = () => {
       <div className={cn('layout-block-inner', s.sticky)}>
         <aside className={s.title}>
           <p className="h3">
-            Lenis brings
-            <br />
-            <span className="grey">the heat</span>
+            <AppearTitle>
+              Lenis brings
+              <br />
+              <span className="grey">the heat</span>
+            </AppearTitle>
           </p>
         </aside>
         <div ref={element}>
