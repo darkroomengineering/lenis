@@ -69,7 +69,7 @@ const lenis = new Lenis({
   smooth: true,
   smoothTouch: false,
   touchMultiplier: 2,
-  inifinite: false,
+  infinite: false,
 })
 
 //get scroll value
@@ -100,7 +100,7 @@ const lenis = new Lenis({
   smooth: true,
   smoothTouch: false,
   touchMultiplier: 2,
-  inifinite: false,
+  infinite: false,
 })
 ```
 
