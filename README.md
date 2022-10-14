@@ -117,7 +117,7 @@ const lenis = new Lenis({
 | `direction`        | `string`      | `vertical`                                        | `vertical` or `horizontal` scrolling.                                                                                                                |
 | `gestureDirection` | `string`      | `vertical`                                        | `vertical`, `horizontal` or `both`.                                                                                                                  |
 | `smooth`           | `boolean`     | `true`                                            | Enable or disable 'smoothness' on all devices                                                                                                        |
-| `smoothTouch`      | `boolean`     | `false`                                           | Enable or disable 'smoothness' on touch devices. Note: We have disabled it by default because touch devices native smoothness is impossible to mimic |
+| `smoothTouch`      | `boolean`     | `false`                                           | Enable or disable 'smoothness' while scrolling using touch. Note: We have disabled it by default because touch devices native smoothness is impossible to mimic |
 | `touchMultiplier`  | `number`      | `string`                                          | This value is passed directly to [Virtual Scroll](https://github.com/ayamflow/virtual-scroll)                                                        |
 | `inifinite`        | `boolean`     | `false`                                           | Enable infinite scrolling!                                                                                                                           |
 
