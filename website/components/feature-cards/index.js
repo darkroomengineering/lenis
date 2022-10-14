@@ -22,7 +22,7 @@ const cards = [
   { text: 'Made for 2022+' },
   { text: 'Bring your own animation library' },
   {
-    text: <>Custom scroll easing</>,
+    text: <>CONTROL THE SCROLL EASING DURATION</>,
   },
   { text: 'Use any element as scroller' },
   { text: 'Enjoy horizontal + vertical support' },
