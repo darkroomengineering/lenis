@@ -8,6 +8,7 @@ import { Title } from 'components/intro'
 import { Link } from 'components/link'
 import { ListItem } from 'components/list-item'
 import { Parallax } from 'components/parallax'
+import { projects } from 'content/projects'
 // import { WebGL } from 'components/webgl'
 import { useScroll } from 'hooks/use-scroll'
 import { Layout } from 'layouts/default'
@@ -15,7 +16,7 @@ import { clamp, mapRange } from 'lib/maths'
 import { useStore } from 'lib/store'
 import dynamic from 'next/dynamic'
 import { useEffect, useRef, useState } from 'react'
-import { useWindowSize } from 'react-use'
+import { useIntersection, useWindowSize } from 'react-use'
 import s from './home.module.scss'
 
 const SFDR = dynamic(() => import('icons/sfdr.svg'), { ssr: false })
@@ -122,6 +123,18 @@ export default function Home() {
   // useScroll((e) => {
   //   console.log(e)
   // })
+
+  const inUseRef = useRef()
+
+  const [visible, setIsVisible] = useState(false)
+  const intersection = useIntersection(inUseRef, {
+    threshold: 0.2,
+  })
+  useEffect(() => {
+    if (intersection?.isIntersecting) {
+      setIsVisible(true)
+    }
+  }, [intersection])
 
   return (
     <Layout
@@ -343,71 +356,37 @@ export default function Home() {
           <FeatureCards />
         </section>
       </section>
-      <section ref={inuseRectRef} className={cn('theme-light', s['in-use'])}>
+      <section
+        ref={(node) => {
+          inuseRectRef(node)
+          inUseRef.current = node
+        }}
+        className={cn('theme-light', s['in-use'], visible && s.visible)}
+      >
         <div className="layout-grid">
           <aside className={s.title}>
             <p className="h3">
-              Lenis <br />
-              <span className="grey">in use</span>
+              <span className={s.line} style={{ '--i': 0 }}>
+                <span>Lenis</span>
+              </span>
+              <br />
+              <span className={cn('grey', s.line)} style={{ '--i': 1 }}>
+                <span>in use</span>
+              </span>
             </p>
           </aside>
           <ul className={s.list}>
-            <li>
-              <ListItem
-                title="Wyre"
-                source="Studio Freight"
-                href="https://sendwyre.com"
-              />
-            </li>
-            <li>
-              <ListItem
-                title="Lunchbox"
-                source="Studio Freight"
-                href="https://lunchbox.io"
-              />
-            </li>
-            <li>
-              <ListItem
-                title="Scroll Animation Ideas for Image Grids"
-                source="Codrops"
-                href="https://tympanus.net/Development/ScrollAnimationsGrid/"
-              />
-            </li>
-            <li>
-              <ListItem
-                title="Easol"
-                source="Studio Freight"
-                href="https://easol.com"
-              />
-            </li>
-            <li>
-              <ListItem
-                title="Repeat"
-                source="Studio Freight"
-                href="https://getrepeat.io"
-              />
-            </li>
-            <li>
-              <ListItem
-                title="How to Animate SVG Shapes on Scroll"
-                source="Codrops"
-                href="https://tympanus.net/codrops/2022/06/08/how-to-animate-svg-shapes-on-scroll"
-              />
-            </li>
-            <li>
-              <ListItem
-                title="Dragonfly"
-                source="Studio Freight"
-                href="https://dragonfly.xyz"
-              />
-            </li>
-            <li>
-              <ListItem
-                title="Yuga Labs"
-                source="Antinomy Studio"
-                href="https://yuga.com"
-              />
-            </li>
+            {projects.map(({ title, source, href }, i) => (
+              <li key={i}>
+                <ListItem
+                  title={title}
+                  source={source}
+                  href={href}
+                  index={i}
+                  visible={visible}
+                />
+              </li>
+            ))}
           </ul>
         </div>
       </section>

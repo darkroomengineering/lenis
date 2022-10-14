@@ -1,12 +1,31 @@
 @import 'styles/_functions';
 
 .item {
-  display: flex;
-  justify-content: space-between;
-  border-bottom: 1px solid var(--grey);
-  padding: mobile-vw(16px) 0;
+  // border-bottom: desktop-vw(1px) solid transparent;
+
   position: relative;
-  overflow: hidden;
+
+  .inner {
+    padding: mobile-vw(16px) 0;
+    overflow: hidden;
+    display: flex;
+    justify-content: space-between;
+
+    @include desktop {
+      align-items: center;
+      padding: desktop-vw(16px) 0;
+    }
+  }
+
+  &::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    height: desktop-vw(1px);
+    background-color: var(--grey);
+    bottom: 0;
+  }
 
   &::before {
     position: absolute;
@@ -29,16 +48,12 @@
     }
   }
 
-  @include desktop {
-    align-items: center;
-    padding: desktop-vw(16px) 0;
-  }
-
   .title {
     display: flex;
     align-items: center;
     transition: transform 600ms var(--ease-out-expo);
-    will-change: transform;
+    // will-change: transform;
+    overflow: hidden;
 
     .text {
       font-weight: 500;
@@ -106,6 +121,45 @@
 
       .source {
         transform: translateX(desktop-vw(-16px));
+      }
+    }
+  }
+
+  //animation
+
+  @include desktop {
+    display: inline-block;
+    width: 100%;
+    transition: transform 1.2s var(--ease-out-expo);
+    transition-delay: calc(100ms * var(--i));
+
+    &::after {
+      transition: transform 1.2s var(--ease-out-expo);
+      transform-origin: right;
+      transition-delay: calc(100ms * var(--i));
+    }
+
+    .source {
+      overflow: hidden;
+    }
+
+    .text,
+    .source > * {
+      transition: transform 1.2s var(--ease-out-expo);
+      display: block;
+      transition-delay: calc(100ms * var(--i));
+    }
+
+    &:not(.visible) {
+      transform: translateY(100%);
+
+      &::after {
+        transform: scaleX(0);
+      }
+
+      .text,
+      .source > * {
+        transform: translateY(100%);
       }
     }
   }

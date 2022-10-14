@@ -478,6 +478,27 @@ $intro-duration: 2050ms;
     @include desktop {
       grid-column: 1 / span 5;
     }
+
+    .line {
+      display: inline-block;
+      overflow: hidden;
+
+      > * {
+        display: inline-block;
+        transition: 1.2s var(--ease-out-expo) transform;
+        transition-delay: calc(var(--i) * 100ms);
+      }
+    }
+  }
+
+  @include desktop {
+    &:not(.visible) {
+      .line {
+        > * {
+          transform: translateY(100%);
+        }
+      }
+    }
   }
 
   .list {
