@@ -1,5 +1,6 @@
 import { useRect } from '@studio-freight/hamo'
 import cn from 'clsx'
+import { AppearTitle } from 'components/appear-title'
 import { Button } from 'components/button'
 import { Card } from 'components/card'
 import { FeatureCards } from 'components/feature-cards'
@@ -150,7 +151,12 @@ export default function Home() {
         <WebGL />
       </div>
 
-      <section className={s.hero}>
+      <section
+        className={s.hero}
+        onClick={() => {
+          lenis.scrollTo(lenis.limit - 100)
+        }}
+      >
         <div className="layout-grid-inner">
           <Title className={s.title} />
           <SFDR className={cn(s.icon, introOut && s.show)} />
@@ -207,7 +213,9 @@ export default function Home() {
       </section>
       <section className={s.why}>
         <div className="layout-grid">
-          <p className={cn(s.sticky, 'h2')}>Why smooth scroll?</p>
+          <h2 className={cn(s.sticky, 'h2')}>
+            <AppearTitle>Why smooth scroll?</AppearTitle>
+          </h2>
           <aside className={s.features} ref={whyRectRef}>
             <div className={s.feature}>
               <p className="p">
