@@ -63,7 +63,7 @@ import Lenis from '@studio-freight/lenis'
 
 const lenis = new Lenis({
   duration: 1.2,
-  easing: (t) => (t === 1 ? 1 : 1 - Math.pow(2, -10 * t)), // https://easings.net/en#easeOutExpo
+  easing: (t) => Math.min(1, 1.00098 - Math.pow(2, -10 * t)), // https://www.desmos.com/calculator/qsbe9zydsz
   direction: 'vertical', // vertical, horizontal
   gestureDirection: 'vertical', // vertical, horizontal, both
   smooth: true,
@@ -93,14 +93,6 @@ Using custom scroll container
 const lenis = new Lenis({
   wrapper: NodeElement, // element which has overflow
   content: NodeElement, // usually wrapper's direct child
-  duration: 1.2,
-  easing: (t) => (t === 1 ? 1 : 1 - Math.pow(2, -10 * t)),
-  direction: 'vertical',
-  gestureDirection: 'vertical',
-  smooth: true,
-  smoothTouch: false,
-  touchMultiplier: 2,
-  infinite: false,
 })
 ```
 
@@ -113,7 +105,7 @@ const lenis = new Lenis({
 | `wrapper`          | `NodeElement` | `window`                                          | Default element which has overflow                                                                                                                   |
 | `content`          | `NodeElement` | `document`                                        | `wrapper`'s direct child                                                                                                                             |
 | `duration`         | `number`      | `1.2`                                             | Specifies the duration of the animation                                                                                                              |
-| `easing`           | `function`    | `(t) => (t === 1 ? 1 : 1 - Math.pow(2, -10 * t))` | Specifies the rate of change of a specific value, our default is coming from [Easings.net](https://easings.net/en)                                   |
+| `easing`           | `function`    | `(t) => Math.min(1, 1.00098 - Math.pow(2, -10 * t))` | Specifies the rate of change of a specific value, our default is custom but you can take one from [Easings.net](https://easings.net/en)                                   |
 | `direction`        | `string`      | `vertical`                                        | `vertical` or `horizontal` scrolling.                                                                                                                |
 | `gestureDirection` | `string`      | `vertical`                                        | `vertical`, `horizontal` or `both`.                                                                                                                  |
 | `smooth`           | `boolean`     | `true`                                            | Enable or disable 'smoothness'                                                                                                        |
