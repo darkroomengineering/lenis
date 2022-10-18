@@ -19,6 +19,8 @@
     // --t: calc(var(--p) * 100%);
     // transform: translate3d(var(--t), var(--t), 0);
     // opacity: var(--progress);
+    --d: 100vh;
+    transform: translate3d(0, calc(var(--progress) * -1 * var(--d)), 0);
 
     @include mobile {
       @for $i from 0 through 9 {
@@ -42,7 +44,15 @@
       @for $i from 0 through 9 {
         &:nth-child(#{$i + 1}) {
           top: calc(
-            ((100vh - #{desktop-vw(440px)} - (2 * var(--layout-margin))) / 8) *
+            (
+                (
+                    100vh +
+                      var(--d) -
+                      #{desktop-vw(440px)} -
+                      (2 * var(--layout-margin))
+                  ) /
+                  8
+              ) *
               $i
           );
           left: calc(
