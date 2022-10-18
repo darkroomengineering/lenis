@@ -414,10 +414,11 @@ $intro-duration: 2050ms;
     transform-origin: 50% calc(50% - (var(--progress1) * 27%));
     opacity: calc(var(--progress1) * 2);
     text-align: center;
+    will-change: transform;
 
     @include desktop {
       transform: translate(-50%, -50%) scale(calc((var(--progress1) * 8.5)));
-      transform-origin: 50% calc(50% - (var(--progress1) * 25.5%));
+      transform-origin: 50% calc(50% - (var(--progress1) * 25%));
     }
   }
 }
