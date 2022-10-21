@@ -67,6 +67,7 @@ const lenis = new Lenis({
   direction: 'vertical', // vertical, horizontal
   gestureDirection: 'vertical', // vertical, horizontal, both
   smooth: true,
+  mouseMultiplier: 1,
   smoothTouch: false,
   touchMultiplier: 2,
   infinite: false,
@@ -109,6 +110,7 @@ const lenis = new Lenis({
 | `direction`        | `string`      | `vertical`                                        | `vertical` or `horizontal` scrolling.                                                                                                                |
 | `gestureDirection` | `string`      | `vertical`                                        | `vertical`, `horizontal` or `both`.                                                                                                                  |
 | `smooth`           | `boolean`     | `true`                                            | Enable or disable 'smoothness'                                                                                                        |
+| `mouseMultiplier`           | `number`     | `1`                                            | This value is passed directly to [Virtual Scroll](https://github.com/ayamflow/virtual-scroll)                                                                                                         |
 | `smoothTouch`      | `boolean`     | `false`                                           | Enable or disable 'smoothness' while scrolling using touch. Note: We have disabled it by default because touch devices native smoothness is impossible to mimic |
 | `touchMultiplier`  | `number`      | `string`                                          | This value is passed directly to [Virtual Scroll](https://github.com/ayamflow/virtual-scroll)                                                        |
 | `infinite`        | `boolean`     | `false`                                           | Enable infinite scrolling!                                                                                                                           |
