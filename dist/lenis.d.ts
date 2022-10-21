@@ -8,6 +8,7 @@ export default class Lenis {
      * @property {number} [duration]
      * @property {EasingFunction} [easing]
      * @property {boolean} [smooth]
+     * @property {number} [mouseMultiplier]
      * @property {boolean} [smoothTouch]
      * @property {number} [touchMultiplier]
      * @property {Direction} [direction]
@@ -18,10 +19,11 @@ export default class Lenis {
      *
      * @param {LenisOptions}
      */
-    constructor({ duration, easing, smooth, smoothTouch, touchMultiplier, direction, gestureDirection, infinite, wrapper, content, }?: {
+    constructor({ duration, easing, smooth, mouseMultiplier, smoothTouch, touchMultiplier, direction, gestureDirection, infinite, wrapper, content, }?: {
         duration?: number;
         easing?: (t: number) => number;
         smooth?: boolean;
+        mouseMultiplier?: number;
         smoothTouch?: boolean;
         touchMultiplier?: number;
         direction?: "vertical" | "horizontal";
@@ -34,6 +36,7 @@ export default class Lenis {
         duration: number;
         easing: (t: number) => number;
         smooth: boolean;
+        mouseMultiplier: number;
         smoothTouch: boolean;
         touchMultiplier: number;
         direction: "vertical" | "horizontal";
@@ -45,6 +48,7 @@ export default class Lenis {
     duration: number;
     easing: (t: number) => number;
     smooth: boolean;
+    mouseMultiplier: number;
     smoothTouch: boolean;
     touchMultiplier: number;
     direction: "vertical" | "horizontal";

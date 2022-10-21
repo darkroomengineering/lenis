@@ -61,6 +61,7 @@ export default class Lenis extends EventEmitter {
    * @property {number} [duration]
    * @property {EasingFunction} [easing]
    * @property {boolean} [smooth]
+   * @property {number} [mouseMultiplier]
    * @property {boolean} [smoothTouch]
    * @property {number} [touchMultiplier]
    * @property {Direction} [direction]
@@ -75,6 +76,7 @@ export default class Lenis extends EventEmitter {
     duration = 1.2,
     easing = (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)), // https://www.desmos.com/calculator/k2tgx2kn8t
     smooth = true,
+    mouseMultiplier = 1,
     smoothTouch = false,
     touchMultiplier = 2,
     direction = 'vertical', // vertical, horizontal
@@ -91,6 +93,7 @@ export default class Lenis extends EventEmitter {
       duration,
       easing,
       smooth,
+      mouseMultiplier,
       smoothTouch,
       touchMultiplier,
       direction,
@@ -103,6 +106,7 @@ export default class Lenis extends EventEmitter {
     this.duration = duration
     this.easing = easing
     this.smooth = smooth
+    this.mouseMultiplier = mouseMultiplier
     this.smoothTouch = smoothTouch
     this.touchMultiplier = touchMultiplier
     this.direction = direction
@@ -148,7 +152,8 @@ export default class Lenis extends EventEmitter {
     this.virtualScroll = new VirtualScroll({
       el: this.wrapperNode,
       firefoxMultiplier: 50,
-      mouseMultiplier: platform.includes('Win') ? 1 : 0.4,
+      mouseMultiplier:
+        this.mouseMultiplier * (platform.includes('Win') ? 0.84 : 0.4),
       useKeyboard: false,
       touchMultiplier: this.touchMultiplier,
       useTouch: true,

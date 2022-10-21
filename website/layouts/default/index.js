@@ -37,9 +37,10 @@ export function Layout({
       direction: 'vertical',
       gestureDirection: 'vertical',
       smooth: true,
+      mouseMultiplier: 1,
       smoothTouch: false,
-      infinite: false,
       touchMultiplier: 2,
+      infinite: false,
     })
     window.lenis = lenis
     setLenis(lenis)
