@@ -158,10 +158,9 @@ body {
 }
 ```
 
-#### Stop wheel event propagation on elements with overflow ([see this issue](https://github.com/studio-freight/lenis/issues/14))
-
+#### Use `data-lenis-prevent` attribute on nested scroll elements
 ```html
-<div onwheel="event.stopPropagation()">scroll content</div>
+<div data-lenis-prevent>scroll content</div>
 ```
 
 #### Manually use `lenis.scrollTo('#anchor')` on anchor link click ([see this issue](https://github.com/studio-freight/lenis/issues/19))
