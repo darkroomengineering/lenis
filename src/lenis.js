@@ -221,7 +221,11 @@ export default class Lenis extends EventEmitter {
   }
 
   onVirtualScroll = ({ deltaY, deltaX, originalEvent: e }) => {
-    if (e.ctrlKey) return
+    const preventScroll = !!e.path.find(
+      (node) => node.getAttribute && node.getAttribute('data-lenis-prevent')
+    )
+
+    if (e.ctrlKey || preventScroll) return
 
     // switch to smooth if event is touch and if smoothTouch=true
     this.smooth = !!e.changedTouches ? this.smoothTouch : this.options.smooth

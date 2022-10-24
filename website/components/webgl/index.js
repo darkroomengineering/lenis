@@ -173,7 +173,7 @@ const steps = [
     type: 1,
   },
   {
-    position: [-0.8, -0.6, 0],
+    position: [-1.2, -0.6, 0],
     scale: 0.05,
     rotation: [
       MathUtils.degToRad(-90),
@@ -217,7 +217,7 @@ const steps = [
     scale: 0.03,
     rotation: [
       MathUtils.degToRad(0),
-      MathUtils.degToRad(-157),
+      MathUtils.degToRad(-(157 + 360)),
       MathUtils.degToRad(-16),
     ],
     type: 2,
@@ -227,7 +227,7 @@ const steps = [
     scale: 0.03,
     rotation: [
       MathUtils.degToRad(0),
-      MathUtils.degToRad(-340),
+      MathUtils.degToRad(-(340 + 360)),
       MathUtils.degToRad(-16),
     ],
     type: 2,

@@ -151,12 +151,7 @@ export default function Home() {
         <WebGL />
       </div>
 
-      <section
-        className={s.hero}
-        onClick={() => {
-          lenis.scrollTo(lenis.limit - 100)
-        }}
-      >
+      <section className={s.hero}>
         <div className="layout-grid-inner">
           <Title className={s.title} />
           <SFDR className={cn(s.icon, introOut && s.show)} />
@@ -213,7 +208,7 @@ export default function Home() {
       </section>
       <section className={s.why}>
         <div className="layout-grid">
-          <h2 className={cn(s.sticky, 'h2')}>
+          <h2 className={cn(s.sticky, 'h2')} data-lenis-prevent>
             <AppearTitle>Why smooth scroll?</AppearTitle>
           </h2>
           <aside className={s.features} ref={whyRectRef}>
