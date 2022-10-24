@@ -158,7 +158,7 @@ body {
 }
 ```
 
-#### Use `data-lenis-prevent` attribute on nested scroll elements
+#### Use `data-lenis-prevent` attribute on nested scroll elements. In addition, we advice you to add `overscroll-behavior: contain` on this element.
 ```html
 <div data-lenis-prevent>scroll content</div>
 ```
