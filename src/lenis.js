@@ -222,7 +222,7 @@ export default class Lenis extends EventEmitter {
 
   onVirtualScroll = ({ deltaY, deltaX, originalEvent: e }) => {
     const preventScroll = !!e.path.find(
-      (node) => node.getAttribute && node.getAttribute('data-lenis-prevent')
+      (node) => node.hasAttribute && node.hasAttribute('data-lenis-prevent')
     )
 
     if (e.ctrlKey || preventScroll) return
