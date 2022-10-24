@@ -208,7 +208,7 @@ export default function Home() {
       </section>
       <section className={s.why}>
         <div className="layout-grid">
-          <h2 className={cn(s.sticky, 'h2')} data-lenis-prevent>
+          <h2 className={cn(s.sticky, 'h2')}>
             <AppearTitle>Why smooth scroll?</AppearTitle>
           </h2>
           <aside className={s.features} ref={whyRectRef}>
