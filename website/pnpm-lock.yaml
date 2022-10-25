@@ -34,7 +34,7 @@ specifiers:
   eslint-import-resolver-alias: ^1.1.2
   eslint-plugin-import: ^2.26.0
   glslify-loader: ^2.0.0
-  gsap-trial: ^3.11.3
+  gsap: npm:@gsap/business@^3.11.3
   leva: ^0.9.32
   lottie-web: ^5.9.6
   nanoid: ^4.0.0
@@ -68,7 +68,7 @@ dependencies:
   embla-carousel-autoplay: 7.0.3_embla-carousel@7.0.3
   embla-carousel-react: 7.0.3_react@18.2.0
   glslify-loader: 2.0.0
-  gsap-trial: 3.11.3
+  gsap: /@gsap/business/3.11.3
   leva: 0.9.32_biqbaboplfbrettd7655fr4n2y
   lottie-web: 5.9.6
   nanoid: 4.0.0
@@ -1421,6 +1421,10 @@ packages:
     transitivePeerDependencies:
       - supports-color
     dev: true
+
+  /@gsap/business/3.11.3:
+    resolution: {integrity: sha512-u+8zXI2yOHk7IIzML5TzON+xUkwBnyIaHIo0qCI2OV7oISUyARDHQfbEpqcOL93niU4C7l1lZqniTRFK70Us3g==}
+    dev: false
 
   /@humanwhocodes/config-array/0.11.6:
     resolution: {integrity: sha512-jJr+hPTJYKyDILJfhNSHsjiwXYf26Flsz8DvNndOsHs5pwSnpGUEy8yzF0JYhCEvTDdV2vuOK5tt8BVhwO5/hg==}
@@ -4536,10 +4540,6 @@ packages:
   /grapheme-splitter/1.0.4:
     resolution: {integrity: sha512-bzh50DW9kTPM00T8y4o8vQg89Di9oLJVLW/KaOGIXJWP/iqCN6WKYkbNOF04vFLJhwcpYUh9ydh/+5vpOqV4YQ==}
     dev: true
-
-  /gsap-trial/3.11.3:
-    resolution: {integrity: sha512-d2KL2hKnC6/sTV34TV2EUdpY3kE346FBbKBXDkJnpexSzC5LdtmjTmdLE1uVxxOPVcEcfcS9yxIk4BsEOqg62Q==}
-    dev: false
 
   /gzip-size/6.0.0:
     resolution: {integrity: sha512-ax7ZYomf6jqPTQ4+XCpUGyXKHk5WweS+e05MBO4/y3WJ5RkmPXNKvX+bx1behVILVwr6JSQvZAku021CHPXG3Q==}
