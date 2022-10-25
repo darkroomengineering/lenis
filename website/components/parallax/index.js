@@ -1,5 +1,5 @@
 import { useLayoutEffect } from '@studio-freight/hamo'
-import { gsap } from 'gsap-trial'
+import { gsap } from 'gsap'
 import { mapRange } from 'lib/maths'
 import { useRef } from 'react'
 import { useWindowSize } from 'react-use'

@@ -28,7 +28,7 @@
     "embla-carousel-autoplay": "7.0.3",
     "embla-carousel-react": "7.0.3",
     "glslify-loader": "^2.0.0",
-    "gsap-trial": "^3.11.3",
+    "gsap": "npm:@gsap/business@^3.11.3",
     "leva": "^0.9.32",
     "lottie-web": "^5.9.6",
     "nanoid": "^4.0.0",
