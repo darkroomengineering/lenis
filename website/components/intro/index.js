@@ -57,12 +57,12 @@ export const Intro = () => {
         })
       }}
     >
-      <div className={isLoaded && s.relative}>
+      <div className={cn(isLoaded && s.relative)}>
         <LNS isLoaded={isLoaded} fill={'var(--black)'} />
         <EI
           isLoaded={isLoaded}
           fill={'var(--black)'}
-          className={introOut && s.translate}
+          className={cn(introOut && s.translate)}
         />
       </div>
     </div>

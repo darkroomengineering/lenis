@@ -39,4 +39,19 @@ export const projects = [
     source: 'Antinomy Studio',
     href: 'https://yuga.com',
   },
+  {
+    title: "Quentin Hocde's Portfolio",
+    source: 'Quentin Hocde',
+    href: 'https://quentinhocde.com/',
+  },
+  {
+    title: 'Houses Of',
+    source: 'Felix P. & Shelby Kay',
+    href: 'https://housesof.world/',
+  },
+  {
+    title: 'Heights Agency',
+    source: 'Francesco Michelini',
+    href: 'https://www.heights.agency/',
+  },
 ]
