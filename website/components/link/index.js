@@ -61,7 +61,7 @@ export const Link = forwardRef(
 
     const noTransition = (href) => {
       // Add hrefs that don't use page transition
-      const urlsTransition = ['gsap']
+      const urlsTransition = ['gsap-trial']
       return !!urlsTransition.find((url) => href.includes(url))
     }
 
@@ -70,21 +70,18 @@ export const Link = forwardRef(
         href={href}
         passHref={isExternal || isAnchor}
         shallow={needsShallow(href)}
+        {...attributes}
+        onClick={(e) => {
+          if (isExternal || isAnchor) return
+          if (!noTransition(href)) {
+            e.preventDefault()
+            setTriggerTransition(href)
+          }
+          onClick()
+        }}
+        {...(isExternal && { target: '_blank', rel: 'noopener noreferrer' })}
       >
-        <a
-          {...attributes}
-          onClick={(e) => {
-            if (isExternal || isAnchor) return
-            if (!noTransition(href)) {
-              e.preventDefault()
-              setTriggerTransition(href)
-            }
-            onClick()
-          }}
-          {...(isExternal && { target: '_blank', rel: 'noopener noreferrer' })}
-        >
-          {children}
-        </a>
+        {children}
       </NextLink>
     )
   }

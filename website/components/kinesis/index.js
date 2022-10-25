@@ -1,5 +1,5 @@
 import { useIsTouchDevice, useLayoutEffect } from '@studio-freight/hamo'
-import gsap from 'gsap'
+import gsap from 'gsap-trial'
 import { useRef } from 'react'
 import { useWindowSize } from 'react-use'
 
