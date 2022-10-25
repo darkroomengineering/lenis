@@ -222,9 +222,9 @@ export default function Home() {
               </p>
             </div>
             <div className={s.feature}>
-              <h4 className={cn(s.title, 'h4')}>
+              <h3 className={cn(s.title, 'h4')}>
                 Create more immersive interfaces
-              </h4>
+              </h3>
               <p className="p">
                 Unlock the creative potential and impact of your web
                 experiences. Smoothing the scroll pulls users into the flow of
@@ -233,9 +233,9 @@ export default function Home() {
               </p>
             </div>
             <div className={s.feature}>
-              <h4 className={cn(s.title, 'h4')}>
+              <h3 className={cn(s.title, 'h4')}>
                 Normalize all your user inputs
-              </h4>
+              </h3>
               <p className="p">
                 Give all your users the same (dope) experience whether they’re
                 using trackpads, mouse wheels, or otherwise. With smooth scroll,
@@ -244,9 +244,9 @@ export default function Home() {
               </p>
             </div>
             <div className={s.feature}>
-              <h4 className={cn(s.title, 'h4')}>
+              <h3 className={cn(s.title, 'h4')}>
                 Make your animations flawless
-              </h4>
+              </h3>
               <p className="p">
                 Synchronization with native scroll is not reliable. Those jumps
                 and delays with scroll-linked animations are caused by
