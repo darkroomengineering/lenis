@@ -426,7 +426,6 @@ $intro-duration: 2050ms;
 .featuring {
   position: relative;
   padding-bottom: mobile-vw(160px);
-  // background-color: var(--theme-primary);
   color: var(--theme-secondary);
 
   &::before {
@@ -449,7 +448,7 @@ $intro-duration: 2050ms;
 
   @include desktop {
     padding: desktop-vw(40px) 0;
-    padding-bottom: desktop-vw(440px);
+    padding-bottom: desktop-vw(320px);
   }
 
   .inner {

@@ -54,4 +54,9 @@ export const projects = [
     source: 'Francesco Michelini',
     href: 'https://www.heights.agency/',
   },
+  {
+    title: 'Goodship',
+    source: 'Studio Freight',
+    href: 'https://goodship.io/',
+  },
 ]

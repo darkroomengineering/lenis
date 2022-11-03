@@ -8,22 +8,18 @@
   }
 
   .card {
+    --d: 100vh;
+
     position: absolute;
     will-change: transform;
     transition-duration: 1.2s;
     transition-property: opacity, transform;
     transition-timing-function: var(--ease-out-expo);
-
-    // @debug var(--progress) % var(--i);
-    // --p: calc(1 - var(--progress));
-    // --t: calc(var(--p) * 100%);
-    // transform: translate3d(var(--t), var(--t), 0);
-    // opacity: var(--progress);
-    --d: 100vh;
-    transform: translate3d(0, calc(var(--progress) * -1 * var(--d)), 0);
+    // transform: translate3d(0, calc(var(--progress) * -1 * var(--d)), 0);
+    // transform: translateY(calc(var(--progress) * -1 * var(--d)));
 
     @include mobile {
-      @for $i from 0 through 9 {
+      @for $i from 0 through 8 {
         &:nth-child(#{$i + 1}) {
           top: calc(
             (
@@ -41,16 +37,11 @@
     }
 
     @include desktop {
-      @for $i from 0 through 9 {
+      @for $i from 0 through 8 {
         &:nth-child(#{$i + 1}) {
           top: calc(
             (
-                (
-                    100vh +
-                      var(--d) -
-                      #{desktop-vw(440px)} -
-                      (2 * var(--layout-margin))
-                  ) /
+                (var(--d) - #{desktop-vw(440px)} - (2 * var(--layout-margin))) /
                   8
               ) *
               $i

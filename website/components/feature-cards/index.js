@@ -45,14 +45,6 @@ export const FeatureCards = () => {
       const end = rect.top + rect.height - windowHeight
 
       const progress = clamp(0, mapRange(start, end, scroll, 0, 1), 1)
-      // const cards = [...element.current.children]
-      // cards.forEach((node, i) => {
-      //   node.style.setProperty(
-      //     '--progress-unique',
-      //     clamp(0, mapRange(i + 1, i+2, progress * 10, 0, 1), 1)
-      //     // clamp(i, progress * 10, i + 1) - i
-      //   )
-      // })
 
       element.current.style.setProperty(
         '--progress',
