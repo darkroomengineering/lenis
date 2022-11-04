@@ -10,7 +10,6 @@ import { Footer } from 'components/footer'
 import { PageTransition } from 'components/page-transition'
 import Lenis from '../../../bundled/lenis'
 
-// import { Header } from 'components/header'
 import { Intro } from 'components/intro'
 import { Scrollbar } from 'components/scrollbar'
 import { useStore } from 'lib/store'
@@ -27,7 +26,6 @@ export function Layout({
   const isTouchDevice = useIsTouchDevice()
   const [lenis, setLenis] = useStore((state) => [state.lenis, state.setLenis])
   const router = useRouter()
-  // const [ref, { height }] = useMeasure({ debounce: 100 })
 
   useLayoutEffect(() => {
     window.scrollTo(0, 0)
@@ -123,7 +121,6 @@ export function Layout({
         <Intro />
         {isTouchDevice === false && <Cursor />}
         {isTouchDevice === false && <Scrollbar />}
-        {/* <Header ref={ref} /> */}
         <main className={s.main}>{children}</main>
         <Footer />
       </div>

@@ -121,9 +121,9 @@ export default function Home() {
     addThreshold({ id: 'end', value: top })
   }, [lenis?.limit])
 
-  // useScroll((e) => {
-  //   console.log(e)
-  // })
+  useScroll((e) => {
+    console.log(e)
+  })
 
   const inUseRef = useRef()
 
