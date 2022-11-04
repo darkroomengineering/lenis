@@ -154,9 +154,7 @@ export default class Lenis extends EventEmitter {
       firefoxMultiplier: 50,
       mouseMultiplier:
         this.mouseMultiplier * (platform.includes('Win') ? 0.84 : 0.4),
-      useKeyboard: false,
       touchMultiplier: this.touchMultiplier,
-      useTouch: true,
       passive: false,
     })
 
@@ -313,11 +311,13 @@ export default class Lenis extends EventEmitter {
   notify() {
     let scroll = this.infinite ? modulo(this.scroll, this.limit) : this.scroll
 
+    let direction = this.lastScroll < scroll ? 1 : -1
+
     this.emit('scroll', {
       scroll,
       limit: this.limit,
       velocity: this.velocity,
-      direction: this.direction,
+      direction,
       progress: scroll / this.limit,
     })
   }
