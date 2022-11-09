@@ -156,6 +156,8 @@ export default class Lenis extends EventEmitter {
         this.mouseMultiplier * (platform.includes('Win') ? 0.84 : 0.4),
       touchMultiplier: this.touchMultiplier,
       passive: false,
+      useKeyboard: false,
+      useTouch: true,
     })
 
     this.virtualScroll.on(this.onVirtualScroll)
