@@ -172,6 +172,14 @@ body {
 
 <br>
 
+## Limitations
+
+- no support of CSS scroll-snap
+- erase browser previous and next trackpad gestures
+- can only run 60fps maximum on Safari ([source](https://bugs.webkit.org/show_bug.cgi?id=173434))
+
+<br>
+
 ## Tutorials
 
 - [Scroll Animation Ideas for Image Grids](https://tympanus.net/Development/ScrollAnimationsGrid/) by [Codrops](https://tympanus.net/codrops)
