@@ -208,6 +208,7 @@ body {
 - [Shelby Kay's Portfolio](https://shelbykay.dev) by [Shelby Kay](https://shelbykay.dev/)
 - [Heights Agency Portfolio](https://www.heights.agency/) by [Francesco Michelini](https://www.francescomichelini.com/)
 - [Goodship](https://goodship.io) by [Studio Freight](https://www.studiofreight.com/)
+- [Flayks' Portfolio](https://flayks.com) by [Félix P.](https://flayks.com/) & [Shelby Kay](https://shelbykay.dev/)
 
 <br/>
 
