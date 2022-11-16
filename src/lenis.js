@@ -1,4 +1,4 @@
-import EventEmitter from 'tiny-emitter'
+import { TinyEmitter as EventEmitter } from 'tiny-emitter'
 import VirtualScroll from 'virtual-scroll'
 import { version } from '../package.json'
 import { clamp, modulo } from './maths'
