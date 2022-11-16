@@ -1,4 +1,4 @@
-export default class Lenis {
+export default class Lenis extends EventEmitter {
     constructor({ duration, easing, smooth, mouseMultiplier, smoothTouch, touchMultiplier, direction, gestureDirection, infinite, wrapper, content, }?: {
         duration?: number;
         easing?: (t: number) => number;
@@ -56,7 +56,7 @@ export default class Lenis {
     onWrapperResize: ([entry]: [any]) => void;
     onContentResize: ([entry]: [any]) => void;
     get limit(): number;
-    onVirtualScroll: ({ deltaY, deltaX, originalEvent }: {
+    onVirtualScroll: ({ deltaY, deltaX, originalEvent: e }: {
         deltaY: any;
         deltaX: any;
         originalEvent: any;
@@ -75,6 +75,7 @@ export default class Lenis {
         easing?: (t: number) => number;
     }): void;
 }
+import { TinyEmitter as EventEmitter } from "tiny-emitter";
 declare class Animate {
     to(target: any, { duration, easing, ...keys }?: {
         duration?: number;
