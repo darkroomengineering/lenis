@@ -56,7 +56,7 @@ export default class Lenis extends EventEmitter {
     onWrapperResize: ([entry]: [any]) => void;
     onContentResize: ([entry]: [any]) => void;
     get limit(): number;
-    onVirtualScroll: ({ deltaY, deltaX, originalEvent: e }: {
+    onVirtualScroll: ({ deltaY, deltaX, originalEvent }: {
         deltaY: any;
         deltaX: any;
         originalEvent: any;
