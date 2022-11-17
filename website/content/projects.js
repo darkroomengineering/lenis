@@ -27,7 +27,7 @@ export const projects = [
   {
     title: 'How to Animate SVG Shapes on Scroll',
     source: 'Codrops',
-    href: 'https://getrepeat.io',
+    href: 'https://tympanus.net/Tutorials/OnScrollPathAnimations/',
   },
   {
     title: 'Dragonfly',
