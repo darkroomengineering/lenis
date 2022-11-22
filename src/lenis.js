@@ -381,6 +381,7 @@ export default class Lenis extends EventEmitter {
     }
 
     if (!this.smooth || immediate) {
+      this.animate.stop()
       this.scroll = this.lastScroll = this.targetScroll
       this.setScroll(this.targetScroll)
     } else {

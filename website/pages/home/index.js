@@ -13,6 +13,7 @@ import { projects } from 'content/projects'
 // import { WebGL } from 'components/webgl'
 import { useScroll } from 'hooks/use-scroll'
 import { Layout } from 'layouts/default'
+import { button, useControls } from 'leva'
 import { clamp, mapRange } from 'lib/maths'
 import { useStore } from 'lib/store'
 import dynamic from 'next/dynamic'
@@ -44,6 +45,20 @@ export default function Home() {
   const introOut = useStore(({ introOut }) => introOut)
 
   const [theme, setTheme] = useState('dark')
+  const lenis = useStore(({ lenis }) => lenis)
+
+  useControls(
+    'scrollTo',
+    () => ({
+      immediate: button(() => {
+        lenis.scrollTo(100, { immediate: true })
+      }),
+      smooth: button(() => {
+        lenis.scrollTo(100)
+      }),
+    }),
+    [lenis]
+  )
 
   useScroll(({ scroll }) => {
     setHasScrolled(scroll > 10)
@@ -113,8 +128,6 @@ export default function Home() {
     const top = inuseRect.top
     addThreshold({ id: 'in-use', value: top })
   }, [inuseRect])
-
-  const lenis = useStore(({ lenis }) => lenis)
 
   useEffect(() => {
     const top = lenis?.limit

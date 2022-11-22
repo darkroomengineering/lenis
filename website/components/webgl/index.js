@@ -331,7 +331,12 @@ export function Arm() {
     () => ({
       export: button(() => {
         alert(
-          JSON.stringify({ scale: scale.toFixed(3), position, rotation, type })
+          JSON.stringify({
+            scale: scale.toFixed(3),
+            position,
+            rotation,
+            type,
+          })
         )
       }),
     }),
@@ -405,6 +410,7 @@ export function Arm() {
   )
 
   useScroll(({ scroll }) => {
+    if (!parent.current) return
     if (custom) {
       parent.current.scale.setScalar(viewport.height * scale)
       parent.current.position.set(
@@ -429,7 +435,9 @@ export function Arm() {
 
     // return
 
-    parent.current.visible = from?.type === to?.type
+    if (parent.current) {
+      parent.current.visible = from?.type === to?.type
+    }
 
     if (!to) return
 
