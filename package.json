@@ -17,16 +17,16 @@
   },
   "devDependencies": {
     "@size-limit/preset-small-lib": "^8.1.0",
-    "husky": "^8.0.1",
+    "husky": "^8.0.2",
     "lint-staged": "^13.0.3",
     "microbundle": "^0.15.1",
     "path": "^0.12.7",
-    "prettier": "^2.7.1",
+    "prettier": "^2.8.0",
     "rimraf": "^3.0.2",
     "size-limit": "^8.1.0",
     "stats.js": "^0.17.0",
-    "typescript": "^4.8.3",
-    "vite": "^3.1.0"
+    "typescript": "^4.9.3",
+    "vite": "^3.2.4"
   },
   "dependencies": {
     "tiny-emitter": "^2.1.0",
@@ -62,19 +62,19 @@
   ],
   "size-limit": [
     {
-      "limit": "4 kB",
+      "limit": "4.5 kB",
       "path": "dist/lenis.js"
     },
     {
-      "limit": "4 kB",
+      "limit": "4.5 kB",
       "path": "dist/lenis.mjs"
     },
     {
-      "limit": "4 kB",
+      "limit": "4.5 kB",
       "path": "dist/lenis.modern.mjs"
     },
     {
-      "limit": "4 kB",
+      "limit": "4.5 kB",
       "path": "dist/lenis.umd.js"
     }
   ],
