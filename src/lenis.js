@@ -313,13 +313,18 @@ export default class Lenis extends EventEmitter {
   notify() {
     let scroll = this.infinite ? modulo(this.scroll, this.limit) : this.scroll
 
-    let direction = this.lastScroll < scroll ? 1 : -1
+    this.scrollDirection =
+      this.lastScroll === scroll
+        ? this.scrollDirection
+        : this.lastScroll < scroll
+        ? 1
+        : -1
 
     this.emit('scroll', {
       scroll,
       limit: this.limit,
       velocity: this.velocity,
-      direction,
+      direction: this.scrollDirection,
       progress: scroll / this.limit,
     })
   }
