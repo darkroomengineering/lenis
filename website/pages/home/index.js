@@ -48,6 +48,19 @@ export default function Home() {
   const lenis = useStore(({ lenis }) => lenis)
 
   useControls(
+    'lenis',
+    () => ({
+      stop: button(() => {
+        lenis.stop()
+      }),
+      start: button(() => {
+        lenis.start()
+      }),
+    }),
+    [lenis]
+  )
+
+  useControls(
     'scrollTo',
     () => ({
       immediate: button(() => {

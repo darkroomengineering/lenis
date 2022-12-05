@@ -14,11 +14,12 @@ export function truncate(value, decimals) {
   return parseFloat(value.toFixed(decimals))
 }
 
-export function modulo(value, max) {
-  let v = value % max
-  if (v < 0) {
-    v += max
+export function clampedModulo(dividend, divisor) {
+  let remainder = dividend % divisor
+
+  if ((divisor > 0 && remainder < 0) || (divisor < 0 && remainder > 0)) {
+    remainder += divisor
   }
 
-  return v
+  return remainder
 }

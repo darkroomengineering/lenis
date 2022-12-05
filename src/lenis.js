@@ -1,7 +1,7 @@
 import { TinyEmitter as EventEmitter } from 'tiny-emitter'
 import VirtualScroll from 'virtual-scroll'
 import { version } from '../package.json'
-import { clamp, modulo } from './maths'
+import { clamp, clampedModulo } from './maths'
 
 class Animate {
   to(target, { duration = 1, easing = (t) => t, ...keys } = {}) {
@@ -174,10 +174,18 @@ export default class Lenis extends EventEmitter {
   }
 
   start() {
+    let element = this.wrapperNode
+    if (this.wrapperNode === window) element = document.documentElement
+    element.classList.remove('lenis-stopped')
+
     this.stopped = false
   }
 
   stop() {
+    let element = this.wrapperNode
+    if (this.wrapperNode === window) element = document.documentElement
+    element.classList.add('lenis-stopped')
+
     this.stopped = true
     this.animate.stop()
   }
@@ -290,7 +298,7 @@ export default class Lenis extends EventEmitter {
   }
 
   setScroll(value) {
-    let scroll = this.infinite ? modulo(value, this.limit) : value
+    let scroll = this.infinite ? clampedModulo(value, this.limit) : value
 
     this.direction === 'horizontal'
       ? this.wrapperNode.scrollTo(scroll, 0)
@@ -311,7 +319,9 @@ export default class Lenis extends EventEmitter {
   }
 
   notify() {
-    let scroll = this.infinite ? modulo(this.scroll, this.limit) : this.scroll
+    let scroll = this.infinite
+      ? clampedModulo(this.scroll, this.limit)
+      : this.scroll
     let direction = this.velocity === 0 ? 0 : this.velocity > 0 ? 1 : -1
 
     this.emit('scroll', {
