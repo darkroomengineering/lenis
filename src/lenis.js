@@ -30,7 +30,7 @@ class Animate {
 
     this.currentTime = Math.min(this.currentTime + deltaTime, this.duration)
 
-    const progress = this.easing(this.progress)
+    const progress = this.progress >= 1 ? 1 : this.easing(this.progress)
 
     this.keys.forEach((key) => {
       const from = this.fromKeys[key]
@@ -342,7 +342,7 @@ export default class Lenis extends EventEmitter {
       easing = this.easing,
     } = {}
   ) {
-    if (target === undefined || target === null) return
+    if (target === undefined || target === null || this.stopped) return
     let value
 
     if (typeof target === 'number') {

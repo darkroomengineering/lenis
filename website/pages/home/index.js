@@ -64,10 +64,10 @@ export default function Home() {
     'scrollTo',
     () => ({
       immediate: button(() => {
-        lenis.scrollTo(100, { immediate: true })
+        lenis.scrollTo(8000, { immediate: true })
       }),
       smooth: button(() => {
-        lenis.scrollTo(100)
+        lenis.scrollTo(8000)
       }),
     }),
     [lenis]

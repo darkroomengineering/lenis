@@ -7,14 +7,13 @@ import cn from 'clsx'
 import { Cursor } from 'components/cursor'
 import { CustomHead } from 'components/custom-head'
 import { Footer } from 'components/footer'
-import { PageTransition } from 'components/page-transition'
-import Lenis from '../../../bundled/lenis'
-
 import { Intro } from 'components/intro'
+import { PageTransition } from 'components/page-transition'
 import { Scrollbar } from 'components/scrollbar'
 import { useStore } from 'lib/store'
 import { useRouter } from 'next/router'
 import { useState } from 'react'
+import Lenis from '../../../bundled/lenis'
 import s from './layout.module.scss'
 
 export function Layout({
@@ -66,21 +65,6 @@ export function Layout({
       setHash('#' + hash)
     }
   }, [router])
-
-  useLayoutEffect(() => {
-    if (!lenis) return
-
-    // eslint-disable-next-line no-unused-vars
-    function onScroll(e) {
-      // console.log(e)
-    }
-
-    lenis.on('scroll', onScroll)
-
-    return () => {
-      lenis.off('scroll', onScroll)
-    }
-  }, [lenis])
 
   useLayoutEffect(() => {
     // catch anchor links clicks
