@@ -153,7 +153,8 @@ export default class Lenis extends EventEmitter {
       el: this.wrapperNode,
       firefoxMultiplier: 50,
       mouseMultiplier:
-        this.mouseMultiplier * (platform.includes('Win') ? 0.84 : 0.4),
+        this.mouseMultiplier *
+        (platform.includes('Win') || platform.includes('Linux') ? 0.84 : 0.4), // assuming using a mouse on windows qnd linux
       touchMultiplier: this.touchMultiplier,
       passive: false,
       useKeyboard: false,
