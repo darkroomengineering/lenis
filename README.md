@@ -177,7 +177,6 @@ body {
 ## Limitations
 
 - no support of CSS scroll-snap
-- erase browser previous and next trackpad gestures
 - can only run 60fps maximum on Safari ([source](https://bugs.webkit.org/show_bug.cgi?id=173434))
 
 <br>
