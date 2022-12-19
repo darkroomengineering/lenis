@@ -83,7 +83,7 @@ export default class Lenis extends EventEmitter {
     gestureDirection = 'vertical', // vertical, horizontal, both
     infinite = false,
     wrapper = window,
-    content = document.body,
+    content = document.documentElement,
   } = {}) {
     super()
 
@@ -230,6 +230,14 @@ export default class Lenis extends EventEmitter {
   }
 
   onVirtualScroll = ({ deltaY, deltaX, originalEvent: e }) => {
+    // keep previous/next page gesture on trackpads
+    if (
+      (this.gestureDirection === 'vertical' && deltaY === 0) ||
+      (this.gestureDirection === 'horizontal' && deltaX === 0)
+    ) {
+      return
+    }
+
     const preventScroll = !!e
       .composedPath()
       .find(
