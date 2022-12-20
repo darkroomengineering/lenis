@@ -50,8 +50,8 @@ $ npm i @studio-freight/lenis
 
 using scripts:
 
-```html
-<script src="https://cdn.jsdelivr.net/gh/studio-freight/lenis@latest/bundled/lenis.js"></script>
+```htmt
+<script src="https://cdn.jsdelivr.net/gh/studio-freight/lenis@0.2.27/bundled/lenis.js"></script>
 ```
 
 <br>
@@ -106,7 +106,7 @@ const lenis = new Lenis({
 | Option             | Type          | Default                                            | Description                                                                                                                                                     |
 | ------------------ | ------------- | -------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `wrapper`          | `NodeElement` | `window`                                           | Default element which has overflow                                                                                                                              |
-| `content`          | `NodeElement` | `document`                                         | `wrapper`'s direct child                                                                                                                                        |
+| `content`          | `NodeElement` | `document.documentElement`                                         | `wrapper`'s direct child                                                                                                                                        |
 | `duration`         | `number`      | `1.2`                                              | Specifies the duration of the animation                                                                                                                         |
 | `easing`           | `function`    | `(t) => Math.min(1, 1.001 - Math.pow(2, -10 * t))` | Specifies the rate of change of a specific value, our default is custom but you can pick one from [Easings.net](https://easings.net/en)                         |
 | `direction`        | `string`      | `vertical`                                         | `vertical` or `horizontal` scrolling.                                                                                                                           |
@@ -155,8 +155,8 @@ html {
 ```css
 html,
 body {
-  width: 100%;
   min-height: 100%;
+  height: auto;
 }
 ```
 
@@ -177,7 +177,6 @@ body {
 ## Limitations
 
 - no support of CSS scroll-snap
-- erase browser previous and next trackpad gestures
 - can only run 60fps maximum on Safari ([source](https://bugs.webkit.org/show_bug.cgi?id=173434))
 
 <br>
