@@ -83,7 +83,7 @@ export default class Lenis extends EventEmitter {
     gestureDirection = 'vertical', // vertical, horizontal, both
     infinite = false,
     wrapper = window,
-    content = document.documentElement,
+    content = document.body,
   } = {}) {
     super()
 

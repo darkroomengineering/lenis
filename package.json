@@ -1,6 +1,6 @@
 {
   "name": "@studio-freight/lenis",
-  "version": "0.2.27",
+  "version": "0.2.28",
   "description": "Lenis is a smooth scroll library to normalize the scrolling experience across devices",
   "files": [
     "dist"
@@ -38,7 +38,8 @@
     "url": "git+https://github.com/studio-freight/lenis.git"
   },
   "scripts": {
-    "dev": "microbundle watch -i src/lenis.js --format umd --compress --no-sourcemap --no-pkg-main --external none --output ./bundled --name 'Lenis' & npm run dev:website --prefix ./website",
+    "dev": "microbundle watch -i src/lenis.js --format umd --compress --no-sourcemap --no-pkg-main --external none --output ./bundled --name 'Lenis' & npm run dev:website",
+    "dev:website": "npm run dev:website --prefix ./website",
     "size": "size-limit",
     "clean": "rimraf dist && rimraf bundled",
     "build": "npm run clean && npm run build:light && npm run build:bundle && npm run build:types",
