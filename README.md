@@ -103,19 +103,24 @@ const lenis = new Lenis({
 
 ## Instance settings
 
-| Option             | Type          | Default                                            | Description                                                                                                                                                     |
-| ------------------ | ------------- | -------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `wrapper`          | `NodeElement` | `window`                                           | Default element which has overflow                                                                                                                              |
-| `content`          | `NodeElement` | `document.body`                                    | `wrapper`'s direct child                                                                                                                                        |
-| `duration`         | `number`      | `1.2`                                              | Specifies the duration of the animation                                                                                                                         |
-| `easing`           | `function`    | `(t) => Math.min(1, 1.001 - Math.pow(2, -10 * t))` | Specifies the rate of change of a specific value, our default is custom but you can pick one from [Easings.net](https://easings.net/en)                         |
-| `direction`        | `string`      | `vertical`                                         | `vertical` or `horizontal` scrolling.                                                                                                                           |
-| `gestureDirection` | `string`      | `vertical`                                         | `vertical`, `horizontal` or `both`.                                                                                                                             |
-| `smooth`           | `boolean`     | `true`                                             | Enable or disable 'smoothness'                                                                                                                                  |
-| `mouseMultiplier`  | `number`      | `1`                                                | This value is passed directly to [Virtual Scroll](https://github.com/ayamflow/virtual-scroll)                                                                   |
-| `smoothTouch`      | `boolean`     | `false`                                            | Enable or disable 'smoothness' while scrolling using touch. Note: We have disabled it by default because touch devices native smoothness is impossible to mimic |
-| `touchMultiplier`  | `number`      | `string`                                           | This value is passed directly to [Virtual Scroll](https://github.com/ayamflow/virtual-scroll)                                                                   |
-| `infinite`         | `boolean`     | `false`                                            | Enable infinite scrolling!                                                                                                                                      |
+| Option              | Type            | Default                                            | Description                                                                                                                                                     |
+| ------------------  | -------------   | -------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `wrapper`           | `NodeElement`   | `window`                                           | Default element which has overflow                                                                                                                              |
+| `content`           | `NodeElement`   | `document.body`                                    | `wrapper`'s direct child                                                                                                                                        |
+| `duration`          | `number`        | `1.2`                                              | Specifies the duration of the animation                                                                                                                         |
+| `easing`            | `function`      | `(t) => Math.min(1, 1.001 - Math.pow(2, -10 * t))` | Specifies the rate of change of a specific value, our default is custom but you can pick one from [Easings.net](https://easings.net/en)                         |
+| `direction`         | `string`        | `vertical`                                         | `vertical` or `horizontal` scrolling.                                                                                                                           |
+| `gestureDirection`  | `string`        | `vertical`                                         | `vertical`, `horizontal` or `both`.                                                                                                                             |
+| `smooth`            | `boolean`       | `true`                                             | Enable or disable 'smoothness'                                                                                                                                  |
+| `mouseMultiplier`   | `number`        | `1`                                                | This value is passed directly to [Virtual Scroll](https://github.com/ayamflow/virtual-scroll)                                                                   |
+| `smoothTouch`       | `boolean`       | `false`                                            | Enable or disable 'smoothness' while scrolling using touch. Note: We have disabled it by default because touch devices native smoothness is impossible to mimic |
+| `touchMultiplier`   | `number`        | `string`                                           | This value is passed directly to [Virtual Scroll](https://github.com/ayamflow/virtual-scroll)                                                                   |
+| `infinite`          | `boolean`       | `false`                                            | Enable infinite scrolling!                                                                                                                                      |
+| `snapDuration`      | `number`        | `0.4`                                              | Specifies the duration of the snap animation                                                                                                                    |
+| `snapDelayOnScroll` | `number`        | `0.4`                                              | Specifies the delay of the snap animation after wheel scrolling                                                                                                 |
+| `snapDelayOnResize` | `number`        | `0.1`                                              | Specifies the delay of the snap animation after non-whell scrolling or resizing                                                                                 |
+| `snapLength`        | `number|string` | `20%`                                              | Specifies the snap threshold value. Can be any size value `px`, `%`, `vh` or `vw`                                                                               |
+| `snapAlign`         | `string`        | `start`                                            | Specifies the scroll-snap-align value. `start`, `end`, or `center`                                                                                              |
 
 <br/>
 
@@ -164,6 +169,15 @@ body {
 
 ```html
 <div data-lenis-prevent>scroll content</div>
+```
+
+#### Use `snap` attribute on nested scroll elements for scroll snap. It will override `snapAlign` setting value for the element. `snap-length` attribute can be used to override `snapLength` setting value.
+
+```html
+<div snap>scroll content</div>
+<div snap="start">scroll content</div>
+<div snap="center" snap-length="20vh">scroll content</div>
+<div snap="end" snap-lenght="20">scroll content</div>
 ```
 
 #### Manually use `lenis.scrollTo('#anchor')` on anchor link click ([see this issue](https://github.com/studio-freight/lenis/issues/19))

@@ -52,6 +52,7 @@ export default class Lenis extends EventEmitter {
    * @typedef {(t: number) => number} EasingFunction
    * @typedef {'vertical' | 'horizontal'} Direction
    * @typedef {'vertical' | 'horizontal' | 'both'} GestureDirection
+   * @typedef {'start' | 'end' | 'center'} SnapAlign
    *
    * @typedef LenisOptions
    * @property {number} [duration]
@@ -65,6 +66,11 @@ export default class Lenis extends EventEmitter {
    * @property {boolean} [infinite]
    * @property {Window | HTMLElement} [wrapper]
    * @property {HTMLElement} [content]
+   * @property {number} [snapDuration]
+   * @property {number} [snapDelayOnWheel]
+   * @property {number} [snapDelayOnResize]
+   * @property {string|number} [snapLength]
+   * @property {SnapAlign} [snapAlign]
    *
    * @param {LenisOptions}
    */
@@ -81,9 +87,10 @@ export default class Lenis extends EventEmitter {
     wrapper = window,
     content = document.body,
     snapDuration = 0.4,
-    snapDelay = 0.4,
+    snapDelayOnWheel = 0.4,
     snapDelayOnResize = 0.1,
-    snapType = 'start', // start, end, center
+    snapLength = '20%',
+    snapAlign = 'start', // start, end, center
   } = {}) {
     super()
 
@@ -115,10 +122,11 @@ export default class Lenis extends EventEmitter {
     this.wrapperNode = wrapper
     this.contentNode = content
 
-    this.snapType = snapType || 'start';
+    this.snapAlign = snapAlign || 'start';
+    this.snapLength = snapLength || 'start';
     this.snapDuration = snapDuration;
+    this.snapDelayOnWheelMS = snapDelayOnWheel * 1000; // MS => MilliSeconds
     this.snapDelayOnResizeMS = snapDelayOnResize < 0.05 ? 100 : snapDelayOnResize * 1000 // Snap delay should be bigger than 50ms to avoid weird behavior
-    this.snapDelayMS = snapDelay * 1000; // MS => MilliSeconds
     this.isHorizontal = this.direction === 'horizontal'
 
     this.wrapperNode.addEventListener('scroll', this.onScroll)
@@ -289,8 +297,8 @@ export default class Lenis extends EventEmitter {
     // this.targetScroll = clamp(0, this.targetScroll, this.limit)
 
     this.scrollTo(this.targetScroll)
+    this.scheduleSnap(this.snapDelayOnWheelMS)
 
-    this.scheduleSnap(this.snapDelayMS)
   }
 
   raf(now) {
@@ -434,8 +442,8 @@ export default class Lenis extends EventEmitter {
   initSnapElements() {
     let allSnapElements = this.contentNode.querySelectorAll('[snap]');
     allSnapElements.forEach(snapElement => {
-      snapElement.snapType = snapElement.getAttribute('snap') || this.snapType; // start, end, center
-      snapElement.snapLength = getSnapLength(snapElement, snapElement.getAttribute('snap-length') || '20%');
+      snapElement.snapAlign = snapElement.getAttribute('snap') || this.snapAlign; // start, end, center
+      snapElement.snapLength = getSnapLength(snapElement, snapElement.getAttribute('snap-length') || this.snapLength);
     })
 
     this.snapElements = allSnapElements;
@@ -459,14 +467,14 @@ export default class Lenis extends EventEmitter {
     }
 
     this.snapElements.forEach(snapElement => {
-      const snapType = snapElement.snapType; // start, end, center
+      const snapAlign = snapElement.snapAlign; // start, end, center
       const snapLength = snapElement.snapLength;
       const elRect = snapElement.getBoundingClientRect();
 
       let delta;
-      if ('end' === snapType) {
+      if ('end' === snapAlign) {
         delta = this.isHorizontal ? elRect.right - wrapperRect.right : elRect.bottom - wrapperRect.bottom
-      } else if ('center' === snapType) {
+      } else if ('center' === snapAlign) {
         delta = this.isHorizontal ? (elRect.left - wrapperRect.left + (elRect.width - this.wrapperWidth) / 2) : (elRect.top - wrapperRect.top + (elRect.height - this.wrapperHeight) / 2)
       } else {
         // default type 'start'
