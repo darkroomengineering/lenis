@@ -51,7 +51,7 @@ $ npm i @studio-freight/lenis
 using scripts:
 
 ```htmt
-<script src="https://cdn.jsdelivr.net/gh/studio-freight/lenis@0.2.27/bundled/lenis.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/studio-freight/lenis@0.2.28/bundled/lenis.js"></script>
 ```
 
 <br>
@@ -106,7 +106,7 @@ const lenis = new Lenis({
 | Option             | Type          | Default                                            | Description                                                                                                                                                     |
 | ------------------ | ------------- | -------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `wrapper`          | `NodeElement` | `window`                                           | Default element which has overflow                                                                                                                              |
-| `content`          | `NodeElement` | `document.documentElement`                                         | `wrapper`'s direct child                                                                                                                                        |
+| `content`          | `NodeElement` | `document.body`                                    | `wrapper`'s direct child                                                                                                                                        |
 | `duration`         | `number`      | `1.2`                                              | Specifies the duration of the animation                                                                                                                         |
 | `easing`           | `function`    | `(t) => Math.min(1, 1.001 - Math.pow(2, -10 * t))` | Specifies the rate of change of a specific value, our default is custom but you can pick one from [Easings.net](https://easings.net/en)                         |
 | `direction`        | `string`      | `vertical`                                         | `vertical` or `horizontal` scrolling.                                                                                                                           |
@@ -121,14 +121,14 @@ const lenis = new Lenis({
 
 ## Instance Methods
 
-| Method                                                   | Description                                                   | Arguments                                                                                                                                                                                                                                                                                                                         |
-| -------------------------------------------------------- | ------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `raf(time)`                                              | Must be called every frame for internal usage.                |                                                                                                                                                                                                                                                                                                                                   |
-| `scrollTo(target,{offset, duration, easing, immediate})` | Scroll to a target.                                           | `target`: can be `Number`, `NodeElement` or `String` (CSS selector).<br> `offset` : `Number` equivalent to [scroll-padding-top](https://developer.mozilla.org/en-US/docs/Web/CSS/scroll-padding-top).<br>`duration` : `Number` scroll duration in seconds.<br>`easing` : `Function`.<br>`immediate` : ignore duration and easing. |
+| Method                                                   | Description                                                                     | Arguments                                                                                                                                                                                                                                                                                                                         |
+| -------------------------------------------------------- | ------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `raf(time)`                                              | Must be called every frame for internal usage.                                  |                                                                                                                                                                                                                                                                                                                                   |
+| `scrollTo(target,{offset, duration, easing, immediate})` | Scroll to a target.                                                             | `target`: can be `Number`, `NodeElement` or `String` (CSS selector).<br> `offset` : `Number` equivalent to [scroll-padding-top](https://developer.mozilla.org/en-US/docs/Web/CSS/scroll-padding-top).<br>`duration` : `Number` scroll duration in seconds.<br>`easing` : `Function`.<br>`immediate` : ignore duration and easing. |
 | `on(id,callback({scroll,limit,velocity,direction}))`     | `id` can be any of the following [instance events](#instance-events) to listen. |                                                                                                                                                                                                                                                                                                                                   |
-| `stop()`                                                 | To pause the scroll                                           |                                                                                                                                                                                                                                                                                                                                   |
-| `start()`                                                | To resume the scroll                                          |                                                                                                                                                                                                                                                                                                                                   |
-| `destroy()`                                              | To destroy the instance and remove all events.                |                                                                                                                                                                                                                                                                                                                                   |
+| `stop()`                                                 | To pause the scroll                                                             |                                                                                                                                                                                                                                                                                                                                   |
+| `start()`                                                | To resume the scroll                                                            |                                                                                                                                                                                                                                                                                                                                   |
+| `destroy()`                                              | To destroy the instance and remove all events.                                  |                                                                                                                                                                                                                                                                                                                                   |
 
 ## Instance Events
 
@@ -160,7 +160,7 @@ body {
 }
 ```
 
-#### Use `data-lenis-prevent` attribute on nested scroll elements. In addition, we advice you to add `overscroll-behavior: contain` on this element.
+#### Use `data-lenis-prevent` attribute on nested scroll elements. In addition, we advise you to add `overscroll-behavior: contain` on this element.
 
 ```html
 <div data-lenis-prevent>scroll content</div>
@@ -210,6 +210,8 @@ body {
 - [Heights Agency Portfolio](https://www.heights.agency/) by [Francesco Michelini](https://www.francescomichelini.com/)
 - [Goodship](https://goodship.io) by [Studio Freight](https://www.studiofreight.com/)
 - [Flayks' Portfolio](https://flayks.com) by [Félix P.](https://flayks.com/) & [Shelby Kay](https://shelbykay.dev/)
+- [Matt Rothenberg's portfolio](https://mattrothenberg.com) by [Matt Rothenberg](https://twitter.com/mattrothenberg)
+- [Edoardo Lunardi's portfolio](https://www.edoardolunardi.dev/) by [Edoardo Lunardi](https://www.edoardolunardi.dev/)
 
 <br/>
 

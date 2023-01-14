@@ -14,14 +14,14 @@ jobs:
       - run: sleep 120
       - name: Capture Vercel preview URL
         id: vercel_preview_url
-        uses: zentered/vercel-preview-url@v1.1.2
+        uses: zentered/vercel-preview-url@v1.1.9
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
         with:
           # find project id here: https://vercel.com/studio-freight/satus/settings
           vercel_team_id: 'studio-freight'
           vercel_project_id: prj_GNzV5Jq8gnOAr2BF2xcDbiL22oWb
-      - uses: actions/checkout@v3.2.0
+      - uses: actions/checkout@v3.3.0
       - name: Audit preview URL with Lighthouse
         id: lighthouse_audit
         uses: treosh/lighthouse-ci-action@v9
