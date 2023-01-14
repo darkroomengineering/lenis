@@ -31,6 +31,7 @@
     "gsap": "npm:@gsap/business@^3.11.3",
     "leva": "^0.9.34",
     "lottie-web": "^5.9.6",
+    "nanoevents": "^7.0.1",
     "nanoid": "^4.0.0",
     "next": "^13.0.5",
     "raw-loader": "^4.0.2",

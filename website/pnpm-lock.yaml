@@ -37,6 +37,7 @@ specifiers:
   gsap: npm:@gsap/business@^3.11.3
   leva: ^0.9.34
   lottie-web: ^5.9.6
+  nanoevents: ^7.0.1
   nanoid: ^4.0.0
   next: ^13.0.5
   next-pwa: 5.6.0
@@ -71,6 +72,7 @@ dependencies:
   gsap: /@gsap/business/3.11.3
   leva: 0.9.34_biqbaboplfbrettd7655fr4n2y
   lottie-web: 5.9.6
+  nanoevents: 7.0.1
   nanoid: 4.0.0
   next: 13.0.5_vgii64pd2ccbnbx2v3ro5gbin4
   raw-loader: 4.0.2_webpack@5.75.0
@@ -5311,6 +5313,11 @@ packages:
       sourcemap-codec: 1.4.8
       stacktrace-js: 2.0.2
       stylis: 4.1.3
+    dev: false
+
+  /nanoevents/7.0.1:
+    resolution: {integrity: sha512-o6lpKiCxLeijK4hgsqfR6CNToPyRU3keKyyI6uwuHRvpRTbZ0wXw51WRgyldVugZqoJfkGFrjrIenYH3bfEO3Q==}
+    engines: {node: ^14.0.0 || ^16.0.0 || >=18.0.0}
     dev: false
 
   /nanoid/3.3.4:
