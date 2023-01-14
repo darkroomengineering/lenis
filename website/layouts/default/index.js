@@ -13,7 +13,7 @@ import { Scrollbar } from 'components/scrollbar'
 import { useStore } from 'lib/store'
 import { useRouter } from 'next/router'
 import { useState } from 'react'
-import Lenis from '../../../bundled/lenis'
+import Lenis from '../../../src/v1'
 import s from './layout.module.scss'
 
 export function Layout({
@@ -29,15 +29,17 @@ export function Layout({
   useLayoutEffect(() => {
     window.scrollTo(0, 0)
     const lenis = new Lenis({
-      duration: 1.2,
-      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-      direction: 'vertical',
-      gestureDirection: 'vertical',
-      smooth: true,
-      mouseMultiplier: 1,
-      smoothTouch: false,
-      touchMultiplier: 2,
-      infinite: false,
+      smoothTouch: true,
+      // gestureDirection: 'v0',
+      // duration: 1.2,
+      // easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+      // direction: 'vertical',
+      // gestureDirection: 'vertical',
+      // smooth: true,
+      // mouseMultiplier: 1,
+      // smoothTouch: false,
+      // touchMultiplier: 2,
+      // infinite: false,
     })
     window.lenis = lenis
     setLenis(lenis)
