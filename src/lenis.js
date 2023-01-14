@@ -122,6 +122,8 @@ export default class Lenis extends EventEmitter {
     this.isHorizontal = this.direction === 'horizontal'
 
     this.wrapperNode.addEventListener('scroll', this.onScroll)
+    this.wrapperNode.addEventListener('mousedown', this.onMouseDown)
+    this.wrapperNode.addEventListener('mouseup', this.onMouseUp)
 
     //observe wrapper node size
     if (this.wrapperNode === window) {
@@ -300,11 +302,14 @@ export default class Lenis extends EventEmitter {
     this.lastScroll = this.scroll
 
     // where this.scroll is updated
-    this.animate.raf(deltaTime * 0.001)
+    if (!this.pause) {
+      this.animate.raf(deltaTime * 0.001)
+    }
 
     if (this.scroll === this.targetScroll) {
       // if target reached velocity should be 0
       this.lastScroll = this.scroll
+      this.animate.stop()
     }
 
     if (this.isScrolling) {
@@ -336,11 +341,7 @@ export default class Lenis extends EventEmitter {
         this.lastScroll =
           this.wrapperNode[this.scrollProperty]
 
-      if (!this.isSnapping) {
-        this.scheduleSnap(this.snapDelayMS)
-      } else {
-        this.isSnapping = false;
-      }
+      this.scheduleSnap(this.snapDelayOnResizeMS)
 
       this.notify()
     }
@@ -441,7 +442,6 @@ export default class Lenis extends EventEmitter {
   }
 
   snap() {
-    this.isSnapping = true;
     if (!this.snapElements?.length) {
       return
     }
@@ -488,5 +488,13 @@ export default class Lenis extends EventEmitter {
     this.snapTimer = setTimeout(() => {
       this.snap();
     }, delay);
+  }
+
+  onMouseUp = () => {
+    this.pause = false;
+  }
+
+  onMouseDown = () => {
+    this.pause = true;
   }
 }
