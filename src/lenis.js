@@ -2,6 +2,7 @@ import { TinyEmitter as EventEmitter } from 'tiny-emitter'
 import VirtualScroll from 'virtual-scroll'
 import { version } from '../package.json'
 import { clamp, clampedModulo } from './maths'
+import { getSnapLength } from './util'
 
 class Animate {
   to(target, { duration = 1, easing = (t) => t, ...keys } = {}) {
@@ -28,17 +29,15 @@ class Animate {
   raf(deltaTime) {
     if (!this.isRunning) return
 
-    this.currentTime = Math.min(this.currentTime + deltaTime, this.duration)
+    this.currentTime += deltaTime
 
-    const progress = this.progress >= 1 ? 1 : this.easing(this.progress)
+    const progress = this.currentTime >= this.duration ? 1 : this.easing(this.currentTime / this.duration)
 
     this.keys.forEach((key) => {
       const from = this.fromKeys[key]
       const to = this.toKeys[key]
 
-      const value = from + (to - from) * progress
-
-      this.target[key] = value
+      this.target[key] = from + (to - from) * progress
     })
 
     if (progress === 1) {
@@ -46,9 +45,6 @@ class Animate {
     }
   }
 
-  get progress() {
-    return this.currentTime / this.duration
-  }
 }
 
 export default class Lenis extends EventEmitter {
@@ -84,6 +80,10 @@ export default class Lenis extends EventEmitter {
     infinite = false,
     wrapper = window,
     content = document.body,
+    snapDuration = 0.4,
+    snapDelay = 0.4,
+    snapDelayOnResize = 0.1,
+    snapType = 'start', // start, end, center
   } = {}) {
     super()
 
@@ -114,6 +114,12 @@ export default class Lenis extends EventEmitter {
     this.infinite = infinite
     this.wrapperNode = wrapper
     this.contentNode = content
+
+    this.snapType = snapType || 'start';
+    this.snapDuration = snapDuration;
+    this.snapDelayOnResizeMS = snapDelayOnResize < 0.05 ? 100 : snapDelayOnResize * 1000 // Snap delay should be bigger than 50ms to avoid weird behavior
+    this.snapDelayMS = snapDelay * 1000; // MS => MilliSeconds
+    this.isHorizontal = this.direction === 'horizontal'
 
     this.wrapperNode.addEventListener('scroll', this.onScroll)
 
@@ -162,6 +168,8 @@ export default class Lenis extends EventEmitter {
     })
 
     this.virtualScroll.on(this.onVirtualScroll)
+
+    this.initSnapElements()
   }
 
   get scrollProperty() {
@@ -205,6 +213,7 @@ export default class Lenis extends EventEmitter {
   onWindowResize = () => {
     this.wrapperWidth = window.innerWidth
     this.wrapperHeight = window.innerHeight
+    this.scheduleSnap(this.snapDelayOnResizeMS)
   }
 
   onWrapperResize = ([entry]) => {
@@ -212,6 +221,7 @@ export default class Lenis extends EventEmitter {
       const rect = entry.contentRect
       this.wrapperWidth = rect.width
       this.wrapperHeight = rect.height
+      this.scheduleSnap(this.snapDelayOnResizeMS)
     }
   }
 
@@ -220,6 +230,7 @@ export default class Lenis extends EventEmitter {
       const rect = entry.contentRect
       this.contentWidth = rect.width
       this.contentHeight = rect.height
+      this.scheduleSnap(this.snapDelayOnResizeMS)
     }
   }
 
@@ -276,6 +287,8 @@ export default class Lenis extends EventEmitter {
     // this.targetScroll = clamp(0, this.targetScroll, this.limit)
 
     this.scrollTo(this.targetScroll)
+
+    this.scheduleSnap(this.snapDelayMS)
   }
 
   raf(now) {
@@ -299,7 +312,7 @@ export default class Lenis extends EventEmitter {
       this.notify()
     }
 
-    this.isScrolling = this.scroll !== this.targetScroll
+    this.isScrolling = this.scroll !== this.lastScroll
   }
 
   get velocity() {
@@ -322,6 +335,12 @@ export default class Lenis extends EventEmitter {
         this.scroll =
         this.lastScroll =
           this.wrapperNode[this.scrollProperty]
+
+      if (!this.isSnapping) {
+        this.scheduleSnap(this.snapDelayMS)
+      } else {
+        this.isSnapping = false;
+      }
 
       this.notify()
     }
@@ -409,5 +428,65 @@ export default class Lenis extends EventEmitter {
         scroll: this.targetScroll,
       })
     }
+  }
+
+  initSnapElements() {
+    let allSnapElements = this.contentNode.querySelectorAll('[snap]');
+    allSnapElements.forEach(snapElement => {
+      snapElement.snapType = snapElement.getAttribute('snap') || this.snapType; // start, end, center
+      snapElement.snapLength = getSnapLength(snapElement, snapElement.getAttribute('snap-length') || '20%');
+    })
+
+    this.snapElements = allSnapElements;
+  }
+
+  snap() {
+    this.isSnapping = true;
+    if (!this.snapElements?.length) {
+      return
+    }
+
+    let wrapperRect;
+    if (this.wrapperNode === window) {
+      wrapperRect = {
+        left: 0,
+        top: 0,
+        right: this.wrapperWidth,
+        bottom: this.wrapperHeight,
+      }
+    } else {
+      wrapperRect = this.wrapperNode.getBoundingClientRect();
+    }
+
+    this.snapElements.forEach(snapElement => {
+      const snapType = snapElement.snapType; // start, end, center
+      const snapLength = snapElement.snapLength;
+      const elRect = snapElement.getBoundingClientRect();
+
+      let delta;
+      if ('end' === snapType) {
+        delta = this.isHorizontal ? elRect.right - wrapperRect.right : elRect.bottom - wrapperRect.bottom
+      } else if ('center' === snapType) {
+        delta = this.isHorizontal ? (elRect.left - wrapperRect.left + (elRect.width - this.wrapperWidth) / 2) : (elRect.top - wrapperRect.top + (elRect.height - this.wrapperHeight) / 2)
+      } else {
+        // default type 'start'
+        delta = this.isHorizontal ? elRect.left - wrapperRect.left : elRect.top - wrapperRect.top;
+      }
+
+      if (Math.abs(delta) <= snapLength) {
+        this.scrollTo(this.scroll + delta, { duration: this.snapDuration });
+        return;
+      }
+    })
+  }
+
+  scheduleSnap(delay) {
+    if (this.snapTimer) {
+      clearTimeout(this.snapTimer)
+    }
+
+    this.snapTimer = setTimeout(() => {
+      this.snap();
+    }, delay);
   }
 }
