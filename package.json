@@ -29,6 +29,7 @@
     "vite": "^3.2.4"
   },
   "dependencies": {
+    "nanoevents": "^7.0.1",
     "tiny-emitter": "^2.1.0",
     "virtual-scroll": "^2.2.1"
   },

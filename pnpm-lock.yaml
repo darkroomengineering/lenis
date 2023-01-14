@@ -5,6 +5,7 @@ specifiers:
   husky: ^8.0.2
   lint-staged: ^13.0.3
   microbundle: ^0.15.1
+  nanoevents: ^7.0.1
   path: ^0.12.7
   prettier: ^2.8.0
   rimraf: ^3.0.2
@@ -16,6 +17,7 @@ specifiers:
   vite: ^3.2.4
 
 dependencies:
+  nanoevents: 7.0.1
   tiny-emitter: 2.1.0
   virtual-scroll: 2.2.1
 
@@ -3248,6 +3250,11 @@ packages:
   /ms/2.1.2:
     resolution: {integrity: sha512-sGkPx+VjMtmA6MX27oA4FBFELFCZZ4S4XqeGOXCv68tT+jb3vk/RyaKWP0PTKyWtmLSM0b+adUTEvbs1PEaH2w==}
     dev: true
+
+  /nanoevents/7.0.1:
+    resolution: {integrity: sha512-o6lpKiCxLeijK4hgsqfR6CNToPyRU3keKyyI6uwuHRvpRTbZ0wXw51WRgyldVugZqoJfkGFrjrIenYH3bfEO3Q==}
+    engines: {node: ^14.0.0 || ^16.0.0 || >=18.0.0}
+    dev: false
 
   /nanoid/3.3.4:
     resolution: {integrity: sha512-MqBkQh/OHTS2egovRtLk45wEyNXwF+cokD+1YPf9u5VfJiRdAiRwB2froX5Co9Rh20xs4siNPm8naNotSD6RBw==}
