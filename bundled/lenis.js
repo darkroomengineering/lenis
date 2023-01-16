@@ -1,7 +1,7 @@
 (function (global, factory) {
   typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
   typeof define === 'function' && define.amd ? define(factory) :
-  (global = global || self, global["'Lenis'"] = factory());
+  (global = global || self, global.Lenis = factory());
 })(this, (function () {
   function _defineProperties(target, props) {
     for (var i = 0; i < props.length; i++) {

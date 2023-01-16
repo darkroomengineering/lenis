@@ -41,7 +41,7 @@
     "url": "git+https://github.com/studio-freight/lenis.git"
   },
   "scripts": {
-    "dev": "microbundle watch -i src/lenis.js --format umd --compress --no-sourcemap --no-pkg-main --external none --output ./bundled --name 'Lenis' & npm run dev:website",
+    "dev": "microbundle watch -i src/lenis.js --format umd --compress --no-sourcemap --no-pkg-main --external none --output ./bundled --name Lenis & npm run dev:website",
     "dev:website": "npm run dev:website --prefix ./website",
     "size": "size-limit",
     "clean": "rimraf dist && rimraf bundled",
@@ -55,8 +55,8 @@
     "build:types": "tsc --allowJs -d --emitDeclarationOnly --declarationDir ./dist/types --removeComments ./src/index.js",
     "build:dist": "microbundle build -i src/ --o ./dist",
     "build:bundle": "npm-run-all build:bundle-full build:bundle-min",
-    "build:bundle-full": "microbundle build -i src/ --o ./bundled/lenis.js --no-sourcemap --no-pkg-main --external none --name 'Lenis' --format umd  --no-compress",
-    "build:bundle-min": "microbundle build -i src/ --o ./bundled/lenis.min.js --no-sourcemap --no-pkg-main --external none --name 'Lenis' --format umd"
+    "build:bundle-full": "microbundle build -i src/ --o ./bundled/lenis.js --no-sourcemap --no-pkg-main --external none --name Lenis --format umd  --no-compress",
+    "build:bundle-min": "microbundle build -i src/ --o ./bundled/lenis.min.js --no-sourcemap --no-pkg-main --external none --name Lenis --format umd"
   },
   "bugs": {
     "url": "https://github.com/studio-freight/lenis/issues"
