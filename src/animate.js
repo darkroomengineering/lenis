@@ -33,10 +33,6 @@ export class Animate {
     }
   }
 
-  // get progress() {
-  //   return this.currentTime / this.duration
-  // }
-
   stop() {
     this.isRunning = false
   }

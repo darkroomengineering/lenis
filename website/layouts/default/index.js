@@ -13,7 +13,7 @@ import { Scrollbar } from 'components/scrollbar'
 import { useStore } from 'lib/store'
 import { useRouter } from 'next/router'
 import { useState } from 'react'
-import Lenis from '../../../src/v1'
+import Lenis from '../../../dist/lenis.mjs'
 import s from './layout.module.scss'
 
 export function Layout({

@@ -1,6 +1,6 @@
 {
   "name": "@studio-freight/lenis",
-  "version": "0.2.28",
+  "version": "1.0.0-dev.1",
   "description": "Lenis is a smooth scroll library to normalize the scrolling experience across devices",
   "files": [
     "dist"
@@ -10,7 +10,7 @@
   "main": "dist/lenis.js",
   "umd:main": "dist/lenis.umd.js",
   "module": "dist/lenis.mjs",
-  "types": "dist/lenis.d.ts",
+  "types": "dist/types/index.d.ts",
   "exports": {
     "require": "./dist/lenis.js",
     "default": "./dist/lenis.modern.mjs"
@@ -29,6 +29,7 @@
     "vite": "^3.2.4"
   },
   "dependencies": {
+    "@theatre/core": "^0.5.1",
     "nanoevents": "^7.0.1",
     "npm-run-all": "^4.1.5",
     "tiny-emitter": "^2.1.0",
@@ -44,21 +45,18 @@
     "dev:website": "npm run dev:website --prefix ./website",
     "size": "size-limit",
     "clean": "rimraf dist && rimraf bundled",
-    "build": "npm run clean && npm run build:light && npm run build:bundle && npm run build:types",
-    "build:types": "tsc --allowJs -d --emitDeclarationOnly --declarationDir dist --removeComments ./src/lenis.js ./src/maths.js",
-    "build:light": "microbundle",
-    "build:bundle": "microbundle build -i src/lenis.js --format umd --compress --no-sourcemap --no-pkg-main --external none --output ./bundled --name Lenis",
     "build:website": "vite build",
     "prebuild": "npm run clean",
     "preversion": "npm run build",
     "postversion": "git push --follow-tags",
     "prepublishOnly": "npm run build",
     "prepare": "husky install",
-    "build:v1": "npm-run-all --parallel build:v1:dist build:v1:bundle",
-    "build:v1:dist": "microbundle build -i src/v1 --o ./src/v1/dist",
-    "build:v1:bundle": "npm-run-all build:v1:bundle-full build:v1:bundle-min",
-    "build:v1:bundle-full": "microbundle build -i src/v1 --o ./src/v1/bundled/lenis.js --no-sourcemap --no-pkg-main --external none --name 'Lenis' --format umd  --no-compress",
-    "build:v1:bundle-min": "microbundle build -i src/v1 --o ./src/v1/bundled/lenis.min.js --no-sourcemap --no-pkg-main --external none --name 'Lenis' --format umd"
+    "build": "npm-run-all --parallel build:dist build:bundle build:types",
+    "build:types": "tsc --allowJs -d --emitDeclarationOnly --declarationDir ./dist/types --removeComments ./src/index.js",
+    "build:dist": "microbundle build -i src/ --o ./dist",
+    "build:bundle": "npm-run-all build:bundle-full build:bundle-min",
+    "build:bundle-full": "microbundle build -i src/ --o ./bundled/lenis.js --no-sourcemap --no-pkg-main --external none --name 'Lenis' --format umd  --no-compress",
+    "build:bundle-min": "microbundle build -i src/ --o ./bundled/lenis.min.js --no-sourcemap --no-pkg-main --external none --name 'Lenis' --format umd"
   },
   "bugs": {
     "url": "https://github.com/studio-freight/lenis/issues"

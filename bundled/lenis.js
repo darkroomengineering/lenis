@@ -1,2 +1,760 @@
-!function(t,e){"object"==typeof exports&&"undefined"!=typeof module?module.exports=e():"function"==typeof define&&define.amd?define(e):(t||self).Lenis=e()}(this,function(){function t(t,e){for(var i=0;i<e.length;i++){var o=e[i];o.enumerable=o.enumerable||!1,o.configurable=!0,"value"in o&&(o.writable=!0),Object.defineProperty(t,o.key,o)}}function e(e,i,o){return i&&t(e.prototype,i),o&&t(e,o),Object.defineProperty(e,"prototype",{writable:!1}),e}function i(){return i=Object.assign?Object.assign.bind():function(t){for(var e=1;e<arguments.length;e++){var i=arguments[e];for(var o in i)Object.prototype.hasOwnProperty.call(i,o)&&(t[o]=i[o])}return t},i.apply(this,arguments)}function o(t,e){return o=Object.setPrototypeOf?Object.setPrototypeOf.bind():function(t,e){return t.__proto__=e,t},o(t,e)}function n(){}n.prototype={on:function(t,e,i){var o=this.e||(this.e={});return(o[t]||(o[t]=[])).push({fn:e,ctx:i}),this},once:function(t,e,i){var o=this;function n(){o.off(t,n),e.apply(i,arguments)}return n._=e,this.on(t,n,i)},emit:function(t){for(var e=[].slice.call(arguments,1),i=((this.e||(this.e={}))[t]||[]).slice(),o=0,n=i.length;o<n;o++)i[o].fn.apply(i[o].ctx,e);return this},off:function(t,e){var i=this.e||(this.e={}),o=i[t],n=[];if(o&&e)for(var r=0,s=o.length;r<s;r++)o[r].fn!==e&&o[r].fn._!==e&&n.push(o[r]);return n.length?i[t]=n:delete i[t],this}};var r=n;n.TinyEmitter=r,"undefined"!=typeof globalThis?globalThis:"undefined"!=typeof window?window:"undefined"!=typeof global?global:"undefined"!=typeof self&&self;var s=function(t){var e={exports:{}};return function(t,e){t.exports=function(){var t=0;function e(e){return"__private_"+t+++"_"+e}function i(t,e){if(!Object.prototype.hasOwnProperty.call(t,e))throw new TypeError("attempted to use private field on non-instance");return t}function o(){}o.prototype={on:function(t,e,i){var o=this.e||(this.e={});return(o[t]||(o[t]=[])).push({fn:e,ctx:i}),this},once:function(t,e,i){var o=this;function n(){o.off(t,n),e.apply(i,arguments)}return n._=e,this.on(t,n,i)},emit:function(t){for(var e=[].slice.call(arguments,1),i=((this.e||(this.e={}))[t]||[]).slice(),o=0,n=i.length;o<n;o++)i[o].fn.apply(i[o].ctx,e);return this},off:function(t,e){var i=this.e||(this.e={}),o=i[t],n=[];if(o&&e)for(var r=0,s=o.length;r<s;r++)o[r].fn!==e&&o[r].fn._!==e&&n.push(o[r]);return n.length?i[t]=n:delete i[t],this}};var n=o;n.TinyEmitter=o;var r,s="virtualscroll",l=e("options"),h=e("el"),a=e("emitter"),c=e("event"),u=e("touchStart"),d=e("bodyTouchAction");return function(){function t(t){var e=this;Object.defineProperty(this,l,{writable:!0,value:void 0}),Object.defineProperty(this,h,{writable:!0,value:void 0}),Object.defineProperty(this,a,{writable:!0,value:void 0}),Object.defineProperty(this,c,{writable:!0,value:void 0}),Object.defineProperty(this,u,{writable:!0,value:void 0}),Object.defineProperty(this,d,{writable:!0,value:void 0}),this._onWheel=function(t){var o=i(e,l)[l],n=i(e,c)[c];n.deltaX=t.wheelDeltaX||-1*t.deltaX,n.deltaY=t.wheelDeltaY||-1*t.deltaY,r.isFirefox&&1===t.deltaMode&&(n.deltaX*=o.firefoxMultiplier,n.deltaY*=o.firefoxMultiplier),n.deltaX*=o.mouseMultiplier,n.deltaY*=o.mouseMultiplier,e._notify(t)},this._onMouseWheel=function(t){var o=i(e,c)[c];o.deltaX=t.wheelDeltaX?t.wheelDeltaX:0,o.deltaY=t.wheelDeltaY?t.wheelDeltaY:t.wheelDelta,e._notify(t)},this._onTouchStart=function(t){var o=t.targetTouches?t.targetTouches[0]:t;i(e,u)[u].x=o.pageX,i(e,u)[u].y=o.pageY},this._onTouchMove=function(t){var o=i(e,l)[l];o.preventTouch&&!t.target.classList.contains(o.unpreventTouchClass)&&t.preventDefault();var n=i(e,c)[c],r=t.targetTouches?t.targetTouches[0]:t;n.deltaX=(r.pageX-i(e,u)[u].x)*o.touchMultiplier,n.deltaY=(r.pageY-i(e,u)[u].y)*o.touchMultiplier,i(e,u)[u].x=r.pageX,i(e,u)[u].y=r.pageY,e._notify(t)},this._onKeyDown=function(t){var o=i(e,c)[c];o.deltaX=o.deltaY=0;var n=window.innerHeight-40;switch(t.keyCode){case 37:case 38:o.deltaY=i(e,l)[l].keyStep;break;case 39:case 40:o.deltaY=-i(e,l)[l].keyStep;break;case 32:o.deltaY=n*(t.shiftKey?1:-1);break;default:return}e._notify(t)},i(this,h)[h]=window,t&&t.el&&(i(this,h)[h]=t.el,delete t.el),r||(r={hasWheelEvent:"onwheel"in document,hasMouseWheelEvent:"onmousewheel"in document,hasTouch:"ontouchstart"in document,hasTouchWin:navigator.msMaxTouchPoints&&navigator.msMaxTouchPoints>1,hasPointer:!!window.navigator.msPointerEnabled,hasKeyDown:"onkeydown"in document,isFirefox:navigator.userAgent.indexOf("Firefox")>-1}),i(this,l)[l]=Object.assign({mouseMultiplier:1,touchMultiplier:2,firefoxMultiplier:15,keyStep:120,preventTouch:!1,unpreventTouchClass:"vs-touchmove-allowed",useKeyboard:!0,useTouch:!0},t),i(this,a)[a]=new n,i(this,c)[c]={y:0,x:0,deltaX:0,deltaY:0},i(this,u)[u]={x:null,y:null},i(this,d)[d]=null,void 0!==i(this,l)[l].passive&&(this.listenerOptions={passive:i(this,l)[l].passive})}var e=t.prototype;return e._notify=function(t){var e=i(this,c)[c];e.x+=e.deltaX,e.y+=e.deltaY,i(this,a)[a].emit(s,{x:e.x,y:e.y,deltaX:e.deltaX,deltaY:e.deltaY,originalEvent:t})},e._bind=function(){r.hasWheelEvent&&i(this,h)[h].addEventListener("wheel",this._onWheel,this.listenerOptions),r.hasMouseWheelEvent&&i(this,h)[h].addEventListener("mousewheel",this._onMouseWheel,this.listenerOptions),r.hasTouch&&i(this,l)[l].useTouch&&(i(this,h)[h].addEventListener("touchstart",this._onTouchStart,this.listenerOptions),i(this,h)[h].addEventListener("touchmove",this._onTouchMove,this.listenerOptions)),r.hasPointer&&r.hasTouchWin&&(i(this,d)[d]=document.body.style.msTouchAction,document.body.style.msTouchAction="none",i(this,h)[h].addEventListener("MSPointerDown",this._onTouchStart,!0),i(this,h)[h].addEventListener("MSPointerMove",this._onTouchMove,!0)),r.hasKeyDown&&i(this,l)[l].useKeyboard&&document.addEventListener("keydown",this._onKeyDown)},e._unbind=function(){r.hasWheelEvent&&i(this,h)[h].removeEventListener("wheel",this._onWheel),r.hasMouseWheelEvent&&i(this,h)[h].removeEventListener("mousewheel",this._onMouseWheel),r.hasTouch&&(i(this,h)[h].removeEventListener("touchstart",this._onTouchStart),i(this,h)[h].removeEventListener("touchmove",this._onTouchMove)),r.hasPointer&&r.hasTouchWin&&(document.body.style.msTouchAction=i(this,d)[d],i(this,h)[h].removeEventListener("MSPointerDown",this._onTouchStart,!0),i(this,h)[h].removeEventListener("MSPointerMove",this._onTouchMove,!0)),r.hasKeyDown&&i(this,l)[l].useKeyboard&&document.removeEventListener("keydown",this._onKeyDown)},e.on=function(t,e){i(this,a)[a].on(s,t,e);var o=i(this,a)[a].e;o&&o[s]&&1===o[s].length&&this._bind()},e.off=function(t,e){i(this,a)[a].off(s,t,e);var o=i(this,a)[a].e;(!o[s]||o[s].length<=0)&&this._unbind()},e.destroy=function(){i(this,a)[a].off(),this._unbind()},t}()}()}(e),e.exports}();function l(t,e){var i=t%e;return(e>0&&i<0||e<0&&i>0)&&(i+=e),i}var h=["duration","easing"],a=/*#__PURE__*/function(){function t(){}var o=t.prototype;return o.to=function(t,e){var o=this,n=void 0===e?{}:e,r=n.duration,s=void 0===r?1:r,l=n.easing,a=void 0===l?function(t){return t}:l,c=function(t,e){if(null==t)return{};var i,o,n={},r=Object.keys(t);for(o=0;o<r.length;o++)e.indexOf(i=r[o])>=0||(n[i]=t[i]);return n}(n,h);this.target=t,this.fromKeys=i({},c),this.toKeys=i({},c),this.keys=Object.keys(i({},c)),this.keys.forEach(function(e){o.fromKeys[e]=t[e]}),this.duration=s,this.easing=a,this.currentTime=0,this.isRunning=!0},o.stop=function(){this.isRunning=!1},o.raf=function(t){var e=this;if(this.isRunning){this.currentTime=Math.min(this.currentTime+t,this.duration);var i=this.progress>=1?1:this.easing(this.progress);this.keys.forEach(function(t){var o=e.fromKeys[t];e.target[t]=o+(e.toKeys[t]-o)*i}),1===i&&this.stop()}},e(t,[{key:"progress",get:function(){return this.currentTime/this.duration}}]),t}();/*#__PURE__*/
-return function(t){var i,n;function r(e){var i,o,n,r,l=void 0===e?{}:e,h=l.duration,c=void 0===h?1.2:h,u=l.easing,d=void 0===u?function(t){return Math.min(1,1.001-Math.pow(2,-10*t))}:u,p=l.smooth,f=void 0===p||p,v=l.mouseMultiplier,w=void 0===v?1:v,y=l.smoothTouch,m=void 0!==y&&y,g=l.touchMultiplier,b=void 0===g?2:g,T=l.direction,M=void 0===T?"vertical":T,S=l.gestureDirection,_=void 0===S?"vertical":S,O=l.infinite,E=void 0!==O&&O,W=l.wrapper,x=void 0===W?window:W,D=l.content,N=void 0===D?document.body:D;(r=t.call(this)||this).onWindowResize=function(){r.wrapperWidth=window.innerWidth,r.wrapperHeight=window.innerHeight},r.onWrapperResize=function(t){var e=t[0];if(e){var i=e.contentRect;r.wrapperWidth=i.width,r.wrapperHeight=i.height}},r.onContentResize=function(t){var e=t[0];if(e){var i=e.contentRect;r.contentWidth=i.width,r.contentHeight=i.height}},r.onVirtualScroll=function(t){var e=t.deltaY,i=t.deltaX,o=t.originalEvent;if(!("vertical"===r.gestureDirection&&0===e||"horizontal"===r.gestureDirection&&0===i)){var n=!!o.composedPath().find(function(t){return t.hasAttribute&&t.hasAttribute("data-lenis-prevent")});o.ctrlKey||n||(r.smooth=o.changedTouches?r.smoothTouch:r.options.smooth,r.stopped?o.preventDefault():r.smooth&&4!==o.buttons&&(r.smooth&&o.preventDefault(),r.targetScroll-="both"===r.gestureDirection?i+e:"horizontal"===r.gestureDirection?i:e,r.scrollTo(r.targetScroll)))}},r.onScroll=function(t){r.isScrolling&&r.smooth||(r.targetScroll=r.scroll=r.lastScroll=r.wrapperNode[r.scrollProperty],r.notify())},window.lenisVersion="0.2.28",r.options={duration:c,easing:d,smooth:f,mouseMultiplier:w,smoothTouch:m,touchMultiplier:b,direction:M,gestureDirection:_,infinite:E,wrapper:x,content:N},r.duration=c,r.easing=d,r.smooth=f,r.mouseMultiplier=w,r.smoothTouch=m,r.touchMultiplier=b,r.direction=M,r.gestureDirection=_,r.infinite=E,r.wrapperNode=x,r.contentNode=N,r.wrapperNode.addEventListener("scroll",r.onScroll),r.wrapperNode===window?(r.wrapperNode.addEventListener("resize",r.onWindowResize),r.onWindowResize()):(r.wrapperHeight=r.wrapperNode.offsetHeight,r.wrapperWidth=r.wrapperNode.offsetWidth,r.wrapperObserver=new ResizeObserver(r.onWrapperResize),r.wrapperObserver.observe(r.wrapperNode)),r.contentHeight=r.contentNode.offsetHeight,r.contentWidth=r.contentNode.offsetWidth,r.contentObserver=new ResizeObserver(r.onContentResize),r.contentObserver.observe(r.contentNode),r.targetScroll=r.scroll=r.lastScroll=r.wrapperNode[r.scrollProperty],r.animate=new a;var P=(null==(i=navigator)||null==(o=i.userAgentData)?void 0:o.platform)||(null==(n=navigator)?void 0:n.platform)||"unknown";return r.virtualScroll=new s({el:r.wrapperNode,firefoxMultiplier:50,mouseMultiplier:r.mouseMultiplier*(P.includes("Win")||P.includes("Linux")?.84:.4),touchMultiplier:r.touchMultiplier,passive:!1,useKeyboard:!1,useTouch:!0}),r.virtualScroll.on(r.onVirtualScroll),r}n=t,(i=r).prototype=Object.create(n.prototype),i.prototype.constructor=i,o(i,n);var h=r.prototype;return h.start=function(){var t=this.wrapperNode;this.wrapperNode===window&&(t=document.documentElement),t.classList.remove("lenis-stopped"),this.stopped=!1},h.stop=function(){var t=this.wrapperNode;this.wrapperNode===window&&(t=document.documentElement),t.classList.add("lenis-stopped"),this.stopped=!0,this.animate.stop()},h.destroy=function(){var t;this.wrapperNode===window&&this.wrapperNode.removeEventListener("resize",this.onWindowResize),this.wrapperNode.removeEventListener("scroll",this.onScroll),this.virtualScroll.destroy(),null==(t=this.wrapperObserver)||t.disconnect(),this.contentObserver.disconnect()},h.raf=function(t){var e=t-(this.now||0);this.now=t,!this.stopped&&this.smooth&&(this.lastScroll=this.scroll,this.animate.raf(.001*e),this.scroll===this.targetScroll&&(this.lastScroll=this.scroll),this.isScrolling&&(this.setScroll(this.scroll),this.notify()),this.isScrolling=this.scroll!==this.targetScroll)},h.setScroll=function(t){var e=this.infinite?l(t,this.limit):t;"horizontal"===this.direction?this.wrapperNode.scrollTo(e,0):this.wrapperNode.scrollTo(0,e)},h.notify=function(){var t=this.infinite?l(this.scroll,this.limit):this.scroll;this.emit("scroll",{scroll:t,limit:this.limit,velocity:this.velocity,direction:0===this.velocity?0:this.velocity>0?1:-1,progress:t/this.limit})},h.scrollTo=function(t,e){var i=void 0===e?{}:e,o=i.offset,n=void 0===o?0:o,r=i.immediate,s=void 0!==r&&r,l=i.duration,h=void 0===l?this.duration:l,a=i.easing,c=void 0===a?this.easing:a;if(null!=t&&!this.stopped){var u;if("number"==typeof t)u=t;else if("top"===t||"#top"===t)u=0;else if("bottom"===t)u=this.limit;else{var d;if("string"==typeof t)d=document.querySelector(t);else{if(null==t||!t.nodeType)return;d=t}if(!d)return;var p=0;if(this.wrapperNode!==window){var f=this.wrapperNode.getBoundingClientRect();p="horizontal"===this.direction?f.left:f.top}var v=d.getBoundingClientRect();u=("horizontal"===this.direction?v.left:v.top)+this.scroll-p}u+=n,this.targetScroll=this.infinite?u:Math.max(0,Math.min(u,this.limit)),!this.smooth||s?(this.animate.stop(),this.scroll=this.lastScroll=this.targetScroll,this.setScroll(this.targetScroll)):this.animate.to(this,{duration:h,easing:c,scroll:this.targetScroll})}},e(r,[{key:"scrollProperty",get:function(){return this.wrapperNode===window?"horizontal"===this.direction?"scrollX":"scrollY":"horizontal"===this.direction?"scrollLeft":"scrollTop"}},{key:"limit",get:function(){return"horizontal"===this.direction?this.contentWidth-this.wrapperWidth:this.contentHeight-this.wrapperHeight}},{key:"velocity",get:function(){return this.scroll-this.lastScroll}}]),r}(r)});
+(function (global, factory) {
+  typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
+  typeof define === 'function' && define.amd ? define(factory) :
+  (global = global || self, global["'Lenis'"] = factory());
+})(this, (function () {
+  function _defineProperties(target, props) {
+    for (var i = 0; i < props.length; i++) {
+      var descriptor = props[i];
+      descriptor.enumerable = descriptor.enumerable || false;
+      descriptor.configurable = true;
+      if ("value" in descriptor) descriptor.writable = true;
+      Object.defineProperty(target, descriptor.key, descriptor);
+    }
+  }
+  function _createClass(Constructor, protoProps, staticProps) {
+    if (protoProps) _defineProperties(Constructor.prototype, protoProps);
+    if (staticProps) _defineProperties(Constructor, staticProps);
+    Object.defineProperty(Constructor, "prototype", {
+      writable: false
+    });
+    return Constructor;
+  }
+  function _extends() {
+    _extends = Object.assign ? Object.assign.bind() : function (target) {
+      for (var i = 1; i < arguments.length; i++) {
+        var source = arguments[i];
+        for (var key in source) {
+          if (Object.prototype.hasOwnProperty.call(source, key)) {
+            target[key] = source[key];
+          }
+        }
+      }
+      return target;
+    };
+    return _extends.apply(this, arguments);
+  }
+  var id = 0;
+  function _classPrivateFieldLooseKey(name) {
+    return "__private_" + id++ + "_" + name;
+  }
+  function _classPrivateFieldLooseBase(receiver, privateKey) {
+    if (!Object.prototype.hasOwnProperty.call(receiver, privateKey)) {
+      throw new TypeError("attempted to use private field on non-instance");
+    }
+    return receiver;
+  }
+
+  let createNanoEvents = () => ({
+    events: {},
+    emit(event, ...args) {
+      let callbacks = this.events[event] || [];
+      for (let i = 0, length = callbacks.length; i < length; i++) {
+        callbacks[i](...args);
+      }
+    },
+    on(event, cb) {
+      this.events[event]?.push(cb) || (this.events[event] = [cb]);
+      return () => {
+        this.events[event] = this.events[event]?.filter(i => cb !== i);
+      }
+    }
+  });
+
+  var version = "1.0.0-dev.1";
+
+  function clamp(min, input, max) {
+    return Math.max(min, Math.min(input, max));
+  }
+  function lerp(start, end, amt) {
+    return (1 - amt) * start + amt * end;
+  }
+  function clampedModulo(dividend, divisor) {
+    var remainder = dividend % divisor;
+    if (divisor > 0 && remainder < 0 || divisor < 0 && remainder > 0) {
+      remainder += divisor;
+    }
+    return remainder;
+  }
+
+  var Animate = /*#__PURE__*/function () {
+    function Animate() {}
+    var _proto = Animate.prototype;
+    _proto.advance = function advance(deltaTime) {
+      var _this$onUpdate;
+      if (!this.isRunning) return;
+      if (this.value === this.from) {
+        var _this$onStart;
+        (_this$onStart = this.onStart) == null ? void 0 : _this$onStart.call(this, this.from);
+      }
+      var completed = false;
+      if (this.lerp) {
+        this.value = lerp(this.value, this.to, this.lerp);
+        if (Math.round(this.value) === this.to) {
+          this.value = this.to;
+          completed = true;
+        }
+      } else {
+        this.currentTime += deltaTime;
+        var linearProgress = clamp(0, this.currentTime / this.duration, 1);
+        completed = linearProgress >= 1;
+        var easedProgress = completed ? 1 : this.easing(linearProgress);
+        this.value = this.from + (this.to - this.from) * easedProgress;
+      }
+      (_this$onUpdate = this.onUpdate) == null ? void 0 : _this$onUpdate.call(this, this.value);
+      if (completed) {
+        var _this$onComplete;
+        (_this$onComplete = this.onComplete) == null ? void 0 : _this$onComplete.call(this, this.to);
+        this.stop();
+      }
+    };
+    _proto.stop = function stop() {
+      this.isRunning = false;
+    };
+    _proto.fromTo = function fromTo(from, to, _ref) {
+      var _ref$lerp = _ref.lerp,
+        lerp = _ref$lerp === void 0 ? 0.1 : _ref$lerp,
+        _ref$duration = _ref.duration,
+        duration = _ref$duration === void 0 ? 1 : _ref$duration,
+        _ref$easing = _ref.easing,
+        easing = _ref$easing === void 0 ? function (t) {
+          return t;
+        } : _ref$easing,
+        onStart = _ref.onStart,
+        onUpdate = _ref.onUpdate,
+        onComplete = _ref.onComplete;
+      this.from = this.value = from;
+      this.to = to;
+      this.lerp = lerp;
+      this.duration = duration;
+      this.easing = easing;
+      this.currentTime = 0;
+      this.isRunning = true;
+      this.onStart = onStart;
+      this.onUpdate = onUpdate;
+      this.onComplete = onComplete;
+    };
+    return Animate;
+  }();
+
+  var _resizeObserver = /*#__PURE__*/_classPrivateFieldLooseKey("resizeObserver");
+  var _onResize = /*#__PURE__*/_classPrivateFieldLooseKey("onResize");
+  var _onWindowResize = /*#__PURE__*/_classPrivateFieldLooseKey("onWindowResize");
+  var ObservedElement = /*#__PURE__*/function () {
+    function ObservedElement(element) {
+      var _this = this;
+      Object.defineProperty(this, _resizeObserver, {
+        writable: true,
+        value: void 0
+      });
+      Object.defineProperty(this, _onResize, {
+        writable: true,
+        value: function value(_ref) {
+          var entry = _ref[0];
+          if (entry) {
+            var _entry$contentRect = entry.contentRect,
+              width = _entry$contentRect.width,
+              height = _entry$contentRect.height;
+            _this.width = width;
+            _this.height = height;
+          }
+        }
+      });
+      Object.defineProperty(this, _onWindowResize, {
+        writable: true,
+        value: function value() {
+          _this.width = window.innerWidth;
+          _this.height = window.innerHeight;
+        }
+      });
+      this.element = element;
+      if (element === window) {
+        window.addEventListener('resize', _classPrivateFieldLooseBase(this, _onWindowResize)[_onWindowResize]);
+        _classPrivateFieldLooseBase(this, _onWindowResize)[_onWindowResize]();
+      } else {
+        this.width = this.element.offsetWidth;
+        this.height = this.element.offsetHeight;
+        _classPrivateFieldLooseBase(this, _resizeObserver)[_resizeObserver] = new ResizeObserver(_classPrivateFieldLooseBase(this, _onResize)[_onResize]);
+        _classPrivateFieldLooseBase(this, _resizeObserver)[_resizeObserver].observe(this.element);
+      }
+    }
+    var _proto = ObservedElement.prototype;
+    _proto.destroy = function destroy() {
+      window.removeEventListener('resize', this.onWindowResize);
+      _classPrivateFieldLooseBase(this, _resizeObserver)[_resizeObserver].disconnect();
+    };
+    return ObservedElement;
+  }();
+
+  var _wheelMultiplier = /*#__PURE__*/_classPrivateFieldLooseKey("wheelMultiplier");
+  var _touchMultiplier = /*#__PURE__*/_classPrivateFieldLooseKey("touchMultiplier");
+  var _touchStart = /*#__PURE__*/_classPrivateFieldLooseKey("touchStart");
+  var _emitter$1 = /*#__PURE__*/_classPrivateFieldLooseKey("emitter");
+  var _onTouchStart = /*#__PURE__*/_classPrivateFieldLooseKey("onTouchStart");
+  var _onTouchMove = /*#__PURE__*/_classPrivateFieldLooseKey("onTouchMove");
+  var _onWheel = /*#__PURE__*/_classPrivateFieldLooseKey("onWheel");
+  var VirtualScroll = /*#__PURE__*/function () {
+    function VirtualScroll(element, _ref) {
+      var _this = this;
+      var _ref$wheelMultiplier = _ref.wheelMultiplier,
+        wheelMultiplier = _ref$wheelMultiplier === void 0 ? 1 : _ref$wheelMultiplier,
+        _ref$touchMultiplier = _ref.touchMultiplier,
+        touchMultiplier = _ref$touchMultiplier === void 0 ? 2 : _ref$touchMultiplier;
+      Object.defineProperty(this, _wheelMultiplier, {
+        writable: true,
+        value: void 0
+      });
+      Object.defineProperty(this, _touchMultiplier, {
+        writable: true,
+        value: void 0
+      });
+      Object.defineProperty(this, _touchStart, {
+        writable: true,
+        value: void 0
+      });
+      Object.defineProperty(this, _emitter$1, {
+        writable: true,
+        value: void 0
+      });
+      Object.defineProperty(this, _onTouchStart, {
+        writable: true,
+        value: function value(event) {
+          var _ref2 = event.targetTouches ? event.targetTouches[0] : event,
+            pageX = _ref2.pageX,
+            pageY = _ref2.pageY;
+          _classPrivateFieldLooseBase(_this, _touchStart)[_touchStart].x = pageX;
+          _classPrivateFieldLooseBase(_this, _touchStart)[_touchStart].y = pageY;
+        }
+      });
+      Object.defineProperty(this, _onTouchMove, {
+        writable: true,
+        value: function value(event) {
+          var _ref3 = event.targetTouches ? event.targetTouches[0] : event,
+            pageX = _ref3.pageX,
+            pageY = _ref3.pageY;
+          var deltaX = -(pageX - _classPrivateFieldLooseBase(_this, _touchStart)[_touchStart].x) * _classPrivateFieldLooseBase(_this, _touchMultiplier)[_touchMultiplier];
+          var deltaY = -(pageY - _classPrivateFieldLooseBase(_this, _touchStart)[_touchStart].y) * _classPrivateFieldLooseBase(_this, _touchMultiplier)[_touchMultiplier];
+          _classPrivateFieldLooseBase(_this, _touchStart)[_touchStart].x = pageX;
+          _classPrivateFieldLooseBase(_this, _touchStart)[_touchStart].y = pageY;
+          _classPrivateFieldLooseBase(_this, _emitter$1)[_emitter$1].emit('scroll', {
+            type: 'touch',
+            deltaX: deltaX,
+            deltaY: deltaY,
+            event: event
+          });
+        }
+      });
+      Object.defineProperty(this, _onWheel, {
+        writable: true,
+        value: function value(event) {
+          var deltaX = event.deltaX,
+            deltaY = event.deltaY;
+          deltaX *= _classPrivateFieldLooseBase(_this, _wheelMultiplier)[_wheelMultiplier];
+          deltaY *= _classPrivateFieldLooseBase(_this, _wheelMultiplier)[_wheelMultiplier];
+          _classPrivateFieldLooseBase(_this, _emitter$1)[_emitter$1].emit('scroll', {
+            type: 'wheel',
+            deltaX: deltaX,
+            deltaY: deltaY,
+            event: event
+          });
+        }
+      });
+      this.element = element;
+      _classPrivateFieldLooseBase(this, _wheelMultiplier)[_wheelMultiplier] = wheelMultiplier;
+      _classPrivateFieldLooseBase(this, _touchMultiplier)[_touchMultiplier] = touchMultiplier;
+      _classPrivateFieldLooseBase(this, _touchStart)[_touchStart] = {
+        x: null,
+        y: null
+      };
+      _classPrivateFieldLooseBase(this, _emitter$1)[_emitter$1] = createNanoEvents();
+      this.element.addEventListener('wheel', _classPrivateFieldLooseBase(this, _onWheel)[_onWheel], {
+        passive: false
+      });
+      this.element.addEventListener('touchstart', _classPrivateFieldLooseBase(this, _onTouchStart)[_onTouchStart], {
+        passive: false
+      });
+      this.element.addEventListener('touchmove', _classPrivateFieldLooseBase(this, _onTouchMove)[_onTouchMove], {
+        passive: false
+      });
+    }
+    var _proto = VirtualScroll.prototype;
+    _proto.on = function on(event, callback) {
+      return _classPrivateFieldLooseBase(this, _emitter$1)[_emitter$1].on(event, callback);
+    };
+    _proto.destroy = function destroy() {
+      _classPrivateFieldLooseBase(this, _emitter$1)[_emitter$1].events = {};
+      this.element.removeEventListener('wheel', _classPrivateFieldLooseBase(this, _onWheel)[_onWheel], {
+        passive: false
+      });
+      this.element.removeEventListener('touchstart', _classPrivateFieldLooseBase(this, _onTouchStart)[_onTouchStart], {
+        passive: false
+      });
+      this.element.removeEventListener('touchmove', _classPrivateFieldLooseBase(this, _onTouchMove)[_onTouchMove], {
+        passive: false
+      });
+    };
+    return VirtualScroll;
+  }();
+
+  var _options = /*#__PURE__*/_classPrivateFieldLooseKey("options");
+  var _wrapper = /*#__PURE__*/_classPrivateFieldLooseKey("wrapper");
+  var _content = /*#__PURE__*/_classPrivateFieldLooseKey("content");
+  var _animate = /*#__PURE__*/_classPrivateFieldLooseKey("animate");
+  var _emitter = /*#__PURE__*/_classPrivateFieldLooseKey("emitter");
+  var _virtualScroll = /*#__PURE__*/_classPrivateFieldLooseKey("virtualScroll");
+  var _time = /*#__PURE__*/_classPrivateFieldLooseKey("time");
+  var _velocity = /*#__PURE__*/_classPrivateFieldLooseKey("velocity");
+  var _direction = /*#__PURE__*/_classPrivateFieldLooseKey("direction");
+  var _animatedScroll = /*#__PURE__*/_classPrivateFieldLooseKey("animatedScroll");
+  var _targetScroll = /*#__PURE__*/_classPrivateFieldLooseKey("targetScroll");
+  var _isScrolling = /*#__PURE__*/_classPrivateFieldLooseKey("isScrolling");
+  var _isStopped = /*#__PURE__*/_classPrivateFieldLooseKey("isStopped");
+  var _isLocked = /*#__PURE__*/_classPrivateFieldLooseKey("isLocked");
+  var _isSmooth = /*#__PURE__*/_classPrivateFieldLooseKey("isSmooth");
+  var _setScroll = /*#__PURE__*/_classPrivateFieldLooseKey("setScroll");
+  var _onVirtualScroll = /*#__PURE__*/_classPrivateFieldLooseKey("onVirtualScroll");
+  var _onScroll = /*#__PURE__*/_classPrivateFieldLooseKey("onScroll");
+  var _classElement = /*#__PURE__*/_classPrivateFieldLooseKey("classElement");
+  var _actualScroll = /*#__PURE__*/_classPrivateFieldLooseKey("actualScroll");
+  var Lenis = /*#__PURE__*/function () {
+    // element with hidden overflow
+    // wrapper direct child with scrollable content
+
+    // value used for animation
+    // value to reach
+    // true when scroll is animated programatically
+    // true if user should not be able to scroll - enable/disable programatically
+    // same as isStopped - enable/disable when scroll reaches target
+
+    /**
+     * @typedef {(t: number) => number} EasingFunction
+     * @typedef {'vertical' | 'horizontal'} Orientation
+     * @typedef {'vertical' | 'horizontal' | 'both'} GestureOrientation
+     *
+     * @typedef LenisOptions
+     * @property {Orientation} [direction]
+     * @property {GestureOrientation} [gestureDirection]
+     * @property {number} [mouseMultiplier]
+     * @property {boolean} [smooth]
+     *
+     * @property {Window | HTMLElement} [wrapper]
+     * @property {HTMLElement} [content]
+     * @property {boolean} [smoothWheel]
+     * @property {boolean} [smoothTouch]
+     * @property {number} [duration]
+     * @property {EasingFunction} [easing]
+     * @property {number} [lerp]
+     * @property {boolean} [infinite]
+     * @property {Orientation} [orientation]
+     * @property {GestureOrientation} [gestureOrientation]
+     * @property {number} [touchMultiplier]
+     * @property {number} [wheelMultiplier]
+     *
+     * @param {LenisOptions}
+     */
+    function Lenis(_temp) {
+      var _this = this;
+      var _ref = _temp === void 0 ? {} : _temp,
+        direction = _ref.direction,
+        gestureDirection = _ref.gestureDirection,
+        mouseMultiplier = _ref.mouseMultiplier,
+        smooth = _ref.smooth,
+        _ref$wrapper = _ref.wrapper,
+        wrapper = _ref$wrapper === void 0 ? window : _ref$wrapper,
+        _ref$content = _ref.content,
+        content = _ref$content === void 0 ? document.documentElement : _ref$content,
+        _ref$smoothWheel = _ref.smoothWheel,
+        smoothWheel = _ref$smoothWheel === void 0 ? smooth != null ? smooth : true : _ref$smoothWheel,
+        _ref$smoothTouch = _ref.smoothTouch,
+        smoothTouch = _ref$smoothTouch === void 0 ? false : _ref$smoothTouch,
+        duration = _ref.duration,
+        _ref$easing = _ref.easing,
+        easing = _ref$easing === void 0 ? function (t) {
+          return Math.min(1, 1.001 - Math.pow(2, -10 * t));
+        } : _ref$easing,
+        _ref$lerp = _ref.lerp,
+        lerp = _ref$lerp === void 0 ? duration ? null : 0.1 : _ref$lerp,
+        _ref$infinite = _ref.infinite,
+        infinite = _ref$infinite === void 0 ? false : _ref$infinite,
+        _ref$orientation = _ref.orientation,
+        orientation = _ref$orientation === void 0 ? direction != null ? direction : 'vertical' : _ref$orientation,
+        _ref$gestureOrientati = _ref.gestureOrientation,
+        gestureOrientation = _ref$gestureOrientati === void 0 ? gestureDirection != null ? gestureDirection : 'vertical' : _ref$gestureOrientati,
+        _ref$touchMultiplier = _ref.touchMultiplier,
+        touchMultiplier = _ref$touchMultiplier === void 0 ? 2 : _ref$touchMultiplier,
+        _ref$wheelMultiplier = _ref.wheelMultiplier,
+        wheelMultiplier = _ref$wheelMultiplier === void 0 ? mouseMultiplier != null ? mouseMultiplier : 1 : _ref$wheelMultiplier;
+      Object.defineProperty(this, _actualScroll, {
+        get: _get_actualScroll,
+        set: void 0
+      });
+      Object.defineProperty(this, _classElement, {
+        get: _get_classElement,
+        set: void 0
+      });
+      Object.defineProperty(this, _setScroll, {
+        value: _setScroll2
+      });
+      Object.defineProperty(this, _options, {
+        writable: true,
+        value: void 0
+      });
+      Object.defineProperty(this, _wrapper, {
+        writable: true,
+        value: void 0
+      });
+      Object.defineProperty(this, _content, {
+        writable: true,
+        value: void 0
+      });
+      Object.defineProperty(this, _animate, {
+        writable: true,
+        value: void 0
+      });
+      Object.defineProperty(this, _emitter, {
+        writable: true,
+        value: void 0
+      });
+      Object.defineProperty(this, _virtualScroll, {
+        writable: true,
+        value: void 0
+      });
+      Object.defineProperty(this, _time, {
+        writable: true,
+        value: void 0
+      });
+      Object.defineProperty(this, _velocity, {
+        writable: true,
+        value: void 0
+      });
+      Object.defineProperty(this, _direction, {
+        writable: true,
+        value: void 0
+      });
+      Object.defineProperty(this, _animatedScroll, {
+        writable: true,
+        value: void 0
+      });
+      Object.defineProperty(this, _targetScroll, {
+        writable: true,
+        value: void 0
+      });
+      Object.defineProperty(this, _isScrolling, {
+        writable: true,
+        value: void 0
+      });
+      Object.defineProperty(this, _isStopped, {
+        writable: true,
+        value: void 0
+      });
+      Object.defineProperty(this, _isLocked, {
+        writable: true,
+        value: void 0
+      });
+      Object.defineProperty(this, _isSmooth, {
+        writable: true,
+        value: void 0
+      });
+      Object.defineProperty(this, _onVirtualScroll, {
+        writable: true,
+        value: function value(_ref2) {
+          var type = _ref2.type,
+            deltaX = _ref2.deltaX,
+            deltaY = _ref2.deltaY,
+            event = _ref2.event;
+          // keep zoom feature
+          if (event.ctrlKey) return;
+
+          // keep previous/next page gesture on trackpads
+          if (_classPrivateFieldLooseBase(_this, _options)[_options].gestureOrientation === 'vertical' && deltaY === 0 || _classPrivateFieldLooseBase(_this, _options)[_options].gestureOrientation === 'horizontal' && deltaX === 0) return;
+
+          // catch if scrolling on nested scroll elements
+          if (!!event.composedPath().find(function (node) {
+            return node == null ? void 0 : node.hasAttribute == null ? void 0 : node.hasAttribute('data-lenis-prevent');
+          })) return;
+          if (_this.isStopped || _classPrivateFieldLooseBase(_this, _isLocked)[_isLocked]) {
+            event.preventDefault();
+            return;
+          }
+          _this.isSmooth = _classPrivateFieldLooseBase(_this, _options)[_options].smoothTouch && type === 'touch' || _classPrivateFieldLooseBase(_this, _options)[_options].smoothWheel && type === 'wheel';
+          if (!_this.isSmooth) return;
+          event.preventDefault();
+          var delta = deltaY;
+          if (_classPrivateFieldLooseBase(_this, _options)[_options].gestureOrientation === 'both') {
+            delta = deltaX + deltaY;
+          } else if (_classPrivateFieldLooseBase(_this, _options)[_options].gestureOrientation === 'horizontal') {
+            delta = deltaX;
+          }
+          _this.scrollTo(_classPrivateFieldLooseBase(_this, _targetScroll)[_targetScroll] + delta, {}, false);
+        }
+      });
+      Object.defineProperty(this, _onScroll, {
+        writable: true,
+        value: function value() {
+          if (!_this.isScrolling) {
+            _classPrivateFieldLooseBase(_this, _animatedScroll)[_animatedScroll] = _classPrivateFieldLooseBase(_this, _targetScroll)[_targetScroll] = _classPrivateFieldLooseBase(_this, _actualScroll)[_actualScroll];
+            _this.velocity = 0;
+            _this.emit();
+          }
+        }
+      });
+      window.lenisVersion = version;
+
+      // if wrapper is html or body, fallback to window
+      if (wrapper === document.documentElement || wrapper === document.body) {
+        wrapper = window;
+      }
+      _classPrivateFieldLooseBase(this, _options)[_options] = {
+        wrapper: wrapper,
+        content: content,
+        smoothWheel: smoothWheel,
+        smoothTouch: smoothTouch,
+        duration: duration,
+        easing: easing,
+        lerp: lerp,
+        infinite: infinite,
+        gestureOrientation: gestureOrientation,
+        orientation: orientation,
+        touchMultiplier: touchMultiplier,
+        wheelMultiplier: wheelMultiplier
+      };
+      _classPrivateFieldLooseBase(this, _wrapper)[_wrapper] = new ObservedElement(wrapper);
+      _classPrivateFieldLooseBase(this, _content)[_content] = new ObservedElement(content);
+      _classPrivateFieldLooseBase(this, _classElement)[_classElement].classList.add('lenis');
+      this.velocity = 0;
+      this.isStopped = false;
+      this.isSmooth = smoothWheel || smoothTouch;
+      this.isScrolling = false;
+      _classPrivateFieldLooseBase(this, _targetScroll)[_targetScroll] = _classPrivateFieldLooseBase(this, _animatedScroll)[_animatedScroll] = _classPrivateFieldLooseBase(this, _actualScroll)[_actualScroll];
+      _classPrivateFieldLooseBase(this, _animate)[_animate] = new Animate();
+      _classPrivateFieldLooseBase(this, _emitter)[_emitter] = createNanoEvents();
+      _classPrivateFieldLooseBase(this, _wrapper)[_wrapper].element.addEventListener('scroll', _classPrivateFieldLooseBase(this, _onScroll)[_onScroll], {
+        passive: false
+      });
+      _classPrivateFieldLooseBase(this, _virtualScroll)[_virtualScroll] = new VirtualScroll(wrapper, {
+        touchMultiplier: touchMultiplier,
+        wheelMultiplier: wheelMultiplier
+      });
+      _classPrivateFieldLooseBase(this, _virtualScroll)[_virtualScroll].on('scroll', _classPrivateFieldLooseBase(this, _onVirtualScroll)[_onVirtualScroll]);
+    }
+    var _proto = Lenis.prototype;
+    _proto.destroy = function destroy() {
+      _classPrivateFieldLooseBase(this, _emitter)[_emitter].events = {};
+      _classPrivateFieldLooseBase(this, _wrapper)[_wrapper].element.removeEventListener('scroll', _classPrivateFieldLooseBase(this, _onScroll)[_onScroll], {
+        passive: false
+      });
+      _classPrivateFieldLooseBase(this, _virtualScroll)[_virtualScroll].destroy();
+    };
+    _proto.on = function on(event, callback) {
+      return _classPrivateFieldLooseBase(this, _emitter)[_emitter].on(event, callback);
+    };
+    _proto.emit = function emit() {
+      _classPrivateFieldLooseBase(this, _emitter)[_emitter].emit('scroll', this);
+    };
+    _proto.start = function start() {
+      this.isStopped = false;
+    };
+    _proto.stop = function stop() {
+      this.isStopped = true;
+    };
+    _proto.raf = function raf(time) {
+      var deltaTime = time - (_classPrivateFieldLooseBase(this, _time)[_time] || time);
+      _classPrivateFieldLooseBase(this, _time)[_time] = time;
+      _classPrivateFieldLooseBase(this, _animate)[_animate].advance(deltaTime * 0.001);
+    };
+    _proto.scrollTo = function scrollTo(target, _temp2, programmatic // called from outside of the class
+    ) {
+      var _this2 = this;
+      var _ref3 = _temp2 === void 0 ? {} : _temp2,
+        _ref3$offset = _ref3.offset,
+        offset = _ref3$offset === void 0 ? 0 : _ref3$offset,
+        _ref3$immediate = _ref3.immediate,
+        immediate = _ref3$immediate === void 0 ? false : _ref3$immediate,
+        _ref3$lock = _ref3.lock,
+        lock = _ref3$lock === void 0 ? false : _ref3$lock,
+        _ref3$duration = _ref3.duration,
+        duration = _ref3$duration === void 0 ? _classPrivateFieldLooseBase(this, _options)[_options].duration : _ref3$duration,
+        _ref3$easing = _ref3.easing,
+        easing = _ref3$easing === void 0 ? _classPrivateFieldLooseBase(this, _options)[_options].easing : _ref3$easing,
+        _ref3$lerp = _ref3.lerp,
+        lerp = _ref3$lerp === void 0 ? _classPrivateFieldLooseBase(this, _options)[_options].lerp : _ref3$lerp,
+        _onComplete = _ref3.onComplete;
+      if (programmatic === void 0) {
+        programmatic = true;
+      }
+      // keywords
+      if (['top', 'left', 'start'].includes(target)) {
+        target = 0;
+      } else if (['bottom', 'right', 'end'].includes(target)) {
+        target = this.limit;
+      } else {
+        var _target;
+        var node;
+        if (typeof target === 'string') {
+          // CSS selector
+          node = document.querySelector(target);
+        } else if ((_target = target) != null && _target.nodeType) {
+          // Node element
+          node = target;
+        }
+        if (node) {
+          if (_classPrivateFieldLooseBase(this, _wrapper)[_wrapper].element !== window) {
+            // nested scroll offset correction
+            var wrapperRect = _classPrivateFieldLooseBase(this, _wrapper)[_wrapper].element.getBoundingClientRect();
+            offset -= this.isHorizontal ? wrapperRect.left : wrapperRect.top;
+          }
+          var rect = node.getBoundingClientRect();
+          target = (this.isHorizontal ? rect.left : rect.top) + _classPrivateFieldLooseBase(this, _animatedScroll)[_animatedScroll];
+        }
+      }
+      if (typeof target !== 'number') return;
+      target += offset;
+      if (_classPrivateFieldLooseBase(this, _options)[_options].infinite) {
+        if (programmatic) {
+          _classPrivateFieldLooseBase(this, _targetScroll)[_targetScroll] = _classPrivateFieldLooseBase(this, _animatedScroll)[_animatedScroll] = this.scroll;
+        }
+      } else {
+        target = clamp(0, target, this.limit);
+      }
+
+      // if (this.#scroll === target) {
+      if (_classPrivateFieldLooseBase(this, _animatedScroll)[_animatedScroll] === target) {
+        _onComplete == null ? void 0 : _onComplete();
+        return;
+      }
+      if (immediate) {
+        _classPrivateFieldLooseBase(this, _animatedScroll)[_animatedScroll] = _classPrivateFieldLooseBase(this, _targetScroll)[_targetScroll] = target;
+        _classPrivateFieldLooseBase(this, _setScroll)[_setScroll](target);
+        this.emit();
+        _onComplete == null ? void 0 : _onComplete();
+        return;
+      }
+      if (!programmatic) {
+        _classPrivateFieldLooseBase(this, _targetScroll)[_targetScroll] = target;
+      }
+      _classPrivateFieldLooseBase(this, _animate)[_animate].fromTo(_classPrivateFieldLooseBase(this, _animatedScroll)[_animatedScroll], target, {
+        duration: duration,
+        easing: easing,
+        lerp: lerp,
+        onStart: function onStart() {
+          // user is scrolling
+          if (lock) _classPrivateFieldLooseBase(_this2, _isLocked)[_isLocked] = true;
+          _this2.isScrolling = true;
+        },
+        onUpdate: function onUpdate(value) {
+          _this2.velocity = value - _classPrivateFieldLooseBase(_this2, _animatedScroll)[_animatedScroll];
+          _classPrivateFieldLooseBase(_this2, _animatedScroll)[_animatedScroll] = value;
+          _classPrivateFieldLooseBase(_this2, _setScroll)[_setScroll](value);
+          if (programmatic) {
+            // fix velocity during programmatic scrollTo
+            // wheel during programmatic should stop it
+            _classPrivateFieldLooseBase(_this2, _targetScroll)[_targetScroll] = value;
+          }
+          _this2.emit();
+        },
+        onComplete: function onComplete(value) {
+          // user is not scrolling anymore
+          if (lock) _classPrivateFieldLooseBase(_this2, _isLocked)[_isLocked] = false;
+          requestAnimationFrame(function () {
+            _this2.isScrolling = false;
+          });
+          _this2.velocity = 0;
+          _this2.emit();
+          _onComplete == null ? void 0 : _onComplete();
+        }
+      });
+    };
+    _createClass(Lenis, [{
+      key: "options",
+      get: function get() {
+        return _extends({}, _classPrivateFieldLooseBase(this, _options)[_options]);
+      }
+    }, {
+      key: "limit",
+      get: function get() {
+        return this.isHorizontal ? _classPrivateFieldLooseBase(this, _content)[_content].width - _classPrivateFieldLooseBase(this, _wrapper)[_wrapper].width : _classPrivateFieldLooseBase(this, _content)[_content].height - _classPrivateFieldLooseBase(this, _wrapper)[_wrapper].height;
+      }
+    }, {
+      key: "isHorizontal",
+      get: function get() {
+        return _classPrivateFieldLooseBase(this, _options)[_options].orientation === 'horizontal';
+      }
+    }, {
+      key: "scroll",
+      get: function get() {
+        return clampedModulo(_classPrivateFieldLooseBase(this, _animatedScroll)[_animatedScroll], this.limit);
+      }
+    }, {
+      key: "progress",
+      get: function get() {
+        return this.scroll / this.limit;
+      }
+    }, {
+      key: "velocity",
+      get: function get() {
+        return _classPrivateFieldLooseBase(this, _velocity)[_velocity];
+      },
+      set: function set(value) {
+        _classPrivateFieldLooseBase(this, _velocity)[_velocity] = value;
+        if (value !== 0) {
+          _classPrivateFieldLooseBase(this, _direction)[_direction] = Math.sign(value);
+        }
+      }
+    }, {
+      key: "direction",
+      get: function get() {
+        return _classPrivateFieldLooseBase(this, _direction)[_direction];
+      }
+    }, {
+      key: "isSmooth",
+      get: function get() {
+        return _classPrivateFieldLooseBase(this, _isSmooth)[_isSmooth];
+      },
+      set: function set(value) {
+        _classPrivateFieldLooseBase(this, _isSmooth)[_isSmooth] = value;
+        _classPrivateFieldLooseBase(this, _classElement)[_classElement].classList.toggle('lenis-smooth', value);
+      }
+    }, {
+      key: "isScrolling",
+      get: function get() {
+        return _classPrivateFieldLooseBase(this, _isScrolling)[_isScrolling];
+      },
+      set: function set(value) {
+        _classPrivateFieldLooseBase(this, _isScrolling)[_isScrolling] = value;
+        _classPrivateFieldLooseBase(this, _classElement)[_classElement].classList.toggle('lenis-scrolling', value);
+      }
+    }, {
+      key: "isStopped",
+      get: function get() {
+        return _classPrivateFieldLooseBase(this, _isStopped)[_isStopped];
+      },
+      set: function set(value) {
+        _classPrivateFieldLooseBase(this, _isStopped)[_isStopped] = value;
+        _classPrivateFieldLooseBase(this, _classElement)[_classElement].classList.toggle('lenis-stopped', value);
+      }
+    }]);
+    return Lenis;
+  }();
+  function _setScroll2(scroll) {
+    if (_classPrivateFieldLooseBase(this, _options)[_options].infinite) {
+      scroll = this.scroll;
+    }
+
+    // apply scroll value immediately
+    if (this.isHorizontal) {
+      _classPrivateFieldLooseBase(this, _classElement)[_classElement].scrollLeft = scroll;
+    } else {
+      _classPrivateFieldLooseBase(this, _classElement)[_classElement].scrollTop = scroll;
+    }
+  }
+  function _get_classElement() {
+    return _classPrivateFieldLooseBase(this, _wrapper)[_wrapper].element === window ? _classPrivateFieldLooseBase(this, _content)[_content].element : _classPrivateFieldLooseBase(this, _wrapper)[_wrapper].element;
+  }
+  function _get_actualScroll() {
+    // value browser takes into account
+    return _classPrivateFieldLooseBase(this, _classElement)[_classElement].scrollTop;
+  }
+
+  return Lenis;
+
+}));

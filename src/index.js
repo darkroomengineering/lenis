@@ -1,5 +1,5 @@
 import { createNanoEvents } from 'nanoevents'
-import { version } from '../../package.json'
+import { version } from '../package.json'
 import { Animate } from './animate'
 import { clamp, clampedModulo } from './maths'
 import { ObservedElement } from './observed-element'
@@ -15,7 +15,6 @@ export default class Lenis {
   #time
   #velocity
   #direction
-  // #scroll // current scroll value
   #animatedScroll // value used for animation
   #targetScroll // value to reach
   #isScrolling // true when scroll is animated programatically
@@ -23,6 +22,32 @@ export default class Lenis {
   #isLocked // same as isStopped - enable/disable when scroll reaches target
   #isSmooth
 
+  /**
+   * @typedef {(t: number) => number} EasingFunction
+   * @typedef {'vertical' | 'horizontal'} Orientation
+   * @typedef {'vertical' | 'horizontal' | 'both'} GestureOrientation
+   *
+   * @typedef LenisOptions
+   * @property {Orientation} [direction]
+   * @property {GestureOrientation} [gestureDirection]
+   * @property {number} [mouseMultiplier]
+   * @property {boolean} [smooth]
+   *
+   * @property {Window | HTMLElement} [wrapper]
+   * @property {HTMLElement} [content]
+   * @property {boolean} [smoothWheel]
+   * @property {boolean} [smoothTouch]
+   * @property {number} [duration]
+   * @property {EasingFunction} [easing]
+   * @property {number} [lerp]
+   * @property {boolean} [infinite]
+   * @property {Orientation} [orientation]
+   * @property {GestureOrientation} [gestureOrientation]
+   * @property {number} [touchMultiplier]
+   * @property {number} [wheelMultiplier]
+   *
+   * @param {LenisOptions}
+   */
   constructor({
     //--legacy options--//
     direction,
@@ -74,7 +99,6 @@ export default class Lenis {
     this.isStopped = false
     this.isSmooth = smoothWheel || smoothTouch
     this.isScrolling = false
-    // this.#scroll =
     this.#targetScroll = this.#animatedScroll = this.#actualScroll
     this.#animate = new Animate()
     this.#emitter = createNanoEvents()
@@ -165,22 +189,10 @@ export default class Lenis {
 
   #onScroll = () => {
     if (!this.isScrolling) {
-      // const lastScroll = this.#scroll
-      // const lastScroll = this.#animatedScroll
-
-      // this.#scroll =
       this.#animatedScroll = this.#targetScroll = this.#actualScroll
-
-      // this.#velocity = this.#scroll - lastScroll
-      // this.#velocity = this.#animatedScroll - lastScroll
-      // this.velocity = this.#animatedScroll - lastScroll
-      // this.#direction = Math.sign(this.#velocity)
       this.velocity = 0
       this.emit()
     }
-    // else {
-    //   this.#scroll = this.#actualScroll
-    // }
   }
 
   start() {
@@ -260,10 +272,8 @@ export default class Lenis {
     }
 
     if (immediate) {
-      // this.#scroll = this.#animatedScroll = this.#targetScroll = target
       this.#animatedScroll = this.#targetScroll = target
       this.#setScroll(target)
-      // this.isScrolling = true
       this.emit()
       onComplete?.()
       return
@@ -283,9 +293,7 @@ export default class Lenis {
         this.isScrolling = true
       },
       onUpdate: (value) => {
-        // this.#velocity = value - this.#animatedScroll
         this.velocity = value - this.#animatedScroll
-        // this.#direction = Math.sign(this.#velocity)
 
         this.#animatedScroll = value
         this.#setScroll(value)
@@ -305,7 +313,6 @@ export default class Lenis {
           this.isScrolling = false
         })
         this.velocity = 0
-        // this.#needsEmit = true;
         this.emit()
 
         onComplete?.()
