@@ -29,7 +29,9 @@ export function Layout({
   useLayoutEffect(() => {
     window.scrollTo(0, 0)
     const lenis = new Lenis({
-      smoothTouch: true,
+      // lerp: null,
+      // duration: 10,
+      // smoothTouch: true,
       // gestureDirection: 'v0',
       // duration: 1.2,
       // easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),

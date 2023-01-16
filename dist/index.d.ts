@@ -1,0 +1,63 @@
+export default class Lenis {
+    constructor({ direction, gestureDirection, mouseMultiplier, smooth, wrapper, content, smoothWheel, smoothTouch, duration, easing, lerp, infinite, orientation, gestureOrientation, touchMultiplier, wheelMultiplier, }?: {
+        direction: any;
+        gestureDirection: any;
+        mouseMultiplier: any;
+        smooth: any;
+        wrapper?: Window & typeof globalThis;
+        content?: HTMLElement;
+        smoothWheel?: any;
+        smoothTouch?: boolean;
+        duration: any;
+        easing?: (t: any) => number;
+        lerp?: number;
+        infinite?: boolean;
+        orientation?: any;
+        gestureOrientation?: any;
+        touchMultiplier?: number;
+        wheelMultiplier?: any;
+    });
+    set velocity(arg: any);
+    get velocity(): any;
+    set isStopped(arg: any);
+    get isStopped(): any;
+    set isSmooth(arg: any);
+    get isSmooth(): any;
+    set isScrolling(arg: any);
+    get isScrolling(): any;
+    destroy(): void;
+    on(event: any, callback: any): import("nanoevents").Unsubscribe;
+    get options(): {
+        wrapper: Window & typeof globalThis;
+        content: HTMLElement;
+        smoothWheel: any;
+        smoothTouch: boolean;
+        duration: any;
+        easing: (t: any) => number;
+        lerp: number;
+        infinite: boolean;
+        gestureOrientation: any;
+        orientation: any;
+        touchMultiplier: number;
+        wheelMultiplier: any;
+    };
+    get limit(): number;
+    get isHorizontal(): boolean;
+    get scroll(): number;
+    get progress(): number;
+    get direction(): any;
+    emit(): void;
+    start(): void;
+    stop(): void;
+    raf(time: any): void;
+    scrollTo(target: any, { offset, immediate, lock, duration, easing, lerp, onComplete, }?: {
+        offset?: number;
+        immediate?: boolean;
+        lock?: boolean;
+        duration?: any;
+        easing?: (t: any) => number;
+        lerp?: number;
+        onComplete: any;
+    }, programmatic?: boolean): void;
+    #private;
+}

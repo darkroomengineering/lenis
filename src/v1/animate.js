@@ -1,4 +1,4 @@
-import { lerp } from './maths'
+import { clamp, lerp } from './maths'
 
 export class Animate {
   advance(deltaTime) {
@@ -17,10 +17,12 @@ export class Animate {
         completed = true
       }
     } else {
-      this.currentTime = Math.min(this.currentTime + deltaTime, this.duration)
-      completed = this.progress >= 1
-      const progress = completed ? 1 : this.easing(this.progress)
-      this.value = this.from + (this.to - this.from) * progress
+      this.currentTime += deltaTime
+      const linearProgress = clamp(0, this.currentTime / this.duration, 1)
+
+      completed = linearProgress >= 1
+      const easedProgress = completed ? 1 : this.easing(linearProgress)
+      this.value = this.from + (this.to - this.from) * easedProgress
     }
 
     this.onUpdate?.(this.value)
@@ -31,9 +33,9 @@ export class Animate {
     }
   }
 
-  get progress() {
-    return this.currentTime / this.duration
-  }
+  // get progress() {
+  //   return this.currentTime / this.duration
+  // }
 
   stop() {
     this.isRunning = false

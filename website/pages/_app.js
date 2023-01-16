@@ -3,6 +3,7 @@ import { raf } from '@studio-freight/tempus'
 import { RealViewport } from 'components/real-viewport'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/dist/ScrollTrigger'
+import { useScroll } from 'hooks/use-scroll'
 import { GTM_ID } from 'lib/analytics'
 import { useStore } from 'lib/store'
 import dynamic from 'next/dynamic'
@@ -49,6 +50,8 @@ function MyApp({ Component, pageProps }) {
   //   setFooterData(footerData)
   //   setIsFetched(true)
   // }
+
+  useScroll(ScrollTrigger.update)
 
   useEffect(() => {
     if (overflow) {
