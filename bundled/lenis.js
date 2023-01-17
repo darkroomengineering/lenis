@@ -61,7 +61,7 @@
     }
   });
 
-  var version = "1.0.0-dev.1";
+  var version = "1.0.0-dev.3";
 
   function clamp(min, input, max) {
     return Math.max(min, Math.min(input, max));
@@ -492,12 +492,27 @@
         writable: true,
         value: function value() {
           if (!_this.isScrolling) {
+            var lastScroll = _classPrivateFieldLooseBase(_this, _animatedScroll)[_animatedScroll];
             _classPrivateFieldLooseBase(_this, _animatedScroll)[_animatedScroll] = _classPrivateFieldLooseBase(_this, _targetScroll)[_targetScroll] = _classPrivateFieldLooseBase(_this, _actualScroll)[_actualScroll];
-            _this.velocity = 0;
+            _classPrivateFieldLooseBase(_this, _velocity)[_velocity] = 0;
+            _classPrivateFieldLooseBase(_this, _direction)[_direction] = Math.sign(_classPrivateFieldLooseBase(_this, _animatedScroll)[_animatedScroll] - lastScroll);
             _this.emit();
           }
         }
       });
+      // warn about legacy options
+      if (direction) {
+        console.warn('Lenis: `direction` option is deprecated, use `orientation` instead');
+      }
+      if (gestureDirection) {
+        console.warn('Lenis: `gestureDirection` option is deprecated, use `gestureOrientation` instead');
+      }
+      if (mouseMultiplier) {
+        console.warn('Lenis: `mouseMultiplier` option is deprecated, use `wheelMultiplier` instead');
+      }
+      if (smooth) {
+        console.warn('Lenis: `smooth` option is deprecated, use `smoothWheel` instead');
+      }
       window.lenisVersion = version;
 
       // if wrapper is html or body, fallback to window
@@ -521,7 +536,7 @@
       _classPrivateFieldLooseBase(this, _wrapper)[_wrapper] = new ObservedElement(wrapper);
       _classPrivateFieldLooseBase(this, _content)[_content] = new ObservedElement(content);
       _classPrivateFieldLooseBase(this, _classElement)[_classElement].classList.add('lenis');
-      this.velocity = 0;
+      _classPrivateFieldLooseBase(this, _velocity)[_velocity] = 0;
       this.isStopped = false;
       this.isSmooth = smoothWheel || smoothTouch;
       this.isScrolling = false;
@@ -642,7 +657,8 @@
           _this2.isScrolling = true;
         },
         onUpdate: function onUpdate(value) {
-          _this2.velocity = value - _classPrivateFieldLooseBase(_this2, _animatedScroll)[_animatedScroll];
+          _classPrivateFieldLooseBase(_this2, _velocity)[_velocity] = value - _classPrivateFieldLooseBase(_this2, _animatedScroll)[_animatedScroll];
+          _classPrivateFieldLooseBase(_this2, _direction)[_direction] = Math.sign(_classPrivateFieldLooseBase(_this2, _velocity)[_velocity]);
           _classPrivateFieldLooseBase(_this2, _animatedScroll)[_animatedScroll] = value;
           _classPrivateFieldLooseBase(_this2, _setScroll)[_setScroll](value);
           if (programmatic) {
@@ -658,7 +674,7 @@
           requestAnimationFrame(function () {
             _this2.isScrolling = false;
           });
-          _this2.velocity = 0;
+          _classPrivateFieldLooseBase(_this2, _velocity)[_velocity] = 0;
           _this2.emit();
           _onComplete == null ? void 0 : _onComplete();
         }
@@ -693,12 +709,6 @@
       key: "velocity",
       get: function get() {
         return _classPrivateFieldLooseBase(this, _velocity)[_velocity];
-      },
-      set: function set(value) {
-        _classPrivateFieldLooseBase(this, _velocity)[_velocity] = value;
-        if (value !== 0) {
-          _classPrivateFieldLooseBase(this, _direction)[_direction] = Math.sign(value);
-        }
       }
     }, {
       key: "direction",
