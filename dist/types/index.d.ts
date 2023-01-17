@@ -43,8 +43,6 @@ export default class Lenis {
         touchMultiplier?: number;
         wheelMultiplier?: number;
     });
-    set velocity(arg: any);
-    get velocity(): any;
     set isStopped(arg: any);
     get isStopped(): any;
     set isSmooth(arg: any);
@@ -84,6 +82,7 @@ export default class Lenis {
     get isHorizontal(): boolean;
     get scroll(): number;
     get progress(): number;
+    get velocity(): number;
     get direction(): any;
     #private;
 }

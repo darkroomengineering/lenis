@@ -59,7 +59,7 @@ export default class Lenis {
     content = document.documentElement,
     smoothWheel = smooth ?? true,
     smoothTouch = false,
-    duration,
+    duration, // in seconds
     easing = (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
     lerp = duration ? null : 0.1,
     infinite = false,
@@ -68,6 +68,28 @@ export default class Lenis {
     touchMultiplier = 2,
     wheelMultiplier = mouseMultiplier ?? 1,
   } = {}) {
+    // warn about legacy options
+    if (direction) {
+      console.warn(
+        'Lenis: `direction` option is deprecated, use `orientation` instead'
+      )
+    }
+    if (gestureDirection) {
+      console.warn(
+        'Lenis: `gestureDirection` option is deprecated, use `gestureOrientation` instead'
+      )
+    }
+    if (mouseMultiplier) {
+      console.warn(
+        'Lenis: `mouseMultiplier` option is deprecated, use `wheelMultiplier` instead'
+      )
+    }
+    if (smooth) {
+      console.warn(
+        'Lenis: `smooth` option is deprecated, use `smoothWheel` instead'
+      )
+    }
+
     window.lenisVersion = version
 
     // if wrapper is html or body, fallback to window
@@ -95,7 +117,7 @@ export default class Lenis {
 
     this.#classElement.classList.add('lenis')
 
-    this.velocity = 0
+    this.#velocity = 0
     this.isStopped = false
     this.isSmooth = smoothWheel || smoothTouch
     this.isScrolling = false
@@ -189,8 +211,10 @@ export default class Lenis {
 
   #onScroll = () => {
     if (!this.isScrolling) {
+      const lastScroll = this.#animatedScroll
       this.#animatedScroll = this.#targetScroll = this.#actualScroll
-      this.velocity = 0
+      this.#velocity = 0
+      this.#direction = Math.sign(this.#animatedScroll - lastScroll)
       this.emit()
     }
   }
@@ -293,7 +317,8 @@ export default class Lenis {
         this.isScrolling = true
       },
       onUpdate: (value) => {
-        this.velocity = value - this.#animatedScroll
+        this.#velocity = value - this.#animatedScroll
+        this.#direction = Math.sign(this.#velocity)
 
         this.#animatedScroll = value
         this.#setScroll(value)
@@ -312,7 +337,7 @@ export default class Lenis {
         requestAnimationFrame(() => {
           this.isScrolling = false
         })
-        this.velocity = 0
+        this.#velocity = 0
         this.emit()
 
         onComplete?.()
@@ -355,13 +380,6 @@ export default class Lenis {
 
   get velocity() {
     return this.#velocity
-  }
-
-  set velocity(value) {
-    this.#velocity = value
-    if (value !== 0) {
-      this.#direction = Math.sign(value)
-    }
   }
 
   get direction() {
