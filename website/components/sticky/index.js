@@ -1,5 +1,5 @@
 import { useLayoutEffect } from '@studio-freight/hamo'
-import { gsap } from 'gsap-trial'
+import { gsap } from 'gsap'
 import { useEffect, useRef } from 'react'
 export function Sticky({
   children,

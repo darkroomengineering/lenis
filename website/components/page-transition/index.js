@@ -1,5 +1,5 @@
 import { useLayoutEffect } from '@studio-freight/hamo'
-import gsap from 'gsap-trial'
+import gsap from 'gsap'
 import { useStore } from 'lib/store'
 import { useRouter } from 'next/router'
 import { useEffect, useRef, useState } from 'react'
