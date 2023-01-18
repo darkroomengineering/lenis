@@ -31,6 +31,7 @@ specifiers:
   glslify-loader: ^2.0.0
   gsap: npm:@gsap/business@^3.11.4
   leva: ^0.9.34
+  nanoevents: ^7.0.1
   next: ^13.1.2
   next-pwa: 5.6.0
   next-seo: ^5.15.0
@@ -55,6 +56,7 @@ dependencies:
   glslify-loader: 2.0.0
   gsap: /@gsap/business/3.11.4
   leva: 0.9.34_biqbaboplfbrettd7655fr4n2y
+  nanoevents: 7.0.1
   next: 13.1.2_23e7ztf2chqi3ri6onem3l5mii
   raw-loader: 4.0.2_webpack@5.75.0
   react: 18.2.0
@@ -5107,6 +5109,11 @@ packages:
       sourcemap-codec: 1.4.8
       stacktrace-js: 2.0.2
       stylis: 4.1.3
+    dev: false
+
+  /nanoevents/7.0.1:
+    resolution: {integrity: sha512-o6lpKiCxLeijK4hgsqfR6CNToPyRU3keKyyI6uwuHRvpRTbZ0wXw51WRgyldVugZqoJfkGFrjrIenYH3bfEO3Q==}
+    engines: {node: ^14.0.0 || ^16.0.0 || >=18.0.0}
     dev: false
 
   /nanoid/3.3.4:

@@ -25,6 +25,7 @@
     "glslify-loader": "^2.0.0",
     "gsap": "npm:@gsap/business@^3.11.4",
     "leva": "^0.9.34",
+    "nanoevents": "^7.0.1",
     "next": "^13.1.2",
     "raw-loader": "^4.0.2",
     "react": "^18.2.0",
