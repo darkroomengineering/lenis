@@ -1,6 +1,6 @@
 {
   "name": "@studio-freight/lenis",
-  "version": "1.0.0-dev.3",
+  "version": "1.0.0-dev.4",
   "description": "Lenis is a smooth scroll library to normalize the scrolling experience across devices",
   "files": [
     "dist"

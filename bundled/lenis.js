@@ -61,7 +61,7 @@
     }
   });
 
-  var version = "1.0.0-dev.3";
+  var version = "1.0.0-dev.4";
 
   function clamp(min, input, max) {
     return Math.max(min, Math.min(input, max));
@@ -188,6 +188,7 @@
 
   var _wheelMultiplier = /*#__PURE__*/_classPrivateFieldLooseKey("wheelMultiplier");
   var _touchMultiplier = /*#__PURE__*/_classPrivateFieldLooseKey("touchMultiplier");
+  var _normalizeWheel = /*#__PURE__*/_classPrivateFieldLooseKey("normalizeWheel");
   var _touchStart = /*#__PURE__*/_classPrivateFieldLooseKey("touchStart");
   var _emitter$1 = /*#__PURE__*/_classPrivateFieldLooseKey("emitter");
   var _onTouchStart = /*#__PURE__*/_classPrivateFieldLooseKey("onTouchStart");
@@ -199,12 +200,18 @@
       var _ref$wheelMultiplier = _ref.wheelMultiplier,
         wheelMultiplier = _ref$wheelMultiplier === void 0 ? 1 : _ref$wheelMultiplier,
         _ref$touchMultiplier = _ref.touchMultiplier,
-        touchMultiplier = _ref$touchMultiplier === void 0 ? 2 : _ref$touchMultiplier;
+        touchMultiplier = _ref$touchMultiplier === void 0 ? 2 : _ref$touchMultiplier,
+        _ref$normalizeWheel = _ref.normalizeWheel,
+        normalizeWheel = _ref$normalizeWheel === void 0 ? false : _ref$normalizeWheel;
       Object.defineProperty(this, _wheelMultiplier, {
         writable: true,
         value: void 0
       });
       Object.defineProperty(this, _touchMultiplier, {
+        writable: true,
+        value: void 0
+      });
+      Object.defineProperty(this, _normalizeWheel, {
         writable: true,
         value: void 0
       });
@@ -249,6 +256,10 @@
         value: function value(event) {
           var deltaX = event.deltaX,
             deltaY = event.deltaY;
+          if (_classPrivateFieldLooseBase(_this, _normalizeWheel)[_normalizeWheel]) {
+            deltaX = clamp(-100, deltaX, 100);
+            deltaY = clamp(-100, deltaY, 100);
+          }
           deltaX *= _classPrivateFieldLooseBase(_this, _wheelMultiplier)[_wheelMultiplier];
           deltaY *= _classPrivateFieldLooseBase(_this, _wheelMultiplier)[_wheelMultiplier];
           _classPrivateFieldLooseBase(_this, _emitter$1)[_emitter$1].emit('scroll', {
@@ -262,6 +273,7 @@
       this.element = element;
       _classPrivateFieldLooseBase(this, _wheelMultiplier)[_wheelMultiplier] = wheelMultiplier;
       _classPrivateFieldLooseBase(this, _touchMultiplier)[_touchMultiplier] = touchMultiplier;
+      _classPrivateFieldLooseBase(this, _normalizeWheel)[_normalizeWheel] = normalizeWheel;
       _classPrivateFieldLooseBase(this, _touchStart)[_touchStart] = {
         x: null,
         y: null
@@ -307,15 +319,18 @@
   var _direction = /*#__PURE__*/_classPrivateFieldLooseKey("direction");
   var _animatedScroll = /*#__PURE__*/_classPrivateFieldLooseKey("animatedScroll");
   var _targetScroll = /*#__PURE__*/_classPrivateFieldLooseKey("targetScroll");
-  var _isScrolling = /*#__PURE__*/_classPrivateFieldLooseKey("isScrolling");
-  var _isStopped = /*#__PURE__*/_classPrivateFieldLooseKey("isStopped");
+  var _isScrolling = /*#__PURE__*/_classPrivateFieldLooseKey("_isScrolling");
+  var _isStopped = /*#__PURE__*/_classPrivateFieldLooseKey("_isStopped");
+  var _isSmooth = /*#__PURE__*/_classPrivateFieldLooseKey("_isSmooth");
   var _isLocked = /*#__PURE__*/_classPrivateFieldLooseKey("isLocked");
-  var _isSmooth = /*#__PURE__*/_classPrivateFieldLooseKey("isSmooth");
   var _setScroll = /*#__PURE__*/_classPrivateFieldLooseKey("setScroll");
   var _onVirtualScroll = /*#__PURE__*/_classPrivateFieldLooseKey("onVirtualScroll");
   var _onScroll = /*#__PURE__*/_classPrivateFieldLooseKey("onScroll");
   var _classElement = /*#__PURE__*/_classPrivateFieldLooseKey("classElement");
   var _actualScroll = /*#__PURE__*/_classPrivateFieldLooseKey("actualScroll");
+  var _isSmooth2 = /*#__PURE__*/_classPrivateFieldLooseKey("isSmooth");
+  var _isScrolling2 = /*#__PURE__*/_classPrivateFieldLooseKey("isScrolling");
+  var _isStopped2 = /*#__PURE__*/_classPrivateFieldLooseKey("isStopped");
   var Lenis = /*#__PURE__*/function () {
     // element with hidden overflow
     // wrapper direct child with scrollable content
@@ -324,6 +339,7 @@
     // value to reach
     // true when scroll is animated programatically
     // true if user should not be able to scroll - enable/disable programatically
+    // true if scroll shoul be animated
     // same as isStopped - enable/disable when scroll reaches target
 
     /**
@@ -349,6 +365,7 @@
      * @property {GestureOrientation} [gestureOrientation]
      * @property {number} [touchMultiplier]
      * @property {number} [wheelMultiplier]
+     * @property {number} [normalizeWheel]
      *
      * @param {LenisOptions}
      */
@@ -383,7 +400,21 @@
         _ref$touchMultiplier = _ref.touchMultiplier,
         touchMultiplier = _ref$touchMultiplier === void 0 ? 2 : _ref$touchMultiplier,
         _ref$wheelMultiplier = _ref.wheelMultiplier,
-        wheelMultiplier = _ref$wheelMultiplier === void 0 ? mouseMultiplier != null ? mouseMultiplier : 1 : _ref$wheelMultiplier;
+        wheelMultiplier = _ref$wheelMultiplier === void 0 ? mouseMultiplier != null ? mouseMultiplier : 1 : _ref$wheelMultiplier,
+        _ref$normalizeWheel = _ref.normalizeWheel,
+        normalizeWheel = _ref$normalizeWheel === void 0 ? true : _ref$normalizeWheel;
+      Object.defineProperty(this, _isStopped2, {
+        get: void 0,
+        set: _set_isStopped
+      });
+      Object.defineProperty(this, _isScrolling2, {
+        get: void 0,
+        set: _set_isScrolling
+      });
+      Object.defineProperty(this, _isSmooth2, {
+        get: void 0,
+        set: _set_isSmooth
+      });
       Object.defineProperty(this, _actualScroll, {
         get: _get_actualScroll,
         set: void 0
@@ -447,11 +478,11 @@
         writable: true,
         value: void 0
       });
-      Object.defineProperty(this, _isLocked, {
+      Object.defineProperty(this, _isSmooth, {
         writable: true,
         value: void 0
       });
-      Object.defineProperty(this, _isSmooth, {
+      Object.defineProperty(this, _isLocked, {
         writable: true,
         value: void 0
       });
@@ -476,7 +507,7 @@
             event.preventDefault();
             return;
           }
-          _this.isSmooth = _classPrivateFieldLooseBase(_this, _options)[_options].smoothTouch && type === 'touch' || _classPrivateFieldLooseBase(_this, _options)[_options].smoothWheel && type === 'wheel';
+          _classPrivateFieldLooseBase(_this, _isSmooth2)[_isSmooth2] = _classPrivateFieldLooseBase(_this, _options)[_options].smoothTouch && type === 'touch' || _classPrivateFieldLooseBase(_this, _options)[_options].smoothWheel && type === 'wheel';
           if (!_this.isSmooth) return;
           event.preventDefault();
           var delta = deltaY;
@@ -531,15 +562,16 @@
         gestureOrientation: gestureOrientation,
         orientation: orientation,
         touchMultiplier: touchMultiplier,
-        wheelMultiplier: wheelMultiplier
+        wheelMultiplier: wheelMultiplier,
+        normalizeWheel: normalizeWheel
       };
       _classPrivateFieldLooseBase(this, _wrapper)[_wrapper] = new ObservedElement(wrapper);
       _classPrivateFieldLooseBase(this, _content)[_content] = new ObservedElement(content);
       _classPrivateFieldLooseBase(this, _classElement)[_classElement].classList.add('lenis');
       _classPrivateFieldLooseBase(this, _velocity)[_velocity] = 0;
-      this.isStopped = false;
-      this.isSmooth = smoothWheel || smoothTouch;
-      this.isScrolling = false;
+      _classPrivateFieldLooseBase(this, _isStopped2)[_isStopped2] = false;
+      _classPrivateFieldLooseBase(this, _isSmooth2)[_isSmooth2] = smoothWheel || smoothTouch;
+      _classPrivateFieldLooseBase(this, _isScrolling2)[_isScrolling2] = false;
       _classPrivateFieldLooseBase(this, _targetScroll)[_targetScroll] = _classPrivateFieldLooseBase(this, _animatedScroll)[_animatedScroll] = _classPrivateFieldLooseBase(this, _actualScroll)[_actualScroll];
       _classPrivateFieldLooseBase(this, _animate)[_animate] = new Animate();
       _classPrivateFieldLooseBase(this, _emitter)[_emitter] = createNanoEvents();
@@ -548,7 +580,8 @@
       });
       _classPrivateFieldLooseBase(this, _virtualScroll)[_virtualScroll] = new VirtualScroll(wrapper, {
         touchMultiplier: touchMultiplier,
-        wheelMultiplier: wheelMultiplier
+        wheelMultiplier: wheelMultiplier,
+        normalizeWheel: normalizeWheel
       });
       _classPrivateFieldLooseBase(this, _virtualScroll)[_virtualScroll].on('scroll', _classPrivateFieldLooseBase(this, _onVirtualScroll)[_onVirtualScroll]);
     }
@@ -567,10 +600,10 @@
       _classPrivateFieldLooseBase(this, _emitter)[_emitter].emit('scroll', this);
     };
     _proto.start = function start() {
-      this.isStopped = false;
+      _classPrivateFieldLooseBase(this, _isStopped2)[_isStopped2] = false;
     };
     _proto.stop = function stop() {
-      this.isStopped = true;
+      _classPrivateFieldLooseBase(this, _isStopped2)[_isStopped2] = true;
     };
     _proto.raf = function raf(time) {
       var deltaTime = time - (_classPrivateFieldLooseBase(this, _time)[_time] || time);
@@ -654,7 +687,7 @@
         onStart: function onStart() {
           // user is scrolling
           if (lock) _classPrivateFieldLooseBase(_this2, _isLocked)[_isLocked] = true;
-          _this2.isScrolling = true;
+          _classPrivateFieldLooseBase(_this2, _isScrolling2)[_isScrolling2] = true;
         },
         onUpdate: function onUpdate(value) {
           _classPrivateFieldLooseBase(_this2, _velocity)[_velocity] = value - _classPrivateFieldLooseBase(_this2, _animatedScroll)[_animatedScroll];
@@ -672,7 +705,7 @@
           // user is not scrolling anymore
           if (lock) _classPrivateFieldLooseBase(_this2, _isLocked)[_isLocked] = false;
           requestAnimationFrame(function () {
-            _this2.isScrolling = false;
+            _classPrivateFieldLooseBase(_this2, _isScrolling2)[_isScrolling2] = false;
           });
           _classPrivateFieldLooseBase(_this2, _velocity)[_velocity] = 0;
           _this2.emit();
@@ -719,28 +752,16 @@
       key: "isSmooth",
       get: function get() {
         return _classPrivateFieldLooseBase(this, _isSmooth)[_isSmooth];
-      },
-      set: function set(value) {
-        _classPrivateFieldLooseBase(this, _isSmooth)[_isSmooth] = value;
-        _classPrivateFieldLooseBase(this, _classElement)[_classElement].classList.toggle('lenis-smooth', value);
       }
     }, {
       key: "isScrolling",
       get: function get() {
         return _classPrivateFieldLooseBase(this, _isScrolling)[_isScrolling];
-      },
-      set: function set(value) {
-        _classPrivateFieldLooseBase(this, _isScrolling)[_isScrolling] = value;
-        _classPrivateFieldLooseBase(this, _classElement)[_classElement].classList.toggle('lenis-scrolling', value);
       }
     }, {
       key: "isStopped",
       get: function get() {
         return _classPrivateFieldLooseBase(this, _isStopped)[_isStopped];
-      },
-      set: function set(value) {
-        _classPrivateFieldLooseBase(this, _isStopped)[_isStopped] = value;
-        _classPrivateFieldLooseBase(this, _classElement)[_classElement].classList.toggle('lenis-stopped', value);
       }
     }]);
     return Lenis;
@@ -763,6 +784,24 @@
   function _get_actualScroll() {
     // value browser takes into account
     return _classPrivateFieldLooseBase(this, _classElement)[_classElement].scrollTop;
+  }
+  function _set_isSmooth(value) {
+    if (_classPrivateFieldLooseBase(this, _isSmooth)[_isSmooth] !== value) {
+      _classPrivateFieldLooseBase(this, _classElement)[_classElement].classList.toggle('lenis-smooth', value);
+    }
+    _classPrivateFieldLooseBase(this, _isSmooth)[_isSmooth] = value;
+  }
+  function _set_isScrolling(value) {
+    if (_classPrivateFieldLooseBase(this, _isScrolling)[_isScrolling] !== value) {
+      _classPrivateFieldLooseBase(this, _classElement)[_classElement].classList.toggle('lenis-scrolling', value);
+    }
+    _classPrivateFieldLooseBase(this, _isScrolling)[_isScrolling] = value;
+  }
+  function _set_isStopped(value) {
+    if (_classPrivateFieldLooseBase(this, _isStopped)[_isStopped] !== value) {
+      _classPrivateFieldLooseBase(this, _classElement)[_classElement].classList.toggle('lenis-stopped', value);
+    }
+    _classPrivateFieldLooseBase(this, _isStopped)[_isStopped] = value;
   }
 
   return Lenis;
