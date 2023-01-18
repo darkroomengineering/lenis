@@ -17,10 +17,10 @@ export default class Lenis {
   #direction
   #animatedScroll // value used for animation
   #targetScroll // value to reach
-  #isScrolling // true when scroll is animated programatically
-  #isStopped // true if user should not be able to scroll - enable/disable programatically
+  #_isScrolling // true when scroll is animated programatically
+  #_isStopped // true if user should not be able to scroll - enable/disable programatically
+  #_isSmooth // true if scroll shoul be animated
   #isLocked // same as isStopped - enable/disable when scroll reaches target
-  #isSmooth
 
   /**
    * @typedef {(t: number) => number} EasingFunction
@@ -45,6 +45,7 @@ export default class Lenis {
    * @property {GestureOrientation} [gestureOrientation]
    * @property {number} [touchMultiplier]
    * @property {number} [wheelMultiplier]
+   * @property {number} [normalizeWheel]
    *
    * @param {LenisOptions}
    */
@@ -67,6 +68,7 @@ export default class Lenis {
     gestureOrientation = gestureDirection ?? 'vertical', // vertical, horizontal, both
     touchMultiplier = 2,
     wheelMultiplier = mouseMultiplier ?? 1,
+    normalizeWheel = true,
   } = {}) {
     // warn about legacy options
     if (direction) {
@@ -110,6 +112,7 @@ export default class Lenis {
       orientation,
       touchMultiplier,
       wheelMultiplier,
+      normalizeWheel,
     }
 
     this.#wrapper = new ObservedElement(wrapper)
@@ -118,9 +121,9 @@ export default class Lenis {
     this.#classElement.classList.add('lenis')
 
     this.#velocity = 0
-    this.isStopped = false
-    this.isSmooth = smoothWheel || smoothTouch
-    this.isScrolling = false
+    this.#isStopped = false
+    this.#isSmooth = smoothWheel || smoothTouch
+    this.#isScrolling = false
     this.#targetScroll = this.#animatedScroll = this.#actualScroll
     this.#animate = new Animate()
     this.#emitter = createNanoEvents()
@@ -132,6 +135,7 @@ export default class Lenis {
     this.#virtualScroll = new VirtualScroll(wrapper, {
       touchMultiplier,
       wheelMultiplier,
+      normalizeWheel,
     })
     this.#virtualScroll.on('scroll', this.#onVirtualScroll)
   }
@@ -187,7 +191,7 @@ export default class Lenis {
       return
     }
 
-    this.isSmooth =
+    this.#isSmooth =
       (this.#options.smoothTouch && type === 'touch') ||
       (this.#options.smoothWheel && type === 'wheel')
 
@@ -220,11 +224,11 @@ export default class Lenis {
   }
 
   start() {
-    this.isStopped = false
+    this.#isStopped = false
   }
 
   stop() {
-    this.isStopped = true
+    this.#isStopped = true
   }
 
   raf(time) {
@@ -314,7 +318,7 @@ export default class Lenis {
       onStart: () => {
         // user is scrolling
         if (lock) this.#isLocked = true
-        this.isScrolling = true
+        this.#isScrolling = true
       },
       onUpdate: (value) => {
         this.#velocity = value - this.#animatedScroll
@@ -335,7 +339,7 @@ export default class Lenis {
         // user is not scrolling anymore
         if (lock) this.#isLocked = false
         requestAnimationFrame(() => {
-          this.isScrolling = false
+          this.#isScrolling = false
         })
         this.#velocity = 0
         this.emit()
@@ -387,29 +391,35 @@ export default class Lenis {
   }
 
   get isSmooth() {
-    return this.#isSmooth
+    return this.#_isSmooth
   }
 
-  set isSmooth(value) {
-    this.#isSmooth = value
-    this.#classElement.classList.toggle('lenis-smooth', value)
+  set #isSmooth(value) {
+    if (this.#_isSmooth !== value) {
+      this.#classElement.classList.toggle('lenis-smooth', value)
+    }
+    this.#_isSmooth = value
   }
 
   get isScrolling() {
-    return this.#isScrolling
+    return this.#_isScrolling
   }
 
-  set isScrolling(value) {
-    this.#isScrolling = value
-    this.#classElement.classList.toggle('lenis-scrolling', value)
+  set #isScrolling(value) {
+    if (this.#_isScrolling !== value) {
+      this.#classElement.classList.toggle('lenis-scrolling', value)
+    }
+    this.#_isScrolling = value
   }
 
   get isStopped() {
-    return this.#isStopped
+    return this.#_isStopped
   }
 
-  set isStopped(value) {
-    this.#isStopped = value
-    this.#classElement.classList.toggle('lenis-stopped', value)
+  set #isStopped(value) {
+    if (this.#_isStopped !== value) {
+      this.#classElement.classList.toggle('lenis-stopped', value)
+    }
+    this.#_isStopped = value
   }
 }

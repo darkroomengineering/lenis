@@ -22,10 +22,11 @@ export default class Lenis {
      * @property {GestureOrientation} [gestureOrientation]
      * @property {number} [touchMultiplier]
      * @property {number} [wheelMultiplier]
+     * @property {number} [normalizeWheel]
      *
      * @param {LenisOptions}
      */
-    constructor({ direction, gestureDirection, mouseMultiplier, smooth, wrapper, content, smoothWheel, smoothTouch, duration, easing, lerp, infinite, orientation, gestureOrientation, touchMultiplier, wheelMultiplier, }?: {
+    constructor({ direction, gestureDirection, mouseMultiplier, smooth, wrapper, content, smoothWheel, smoothTouch, duration, easing, lerp, infinite, orientation, gestureOrientation, touchMultiplier, wheelMultiplier, normalizeWheel, }?: {
         direction?: "vertical" | "horizontal";
         gestureDirection?: "vertical" | "horizontal" | "both";
         mouseMultiplier?: number;
@@ -42,13 +43,8 @@ export default class Lenis {
         gestureOrientation?: "vertical" | "horizontal" | "both";
         touchMultiplier?: number;
         wheelMultiplier?: number;
+        normalizeWheel?: number;
     });
-    set isStopped(arg: any);
-    get isStopped(): any;
-    set isSmooth(arg: any);
-    get isSmooth(): any;
-    set isScrolling(arg: any);
-    get isScrolling(): any;
     destroy(): void;
     on(event: any, callback: any): import("nanoevents").Unsubscribe;
     emit(): void;
@@ -77,6 +73,7 @@ export default class Lenis {
         orientation: "vertical" | "horizontal";
         touchMultiplier: number;
         wheelMultiplier: number;
+        normalizeWheel: number;
     };
     get limit(): number;
     get isHorizontal(): boolean;
@@ -84,5 +81,8 @@ export default class Lenis {
     get progress(): number;
     get velocity(): number;
     get direction(): any;
+    get isSmooth(): any;
+    get isScrolling(): any;
+    get isStopped(): any;
     #private;
 }

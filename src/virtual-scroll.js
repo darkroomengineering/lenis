@@ -1,15 +1,21 @@
 import { createNanoEvents } from 'nanoevents'
+import { clamp } from './maths'
 
 export class VirtualScroll {
   #wheelMultiplier
   #touchMultiplier
+  #normalizeWheel
   #touchStart
   #emitter
 
-  constructor(element, { wheelMultiplier = 1, touchMultiplier = 2 }) {
+  constructor(
+    element,
+    { wheelMultiplier = 1, touchMultiplier = 2, normalizeWheel = false }
+  ) {
     this.element = element
     this.#wheelMultiplier = wheelMultiplier
     this.#touchMultiplier = touchMultiplier
+    this.#normalizeWheel = normalizeWheel
 
     this.#touchStart = {
       x: null,
@@ -75,6 +81,12 @@ export class VirtualScroll {
 
   #onWheel = (event) => {
     let { deltaX, deltaY } = event
+
+    if (this.#normalizeWheel) {
+      deltaX = clamp(-100, deltaX, 100)
+      deltaY = clamp(-100, deltaY, 100)
+    }
+
     deltaX *= this.#wheelMultiplier
     deltaY *= this.#wheelMultiplier
 
