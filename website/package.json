@@ -23,7 +23,7 @@
     "@studio-freight/tempus": "^0.0.30",
     "clsx": "^1.2.1",
     "glslify-loader": "^2.0.0",
-    "gsap": "npm:@gsap/business@^3.11.4",
+    "gsap": "npm:gsap-trial@^3.11.4",
     "leva": "^0.9.34",
     "nanoevents": "^7.0.1",
     "next": "^13.1.2",

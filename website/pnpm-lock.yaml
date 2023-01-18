@@ -29,7 +29,7 @@ specifiers:
   eslint-import-resolver-alias: ^1.1.2
   eslint-plugin-import: ^2.27.5
   glslify-loader: ^2.0.0
-  gsap: npm:@gsap/business@^3.11.4
+  gsap: npm:gsap-trial@^3.11.4
   leva: ^0.9.34
   nanoevents: ^7.0.1
   next: ^13.1.2
@@ -54,7 +54,7 @@ dependencies:
   '@studio-freight/tempus': 0.0.30
   clsx: 1.2.1
   glslify-loader: 2.0.0
-  gsap: /@gsap/business/3.11.4
+  gsap: /gsap-trial/3.11.4
   leva: 0.9.34_biqbaboplfbrettd7655fr4n2y
   nanoevents: 7.0.1
   next: 13.1.2_23e7ztf2chqi3ri6onem3l5mii
@@ -1399,10 +1399,6 @@ packages:
     transitivePeerDependencies:
       - supports-color
     dev: true
-
-  /@gsap/business/3.11.4:
-    resolution: {integrity: sha512-+rAtCKKYO+EXUSSjQdkk5EEyZEC+FKJGinwTzQCpMfyCZN/n2ogtSH2HAP80S4gRGhCjBJeNxwyHrnUvHNDlyA==}
-    dev: false
 
   /@humanwhocodes/config-array/0.11.8:
     resolution: {integrity: sha512-UybHIJzJnR5Qc/MsD9Kr+RpO2h+/P1GhOwdiLPXK5TWk5sgTdu88bTD9UP+CKbPPh5Rni1u0GjAdYQLemG8g+g==}
@@ -4339,6 +4335,10 @@ packages:
   /grapheme-splitter/1.0.4:
     resolution: {integrity: sha512-bzh50DW9kTPM00T8y4o8vQg89Di9oLJVLW/KaOGIXJWP/iqCN6WKYkbNOF04vFLJhwcpYUh9ydh/+5vpOqV4YQ==}
     dev: true
+
+  /gsap-trial/3.11.4:
+    resolution: {integrity: sha512-suiNsU6qQs6E1nDDMJb7VJNYXVzijMQE2bFCC4cwQAx+ycfM5jU1tp3R89FNQbz36BbMyc71N8jJOgGK71XJlA==}
+    dev: false
 
   /gzip-size/6.0.0:
     resolution: {integrity: sha512-ax7ZYomf6jqPTQ4+XCpUGyXKHk5WweS+e05MBO4/y3WJ5RkmPXNKvX+bx1behVILVwr6JSQvZAku021CHPXG3Q==}
