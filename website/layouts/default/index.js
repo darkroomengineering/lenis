@@ -8,7 +8,7 @@ import { useStore } from 'lib/store'
 import dynamic from 'next/dynamic'
 import { useRouter } from 'next/router'
 import { useState } from 'react'
-import Lenis from '../../../dist/lenis.mjs'
+import Lenis from '../../../bundled/lenis.js'
 import s from './layout.module.scss'
 
 const Cursor = dynamic(
