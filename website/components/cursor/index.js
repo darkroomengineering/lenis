@@ -1,5 +1,5 @@
 import cn from 'clsx'
-import gsap from 'gsap'
+import gsap from 'gsap-trial'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import s from './cursor.module.scss'
 

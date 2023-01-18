@@ -1,9 +1,12 @@
 import { useMediaQuery, useRect } from '@studio-freight/hamo'
 import cn from 'clsx'
-import { SplitText } from 'gsap/dist/SplitText'
+import { gsap } from 'gsap-trial'
+import { SplitText } from 'gsap-trial/dist/SplitText'
 import { useEffect, useRef, useState } from 'react'
 import { useIntersection, useWindowSize } from 'react-use'
 import s from './appear-title.module.scss'
+
+gsap.registerPlugin(SplitText)
 
 export function AppearTitle({ children, visible = true }) {
   const el = useRef()

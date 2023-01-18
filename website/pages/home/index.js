@@ -1,6 +1,6 @@
 import { useRect } from '@studio-freight/hamo'
 import cn from 'clsx'
-import { AppearTitle } from 'components/appear-title'
+
 import { Button } from 'components/button'
 import { Card } from 'components/card'
 import { FeatureCards } from 'components/feature-cards'
@@ -23,6 +23,11 @@ import s from './home.module.scss'
 
 const SFDR = dynamic(() => import('icons/sfdr.svg'), { ssr: false })
 const GitHub = dynamic(() => import('icons/github.svg'), { ssr: false })
+
+const AppearTitle = dynamic(
+  () => import('components/appear-title').then((mod) => mod.AppearTitle),
+  { ssr: false }
+)
 
 const WebGL = dynamic(
   () => import('components/webgl').then(({ WebGL }) => WebGL),
