@@ -3,7 +3,7 @@ import cn from 'clsx'
 import { Link } from 'components/link'
 import { useStore } from 'lib/store'
 import { useRouter } from 'next/router'
-import shallow from 'zustand/shallow'
+import { shallow } from 'zustand/shallow'
 import s from './navigation.module.scss'
 
 export const Navigation = () => {

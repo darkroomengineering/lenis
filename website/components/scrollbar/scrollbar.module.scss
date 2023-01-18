@@ -10,6 +10,10 @@
   width: 100%;
   padding: 0;
 
+  @media (hover: none) {
+    display: none;
+  }
+
   .inner {
     width: 100%;
     height: desktop-vw(4px);

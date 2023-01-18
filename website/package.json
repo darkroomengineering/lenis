@@ -17,30 +17,20 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@radix-ui/react-accordion": "^1.1.0",
-    "@radix-ui/react-select": "^1.2.0",
     "@react-three/drei": "^9.53.0",
     "@react-three/fiber": "^8.10.0",
     "@studio-freight/hamo": "^0.5.2",
     "@studio-freight/tempus": "^0.0.30",
     "clsx": "^1.2.1",
-    "embla-carousel": "7.0.6",
-    "embla-carousel-autoplay": "7.0.6",
-    "embla-carousel-react": "7.0.6",
     "glslify-loader": "^2.0.0",
     "gsap-trial": "^3.11.4",
     "leva": "^0.9.34",
-    "lottie-web": "^5.10.1",
-    "nanoevents": "^7.0.1",
-    "nanoid": "^4.0.0",
     "next": "^13.1.2",
     "raw-loader": "^4.0.2",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-use": "^17.4.0",
-    "react-use-measure": "^2.1.1",
     "three": "^0.148.0",
-    "use-dark-mode": "^2.3.1",
     "zustand": "4.3.2"
   },
   "devDependencies": {
@@ -50,6 +40,7 @@
     "@svgr/webpack": "^6.5.1",
     "critters": "^0.0.16",
     "cross-env": "^7.0.3",
+    "duplicate-package-checker-webpack-plugin": "^3.0.0",
     "eslint": "8.32.0",
     "eslint-config-next": "13.1.2",
     "eslint-config-prettier": "^8.6.0",
@@ -69,10 +60,10 @@
       "@radix-ui/react-primitive": "0.1.4",
       "extend-shallow": "3.0.2",
       "is-extendable": "1.0.1",
-      "throttle-debounce": "5.0.0",
-      "scheduler": "0.23.0",
       "react-is": "18.2.0",
-      "zustand": "4.1.4"
+      "scheduler": "0.23.0",
+      "throttle-debounce": "5.0.0",
+      "zustand": "4.3.2"
     }
   }
 }

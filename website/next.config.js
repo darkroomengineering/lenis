@@ -8,6 +8,8 @@ const withPWA = require('next-pwa')({
   buildExcludes: [/middleware-manifest.json$/],
   maximumFileSizeToCacheInBytes: 4000000,
 })
+const DuplicatePackageCheckerPlugin = require('duplicate-package-checker-webpack-plugin')
+
 const withBundleAnalyzer = require('@next/bundle-analyzer')({
   enabled: process.env.ANALYZE === 'true',
 })
@@ -22,7 +24,6 @@ const nextConfig = {
   compiler: {
     removeConsole: process.env.NODE_ENV !== 'development',
   },
-  swcMinify: true,
   images: {
     // ADD in case you need to import SVGs in next/image component
     // dangerouslyAllowSVG: true,
@@ -99,6 +100,8 @@ const nextConfig = {
       test: /\.(glsl|vs|fs|vert|frag)$/,
       use: ['raw-loader', 'glslify-loader'],
     })
+
+    config.plugins.push(new DuplicatePackageCheckerPlugin())
 
     return config
   },

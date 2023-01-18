@@ -10,6 +10,10 @@
   pointer-events: none;
   overflow: hidden;
 
+  @media (hover: none) {
+    display: none;
+  }
+
   .cursor {
     position: absolute;
     transform: translate(-50%, -50%);
