@@ -75,7 +75,7 @@
     }
   });
 
-  var version = "1.0.0-dev.4";
+  var version = "1.0.0-dev.5";
 
   function clamp(min, input, max) {
     return Math.max(min, Math.min(input, max));
@@ -522,7 +522,11 @@
             return;
           }
           _classPrivateFieldLooseBase(_this, _isSmooth2)[_isSmooth2] = _classPrivateFieldLooseBase(_this, _options)[_options].smoothTouch && type === 'touch' || _classPrivateFieldLooseBase(_this, _options)[_options].smoothWheel && type === 'wheel';
-          if (!_this.isSmooth) return;
+          if (!_this.isSmooth) {
+            _classPrivateFieldLooseBase(_this, _isScrolling2)[_isScrolling2] = false;
+            _classPrivateFieldLooseBase(_this, _animate)[_animate].stop();
+            return;
+          }
           event.preventDefault();
           var delta = deltaY;
           if (_classPrivateFieldLooseBase(_this, _options)[_options].gestureOrientation === 'both') {
@@ -530,6 +534,7 @@
           } else if (_classPrivateFieldLooseBase(_this, _options)[_options].gestureOrientation === 'horizontal') {
             delta = deltaX;
           }
+          console.log('scrollTo', _classPrivateFieldLooseBase(_this, _targetScroll)[_targetScroll] + delta);
           _this.scrollTo(_classPrivateFieldLooseBase(_this, _targetScroll)[_targetScroll] + delta, {}, false);
         }
       });
@@ -618,6 +623,7 @@
     };
     _proto.stop = function stop() {
       _classPrivateFieldLooseBase(this, _isStopped2)[_isStopped2] = true;
+      _classPrivateFieldLooseBase(this, _animate)[_animate].stop();
     };
     _proto.raf = function raf(time) {
       var deltaTime = time - (_classPrivateFieldLooseBase(this, _time)[_time] || time);
@@ -735,7 +741,7 @@
     }, {
       key: "limit",
       get: function get() {
-        return this.isHorizontal ? _classPrivateFieldLooseBase(this, _content)[_content].width - _classPrivateFieldLooseBase(this, _wrapper)[_wrapper].width : _classPrivateFieldLooseBase(this, _content)[_content].height - _classPrivateFieldLooseBase(this, _wrapper)[_wrapper].height;
+        return Math.round(this.isHorizontal ? _classPrivateFieldLooseBase(this, _content)[_content].width - _classPrivateFieldLooseBase(this, _wrapper)[_wrapper].width : _classPrivateFieldLooseBase(this, _content)[_content].height - _classPrivateFieldLooseBase(this, _wrapper)[_wrapper].height);
       }
     }, {
       key: "isHorizontal",
@@ -745,7 +751,7 @@
     }, {
       key: "scroll",
       get: function get() {
-        return clampedModulo(_classPrivateFieldLooseBase(this, _animatedScroll)[_animatedScroll], this.limit);
+        return _classPrivateFieldLooseBase(this, _options)[_options].infinite ? clampedModulo(_classPrivateFieldLooseBase(this, _animatedScroll)[_animatedScroll], this.limit) : _classPrivateFieldLooseBase(this, _animatedScroll)[_animatedScroll];
       }
     }, {
       key: "progress",
@@ -782,6 +788,7 @@
   }();
   function _setScroll2(scroll) {
     if (_classPrivateFieldLooseBase(this, _options)[_options].infinite) {
+      // modulo scroll value
       scroll = this.scroll;
     }
 
