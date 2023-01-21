@@ -16,20 +16,19 @@
     "default": "./dist/lenis.modern.mjs"
   },
   "devDependencies": {
-    "@size-limit/preset-small-lib": "^8.1.0",
-    "husky": "^8.0.2",
-    "lint-staged": "^13.0.3",
+    "@size-limit/preset-small-lib": "^8.1.2",
+    "husky": "^8.0.3",
+    "lint-staged": "^13.1.0",
     "microbundle": "^0.15.1",
     "path": "^0.12.7",
-    "prettier": "^2.8.0",
-    "rimraf": "^3.0.2",
-    "size-limit": "^8.1.0",
+    "prettier": "^2.8.3",
+    "rimraf": "^4.1.1",
+    "size-limit": "^8.1.2",
     "stats.js": "^0.17.0",
-    "typescript": "^4.9.3",
-    "vite": "^3.2.4"
+    "typescript": "^4.9.4",
+    "vite": "^4.0.4"
   },
   "dependencies": {
-    "@theatre/core": "^0.5.1",
     "nanoevents": "^7.0.1",
     "npm-run-all": "^4.1.5",
     "tiny-emitter": "^2.1.0",

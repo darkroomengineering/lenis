@@ -211,6 +211,7 @@ export default class Lenis {
       delta = deltaX
     }
 
+    console.log('scrollTo', this.#targetScroll + delta)
     this.scrollTo(this.#targetScroll + delta, {}, false)
   }
 

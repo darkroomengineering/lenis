@@ -643,7 +643,8 @@ define(['exports'], function (t) {
         this._ &&
           (function (t, { blocked: e } = {}) {
             const s = indexedDB.deleteDatabase(t)
-            e && s.addEventListener('blocked', () => e()), k(s).then(() => {})
+            e && s.addEventListener('blocked', (t) => e(t.oldVersion, t)),
+              k(s).then(() => {})
           })(this._)
     }
     async setTimestamp(t, e) {
@@ -697,13 +698,25 @@ define(['exports'], function (t) {
             return (
               n &&
                 a.addEventListener('upgradeneeded', (t) => {
-                  n(k(a.result), t.oldVersion, t.newVersion, k(a.transaction))
+                  n(
+                    k(a.result),
+                    t.oldVersion,
+                    t.newVersion,
+                    k(a.transaction),
+                    t
+                  )
                 }),
-              s && a.addEventListener('blocked', () => s()),
+              s &&
+                a.addEventListener('blocked', (t) =>
+                  s(t.oldVersion, t.newVersion, t)
+                ),
               o
                 .then((t) => {
                   i && t.addEventListener('close', () => i()),
-                    r && t.addEventListener('versionchange', () => r())
+                    r &&
+                      t.addEventListener('versionchange', (t) =>
+                        r(t.oldVersion, t.newVersion, t)
+                      )
                 })
                 .catch(() => {}),
               o

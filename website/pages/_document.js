@@ -50,8 +50,6 @@ export default function Document() {
         />
       </Head>
       <body>
-        {/* // https://github.com/donavon/use-dark-mode */}
-        {/* <script src="./noflash.js" /> */}
         <Main />
         <NextScript />
       </body>

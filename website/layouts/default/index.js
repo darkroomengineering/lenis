@@ -1,20 +1,25 @@
-import {
-  useFrame,
-  useIsTouchDevice,
-  useLayoutEffect,
-} from '@studio-freight/hamo'
+import { useFrame, useLayoutEffect } from '@studio-freight/hamo'
 import cn from 'clsx'
-import { Cursor } from 'components/cursor'
 import { CustomHead } from 'components/custom-head'
 import { Footer } from 'components/footer'
 import { Intro } from 'components/intro'
-import { PageTransition } from 'components/page-transition'
 import { Scrollbar } from 'components/scrollbar'
 import { useStore } from 'lib/store'
+import dynamic from 'next/dynamic'
 import { useRouter } from 'next/router'
 import { useState } from 'react'
-import Lenis from '../../../dist/lenis.mjs'
+import Lenis from '../../../bundled/lenis.js'
 import s from './layout.module.scss'
+
+const Cursor = dynamic(
+  () => import('components/cursor').then((mod) => mod.Cursor),
+  { ssr: false }
+)
+
+const PageTransition = dynamic(
+  () => import('components/page-transition').then((mod) => mod.PageTransition),
+  { ssr: false }
+)
 
 export function Layout({
   seo = { title: '', description: '', image: '', keywords: '' },
@@ -22,27 +27,12 @@ export function Layout({
   theme = 'light',
   className,
 }) {
-  const isTouchDevice = useIsTouchDevice()
   const [lenis, setLenis] = useStore((state) => [state.lenis, state.setLenis])
   const router = useRouter()
 
   useLayoutEffect(() => {
     window.scrollTo(0, 0)
-    const lenis = new Lenis({
-      // lerp: null,
-      // duration: 10,
-      // smoothTouch: true,
-      // gestureDirection: 'v0',
-      // duration: 1.2,
-      // easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-      // direction: 'vertical',
-      // gestureDirection: 'vertical',
-      // smooth: true,
-      // mouseMultiplier: 1,
-      // smoothTouch: false,
-      // touchMultiplier: 2,
-      // infinite: false,
-    })
+    const lenis = new Lenis()
     window.lenis = lenis
     setLenis(lenis)
 
@@ -107,8 +97,8 @@ export function Layout({
       <div className={cn(`theme-${theme}`, s.layout, className)}>
         <PageTransition />
         <Intro />
-        {isTouchDevice === false && <Cursor />}
-        {isTouchDevice === false && <Scrollbar />}
+        <Cursor />
+        <Scrollbar />
         <main className={s.main}>{children}</main>
         <Footer />
       </div>

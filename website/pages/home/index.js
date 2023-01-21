@@ -1,16 +1,13 @@
-import { useRect } from '@studio-freight/hamo'
+import { useLayoutEffect, useRect } from '@studio-freight/hamo'
 import cn from 'clsx'
-import { AppearTitle } from 'components/appear-title'
+
 import { Button } from 'components/button'
 import { Card } from 'components/card'
-import { FeatureCards } from 'components/feature-cards'
-import { HorizontalSlides } from 'components/horizontal-slides'
 import { Title } from 'components/intro'
 import { Link } from 'components/link'
 import { ListItem } from 'components/list-item'
-import { Parallax } from 'components/parallax'
+
 import { projects } from 'content/projects'
-// import { WebGL } from 'components/webgl'
 import { useScroll } from 'hooks/use-scroll'
 import { Layout } from 'layouts/default'
 import { button, useControls } from 'leva'
@@ -23,6 +20,27 @@ import s from './home.module.scss'
 
 const SFDR = dynamic(() => import('icons/sfdr.svg'), { ssr: false })
 const GitHub = dynamic(() => import('icons/github.svg'), { ssr: false })
+
+const Parallax = dynamic(
+  () => import('components/parallax').then((mod) => mod.Parallax),
+  { ssr: false }
+)
+
+const AppearTitle = dynamic(
+  () => import('components/appear-title').then((mod) => mod.AppearTitle),
+  { ssr: false }
+)
+
+const HorizontalSlides = dynamic(
+  () =>
+    import('components/horizontal-slides').then((mod) => mod.HorizontalSlides),
+  { ssr: false }
+)
+
+const FeatureCards = dynamic(
+  () => import('components/feature-cards').then((mod) => mod.FeatureCards),
+  { ssr: false }
+)
 
 const WebGL = dynamic(
   () => import('components/webgl').then(({ WebGL }) => WebGL),
@@ -104,11 +122,11 @@ export default function Home() {
 
   const addThreshold = useStore(({ addThreshold }) => addThreshold)
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     addThreshold({ id: 'top', value: 0 })
   }, [])
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     const top = whyRect.top - windowHeight / 2
     addThreshold({ id: 'why-start', value: top })
     addThreshold({
@@ -117,7 +135,7 @@ export default function Home() {
     })
   }, [whyRect])
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     const top = cardsRect.top - windowHeight / 2
     addThreshold({ id: 'cards-start', value: top })
     addThreshold({ id: 'cards-end', value: top + cardsRect.height })
@@ -127,22 +145,22 @@ export default function Home() {
     })
   }, [cardsRect])
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     const top = whiteRect.top - windowHeight
     addThreshold({ id: 'light-start', value: top })
   }, [whiteRect])
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     const top = featuresRect.top
     addThreshold({ id: 'features', value: top })
   }, [featuresRect])
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     const top = inuseRect.top
     addThreshold({ id: 'in-use', value: top })
   }, [inuseRect])
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     const top = lenis?.limit
     addThreshold({ id: 'end', value: top })
   }, [lenis?.limit])
