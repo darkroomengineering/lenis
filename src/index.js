@@ -156,6 +156,7 @@ export default class Lenis {
 
   #setScroll(scroll) {
     if (this.#options.infinite) {
+      // modulo scroll value
       scroll = this.scroll
     }
 
@@ -195,7 +196,11 @@ export default class Lenis {
       (this.#options.smoothTouch && type === 'touch') ||
       (this.#options.smoothWheel && type === 'wheel')
 
-    if (!this.isSmooth) return
+    if (!this.isSmooth) {
+      this.#isScrolling = false
+      this.#animate.stop()
+      return
+    }
 
     event.preventDefault()
 
@@ -229,6 +234,7 @@ export default class Lenis {
 
   stop() {
     this.#isStopped = true
+    this.#animate.stop()
   }
 
   raf(time) {
@@ -360,9 +366,11 @@ export default class Lenis {
   }
 
   get limit() {
-    return this.isHorizontal
-      ? this.#content.width - this.#wrapper.width
-      : this.#content.height - this.#wrapper.height
+    return Math.round(
+      this.isHorizontal
+        ? this.#content.width - this.#wrapper.width
+        : this.#content.height - this.#wrapper.height
+    )
   }
 
   get isHorizontal() {
@@ -375,7 +383,9 @@ export default class Lenis {
   }
 
   get scroll() {
-    return clampedModulo(this.#animatedScroll, this.limit)
+    return this.#options.infinite
+      ? clampedModulo(this.#animatedScroll, this.limit)
+      : this.#animatedScroll
   }
 
   get progress() {

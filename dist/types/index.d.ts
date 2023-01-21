@@ -77,7 +77,7 @@ export default class Lenis {
     };
     get limit(): number;
     get isHorizontal(): boolean;
-    get scroll(): number;
+    get scroll(): any;
     get progress(): number;
     get velocity(): number;
     get direction(): any;
