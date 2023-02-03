@@ -6,21 +6,10 @@ import { ObservedElement } from './observed-element'
 import { VirtualScroll } from './virtual-scroll.js'
 
 export default class Lenis {
-  #options
-  #wrapper // element with hidden overflow
-  #content // wrapper direct child with scrollable content
-  #animate
-  #emitter
-  #virtualScroll
-  #time
-  #velocity
-  #direction
-  #animatedScroll // value used for animation
-  #targetScroll // value to reach
-  #_isScrolling // true when scroll is animated programatically
-  #_isStopped // true if user should not be able to scroll - enable/disable programatically
-  #_isSmooth // true if scroll shoul be animated
-  #isLocked // same as isStopped - enable/disable when scroll reaches target
+  // isScrolling = true when scroll is animating
+  // isStopped = true if user should not be able to scroll - enable/disable programatically
+  // isSmooth = true if scroll should be animated
+  // isLocked = same as isStopped but enabled/disabled when scroll reaches target
 
   /**
    * @typedef {(t: number) => number} EasingFunction
@@ -99,7 +88,7 @@ export default class Lenis {
       wrapper = window
     }
 
-    this.#options = {
+    this.options = {
       wrapper,
       content,
       smoothWheel,
@@ -115,67 +104,73 @@ export default class Lenis {
       normalizeWheel,
     }
 
-    this.#wrapper = new ObservedElement(wrapper)
-    this.#content = new ObservedElement(content)
+    this.wrapper = new ObservedElement(wrapper)
+    this.content = new ObservedElement(content)
 
-    this.#classElement.classList.add('lenis')
+    this.rootElement.classList.add('lenis')
 
-    this.#velocity = 0
-    this.#isStopped = false
-    this.#isSmooth = smoothWheel || smoothTouch
-    this.#isScrolling = false
-    this.#targetScroll = this.#animatedScroll = this.#actualScroll
-    this.#animate = new Animate()
-    this.#emitter = createNanoEvents()
+    this.velocity = 0
+    this.isStopped = false
+    this.isSmooth = smoothWheel || smoothTouch
+    this.isScrolling = false
+    this.targetScroll = this.animatedScroll = this.actualScroll
+    this.animate = new Animate()
+    this.emitter = createNanoEvents()
 
-    this.#wrapper.element.addEventListener('scroll', this.#onScroll, {
+    this.wrapper.element.addEventListener('scroll', this.onScroll, {
       passive: false,
     })
 
-    this.#virtualScroll = new VirtualScroll(wrapper, {
+    this.virtualScroll = new VirtualScroll(wrapper, {
       touchMultiplier,
       wheelMultiplier,
       normalizeWheel,
     })
-    this.#virtualScroll.on('scroll', this.#onVirtualScroll)
+    this.virtualScroll.on('scroll', this.onVirtualScroll)
   }
 
   destroy() {
-    this.#emitter.events = {}
+    this.emitter.events = {}
 
-    this.#wrapper.element.removeEventListener('scroll', this.#onScroll, {
+    this.wrapper.element.removeEventListener('scroll', this.onScroll, {
       passive: false,
     })
 
-    this.#virtualScroll.destroy()
+    this.virtualScroll.destroy()
   }
 
   on(event, callback) {
-    return this.#emitter.on(event, callback)
+    return this.emitter.on(event, callback)
   }
 
-  #setScroll(scroll) {
-    if (this.#options.infinite) {
-      // modulo scroll value
-      scroll = this.scroll
-    }
+  off(event, callback) {
+    this.emitter.events[event] = this.emitter.events[event]?.filter(
+      (i) => callback !== i
+    )
+  }
+
+  setScroll(scroll) {
+    // if (this.options.infinite) {
+    //   // modulo scroll value
+    //   scroll = this.scroll
+    // }
 
     // apply scroll value immediately
     if (this.isHorizontal) {
-      this.#classElement.scrollLeft = scroll
+      this.rootElement.scrollLeft = scroll
     } else {
-      this.#classElement.scrollTop = scroll
+      this.rootElement.scrollTop = scroll
     }
   }
 
-  #onVirtualScroll = ({ type, deltaX, deltaY, event }) => {
+  onVirtualScroll = ({ type, deltaX, deltaY, event }) => {
     // keep zoom feature
     if (event.ctrlKey) return
 
     // keep previous/next page gesture on trackpads
     if (
-      (this.#options.gestureOrientation === 'vertical' && deltaY === 0) ||
-      (this.#options.gestureOrientation === 'horizontal' && deltaX === 0)
+      (this.options.gestureOrientation === 'vertical' && deltaY === 0) ||
+      (this.options.gestureOrientation === 'horizontal' && deltaX === 0)
     )
       return
 
@@ -187,62 +182,61 @@ export default class Lenis {
     )
       return
 
-    if (this.isStopped || this.#isLocked) {
+    if (this.isStopped || this.isLocked) {
       event.preventDefault()
       return
     }
 
-    this.#isSmooth =
-      (this.#options.smoothTouch && type === 'touch') ||
-      (this.#options.smoothWheel && type === 'wheel')
+    this.isSmooth =
+      (this.options.smoothTouch && type === 'touch') ||
+      (this.options.smoothWheel && type === 'wheel')
 
     if (!this.isSmooth) {
-      this.#isScrolling = false
-      this.#animate.stop()
+      this.isScrolling = false
+      this.animate.stop()
       return
     }
 
     event.preventDefault()
 
     let delta = deltaY
-    if (this.#options.gestureOrientation === 'both') {
+    if (this.options.gestureOrientation === 'both') {
       delta = deltaX + deltaY
-    } else if (this.#options.gestureOrientation === 'horizontal') {
+    } else if (this.options.gestureOrientation === 'horizontal') {
       delta = deltaX
     }
 
-    console.log('scrollTo', this.#targetScroll + delta)
-    this.scrollTo(this.#targetScroll + delta, {}, false)
+    this.scrollTo(this.targetScroll + delta, {}, false)
   }
 
   emit() {
-    this.#emitter.emit('scroll', this)
+    this.emitter.emit('scroll', this)
   }
 
-  #onScroll = () => {
+  onScroll = () => {
     if (!this.isScrolling) {
-      const lastScroll = this.#animatedScroll
-      this.#animatedScroll = this.#targetScroll = this.#actualScroll
-      this.#velocity = 0
-      this.#direction = Math.sign(this.#animatedScroll - lastScroll)
+      const lastScroll = this.animatedScroll
+      this.animatedScroll = this.targetScroll = this.actualScroll
+      this.velocity = 0
+      this.direction = Math.sign(this.animatedScroll - lastScroll)
       this.emit()
     }
   }
 
   start() {
-    this.#isStopped = false
+    this.isStopped = false
   }
 
   stop() {
-    this.#isStopped = true
-    this.#animate.stop()
+    this.isStopped = true
+    this.animate.stop()
   }
 
   raf(time) {
-    const deltaTime = time - (this.#time || time)
-    this.#time = time
+    const deltaTime = time - (this.time || time)
+    this.time = time
 
-    this.#animate.advance(deltaTime * 0.001)
+    this.animate.advance(deltaTime * 0.001)
   }
 
   scrollTo(
@@ -251,9 +245,9 @@ export default class Lenis {
       offset = 0,
       immediate = false,
       lock = false,
-      duration = this.#options.duration,
-      easing = this.#options.easing,
-      lerp = this.#options.lerp,
+      duration = this.options.duration,
+      easing = this.options.easing,
+      lerp = this.options.lerp,
       onComplete,
     } = {},
     programmatic = true // called from outside of the class
@@ -275,16 +269,16 @@ export default class Lenis {
       }
 
       if (node) {
-        if (this.#wrapper.element !== window) {
+        if (this.wrapper.element !== window) {
           // nested scroll offset correction
-          const wrapperRect = this.#wrapper.element.getBoundingClientRect()
+          const wrapperRect = this.wrapper.element.getBoundingClientRect()
           offset -= this.isHorizontal ? wrapperRect.left : wrapperRect.top
         }
 
         const rect = node.getBoundingClientRect()
 
         target =
-          (this.isHorizontal ? rect.left : rect.top) + this.#animatedScroll
+          (this.isHorizontal ? rect.left : rect.top) + this.animatedScroll
       }
     }
 
@@ -292,63 +286,63 @@ export default class Lenis {
 
     target += offset
 
-    if (this.#options.infinite) {
+    if (this.options.infinite) {
       if (programmatic) {
-        this.#targetScroll = this.#animatedScroll = this.scroll
+        this.targetScroll = this.animatedScroll = this.scroll
       }
     } else {
       target = clamp(0, target, this.limit)
     }
 
     // if (this.#scroll === target) {
-    if (this.#animatedScroll === target) {
+    if (this.animatedScroll === target) {
       onComplete?.()
       return
     }
 
     if (immediate) {
-      this.#animatedScroll = this.#targetScroll = target
-      this.#setScroll(target)
+      this.animatedScroll = this.targetScroll = target
+      this.setScroll(this.scroll)
       this.emit()
       onComplete?.()
       return
     }
 
     if (!programmatic) {
-      this.#targetScroll = target
+      this.targetScroll = target
     }
 
-    this.#animate.fromTo(this.#animatedScroll, target, {
+    this.animate.fromTo(this.animatedScroll, target, {
       duration,
       easing,
       lerp,
       onStart: () => {
         // user is scrolling
-        if (lock) this.#isLocked = true
-        this.#isScrolling = true
+        if (lock) this.isLocked = true
+        this.isScrolling = true
       },
       onUpdate: (value) => {
-        this.#velocity = value - this.#animatedScroll
-        this.#direction = Math.sign(this.#velocity)
+        this.velocity = value - this.animatedScroll
+        this.direction = Math.sign(this.velocity)
 
-        this.#animatedScroll = value
-        this.#setScroll(value)
+        this.animatedScroll = value
+        this.setScroll(this.scroll)
 
         if (programmatic) {
           // fix velocity during programmatic scrollTo
           // wheel during programmatic should stop it
-          this.#targetScroll = value
+          this.targetScroll = value
         }
 
         this.emit()
       },
       onComplete: (value) => {
         // user is not scrolling anymore
-        if (lock) this.#isLocked = false
+        if (lock) this.isLocked = false
         requestAnimationFrame(() => {
-          this.#isScrolling = false
+          this.isScrolling = false
         })
-        this.#velocity = 0
+        this.velocity = 0
         this.emit()
 
         onComplete?.()
@@ -356,81 +350,71 @@ export default class Lenis {
     })
   }
 
-  get options() {
-    return { ...this.#options }
-  }
-
-  get #classElement() {
-    return this.#wrapper.element === window
-      ? this.#content.element
-      : this.#wrapper.element
+  get rootElement() {
+    return this.wrapper.element === window
+      ? this.content.element
+      : this.wrapper.element
   }
 
   get limit() {
     return Math.round(
       this.isHorizontal
-        ? this.#content.width - this.#wrapper.width
-        : this.#content.height - this.#wrapper.height
+        ? this.content.width - this.wrapper.width
+        : this.content.height - this.wrapper.height
     )
   }
 
   get isHorizontal() {
-    return this.#options.orientation === 'horizontal'
+    return this.options.orientation === 'horizontal'
   }
 
-  get #actualScroll() {
+  get actualScroll() {
     // value browser takes into account
-    return this.#classElement.scrollTop
+    return this.isHorizontal
+      ? this.rootElement.scrollLeft
+      : this.rootElement.scrollTop
   }
 
   get scroll() {
-    return this.#options.infinite
-      ? clampedModulo(this.#animatedScroll, this.limit)
-      : this.#animatedScroll
+    return this.options.infinite
+      ? clampedModulo(this.animatedScroll, this.limit)
+      : this.animatedScroll
   }
 
   get progress() {
     return this.scroll / this.limit
   }
 
-  get velocity() {
-    return this.#velocity
-  }
-
-  get direction() {
-    return this.#direction
-  }
-
   get isSmooth() {
-    return this.#_isSmooth
+    return this.__isSmooth
   }
 
-  set #isSmooth(value) {
-    if (this.#_isSmooth !== value) {
-      this.#classElement.classList.toggle('lenis-smooth', value)
+  set isSmooth(value) {
+    if (this.__isSmooth !== value) {
+      this.rootElement.classList.toggle('lenis-smooth', value)
+      this.__isSmooth = value
     }
-    this.#_isSmooth = value
   }
 
   get isScrolling() {
-    return this.#_isScrolling
+    return this.__isScrolling
   }
 
-  set #isScrolling(value) {
-    if (this.#_isScrolling !== value) {
-      this.#classElement.classList.toggle('lenis-scrolling', value)
+  set isScrolling(value) {
+    if (this.__isScrolling !== value) {
+      this.rootElement.classList.toggle('lenis-scrolling', value)
+      this.__isScrolling = value
     }
-    this.#_isScrolling = value
   }
 
   get isStopped() {
-    return this.#_isStopped
+    return this.__isStopped
   }
 
-  set #isStopped(value) {
-    if (this.#_isStopped !== value) {
-      this.#classElement.classList.toggle('lenis-stopped', value)
+  set isStopped(value) {
+    if (this.__isStopped !== value) {
+      this.rootElement.classList.toggle('lenis-stopped', value)
+      this.__isStopped = value
     }
-    this.#_isStopped = value
   }
 }

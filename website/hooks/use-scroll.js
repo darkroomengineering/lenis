@@ -6,9 +6,11 @@ export function useScroll(callback, deps = []) {
 
   useEffect(() => {
     if (!lenis) return
-    const unsubscribe = lenis.on('scroll', callback)
+    lenis.on('scroll', callback)
     lenis.emit()
 
-    return unsubscribe
+    return () => {
+      lenis.off('scroll', callback)
+    }
   }, [lenis, callback, [...deps]])
 }

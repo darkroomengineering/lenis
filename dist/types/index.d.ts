@@ -45,22 +45,7 @@ export default class Lenis {
         wheelMultiplier?: number;
         normalizeWheel?: number;
     });
-    destroy(): void;
-    on(event: any, callback: any): import("nanoevents").Unsubscribe;
-    emit(): void;
-    start(): void;
-    stop(): void;
-    raf(time: any): void;
-    scrollTo(target: any, { offset, immediate, lock, duration, easing, lerp, onComplete, }?: {
-        offset?: number;
-        immediate?: boolean;
-        lock?: boolean;
-        duration?: number;
-        easing?: (t: number) => number;
-        lerp?: number;
-        onComplete: any;
-    }, programmatic?: boolean): void;
-    get options(): {
+    options: {
         wrapper: Window | HTMLElement;
         content: HTMLElement;
         smoothWheel: boolean;
@@ -75,14 +60,57 @@ export default class Lenis {
         wheelMultiplier: number;
         normalizeWheel: number;
     };
+    wrapper: ObservedElement;
+    content: ObservedElement;
+    velocity: number;
+    set isStopped(arg: any);
+    get isStopped(): any;
+    set isSmooth(arg: any);
+    get isSmooth(): any;
+    set isScrolling(arg: any);
+    get isScrolling(): any;
+    targetScroll: any;
+    animatedScroll: any;
+    animate: Animate;
+    emitter: import("nanoevents").Emitter<import("nanoevents").DefaultEvents>;
+    virtualScroll: VirtualScroll;
+    destroy(): void;
+    on(event: any, callback: any): import("nanoevents").Unsubscribe;
+    off(event: any, callback: any): void;
+    setScroll(scroll: any): void;
+    onVirtualScroll: ({ type, deltaX, deltaY, event }: {
+        type: any;
+        deltaX: any;
+        deltaY: any;
+        event: any;
+    }) => void;
+    emit(): void;
+    onScroll: () => void;
+    direction: number;
+    start(): void;
+    stop(): void;
+    raf(time: any): void;
+    time: any;
+    scrollTo(target: any, { offset, immediate, lock, duration, easing, lerp, onComplete, }?: {
+        offset?: number;
+        immediate?: boolean;
+        lock?: boolean;
+        duration?: number;
+        easing?: (t: number) => number;
+        lerp?: number;
+        onComplete: any;
+    }, programmatic?: boolean): void;
+    isLocked: boolean;
+    get rootElement(): any;
     get limit(): number;
     get isHorizontal(): boolean;
+    get actualScroll(): any;
     get scroll(): any;
     get progress(): number;
-    get velocity(): number;
-    get direction(): any;
-    get isSmooth(): any;
-    get isScrolling(): any;
-    get isStopped(): any;
-    #private;
+    __isSmooth: any;
+    __isScrolling: any;
+    __isStopped: any;
 }
+import { ObservedElement } from "./observed-element";
+import { Animate } from "./animate";
+import { VirtualScroll } from "./virtual-scroll.js";
