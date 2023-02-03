@@ -189,8 +189,9 @@ gsap.ticker.add((time)=>{
 ## Limitations
 
 - no support for CSS scroll-snap
-- capped at 60fps on Safari ([source](https://bugs.webkit.org/show_bug.cgi?id=173434))
+- capped to 60fps on Safari ([source](https://bugs.webkit.org/show_bug.cgi?id=173434))
 - smooth scroll will stop working over iframe since they don't forward wheel events
+- position fixed seems to lag on MacOS Safari pre-M1 ([source](https://github.com/studio-freight/lenis/issues/103))
 
 <br>
 
@@ -207,6 +208,7 @@ gsap.ticker.add((time)=>{
 
 ## Plugins
 
+-[react-lenis](https://github.com/studio-freight/react-lenis)
 - [Loconative-scroll](https://github.com/quentinhocde/loconative-scroll#how-to-switch-from-locomotive-scroll-to-loconative-scroll) by [Quentin Hocde](https://twitter.com/QuentinHocde)
 
 <br>
