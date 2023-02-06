@@ -87,11 +87,13 @@ export default class Lenis {
     emit(): void;
     onScroll: () => void;
     direction: number;
+    reset(): void;
+    isLocked: boolean;
     start(): void;
     stop(): void;
     raf(time: any): void;
     time: any;
-    scrollTo(target: any, { offset, immediate, lock, duration, easing, lerp, onComplete, }?: {
+    scrollTo(target: any, { offset, immediate, lock, duration, easing, lerp, onComplete, force, programmatic, }?: {
         offset?: number;
         immediate?: boolean;
         lock?: boolean;
@@ -99,8 +101,9 @@ export default class Lenis {
         easing?: (t: number) => number;
         lerp?: number;
         onComplete: any;
-    }, programmatic?: boolean): void;
-    isLocked: boolean;
+        force?: boolean;
+        programmatic?: boolean;
+    }): void;
     get rootElement(): any;
     get limit(): number;
     get isHorizontal(): boolean;

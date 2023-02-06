@@ -4,10 +4,6 @@ export class Animate {
   advance(deltaTime) {
     if (!this.isRunning) return
 
-    if (this.value === this.from) {
-      this.onStart?.(this.from)
-    }
-
     let completed = false
 
     if (this.lerp) {
@@ -25,10 +21,9 @@ export class Animate {
       this.value = this.from + (this.to - this.from) * easedProgress
     }
 
-    this.onUpdate?.(this.value)
+    this.onUpdate?.(this.value, { completed })
 
     if (completed) {
-      this.onComplete?.(this.to)
       this.stop()
     }
   }
@@ -37,18 +32,7 @@ export class Animate {
     this.isRunning = false
   }
 
-  fromTo(
-    from,
-    to,
-    {
-      lerp = 0.1,
-      duration = 1,
-      easing = (t) => t,
-      onStart,
-      onUpdate,
-      onComplete,
-    }
-  ) {
+  fromTo(from, to, { lerp = 0.1, duration = 1, easing = (t) => t, onUpdate }) {
     this.from = this.value = from
     this.to = to
     this.lerp = lerp
@@ -57,8 +41,6 @@ export class Animate {
     this.currentTime = 0
     this.isRunning = true
 
-    this.onStart = onStart
     this.onUpdate = onUpdate
-    this.onComplete = onComplete
   }
 }

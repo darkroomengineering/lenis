@@ -50,12 +50,12 @@
     "postversion": "git push --follow-tags",
     "prepublishOnly": "npm run build",
     "prepare": "husky install",
-    "watch": "microbundle watch -i src/ --o ./bundled/lenis.js --no-sourcemap --no-pkg-main --external none --name Lenis --format umd  --no-compress",
+    "watch": "microbundle watch -i src/ --o ./bundled/lenis.js --no-sourcemap --no-pkg-main --external none --name Lenis --format umd --no-compress",
     "build": "npm-run-all --parallel build:dist build:bundle build:types",
     "build:types": "tsc --allowJs -d --emitDeclarationOnly --declarationDir ./dist/types --removeComments ./src/index.js",
     "build:dist": "microbundle build -i src/ --o ./dist",
     "build:bundle": "npm-run-all build:bundle-full build:bundle-min",
-    "build:bundle-full": "microbundle build -i src/ --o ./bundled/lenis.js --no-sourcemap --no-pkg-main --external none --name Lenis --format umd  --no-compress",
+    "build:bundle-full": "microbundle build -i src/ --o ./bundled/lenis.js --no-sourcemap --no-pkg-main --external none --name Lenis --format umd --no-compress",
     "build:bundle-min": "microbundle build -i src/ --o ./bundled/lenis.min.js --no-sourcemap --no-pkg-main --external none --name Lenis --format umd"
   },
   "bugs": {

@@ -5,6 +5,14 @@ import { clamp, clampedModulo } from './maths'
 import { ObservedElement } from './observed-element'
 import { VirtualScroll } from './virtual-scroll.js'
 
+// Technical explaination
+// - listen to 'wheel' events
+// - prevent event to prevent scroll
+// - normalize wheel delta
+// - add delta to targetScroll
+// - animate scroll to targetScroll (smooth context)
+// - if animation is not running, listen to 'scroll' events (native context)
+
 export default class Lenis {
   // isScrolling = true when scroll is animating
   // isStopped = true if user should not be able to scroll - enable/disable programatically
@@ -150,11 +158,6 @@ export default class Lenis {
   }
 
   setScroll(scroll) {
-    // if (this.options.infinite) {
-    //   // modulo scroll value
-    //   scroll = this.scroll
-    // }
-
     // apply scroll value immediately
     if (this.isHorizontal) {
       this.rootElement.scrollLeft = scroll
@@ -206,7 +209,7 @@ export default class Lenis {
       delta = deltaX
     }
 
-    this.scrollTo(this.targetScroll + delta, {}, false)
+    this.scrollTo(this.targetScroll + delta, { programmatic: false })
   }
 
   emit() {
@@ -223,13 +226,23 @@ export default class Lenis {
     }
   }
 
+  reset() {
+    this.isLocked = false
+    this.isScrolling = false
+    this.velocity = 0
+  }
+
   start() {
     this.isStopped = false
+
+    this.reset()
   }
 
   stop() {
     this.isStopped = true
     this.animate.stop()
+
+    this.reset()
   }
 
   raf(time) {
@@ -247,11 +260,14 @@ export default class Lenis {
       lock = false,
       duration = this.options.duration,
       easing = this.options.easing,
-      lerp = this.options.lerp,
+      lerp = !duration && this.options.lerp,
       onComplete,
-    } = {},
-    programmatic = true // called from outside of the class
+      force = false, // scroll even if stopped
+      programmatic = true, // called from outside of the class
+    } = {}
   ) {
+    if (this.isStopped && !force) return
+
     // keywords
     if (['top', 'left', 'start'].includes(target)) {
       target = 0
@@ -285,6 +301,7 @@ export default class Lenis {
     if (typeof target !== 'number') return
 
     target += offset
+    target = Math.round(target)
 
     if (this.options.infinite) {
       if (programmatic) {
@@ -294,15 +311,11 @@ export default class Lenis {
       target = clamp(0, target, this.limit)
     }
 
-    // if (this.#scroll === target) {
-    if (this.animatedScroll === target) {
-      onComplete?.()
-      return
-    }
-
     if (immediate) {
       this.animatedScroll = this.targetScroll = target
       this.setScroll(this.scroll)
+      this.animate.stop()
+      this.reset()
       this.emit()
       onComplete?.()
       return
@@ -316,12 +329,12 @@ export default class Lenis {
       duration,
       easing,
       lerp,
-      onStart: () => {
-        // user is scrolling
+      onUpdate: (value, { completed }) => {
+        // started
         if (lock) this.isLocked = true
         this.isScrolling = true
-      },
-      onUpdate: (value) => {
+
+        // updated
         this.velocity = value - this.animatedScroll
         this.direction = Math.sign(this.velocity)
 
@@ -329,23 +342,22 @@ export default class Lenis {
         this.setScroll(this.scroll)
 
         if (programmatic) {
-          // fix velocity during programmatic scrollTo
           // wheel during programmatic should stop it
           this.targetScroll = value
         }
 
-        this.emit()
-      },
-      onComplete: (value) => {
-        // user is not scrolling anymore
-        if (lock) this.isLocked = false
-        requestAnimationFrame(() => {
-          this.isScrolling = false
-        })
-        this.velocity = 0
-        this.emit()
+        // completed
+        if (completed) {
+          if (lock) this.isLocked = false
+          requestAnimationFrame(() => {
+            //avoid double scroll event
+            this.isScrolling = false
+          })
+          this.velocity = 0
+          onComplete?.()
+        }
 
-        onComplete?.()
+        this.emit()
       },
     })
   }
@@ -418,3 +430,6 @@ export default class Lenis {
     }
   }
 }
+
+// Lenis.ScrollSnap = ScrollSnap
+// export { ScrollSnap }

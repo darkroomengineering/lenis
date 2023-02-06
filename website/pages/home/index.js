@@ -84,8 +84,14 @@ export default function Home() {
       immediate: button(() => {
         lenis.scrollTo(30000, { immediate: true })
       }),
+      smoothDuration: button(() => {
+        lenis.scrollTo(30000, { lock: true, duration: 10 })
+      }),
       smooth: button(() => {
         lenis.scrollTo(30000)
+      }),
+      forceScrollTo: button(() => {
+        lenis.scrollTo(30000, { force: true })
       }),
     }),
     [lenis]
@@ -166,8 +172,14 @@ export default function Home() {
   }, [lenis?.limit])
 
   useScroll((e) => {
-    console.log(window.scrollY, e.scroll, e.velocity, e.direction)
-    // console.log(e.scroll, e.velocity)
+    // console.log(window.scrollY, e.scroll, e.velocity, e.direction)
+    console.log(
+      window.scrollY,
+      e.scroll,
+      e.targetScroll,
+      e.animatedScroll,
+      e.velocity
+    )
   })
 
   const inUseRef = useRef()
@@ -251,7 +263,7 @@ export default function Home() {
           </Button>
         </div>
       </section>
-      <section className={s.why}>
+      <section className={s.why} data-lenis-scroll-snap-align="start">
         <div className="layout-grid">
           <h2 className={cn(s.sticky, 'h2')}>
             <AppearTitle>Why smooth scroll?</AppearTitle>
@@ -304,7 +316,7 @@ export default function Home() {
       </section>
       <section className={s.rethink}>
         <div className={cn('layout-grid', s.pre)}>
-          <div className={s.highlight}>
+          <div className={s.highlight} data-lenis-scroll-snap-align="start">
             <Parallax speed={-0.5}>
               <p className="h2">
                 <AppearTitle>Rethinking smooth scroll</AppearTitle>

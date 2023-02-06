@@ -36,6 +36,8 @@ export function Layout({
     window.lenis = lenis
     setLenis(lenis)
 
+    // new ScrollSnap(lenis, { type: 'proximity' })
+
     return () => {
       lenis.destroy()
       setLenis(null)

@@ -83,10 +83,6 @@
     _proto.advance = function advance(deltaTime) {
       var _this$onUpdate;
       if (!this.isRunning) return;
-      if (this.value === this.from) {
-        var _this$onStart;
-        (_this$onStart = this.onStart) == null ? void 0 : _this$onStart.call(this, this.from);
-      }
       var completed = false;
       if (this.lerp) {
         this.value = lerp(this.value, this.to, this.lerp);
@@ -101,10 +97,10 @@
         var easedProgress = completed ? 1 : this.easing(linearProgress);
         this.value = this.from + (this.to - this.from) * easedProgress;
       }
-      (_this$onUpdate = this.onUpdate) == null ? void 0 : _this$onUpdate.call(this, this.value);
+      (_this$onUpdate = this.onUpdate) == null ? void 0 : _this$onUpdate.call(this, this.value, {
+        completed: completed
+      });
       if (completed) {
-        var _this$onComplete;
-        (_this$onComplete = this.onComplete) == null ? void 0 : _this$onComplete.call(this, this.to);
         this.stop();
       }
     };
@@ -120,9 +116,7 @@
         easing = _ref$easing === void 0 ? function (t) {
           return t;
         } : _ref$easing,
-        onStart = _ref.onStart,
-        onUpdate = _ref.onUpdate,
-        onComplete = _ref.onComplete;
+        onUpdate = _ref.onUpdate;
       this.from = this.value = from;
       this.to = to;
       this.lerp = lerp;
@@ -130,9 +124,7 @@
       this.easing = easing;
       this.currentTime = 0;
       this.isRunning = true;
-      this.onStart = onStart;
       this.onUpdate = onUpdate;
-      this.onComplete = onComplete;
     };
     return Animate;
   }();
@@ -308,6 +300,13 @@
     return VirtualScroll;
   }();
 
+  // Technical explaination
+  // - listen to 'wheel' events
+  // - prevent event to prevent scroll
+  // - normalize wheel delta
+  // - add delta to targetScroll
+  // - animate scroll to targetScroll (smooth context)
+  // - if animation is not running, listen to 'scroll' events (native context)
   var Lenis = /*#__PURE__*/function () {
     // isScrolling = true when scroll is animating
     // isStopped = true if user should not be able to scroll - enable/disable programatically
@@ -407,7 +406,9 @@
         } else if (_this.options.gestureOrientation === 'horizontal') {
           delta = deltaX;
         }
-        _this.scrollTo(_this.targetScroll + delta, {}, false);
+        _this.scrollTo(_this.targetScroll + delta, {
+          programmatic: false
+        });
       };
       this.onScroll = function () {
         if (!_this.isScrolling) {
@@ -490,11 +491,6 @@
       });
     };
     _proto.setScroll = function setScroll(scroll) {
-      // if (this.options.infinite) {
-      //   // modulo scroll value
-      //   scroll = this.scroll
-      // }
-
       // apply scroll value immediately
       if (this.isHorizontal) {
         this.rootElement.scrollLeft = scroll;
@@ -505,20 +501,26 @@
     _proto.emit = function emit() {
       this.emitter.emit('scroll', this);
     };
+    _proto.reset = function reset() {
+      this.isLocked = false;
+      this.isScrolling = false;
+      this.velocity = 0;
+    };
     _proto.start = function start() {
       this.isStopped = false;
+      this.reset();
     };
     _proto.stop = function stop() {
       this.isStopped = true;
       this.animate.stop();
+      this.reset();
     };
     _proto.raf = function raf(time) {
       var deltaTime = time - (this.time || time);
       this.time = time;
       this.animate.advance(deltaTime * 0.001);
     };
-    _proto.scrollTo = function scrollTo(target, _temp2, programmatic // called from outside of the class
-    ) {
+    _proto.scrollTo = function scrollTo(target, _temp2) {
       var _this2 = this;
       var _ref3 = _temp2 === void 0 ? {} : _temp2,
         _ref3$offset = _ref3.offset,
@@ -532,11 +534,14 @@
         _ref3$easing = _ref3.easing,
         easing = _ref3$easing === void 0 ? this.options.easing : _ref3$easing,
         _ref3$lerp = _ref3.lerp,
-        lerp = _ref3$lerp === void 0 ? this.options.lerp : _ref3$lerp,
-        _onComplete = _ref3.onComplete;
-      if (programmatic === void 0) {
-        programmatic = true;
-      }
+        lerp = _ref3$lerp === void 0 ? !duration && this.options.lerp : _ref3$lerp,
+        onComplete = _ref3.onComplete,
+        _ref3$force = _ref3.force,
+        force = _ref3$force === void 0 ? false : _ref3$force,
+        _ref3$programmatic = _ref3.programmatic,
+        programmatic = _ref3$programmatic === void 0 ? true : _ref3$programmatic;
+      if (this.isStopped && !force) return;
+
       // keywords
       if (['top', 'left', 'start'].includes(target)) {
         target = 0;
@@ -564,6 +569,7 @@
       }
       if (typeof target !== 'number') return;
       target += offset;
+      target = Math.round(target);
       if (this.options.infinite) {
         if (programmatic) {
           this.targetScroll = this.animatedScroll = this.scroll;
@@ -571,17 +577,13 @@
       } else {
         target = clamp(0, target, this.limit);
       }
-
-      // if (this.#scroll === target) {
-      if (this.animatedScroll === target) {
-        _onComplete == null ? void 0 : _onComplete();
-        return;
-      }
       if (immediate) {
         this.animatedScroll = this.targetScroll = target;
         this.setScroll(this.scroll);
+        this.animate.stop();
+        this.reset();
         this.emit();
-        _onComplete == null ? void 0 : _onComplete();
+        onComplete == null ? void 0 : onComplete();
         return;
       }
       if (!programmatic) {
@@ -591,32 +593,33 @@
         duration: duration,
         easing: easing,
         lerp: lerp,
-        onStart: function onStart() {
-          // user is scrolling
+        onUpdate: function onUpdate(value, _ref4) {
+          var completed = _ref4.completed;
+          // started
           if (lock) _this2.isLocked = true;
           _this2.isScrolling = true;
-        },
-        onUpdate: function onUpdate(value) {
+
+          // updated
           _this2.velocity = value - _this2.animatedScroll;
           _this2.direction = Math.sign(_this2.velocity);
           _this2.animatedScroll = value;
           _this2.setScroll(_this2.scroll);
           if (programmatic) {
-            // fix velocity during programmatic scrollTo
             // wheel during programmatic should stop it
             _this2.targetScroll = value;
           }
+
+          // completed
+          if (completed) {
+            if (lock) _this2.isLocked = false;
+            requestAnimationFrame(function () {
+              //avoid double scroll event
+              _this2.isScrolling = false;
+            });
+            _this2.velocity = 0;
+            onComplete == null ? void 0 : onComplete();
+          }
           _this2.emit();
-        },
-        onComplete: function onComplete(value) {
-          // user is not scrolling anymore
-          if (lock) _this2.isLocked = false;
-          requestAnimationFrame(function () {
-            _this2.isScrolling = false;
-          });
-          _this2.velocity = 0;
-          _this2.emit();
-          _onComplete == null ? void 0 : _onComplete();
         }
       });
     };
@@ -686,7 +689,7 @@
       }
     }]);
     return Lenis;
-  }();
+  }(); // Lenis.ScrollSnap = ScrollSnap
 
   return Lenis;
 
