@@ -1,3 +1,5 @@
+// https://blog.logrocket.com/style-scroll-snap-points-css/
+
 export class ScrollSnap {
   constructor(lenis, { type = 'mandatory' }) {
     this.lenis = lenis
