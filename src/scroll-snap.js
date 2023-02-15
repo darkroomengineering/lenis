@@ -1,4 +1,6 @@
 // https://blog.logrocket.com/style-scroll-snap-points-css/
+// https://codepen.io/alsacreations/pen/GaebzJ
+// snap/onSnapComplete https://greensock.com/docs/v3/Plugins/ScrollTrigger
 
 export class ScrollSnap {
   constructor(lenis, { type = 'mandatory' }) {
