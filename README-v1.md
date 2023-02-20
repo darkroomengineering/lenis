@@ -4,7 +4,7 @@
 
 ## Introduction
 
-This is our take on smooth scroll, lightweight, hard working, smooth as butter scroll. See [Demo](https://lenis.studiofreight.com/)
+This is our take on smooth scroll, lightweight, hard-working, smooth as butter scroll. See [Demo](https://lenis.studiofreight.com/).
 
 <br>
 
@@ -12,7 +12,7 @@ This is our take on smooth scroll, lightweight, hard working, smooth as butter s
 
 - Performant
 - Lightweight [(<4Kb gzipped)](https://bundlejs.com/?q=%40studio-freight%2Flenis)
-- Run scroll in main thread
+- Run scroll in the main thread
 - Accessibility (CMD+F page search, keyboard navigation, keep scroll position on page refresh, etc.)
 - External RAF
 - SSR proof
@@ -36,7 +36,7 @@ This is our take on smooth scroll, lightweight, hard working, smooth as butter s
 
 ## Installing
 
-using package manager:
+using a package manager:
 
 ```bash
 $ npm i @studio-freight/lenis
@@ -57,7 +57,7 @@ using scripts:
 
 ## Setup
 
-Basic setup
+Basic setup:
 
 ```js
 const lenis = new Lenis()
@@ -89,7 +89,7 @@ requestAnimationFrame(raf)
 | `orientation`        | `string`             | `vertical`                                         | The orientation of the scrolling. Can be `vertical` or `horizontal`                                                                                                 |
 | `gestureOrientation` | `string`             | `vertical`                                         | The orientation of the gestures. Can be `vertical`, `horizontal` or `both`                                                                                          |
 | `smoothWheel`        | `boolean`            | `true`                                             | Whether or not to enable smooth scrolling for mouse wheel events                                                                                                    |
-| `smoothTouch`        | `boolean`            | `false`                                            | Whether or not to enable smooth scrolling for touch events. Note: We have disabled it by default because touch devices native smoothness is impossible to mimic     |
+| `smoothTouch`        | `boolean`            | `false`                                            | Whether or not to enable smooth scrolling for touch events. Note: We have disabled it by default because touch devices' native smoothness is impossible to mimic     |
 | `wheelMultiplier`    | `number`             | `1`                                                | The multiplier to use for mouse wheel events                                                                                                                        |
 | `touchMultiplier`    | `number`             | `2`                                                | The multiplier to use for touch events                                                                                                                              |
 | `normalizeWheel`     | `boolean`            | `true`                                             | Normalize wheel inputs across browsers                                                                                                                              |
@@ -118,11 +118,11 @@ requestAnimationFrame(raf)
 | Method                      | Description                                                                     | Arguments                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
 |-----------------------------|---------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | `raf(time)`                 | Must be called every frame for internal usage.                                  | `time`: in ms                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
-| `scrollTo(target, options)` | Scroll to a target.                                                             | `target`: goal to reach<ul><li>`number`: value to scroll in pixels</li><li>`string`: CSS selector or keyword (`top`, `left`, `start`, `bottom`, `right`, `end`)</li><li>`HTMLElement`: DOM element</li></ul>`options`<ul><li>`offset`(`number`): equivalent to [`scroll-padding-top`](https://developer.mozilla.org/en-US/docs/Web/CSS/scroll-padding-top)</li><li>`lerp`(`number`): animation lerp intensity</li><li>`duration`(`number`): animation duration (in seconds)</li><li>`easing`(`function`): animation easing</li><li>`immediate`(`boolean`): ignore duration, easing and lerp</li><li>`lock`(`boolean`): whether or not to prevent user from scrolling until target reached</li><li>`onComplete`(`function`): called when target is reached</li></ul> |
+| `scrollTo(target, options)` | Scroll to target.                                                             | `target`: goal to reach<ul><li>`number`: value to scroll in pixels</li><li>`string`: CSS selector or keyword (`top`, `left`, `start`, `bottom`, `right`, `end`)</li><li>`HTMLElement`: DOM element</li></ul>`options`<ul><li>`offset`(`number`): equivalent to [`scroll-padding-top`](https://developer.mozilla.org/en-US/docs/Web/CSS/scroll-padding-top)</li><li>`lerp`(`number`): animation lerp intensity</li><li>`duration`(`number`): animation duration (in seconds)</li><li>`easing`(`function`): animation easing</li><li>`immediate`(`boolean`): ignore duration, easing and lerp</li><li>`lock`(`boolean`): whether or not to prevent the user from scrolling until the target is reached</li><li>`onComplete`(`function`): called when the target is reached</li></ul> |
 | `on(id, function)`          | `id` can be any of the following [instance events](#instance-events) to listen. |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
 | `stop()`                    | Pauses the scroll                                                               |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
 | `start()`                   | Resumes the scroll                                                              |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
-| `destroy()`                 | Destroys the instance and remove all events.                                    |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
+| `destroy()`                 | Destroys the instance and removes all events.                                    |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
 
 ## Instance Events
 
@@ -142,7 +142,7 @@ requestAnimationFrame(raf)
 }
 ```
 
-#### Keep html elements default sized, this is necessary for Webflow implementation ([see issue](https://github.com/studio-freight/lenis/issues/10)).
+#### Keep HTML elements default sized, this is necessary for Webflow implementation ([see issue](https://github.com/studio-freight/lenis/issues/10))
 
 ```css
 html.lenis {
@@ -150,7 +150,7 @@ html.lenis {
 }
 ```
 
-#### Use `data-lenis-prevent` attribute on nested scroll elements. In addition, we advise you to add `overscroll-behavior: contain` on this element.
+#### Use the `data-lenis-prevent` attribute on nested scroll elements. In addition, we advise you to add `overscroll-behavior: contain` on this element
 
 ```html
 <div data-lenis-prevent>scroll content</div>
