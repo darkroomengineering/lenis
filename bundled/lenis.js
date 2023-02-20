@@ -61,7 +61,7 @@
     }
   });
 
-  var version = "1.0.0-dev.7";
+  var version = "1.0.0-dev.8";
 
   function clamp(min, input, max) {
     return Math.max(min, Math.min(input, max));
@@ -402,7 +402,7 @@
         event.preventDefault();
         var delta = deltaY;
         if (_this.options.gestureOrientation === 'both') {
-          delta = deltaX + deltaY;
+          delta = Math.abs(deltaY) > Math.abs(deltaX) ? deltaY : deltaX;
         } else if (_this.options.gestureOrientation === 'horizontal') {
           delta = deltaX;
         }

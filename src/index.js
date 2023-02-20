@@ -204,7 +204,7 @@ export default class Lenis {
 
     let delta = deltaY
     if (this.options.gestureOrientation === 'both') {
-      delta = deltaX + deltaY
+      delta = Math.abs(deltaY) > Math.abs(deltaX) ? deltaY : deltaX
     } else if (this.options.gestureOrientation === 'horizontal') {
       delta = deltaX
     }
