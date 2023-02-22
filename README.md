@@ -193,6 +193,8 @@ body {
 ## Plugins
 
 - [Loconative-scroll](https://github.com/quentinhocde/loconative-scroll#how-to-switch-from-locomotive-scroll-to-loconative-scroll) by [Quentin Hocde](https://twitter.com/QuentinHocde)
+- [react-lenis](https://github.com/studio-freight/react-lenis) by [Studio Freight](https://www.studiofreight.com/)
+- [r3f-scroll-rig](https://github.com/14islands/r3f-scroll-rig) by [14islands](https://14islands.com/)
 
 <br>
 
