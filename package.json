@@ -16,20 +16,20 @@
     "default": "./dist/lenis.modern.mjs"
   },
   "devDependencies": {
-    "@size-limit/preset-small-lib": "^8.1.2",
+    "@size-limit/preset-small-lib": "^8.2.4",
     "husky": "^8.0.3",
-    "lint-staged": "^13.1.0",
+    "lint-staged": "^13.1.2",
     "microbundle": "^0.15.1",
     "path": "^0.12.7",
-    "prettier": "^2.8.3",
-    "rimraf": "^4.1.1",
-    "size-limit": "^8.1.2",
+    "prettier": "^2.8.4",
+    "rimraf": "^4.3.1",
+    "size-limit": "^8.2.4",
     "stats.js": "^0.17.0",
-    "typescript": "^4.9.4",
-    "vite": "^4.0.4"
+    "typescript": "^4.9.5",
+    "vite": "^4.1.4"
   },
   "dependencies": {
-    "nanoevents": "^7.0.1",
+    "nanoevents": "^6.0.2",
     "npm-run-all": "^4.1.5",
     "tiny-emitter": "^2.1.0",
     "virtual-scroll": "^2.2.1"
