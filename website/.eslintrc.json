@@ -6,18 +6,6 @@
     "react/no-unknown-property": "off",
     "react/no-unescaped-entities": "off",
     "@next/next/no-img-element": "off",
-    "react-hooks/exhaustive-deps": "off",
-    "no-restricted-imports": [
-      "error",
-      {
-        "paths": [
-          {
-            "name": "react",
-            "importNames": ["useLayoutEffect"],
-            "message": "Please import from @studio-freight/hamo instead."
-          }
-        ]
-      }
-    ]
+    "react-hooks/exhaustive-deps": "off"
   }
 }

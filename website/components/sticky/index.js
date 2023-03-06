@@ -1,4 +1,3 @@
-import { useLayoutEffect } from '@studio-freight/hamo'
 import { gsap } from 'gsap'
 import { useEffect, useRef } from 'react'
 export function Sticky({
@@ -16,7 +15,7 @@ export function Sticky({
   const trigger = useRef()
   const targetRef = useRef()
 
-  useLayoutEffect(() => {
+  useEffect(() => {
     if (!enabled || !pinSpacer.current || !trigger.current) return
     gsap.set(trigger.current, { clearProps: 'all' })
 

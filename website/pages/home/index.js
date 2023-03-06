@@ -1,4 +1,4 @@
-import { useLayoutEffect, useRect } from '@studio-freight/hamo'
+import { useRect } from '@studio-freight/hamo'
 import cn from 'clsx'
 
 import { Button } from 'components/button'
@@ -128,11 +128,11 @@ export default function Home() {
 
   const addThreshold = useStore(({ addThreshold }) => addThreshold)
 
-  useLayoutEffect(() => {
+  useEffect(() => {
     addThreshold({ id: 'top', value: 0 })
   }, [])
 
-  useLayoutEffect(() => {
+  useEffect(() => {
     const top = whyRect.top - windowHeight / 2
     addThreshold({ id: 'why-start', value: top })
     addThreshold({
@@ -141,7 +141,7 @@ export default function Home() {
     })
   }, [whyRect])
 
-  useLayoutEffect(() => {
+  useEffect(() => {
     const top = cardsRect.top - windowHeight / 2
     addThreshold({ id: 'cards-start', value: top })
     addThreshold({ id: 'cards-end', value: top + cardsRect.height })
@@ -151,22 +151,22 @@ export default function Home() {
     })
   }, [cardsRect])
 
-  useLayoutEffect(() => {
+  useEffect(() => {
     const top = whiteRect.top - windowHeight
     addThreshold({ id: 'light-start', value: top })
   }, [whiteRect])
 
-  useLayoutEffect(() => {
+  useEffect(() => {
     const top = featuresRect.top
     addThreshold({ id: 'features', value: top })
   }, [featuresRect])
 
-  useLayoutEffect(() => {
+  useEffect(() => {
     const top = inuseRect.top
     addThreshold({ id: 'in-use', value: top })
   }, [inuseRect])
 
-  useLayoutEffect(() => {
+  useEffect(() => {
     const top = lenis?.limit
     addThreshold({ id: 'end', value: top })
   }, [lenis?.limit])

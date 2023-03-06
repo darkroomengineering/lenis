@@ -1,4 +1,3 @@
-import { useLayoutEffect } from '@studio-freight/hamo'
 import gsap from 'gsap'
 import { useStore } from 'lib/store'
 import { useRouter } from 'next/router'
@@ -30,7 +29,7 @@ export const PageTransition = () => {
     }
   }, [curtainInComplete])
 
-  useLayoutEffect(() => {
+  useEffect(() => {
     if (triggerTransition === '') return
     timeline.current.to(curtainRef.current, {
       x: 0,
@@ -44,7 +43,7 @@ export const PageTransition = () => {
     })
   }, [triggerTransition])
 
-  useLayoutEffect(() => {
+  useEffect(() => {
     if (!pageLoaded) return
     timeline.current.to(curtainRef.current, {
       x: '100%',

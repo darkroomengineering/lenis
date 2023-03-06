@@ -1,7 +1,7 @@
-import { useLayoutEffect } from '@studio-freight/hamo'
+import { useEffect } from 'react'
 
 export const RealViewport = () => {
-  useLayoutEffect(() => {
+  useEffect(() => {
     //https://css-tricks.com/the-trick-to-viewport-units-on-mobile/
     function onWindowResize() {
       document.documentElement.style.setProperty(

@@ -1,7 +1,6 @@
-import { useLayoutEffect } from '@studio-freight/hamo'
 import { gsap } from 'gsap'
 import { mapRange } from 'lib/maths'
-import { useRef } from 'react'
+import { useEffect, useRef } from 'react'
 import { useWindowSize } from 'react-use'
 
 export function Parallax({
@@ -16,7 +15,7 @@ export function Parallax({
 
   const { width: windowWidth } = useWindowSize()
 
-  useLayoutEffect(() => {
+  useEffect(() => {
     const y = windowWidth * speed * 0.1
 
     const setY = gsap.quickSetter(target.current, 'y', 'px')

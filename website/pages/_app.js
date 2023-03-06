@@ -1,4 +1,4 @@
-import { useDebug, useLayoutEffect } from '@studio-freight/hamo'
+import { useDebug } from '@studio-freight/hamo'
 import { raf } from '@studio-freight/tempus'
 import { RealViewport } from 'components/real-viewport'
 import { gsap } from 'gsap'
@@ -11,13 +11,17 @@ import Script from 'next/script'
 import { useEffect } from 'react'
 import 'styles/global.scss'
 
-gsap.registerPlugin(ScrollTrigger)
+if (typeof window !== 'undefined') {
+  gsap.registerPlugin(ScrollTrigger)
+  ScrollTrigger.defaults({ markers: process.env.NODE_ENV === 'development' })
 
-// merge rafs
-gsap.ticker.remove(gsap.updateRoot)
-raf.add((time) => {
-  gsap.updateRoot(time / 1000)
-}, 0)
+  // merge rafs
+  gsap.ticker.lagSmoothing(0)
+  gsap.ticker.remove(gsap.updateRoot)
+  raf.add((time) => {
+    gsap.updateRoot(time / 1000)
+  }, 0)
+}
 
 const Stats = dynamic(
   () => import('components/stats').then(({ Stats }) => Stats),
@@ -39,18 +43,6 @@ function MyApp({ Component, pageProps }) {
   const lenis = useStore(({ lenis }) => lenis)
   const overflow = useStore(({ overflow }) => overflow)
 
-  // const setHeaderData = useStore((state) => state.setHeaderData)
-  // const setFooterData = useStore((state) => state.setFooterData)
-
-  // const [isFetched, setIsFetched] = useState(false)
-
-  // avoid infinite loop
-  // if (!isFetched) {
-  //   setHeaderData(headerData)
-  //   setFooterData(footerData)
-  //   setIsFetched(true)
-  // }
-
   useScroll(ScrollTrigger.update)
 
   useEffect(() => {
@@ -63,11 +55,11 @@ function MyApp({ Component, pageProps }) {
     }
   }, [lenis, overflow])
 
-  useLayoutEffect(() => {
+  useEffect(() => {
     if (lenis) ScrollTrigger.refresh()
   }, [lenis])
 
-  useLayoutEffect(() => {
+  useEffect(() => {
     window.history.scrollRestoration = 'manual'
   }, [])
 
