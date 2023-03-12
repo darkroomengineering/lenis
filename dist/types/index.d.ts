@@ -22,7 +22,7 @@ export default class Lenis {
      * @property {GestureOrientation} [gestureOrientation]
      * @property {number} [touchMultiplier]
      * @property {number} [wheelMultiplier]
-     * @property {number} [normalizeWheel]
+     * @property {boolean} [normalizeWheel]
      *
      * @param {LenisOptions}
      */
@@ -43,7 +43,7 @@ export default class Lenis {
         gestureOrientation?: "vertical" | "horizontal" | "both";
         touchMultiplier?: number;
         wheelMultiplier?: number;
-        normalizeWheel?: number;
+        normalizeWheel?: boolean;
     });
     options: {
         wrapper: Window | HTMLElement;
@@ -58,7 +58,7 @@ export default class Lenis {
         orientation: "vertical" | "horizontal";
         touchMultiplier: number;
         wheelMultiplier: number;
-        normalizeWheel: number;
+        normalizeWheel: boolean;
     };
     wrapper: ObservedElement;
     content: ObservedElement;

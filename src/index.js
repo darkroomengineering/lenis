@@ -7,7 +7,7 @@ import { VirtualScroll } from './virtual-scroll.js'
 
 // Technical explaination
 // - listen to 'wheel' events
-// - prevent event to prevent scroll
+// - prevent 'wheel' event to prevent scroll
 // - normalize wheel delta
 // - add delta to targetScroll
 // - animate scroll to targetScroll (smooth context)
@@ -42,7 +42,7 @@ export default class Lenis {
    * @property {GestureOrientation} [gestureOrientation]
    * @property {number} [touchMultiplier]
    * @property {number} [wheelMultiplier]
-   * @property {number} [normalizeWheel]
+   * @property {boolean} [normalizeWheel]
    *
    * @param {LenisOptions}
    */
@@ -430,6 +430,3 @@ export default class Lenis {
     }
   }
 }
-
-// Lenis.ScrollSnap = ScrollSnap
-// export { ScrollSnap }

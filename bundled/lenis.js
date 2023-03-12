@@ -34,16 +34,6 @@
     var key = _toPrimitive(arg, "string");
     return typeof key === "symbol" ? key : String(key);
   }
-  var id = 0;
-  function _classPrivateFieldLooseKey(name) {
-    return "__private_" + id++ + "_" + name;
-  }
-  function _classPrivateFieldLooseBase(receiver, privateKey) {
-    if (!Object.prototype.hasOwnProperty.call(receiver, privateKey)) {
-      throw new TypeError("attempted to use private field on non-instance");
-    }
-    return receiver;
-  }
 
   let createNanoEvents = () => ({
     events: {},
@@ -125,63 +115,42 @@
     return Animate;
   }();
 
-  var _resizeObserver = /*#__PURE__*/_classPrivateFieldLooseKey("resizeObserver");
-  var _onResize = /*#__PURE__*/_classPrivateFieldLooseKey("onResize");
-  var _onWindowResize = /*#__PURE__*/_classPrivateFieldLooseKey("onWindowResize");
   var ObservedElement = /*#__PURE__*/function () {
     function ObservedElement(element) {
       var _this = this;
-      Object.defineProperty(this, _resizeObserver, {
-        writable: true,
-        value: void 0
-      });
-      Object.defineProperty(this, _onResize, {
-        writable: true,
-        value: function value(_ref) {
-          var entry = _ref[0];
-          if (entry) {
-            var _entry$contentRect = entry.contentRect,
-              width = _entry$contentRect.width,
-              height = _entry$contentRect.height;
-            _this.width = width;
-            _this.height = height;
-          }
+      this.onResize = function (_ref) {
+        var entry = _ref[0];
+        if (entry) {
+          var _entry$contentRect = entry.contentRect,
+            width = _entry$contentRect.width,
+            height = _entry$contentRect.height;
+          _this.width = width;
+          _this.height = height;
         }
-      });
-      Object.defineProperty(this, _onWindowResize, {
-        writable: true,
-        value: function value() {
-          _this.width = window.innerWidth;
-          _this.height = window.innerHeight;
-        }
-      });
+      };
+      this.onWindowResize = function () {
+        _this.width = window.innerWidth;
+        _this.height = window.innerHeight;
+      };
       this.element = element;
       if (element === window) {
-        window.addEventListener('resize', _classPrivateFieldLooseBase(this, _onWindowResize)[_onWindowResize]);
-        _classPrivateFieldLooseBase(this, _onWindowResize)[_onWindowResize]();
+        window.addEventListener('resize', this.onWindowResize);
+        this.onWindowResize();
       } else {
         this.width = this.element.offsetWidth;
         this.height = this.element.offsetHeight;
-        _classPrivateFieldLooseBase(this, _resizeObserver)[_resizeObserver] = new ResizeObserver(_classPrivateFieldLooseBase(this, _onResize)[_onResize]);
-        _classPrivateFieldLooseBase(this, _resizeObserver)[_resizeObserver].observe(this.element);
+        this.resizeObserver = new ResizeObserver(this.onResize);
+        this.resizeObserver.observe(this.element);
       }
     }
     var _proto = ObservedElement.prototype;
     _proto.destroy = function destroy() {
       window.removeEventListener('resize', this.onWindowResize);
-      _classPrivateFieldLooseBase(this, _resizeObserver)[_resizeObserver].disconnect();
+      this.resizeObserver.disconnect();
     };
     return ObservedElement;
   }();
 
-  var _wheelMultiplier = /*#__PURE__*/_classPrivateFieldLooseKey("wheelMultiplier");
-  var _touchMultiplier = /*#__PURE__*/_classPrivateFieldLooseKey("touchMultiplier");
-  var _normalizeWheel = /*#__PURE__*/_classPrivateFieldLooseKey("normalizeWheel");
-  var _touchStart = /*#__PURE__*/_classPrivateFieldLooseKey("touchStart");
-  var _emitter = /*#__PURE__*/_classPrivateFieldLooseKey("emitter");
-  var _onTouchStart = /*#__PURE__*/_classPrivateFieldLooseKey("onTouchStart");
-  var _onTouchMove = /*#__PURE__*/_classPrivateFieldLooseKey("onTouchMove");
-  var _onWheel = /*#__PURE__*/_classPrivateFieldLooseKey("onWheel");
   var VirtualScroll = /*#__PURE__*/function () {
     function VirtualScroll(element, _ref) {
       var _this = this;
@@ -191,105 +160,76 @@
         touchMultiplier = _ref$touchMultiplier === void 0 ? 2 : _ref$touchMultiplier,
         _ref$normalizeWheel = _ref.normalizeWheel,
         normalizeWheel = _ref$normalizeWheel === void 0 ? false : _ref$normalizeWheel;
-      Object.defineProperty(this, _wheelMultiplier, {
-        writable: true,
-        value: void 0
-      });
-      Object.defineProperty(this, _touchMultiplier, {
-        writable: true,
-        value: void 0
-      });
-      Object.defineProperty(this, _normalizeWheel, {
-        writable: true,
-        value: void 0
-      });
-      Object.defineProperty(this, _touchStart, {
-        writable: true,
-        value: void 0
-      });
-      Object.defineProperty(this, _emitter, {
-        writable: true,
-        value: void 0
-      });
-      Object.defineProperty(this, _onTouchStart, {
-        writable: true,
-        value: function value(event) {
-          var _ref2 = event.targetTouches ? event.targetTouches[0] : event,
-            pageX = _ref2.pageX,
-            pageY = _ref2.pageY;
-          _classPrivateFieldLooseBase(_this, _touchStart)[_touchStart].x = pageX;
-          _classPrivateFieldLooseBase(_this, _touchStart)[_touchStart].y = pageY;
+      this.onTouchStart = function (event) {
+        var _ref2 = event.targetTouches ? event.targetTouches[0] : event,
+          pageX = _ref2.pageX,
+          pageY = _ref2.pageY;
+        _this.touchStart.x = pageX;
+        _this.touchStart.y = pageY;
+      };
+      this.onTouchMove = function (event) {
+        var _ref3 = event.targetTouches ? event.targetTouches[0] : event,
+          pageX = _ref3.pageX,
+          pageY = _ref3.pageY;
+        var deltaX = -(pageX - _this.touchStart.x) * _this.touchMultiplier;
+        var deltaY = -(pageY - _this.touchStart.y) * _this.touchMultiplier;
+        _this.touchStart.x = pageX;
+        _this.touchStart.y = pageY;
+        _this.emitter.emit('scroll', {
+          type: 'touch',
+          deltaX: deltaX,
+          deltaY: deltaY,
+          event: event
+        });
+      };
+      this.onWheel = function (event) {
+        var deltaX = event.deltaX,
+          deltaY = event.deltaY;
+        if (_this.normalizeWheel) {
+          deltaX = clamp(-100, deltaX, 100);
+          deltaY = clamp(-100, deltaY, 100);
         }
-      });
-      Object.defineProperty(this, _onTouchMove, {
-        writable: true,
-        value: function value(event) {
-          var _ref3 = event.targetTouches ? event.targetTouches[0] : event,
-            pageX = _ref3.pageX,
-            pageY = _ref3.pageY;
-          var deltaX = -(pageX - _classPrivateFieldLooseBase(_this, _touchStart)[_touchStart].x) * _classPrivateFieldLooseBase(_this, _touchMultiplier)[_touchMultiplier];
-          var deltaY = -(pageY - _classPrivateFieldLooseBase(_this, _touchStart)[_touchStart].y) * _classPrivateFieldLooseBase(_this, _touchMultiplier)[_touchMultiplier];
-          _classPrivateFieldLooseBase(_this, _touchStart)[_touchStart].x = pageX;
-          _classPrivateFieldLooseBase(_this, _touchStart)[_touchStart].y = pageY;
-          _classPrivateFieldLooseBase(_this, _emitter)[_emitter].emit('scroll', {
-            type: 'touch',
-            deltaX: deltaX,
-            deltaY: deltaY,
-            event: event
-          });
-        }
-      });
-      Object.defineProperty(this, _onWheel, {
-        writable: true,
-        value: function value(event) {
-          var deltaX = event.deltaX,
-            deltaY = event.deltaY;
-          if (_classPrivateFieldLooseBase(_this, _normalizeWheel)[_normalizeWheel]) {
-            deltaX = clamp(-100, deltaX, 100);
-            deltaY = clamp(-100, deltaY, 100);
-          }
-          deltaX *= _classPrivateFieldLooseBase(_this, _wheelMultiplier)[_wheelMultiplier];
-          deltaY *= _classPrivateFieldLooseBase(_this, _wheelMultiplier)[_wheelMultiplier];
-          _classPrivateFieldLooseBase(_this, _emitter)[_emitter].emit('scroll', {
-            type: 'wheel',
-            deltaX: deltaX,
-            deltaY: deltaY,
-            event: event
-          });
-        }
-      });
+        deltaX *= _this.wheelMultiplier;
+        deltaY *= _this.wheelMultiplier;
+        _this.emitter.emit('scroll', {
+          type: 'wheel',
+          deltaX: deltaX,
+          deltaY: deltaY,
+          event: event
+        });
+      };
       this.element = element;
-      _classPrivateFieldLooseBase(this, _wheelMultiplier)[_wheelMultiplier] = wheelMultiplier;
-      _classPrivateFieldLooseBase(this, _touchMultiplier)[_touchMultiplier] = touchMultiplier;
-      _classPrivateFieldLooseBase(this, _normalizeWheel)[_normalizeWheel] = normalizeWheel;
-      _classPrivateFieldLooseBase(this, _touchStart)[_touchStart] = {
+      this.wheelMultiplier = wheelMultiplier;
+      this.touchMultiplier = touchMultiplier;
+      this.normalizeWheel = normalizeWheel;
+      this.touchStart = {
         x: null,
         y: null
       };
-      _classPrivateFieldLooseBase(this, _emitter)[_emitter] = createNanoEvents();
-      this.element.addEventListener('wheel', _classPrivateFieldLooseBase(this, _onWheel)[_onWheel], {
+      this.emitter = createNanoEvents();
+      this.element.addEventListener('wheel', this.onWheel, {
         passive: false
       });
-      this.element.addEventListener('touchstart', _classPrivateFieldLooseBase(this, _onTouchStart)[_onTouchStart], {
+      this.element.addEventListener('touchstart', this.onTouchStart, {
         passive: false
       });
-      this.element.addEventListener('touchmove', _classPrivateFieldLooseBase(this, _onTouchMove)[_onTouchMove], {
+      this.element.addEventListener('touchmove', this.onTouchMove, {
         passive: false
       });
     }
     var _proto = VirtualScroll.prototype;
     _proto.on = function on(event, callback) {
-      return _classPrivateFieldLooseBase(this, _emitter)[_emitter].on(event, callback);
+      return this.emitter.on(event, callback);
     };
     _proto.destroy = function destroy() {
-      _classPrivateFieldLooseBase(this, _emitter)[_emitter].events = {};
-      this.element.removeEventListener('wheel', _classPrivateFieldLooseBase(this, _onWheel)[_onWheel], {
+      this.emitter.events = {};
+      this.element.removeEventListener('wheel', this.onWheel, {
         passive: false
       });
-      this.element.removeEventListener('touchstart', _classPrivateFieldLooseBase(this, _onTouchStart)[_onTouchStart], {
+      this.element.removeEventListener('touchstart', this.onTouchStart, {
         passive: false
       });
-      this.element.removeEventListener('touchmove', _classPrivateFieldLooseBase(this, _onTouchMove)[_onTouchMove], {
+      this.element.removeEventListener('touchmove', this.onTouchMove, {
         passive: false
       });
     };
@@ -298,7 +238,7 @@
 
   // Technical explaination
   // - listen to 'wheel' events
-  // - prevent event to prevent scroll
+  // - prevent 'wheel' event to prevent scroll
   // - normalize wheel delta
   // - add delta to targetScroll
   // - animate scroll to targetScroll (smooth context)
@@ -332,7 +272,7 @@
      * @property {GestureOrientation} [gestureOrientation]
      * @property {number} [touchMultiplier]
      * @property {number} [wheelMultiplier]
-     * @property {number} [normalizeWheel]
+     * @property {boolean} [normalizeWheel]
      *
      * @param {LenisOptions}
      */
@@ -685,7 +625,7 @@
       }
     }]);
     return Lenis;
-  }(); // Lenis.ScrollSnap = ScrollSnap
+  }();
 
   return Lenis;
 
