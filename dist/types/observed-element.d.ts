@@ -3,6 +3,8 @@ export class ObservedElement {
     element: any;
     width: any;
     height: any;
+    resizeObserver: ResizeObserver;
     destroy(): void;
-    #private;
+    onResize: ([entry]: [any]) => void;
+    onWindowResize: () => void;
 }

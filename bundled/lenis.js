@@ -47,7 +47,7 @@
     }
   });
 
-  var version = "1.0.0-dev.8";
+  var version = "1.0.0";
 
   function clamp(min, input, max) {
     return Math.max(min, Math.min(input, max));
