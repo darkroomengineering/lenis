@@ -2,24 +2,28 @@ export class ObservedElement {
   constructor(element) {
     this.element = element
 
+    // If the element is the window, add a resize event listener and trigger it initially
     if (element === window) {
-      window.addEventListener('resize', this.onWindowResize)
+      window.addEventListener('resize', this.onWindowResize.bind(this))
       this.onWindowResize()
     } else {
+      // If the element is not the window, observe its size using ResizeObserver
       this.width = this.element.offsetWidth
       this.height = this.element.offsetHeight
 
-      this.resizeObserver = new ResizeObserver(this.onResize)
+      this.resizeObserver = new ResizeObserver(this.onResize.bind(this))
       this.resizeObserver.observe(this.element)
     }
   }
 
+  // Clean up event listeners and disconnect the ResizeObserver when destroying the instance
   destroy() {
-    window.removeEventListener('resize', this.onWindowResize)
+    window.removeEventListener('resize', this.onWindowResize.bind(this))
     this.resizeObserver.disconnect()
   }
 
-  onResize = ([entry]) => {
+  // Update the width and height properties based on the observed element's size
+  onResize([entry]) {
     if (entry) {
       const { width, height } = entry.contentRect
       this.width = width
@@ -27,7 +31,8 @@ export class ObservedElement {
     }
   }
 
-  onWindowResize = () => {
+  // Update the width and height properties based on the window's size
+  onWindowResize() {
     this.width = window.innerWidth
     this.height = window.innerHeight
   }

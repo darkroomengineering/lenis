@@ -27,10 +27,12 @@ export class VirtualScroll {
     })
   }
 
+  // Add an event listener for the given event and callback
   on(event, callback) {
     return this.emitter.on(event, callback)
   }
 
+  // Remove all event listeners and clean up
   destroy() {
     this.emitter.events = {}
 
@@ -45,6 +47,7 @@ export class VirtualScroll {
     })
   }
 
+  // Event handler for 'touchstart' event
   onTouchStart = (event) => {
     const { pageX, pageY } = event.targetTouches
       ? event.targetTouches[0]
@@ -54,6 +57,7 @@ export class VirtualScroll {
     this.touchStart.y = pageY
   }
 
+  // Event handler for 'touchmove' event
   onTouchMove = (event) => {
     const { pageX, pageY } = event.targetTouches
       ? event.targetTouches[0]
@@ -73,6 +77,7 @@ export class VirtualScroll {
     })
   }
 
+  // Event handler for 'wheel' event
   onWheel = (event) => {
     let { deltaX, deltaY } = event
 

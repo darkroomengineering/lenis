@@ -1,6 +1,8 @@
 import { clamp, lerp } from './maths'
 
+// Animate class to handle value animations with lerping or easing
 export class Animate {
+  // Advance the animation by the given delta time
   advance(deltaTime) {
     if (!this.isRunning) return
 
@@ -21,6 +23,7 @@ export class Animate {
       this.value = this.from + (this.to - this.from) * easedProgress
     }
 
+    // Call the onUpdate callback with the current value and completed status
     this.onUpdate?.(this.value, { completed })
 
     if (completed) {
@@ -28,10 +31,13 @@ export class Animate {
     }
   }
 
+  // Stop the animation
   stop() {
     this.isRunning = false
   }
 
+  // Set up the animation from a starting value to an ending value
+  // with optional parameters for lerping, duration, easing, and onUpdate callback
   fromTo(from, to, { lerp = 0.1, duration = 1, easing = (t) => t, onUpdate }) {
     this.from = this.value = from
     this.to = to
