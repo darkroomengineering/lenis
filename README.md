@@ -185,15 +185,6 @@ gsap.ticker.add((time)=>{
 })
 ```
 
-#### If you are using Nuxt2
-Make sure you add:
-```js
- build: {
-    transpile:['@studio-freight/lenis']
-  },
-```
-to your `nuxt.config.js`
-
 <br>
 
 ## Limitations
