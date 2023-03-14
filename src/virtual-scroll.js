@@ -1,5 +1,5 @@
-import { createNanoEvents } from 'nanoevents'
 import { clamp } from './maths'
+import { createNanoEvents } from './nanoevents'
 
 export class VirtualScroll {
   constructor(

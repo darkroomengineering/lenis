@@ -3,7 +3,7 @@
 // snap/onSnapComplete https://greensock.com/docs/v3/Plugins/ScrollTrigger
 
 export class ScrollSnap {
-  constructor(lenis, { type = 'mandatory' }) {
+  constructor(lenis) {
     this.lenis = lenis
     this.init()
 
@@ -24,22 +24,14 @@ export class ScrollSnap {
       .map((element) => {
         const rect = element.getBoundingClientRect()
         const top = rect.top + scroll
-        // const bottom = rect.bottom + scroll
-        // const center = top + rect.height / 2
         const distance = Math.abs(top - scroll)
-        // const distance = top - scroll
         return { element, distance, rect }
       })
-      //   .filter((element) => element.distance > 0)
       .sort((a, b) => a.distance - b.distance)
       .filter((element) => element.distance < window.innerHeight)
 
     const element = elements?.[0]
     if (!element) return
     this.lenis.scrollTo(element.element)
-
-    console.log(elements[0])
   }
 }
-
-// new ScrollSnap(lenis, { type: 'proximity' })

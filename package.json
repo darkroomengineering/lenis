@@ -3,7 +3,8 @@
   "version": "1.0.0",
   "description": "Lenis is a smooth scroll library to normalize the scrolling experience across devices",
   "files": [
-    "dist"
+    "dist",
+    "bundled"
   ],
   "sideEffects": false,
   "source": "src/lenis.js",
@@ -26,13 +27,8 @@
     "size-limit": "^8.2.4",
     "stats.js": "^0.17.0",
     "typescript": "^4.9.5",
-    "vite": "^4.1.4"
-  },
-  "dependencies": {
-    "nanoevents": "^6.0.2",
     "npm-run-all": "^4.1.5",
-    "tiny-emitter": "^2.1.0",
-    "virtual-scroll": "^2.2.1"
+    "vite": "^4.1.4"
   },
   "author": "studio-freight",
   "repository": {
