@@ -1,9 +1,9 @@
-export const createNanoEvents = () => ({
+export let createNanoEvents = () => ({
   events: {},
 
   // Emit an event with the provided arguments
   emit(event, ...args) {
-    const callbacks = this.events[event] || []
+    let callbacks = this.events[event] || []
     for (let i = 0, length = callbacks.length; i < length; i++) {
       callbacks[i](...args)
     }
@@ -12,11 +12,11 @@ export const createNanoEvents = () => ({
   // Register a callback for the specified event
   on(event, cb) {
     // Add the callback to the event's callback list, or create a new list with the callback
-    ;(this.events[event] ??= []).push(cb)
+    this.events[event]?.push(cb) || (this.events[event] = [cb])
 
     // Return an unsubscribe function
     return () => {
-      this.events[event] = this.events[event].filter((i) => cb !== i)
+      this.events[event] = this.events[event]?.filter((i) => cb !== i)
     }
   },
 })

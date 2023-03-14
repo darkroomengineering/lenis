@@ -15,11 +15,11 @@ export function lerp(start, end, amt) {
 
 // Calculate the modulo of the dividend and divisor while keeping the result within the same sign as the divisor
 export function clampedModulo(dividend, divisor) {
-  const remainder = dividend % divisor
+  let remainder = dividend % divisor
 
   // If the remainder and divisor have different signs, adjust the remainder
   if ((divisor > 0 && remainder < 0) || (divisor < 0 && remainder > 0)) {
-    return remainder + divisor
+    remainder += divisor
   }
 
   return remainder

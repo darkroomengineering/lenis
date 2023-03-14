@@ -35,25 +35,34 @@
     return typeof key === "symbol" ? key : String(key);
   }
 
-  var version = "1.0.0";
+  var version = "1.0.1";
 
+  // Clamp a value between a minimum and maximum value
   function clamp(min, input, max) {
     return Math.max(min, Math.min(input, max));
   }
+
+  // Linearly interpolate between two values using an amount (0 <= amt <= 1)
   function lerp(start, end, amt) {
     return (1 - amt) * start + amt * end;
   }
+
+  // Calculate the modulo of the dividend and divisor while keeping the result within the same sign as the divisor
   function clampedModulo(dividend, divisor) {
     var remainder = dividend % divisor;
+
+    // If the remainder and divisor have different signs, adjust the remainder
     if (divisor > 0 && remainder < 0 || divisor < 0 && remainder > 0) {
       remainder += divisor;
     }
     return remainder;
   }
 
+  // Animate class to handle value animations with lerping or easing
   var Animate = /*#__PURE__*/function () {
     function Animate() {}
     var _proto = Animate.prototype;
+    // Advance the animation by the given delta time
     _proto.advance = function advance(deltaTime) {
       var _this$onUpdate;
       if (!this.isRunning) return;
@@ -71,16 +80,25 @@
         var easedProgress = completed ? 1 : this.easing(linearProgress);
         this.value = this.from + (this.to - this.from) * easedProgress;
       }
+
+      // Call the onUpdate callback with the current value and completed status
       (_this$onUpdate = this.onUpdate) == null ? void 0 : _this$onUpdate.call(this, this.value, {
         completed: completed
       });
       if (completed) {
         this.stop();
       }
-    };
+    }
+
+    // Stop the animation
+    ;
     _proto.stop = function stop() {
       this.isRunning = false;
-    };
+    }
+
+    // Set up the animation from a starting value to an ending value
+    // with optional parameters for lerping, duration, easing, and onUpdate callback
+    ;
     _proto.fromTo = function fromTo(from, to, _ref) {
       var _ref$lerp = _ref.lerp,
         lerp = _ref$lerp === void 0 ? 0.1 : _ref$lerp,
@@ -106,16 +124,21 @@
   var createNanoEvents = function createNanoEvents() {
     return {
       events: {},
+      // Emit an event with the provided arguments
       emit: function emit(event) {
         var callbacks = this.events[event] || [];
         for (var i = 0, length = callbacks.length; i < length; i++) {
           callbacks[i].apply(callbacks, [].slice.call(arguments, 1));
         }
       },
+      // Register a callback for the specified event
       on: function on(event, cb) {
         var _this$events$event,
           _this = this;
+        // Add the callback to the event's callback list, or create a new list with the callback
         ((_this$events$event = this.events[event]) == null ? void 0 : _this$events$event.push(cb)) || (this.events[event] = [cb]);
+
+        // Return an unsubscribe function
         return function () {
           var _this$events$event2;
           _this.events[event] = (_this$events$event2 = _this.events[event]) == null ? void 0 : _this$events$event2.filter(function (i) {
@@ -129,6 +152,7 @@
   var ObservedElement = /*#__PURE__*/function () {
     function ObservedElement(element) {
       var _this = this;
+      // Update the width and height properties based on the observed element's size
       this.onResize = function (_ref) {
         var entry = _ref[0];
         if (entry) {
@@ -139,21 +163,27 @@
           _this.height = height;
         }
       };
+      // Update the width and height properties based on the window's size
       this.onWindowResize = function () {
         _this.width = window.innerWidth;
         _this.height = window.innerHeight;
       };
       this.element = element;
+
+      // If the element is the window, add a resize event listener and trigger it initially
       if (element === window) {
         window.addEventListener('resize', this.onWindowResize);
         this.onWindowResize();
       } else {
+        // If the element is not the window, observe its size using ResizeObserver
         this.width = this.element.offsetWidth;
         this.height = this.element.offsetHeight;
         this.resizeObserver = new ResizeObserver(this.onResize);
         this.resizeObserver.observe(this.element);
       }
     }
+
+    // Clean up event listeners and disconnect the ResizeObserver when destroying the instance
     var _proto = ObservedElement.prototype;
     _proto.destroy = function destroy() {
       window.removeEventListener('resize', this.onWindowResize);
@@ -171,6 +201,7 @@
         touchMultiplier = _ref$touchMultiplier === void 0 ? 2 : _ref$touchMultiplier,
         _ref$normalizeWheel = _ref.normalizeWheel,
         normalizeWheel = _ref$normalizeWheel === void 0 ? false : _ref$normalizeWheel;
+      // Event handler for 'touchstart' event
       this.onTouchStart = function (event) {
         var _ref2 = event.targetTouches ? event.targetTouches[0] : event,
           pageX = _ref2.pageX,
@@ -178,6 +209,7 @@
         _this.touchStart.x = pageX;
         _this.touchStart.y = pageY;
       };
+      // Event handler for 'touchmove' event
       this.onTouchMove = function (event) {
         var _ref3 = event.targetTouches ? event.targetTouches[0] : event,
           pageX = _ref3.pageX,
@@ -193,6 +225,7 @@
           event: event
         });
       };
+      // Event handler for 'wheel' event
       this.onWheel = function (event) {
         var deltaX = event.deltaX,
           deltaY = event.deltaY;
@@ -228,10 +261,15 @@
         passive: false
       });
     }
+
+    // Add an event listener for the given event and callback
     var _proto = VirtualScroll.prototype;
     _proto.on = function on(event, callback) {
       return this.emitter.on(event, callback);
-    };
+    }
+
+    // Remove all event listeners and clean up
+    ;
     _proto.destroy = function destroy() {
       this.emitter.events = {};
       this.element.removeEventListener('wheel', this.onWheel, {
