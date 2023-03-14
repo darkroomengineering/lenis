@@ -1,9 +1,9 @@
-import { createNanoEvents } from 'nanoevents'
 import { version } from '../package.json'
 import { Animate } from './animate'
 import { clamp, clampedModulo } from './maths'
+import { createNanoEvents } from './nanoevents'
 import { ObservedElement } from './observed-element'
-import { VirtualScroll } from './virtual-scroll.js'
+import { VirtualScroll } from './virtual-scroll'
 
 // Technical explaination
 // - listen to 'wheel' events

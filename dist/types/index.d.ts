@@ -72,10 +72,14 @@ export default class Lenis {
     targetScroll: any;
     animatedScroll: any;
     animate: Animate;
-    emitter: import("nanoevents").Emitter<import("nanoevents").DefaultEvents>;
+    emitter: {
+        events: {};
+        emit(event: any, ...args: any[]): void;
+        on(event: any, cb: any): () => void;
+    };
     virtualScroll: VirtualScroll;
     destroy(): void;
-    on(event: any, callback: any): import("nanoevents").Unsubscribe;
+    on(event: any, callback: any): () => void;
     off(event: any, callback: any): void;
     setScroll(scroll: any): void;
     onVirtualScroll: ({ type, deltaX, deltaY, event }: {
@@ -116,4 +120,4 @@ export default class Lenis {
 }
 import { ObservedElement } from "./observed-element";
 import { Animate } from "./animate";
-import { VirtualScroll } from "./virtual-scroll.js";
+import { VirtualScroll } from "./virtual-scroll";

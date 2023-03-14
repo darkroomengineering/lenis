@@ -12,8 +12,12 @@ export class VirtualScroll {
         x: any;
         y: any;
     };
-    emitter: import("nanoevents").Emitter<import("nanoevents").DefaultEvents>;
-    on(event: any, callback: any): import("nanoevents").Unsubscribe;
+    emitter: {
+        events: {};
+        emit(event: any, ...args: any[]): void;
+        on(event: any, cb: any): () => void;
+    };
+    on(event: any, callback: any): () => void;
     destroy(): void;
     onTouchStart: (event: any) => void;
     onTouchMove: (event: any) => void;

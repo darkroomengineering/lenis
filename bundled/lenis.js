@@ -35,18 +35,6 @@
     return typeof key === "symbol" ? key : String(key);
   }
 
-  let createNanoEvents = () => ({
-    events: {},
-    emit(event, ...args) {
-  (this.events[event] || []).forEach(i => i(...args));
-    },
-    on(event, cb) {
-  (this.events[event] = this.events[event] || []).push(cb);
-      return () =>
-        (this.events[event] = (this.events[event] || []).filter(i => i !== cb))
-    }
-  });
-
   var version = "1.0.0";
 
   function clamp(min, input, max) {
@@ -114,6 +102,29 @@
     };
     return Animate;
   }();
+
+  var createNanoEvents = function createNanoEvents() {
+    return {
+      events: {},
+      emit: function emit(event) {
+        var callbacks = this.events[event] || [];
+        for (var i = 0, length = callbacks.length; i < length; i++) {
+          callbacks[i].apply(callbacks, [].slice.call(arguments, 1));
+        }
+      },
+      on: function on(event, cb) {
+        var _this$events$event,
+          _this = this;
+        ((_this$events$event = this.events[event]) == null ? void 0 : _this$events$event.push(cb)) || (this.events[event] = [cb]);
+        return function () {
+          var _this$events$event2;
+          _this.events[event] = (_this$events$event2 = _this.events[event]) == null ? void 0 : _this$events$event2.filter(function (i) {
+            return cb !== i;
+          });
+        };
+      }
+    };
+  };
 
   var ObservedElement = /*#__PURE__*/function () {
     function ObservedElement(element) {
