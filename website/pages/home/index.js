@@ -172,7 +172,6 @@ export default function Home() {
   }, [lenis?.limit])
 
   useScroll((e) => {
-    // console.log(window.scrollY, e.scroll, e.velocity, e.direction)
     console.log(
       window.scrollY,
       e.scroll,

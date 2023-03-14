@@ -33,7 +33,5 @@ export class ScrollSnap {
     const element = elements?.[0]
     if (!element) return
     this.lenis.scrollTo(element.element)
-
-    console.log(elements[0])
   }
 }

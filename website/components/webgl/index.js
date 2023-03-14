@@ -389,10 +389,7 @@ export function Arm() {
           roughness: 0.4,
           metalness: 1,
         })
-        // console.log('dark')
       } else {
-        // console.log('light')
-
         setLights({
           light1Intensity: 1,
           light2Intensity: 1,

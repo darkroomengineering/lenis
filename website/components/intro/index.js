@@ -29,7 +29,6 @@ export const Intro = () => {
     }
 
     if (lenis) {
-      console.log(scroll)
       if (scroll) {
         lenis.start()
         document.documentElement.classList.toggle('intro', false)
