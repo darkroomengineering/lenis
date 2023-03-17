@@ -35,14 +35,6 @@ define(['./workbox-588899ac'], function (e) {
     e.precacheAndRoute(
       [
         {
-          url: '/_next/static/N670j7U6X8nsNwXDumUYX/_buildManifest.js',
-          revision: '6f872a0187b25df14c38f28980c4bb23',
-        },
-        {
-          url: '/_next/static/N670j7U6X8nsNwXDumUYX/_ssgManifest.js',
-          revision: 'b6652df95db52feb4daf4eca35380933',
-        },
-        {
           url: '/_next/static/chunks/139-1de889f521a7e339.js',
           revision: '1de889f521a7e339',
         },
@@ -177,6 +169,14 @@ define(['./workbox-588899ac'], function (e) {
         {
           url: '/_next/static/css/df4862f22178cc0c.css',
           revision: 'df4862f22178cc0c',
+        },
+        {
+          url: '/_next/static/nS0foKOdimxXD32DBaWSg/_buildManifest.js',
+          revision: '6f872a0187b25df14c38f28980c4bb23',
+        },
+        {
+          url: '/_next/static/nS0foKOdimxXD32DBaWSg/_ssgManifest.js',
+          revision: 'b6652df95db52feb4daf4eca35380933',
         },
         {
           url: '/android-chrome-192x192.png',
