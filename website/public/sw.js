@@ -1,30 +1,30 @@
 if (!self.define) {
   let e,
     s = {}
-  const c = (c, n) => (
-    (c = new URL(c + '.js', n).href),
-    s[c] ||
+  const n = (n, c) => (
+    (n = new URL(n + '.js', c).href),
+    s[n] ||
       new Promise((s) => {
         if ('document' in self) {
           const e = document.createElement('script')
-          ;(e.src = c), (e.onload = s), document.head.appendChild(e)
-        } else (e = c), importScripts(c), s()
+          ;(e.src = n), (e.onload = s), document.head.appendChild(e)
+        } else (e = n), importScripts(n), s()
       }).then(() => {
-        let e = s[c]
-        if (!e) throw new Error(`Module ${c} didn’t register its module`)
+        let e = s[n]
+        if (!e) throw new Error(`Module ${n} didn’t register its module`)
         return e
       })
   )
-  self.define = (n, a) => {
-    const i =
+  self.define = (c, i) => {
+    const a =
       e ||
       ('document' in self ? document.currentScript.src : '') ||
       location.href
-    if (s[i]) return
+    if (s[a]) return
     let t = {}
-    const r = (e) => c(e, i),
-      o = { module: { uri: i }, exports: t, require: r }
-    s[i] = Promise.all(n.map((e) => o[e] || r(e))).then((e) => (a(...e), t))
+    const r = (e) => n(e, a),
+      o = { module: { uri: a }, exports: t, require: r }
+    s[a] = Promise.all(c.map((e) => o[e] || r(e))).then((e) => (i(...e), t))
   }
 }
 define(['./workbox-588899ac'], function (e) {
@@ -34,14 +34,6 @@ define(['./workbox-588899ac'], function (e) {
     e.clientsClaim(),
     e.precacheAndRoute(
       [
-        {
-          url: '/_next/static/6HGR7rEYOY1rEca9mud9d/_buildManifest.js',
-          revision: '98b86494f6aa06abc33835ab5f6cba36',
-        },
-        {
-          url: '/_next/static/6HGR7rEYOY1rEca9mud9d/_ssgManifest.js',
-          revision: 'b6652df95db52feb4daf4eca35380933',
-        },
         {
           url: '/_next/static/chunks/139-1de889f521a7e339.js',
           revision: '1de889f521a7e339',
@@ -123,8 +115,8 @@ define(['./workbox-588899ac'], function (e) {
           revision: '49b9cef85e85f34d',
         },
         {
-          url: '/_next/static/chunks/pages/_app-a1f1448c6fb38495.js',
-          revision: 'a1f1448c6fb38495',
+          url: '/_next/static/chunks/pages/_app-b4880d79db8106e6.js',
+          revision: 'b4880d79db8106e6',
         },
         {
           url: '/_next/static/chunks/pages/_error-a4ba2246ff8fb532.js',
@@ -177,6 +169,14 @@ define(['./workbox-588899ac'], function (e) {
         {
           url: '/_next/static/css/df4862f22178cc0c.css',
           revision: 'df4862f22178cc0c',
+        },
+        {
+          url: '/_next/static/g_y0E9PPJc3O4EOR_ZbFz/_buildManifest.js',
+          revision: '98b86494f6aa06abc33835ab5f6cba36',
+        },
+        {
+          url: '/_next/static/g_y0E9PPJc3O4EOR_ZbFz/_ssgManifest.js',
+          revision: 'b6652df95db52feb4daf4eca35380933',
         },
         {
           url: '/android-chrome-192x192.png',
@@ -276,8 +276,8 @@ define(['./workbox-588899ac'], function (e) {
             cacheWillUpdate: async ({
               request: e,
               response: s,
-              event: c,
-              state: n,
+              event: n,
+              state: c,
             }) =>
               s && 'opaqueredirect' === s.type
                 ? new Response(s.body, {

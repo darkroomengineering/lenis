@@ -61,7 +61,10 @@ function MyApp({ Component, pageProps }) {
   // }, [isMobile])
 
   useEffect(() => {
-    if (lenis) ScrollTrigger.refresh()
+    if (lenis) {
+      ScrollTrigger.refresh()
+      lenis?.start()
+    }
   }, [lenis])
 
   useEffect(() => {
