@@ -41,19 +41,8 @@ const Leva = dynamic(() => import('leva').then(({ Leva }) => Leva), {
 function MyApp({ Component, pageProps }) {
   const debug = useDebug()
   const lenis = useStore(({ lenis }) => lenis)
-  const overflow = useStore(({ overflow }) => overflow)
 
   useScroll(ScrollTrigger.update)
-
-  useEffect(() => {
-    if (overflow) {
-      lenis?.start()
-      document.documentElement.style.removeProperty('overflow')
-    } else {
-      lenis?.stop()
-      document.documentElement.style.setProperty('overflow', 'hidden')
-    }
-  }, [lenis, overflow])
 
   useEffect(() => {
     if (lenis) {

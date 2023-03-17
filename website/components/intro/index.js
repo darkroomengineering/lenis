@@ -20,6 +20,7 @@ export const Intro = () => {
 
   useEffect(() => {
     if (isMobile) {
+      lenis.start()
       document.documentElement.classList.toggle('intro', false)
       return
     }
