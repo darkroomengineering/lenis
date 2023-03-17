@@ -29,16 +29,16 @@ export const Intro = () => {
     }
 
     if (!lenis) return
-    // if (scroll) {
-    //   lenis.start()
-    //   document.documentElement.classList.toggle('intro', false)
-    // } else {
-    //   setTimeout(() => {
-    //     lenis.stop()
-    //   }, 0)
+    if (scroll) {
+      lenis.start()
+      document.documentElement.classList.toggle('intro', false)
+    } else {
+      setTimeout(() => {
+        lenis.stop()
+      }, 0)
 
-    //   document.documentElement.classList.toggle('intro', true)
-    // }
+      document.documentElement.classList.toggle('intro', true)
+    }
   }, [scroll, lenis, isMobile])
 
   return (

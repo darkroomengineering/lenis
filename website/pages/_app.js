@@ -3,6 +3,7 @@ import { raf } from '@studio-freight/tempus'
 import { RealViewport } from 'components/real-viewport'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/dist/ScrollTrigger'
+import { useScroll } from 'hooks/use-scroll'
 import { GTM_ID } from 'lib/analytics'
 import { useStore } from 'lib/store'
 import dynamic from 'next/dynamic'
@@ -38,27 +39,21 @@ const Leva = dynamic(() => import('leva').then(({ Leva }) => Leva), {
 })
 
 function MyApp({ Component, pageProps }) {
-  // const isMobile = useMediaQuery('(max-width: 800px)')
   const debug = useDebug()
   const lenis = useStore(({ lenis }) => lenis)
-  // const overflow = useStore(({ overflow }) => overflow)
-  // const setOverflow = useStore(({ setOverflow }) => setOverflow)
+  const overflow = useStore(({ overflow }) => overflow)
 
-  // useScroll(ScrollTrigger.update)
+  useScroll(ScrollTrigger.update)
 
-  // useEffect(() => {
-  //   if (overflow) {
-  //     lenis?.start()
-  //     document.documentElement.style.removeProperty('overflow')
-  //   } else {
-  //     lenis?.stop()
-  //     document.documentElement.style.setProperty('overflow', 'hidden')
-  //   }
-  // }, [lenis, overflow])
-
-  // useEffect(() => {
-  //   if (isMobile) setOverflow(true)
-  // }, [isMobile])
+  useEffect(() => {
+    if (overflow) {
+      lenis?.start()
+      document.documentElement.style.removeProperty('overflow')
+    } else {
+      lenis?.stop()
+      document.documentElement.style.setProperty('overflow', 'hidden')
+    }
+  }, [lenis, overflow])
 
   useEffect(() => {
     if (lenis) {
