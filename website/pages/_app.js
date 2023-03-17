@@ -1,4 +1,4 @@
-import { useDebug } from '@studio-freight/hamo'
+import { useDebug, useMediaQuery } from '@studio-freight/hamo'
 import { raf } from '@studio-freight/tempus'
 import { RealViewport } from 'components/real-viewport'
 import { gsap } from 'gsap'
@@ -39,9 +39,11 @@ const Leva = dynamic(() => import('leva').then(({ Leva }) => Leva), {
 })
 
 function MyApp({ Component, pageProps }) {
+  const isMobile = useMediaQuery('(max-width: 800px)')
   const debug = useDebug()
   const lenis = useStore(({ lenis }) => lenis)
   const overflow = useStore(({ overflow }) => overflow)
+  const setOverflow = useStore(({ setOverflow }) => setOverflow)
 
   useScroll(ScrollTrigger.update)
 
@@ -54,6 +56,10 @@ function MyApp({ Component, pageProps }) {
       document.documentElement.style.setProperty('overflow', 'hidden')
     }
   }, [lenis, overflow])
+
+  useEffect(() => {
+    if (!isMobile) setOverflow(true)
+  }, [isMobile])
 
   useEffect(() => {
     if (lenis) ScrollTrigger.refresh()

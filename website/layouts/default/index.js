@@ -35,7 +35,6 @@ export function Layout({
     const lenis = new Lenis()
     window.lenis = lenis
     setLenis(lenis)
-    lenis.start()
 
     // new ScrollSnap(lenis, { type: 'proximity' })
 
