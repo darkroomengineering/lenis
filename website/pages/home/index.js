@@ -6,7 +6,6 @@ import { Card } from 'components/card'
 import { Title } from 'components/intro'
 import { Link } from 'components/link'
 import { ListItem } from 'components/list-item'
-
 import { projects } from 'content/projects'
 import { useScroll } from 'hooks/use-scroll'
 import { Layout } from 'layouts/default'

@@ -1,40 +1,34 @@
-import { useStore } from 'lib/store'
 import NextLink from 'next/link'
-import { forwardRef } from 'react'
+import { forwardRef, useMemo } from 'react'
+
+const SHALLOW_URLS = ['?demo=true']
 
 export const Link = forwardRef(
-  (
-    {
-      href,
-      onClick = () => {},
-      onMouseEnter = () => {},
-      onMouseLeave = () => {},
-      children,
-      className,
-      style,
-    },
-    ref
-  ) => {
+  ({ href, children, className, scroll, shallow, ...props }, ref) => {
     const attributes = {
       ref,
-      onClick,
-      onMouseEnter,
-      onMouseLeave,
       className,
-      style,
+      ...props,
     }
 
-    const setTriggerTransition = useStore(
-      ({ setTriggerTransition }) => setTriggerTransition
+    const isProtocol = useMemo(
+      () => href?.startsWith('mailto:') || href?.startsWith('tel:'),
+      [href]
     )
+
+    const needsShallow = useMemo(
+      () => !!SHALLOW_URLS.find((url) => href?.includes(url)),
+      [href]
+    )
+
+    const isAnchor = useMemo(() => href?.startsWith('#'), [href])
+    const isExternal = useMemo(() => href?.startsWith('http'), [href])
 
     if (typeof href !== 'string') {
       return <button {...attributes}>{children}</button>
     }
 
-    const isProtocol = href?.startsWith('mailto:') || href?.startsWith('tel:')
-
-    if (isProtocol) {
+    if (isProtocol || isExternal) {
       return (
         <a
           {...attributes}
@@ -47,38 +41,13 @@ export const Link = forwardRef(
       )
     }
 
-    const isAnchor = href?.startsWith('#')
-    const isExternal = href?.startsWith('http')
-    if (!isExternal && !href?.startsWith('/')) {
-      href = `/${href}`
-    }
-
-    const needsShallow = (href) => {
-      // Add hrefs that don't need rerunnnig like modals
-      const urlsShallow = ['?demo=true']
-      return !!urlsShallow.find((url) => href.includes(url))
-    }
-
-    const noTransition = (href) => {
-      // Add hrefs that don't use page transition
-      const urlsTransition = ['gsap']
-      return !!urlsTransition.find((url) => href.includes(url))
-    }
-
     return (
       <NextLink
         href={href}
-        passHref={isExternal || isAnchor}
-        shallow={needsShallow(href)}
+        passHref={isAnchor}
+        shallow={needsShallow || shallow}
+        scroll={scroll}
         {...attributes}
-        onClick={(e) => {
-          if (isExternal || isAnchor) return
-          if (!noTransition(href)) {
-            e.preventDefault()
-            setTriggerTransition(href)
-          }
-          onClick()
-        }}
         {...(isExternal && { target: '_blank', rel: 'noopener noreferrer' })}
       >
         {children}

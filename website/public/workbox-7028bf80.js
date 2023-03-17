@@ -183,31 +183,43 @@ define(['exports'], function (t) {
     },
     f = (t) =>
       [l.prefix, t, l.suffix].filter((t) => t && t.length > 0).join('-'),
-    w = (t) => t || f(l.precache),
-    d = (t) => t || f(l.runtime)
-  function p(t, e) {
+    w = {
+      updateDetails: (t) => {
+        ;((t) => {
+          for (const e of Object.keys(l)) t(e)
+        })((e) => {
+          'string' == typeof t[e] && (l[e] = t[e])
+        })
+      },
+      getGoogleAnalyticsName: (t) => t || f(l.googleAnalytics),
+      getPrecacheName: (t) => t || f(l.precache),
+      getPrefix: () => l.prefix,
+      getRuntimeName: (t) => t || f(l.runtime),
+      getSuffix: () => l.suffix,
+    }
+  function d(t, e) {
     const s = new URL(t)
     for (const t of e) s.searchParams.delete(t)
     return s.href
   }
-  class y {
+  class p {
     constructor() {
       this.promise = new Promise((t, e) => {
         ;(this.resolve = t), (this.reject = e)
       })
     }
   }
-  const g = new Set()
-  function m(t) {
+  const y = new Set()
+  function g(t) {
     return 'string' == typeof t ? new Request(t) : t
   }
-  class v {
+  class m {
     constructor(t, e) {
       ;(this.h = {}),
         Object.assign(this, e),
         (this.event = e.event),
         (this.u = t),
-        (this.l = new y()),
+        (this.l = new p()),
         (this.p = []),
         (this.g = [...t.plugins]),
         (this.m = new Map())
@@ -216,7 +228,7 @@ define(['exports'], function (t) {
     }
     async fetch(t) {
       const { event: e } = this
-      let n = m(t)
+      let n = g(t)
       if (
         'navigate' === n.mode &&
         e instanceof FetchEvent &&
@@ -261,7 +273,7 @@ define(['exports'], function (t) {
       return this.waitUntil(this.cachePut(t, s)), e
     }
     async cacheMatch(t) {
-      const e = m(t)
+      const e = g(t)
       let s
       const { cacheName: n, matchOptions: r } = this.u,
         i = await this.getCacheKey(e, 'read'),
@@ -279,7 +291,7 @@ define(['exports'], function (t) {
       return s
     }
     async cachePut(t, e) {
-      const n = m(t)
+      const n = g(t)
       var r
       await ((r = 0), new Promise((t) => setTimeout(t, r)))
       const i = await this.getCacheKey(n, 'write')
@@ -293,20 +305,20 @@ define(['exports'], function (t) {
             )),
         })
       var a
-      const o = await this.v(e)
+      const o = await this.R(e)
       if (!o) return !1
       const { cacheName: c, matchOptions: h } = this.u,
         u = await self.caches.open(c),
         l = this.hasCallback('cacheDidUpdate'),
         f = l
           ? await (async function (t, e, s, n) {
-              const r = p(e.url, s)
+              const r = d(e.url, s)
               if (e.url === r) return t.match(e, n)
               const i = Object.assign(Object.assign({}, n), {
                   ignoreSearch: !0,
                 }),
                 a = await t.keys(e, i)
-              for (const e of a) if (r === p(e.url, s)) return t.match(e, n)
+              for (const e of a) if (r === d(e.url, s)) return t.match(e, n)
             })(u, i.clone(), ['__WB_REVISION__'], h)
           : null
       try {
@@ -316,7 +328,7 @@ define(['exports'], function (t) {
           throw (
             ('QuotaExceededError' === t.name &&
               (await (async function () {
-                for (const t of g) await t()
+                for (const t of y) await t()
               })()),
             t)
           )
@@ -336,7 +348,7 @@ define(['exports'], function (t) {
       if (!this.h[s]) {
         let n = t
         for (const t of this.iterateCallbacks('cacheKeyWillBeUsed'))
-          n = m(
+          n = g(
             await t({
               mode: e,
               request: n,
@@ -376,7 +388,7 @@ define(['exports'], function (t) {
     destroy() {
       this.l.resolve(null)
     }
-    async v(t) {
+    async R(t) {
       let e = t,
         s = !1
       for (const t of this.iterateCallbacks('cacheWillUpdate'))
@@ -396,7 +408,7 @@ define(['exports'], function (t) {
   }
   class R {
     constructor(t = {}) {
-      ;(this.cacheName = d(t.cacheName)),
+      ;(this.cacheName = w.getRuntimeName(t.cacheName)),
         (this.plugins = t.plugins || []),
         (this.fetchOptions = t.fetchOptions),
         (this.matchOptions = t.matchOptions)
@@ -410,11 +422,11 @@ define(['exports'], function (t) {
       const e = t.event,
         s = 'string' == typeof t.request ? new Request(t.request) : t.request,
         n = 'params' in t ? t.params : void 0,
-        r = new v(this, { event: e, request: s, params: n }),
-        i = this.R(r, s, e)
+        r = new m(this, { event: e, request: s, params: n }),
+        i = this.v(r, s, e)
       return [i, this.q(i, r, s, e)]
     }
-    async R(t, e, n) {
+    async v(t, e, n) {
       let r
       await t.runCallbacks('handlerWillStart', { event: n, request: e })
       try {
@@ -458,12 +470,12 @@ define(['exports'], function (t) {
         throw i
     }
   }
-  function b(t) {
+  function v(t) {
     t.then(() => {})
   }
-  function q() {
+  function b() {
     return (
-      (q = Object.assign
+      (b = Object.assign
         ? Object.assign.bind()
         : function (t) {
             for (var e = 1; e < arguments.length; e++) {
@@ -473,20 +485,21 @@ define(['exports'], function (t) {
             }
             return t
           }),
-      q.apply(this, arguments)
+      b.apply(this, arguments)
     )
   }
+  const q = (t, e) => e.some((e) => t instanceof e)
   let D, U
   const x = new WeakMap(),
+    N = new WeakMap(),
     L = new WeakMap(),
     I = new WeakMap(),
-    C = new WeakMap(),
-    E = new WeakMap()
-  let N = {
+    C = new WeakMap()
+  let E = {
     get(t, e, s) {
       if (t instanceof IDBTransaction) {
-        if ('done' === e) return L.get(t)
-        if ('objectStoreNames' === e) return t.objectStoreNames || I.get(t)
+        if ('done' === e) return N.get(t)
+        if ('objectStoreNames' === e) return t.objectStoreNames || L.get(t)
         if ('store' === e)
           return s.objectStoreNames[1]
             ? void 0
@@ -518,7 +531,7 @@ define(['exports'], function (t) {
           }
       : function (e, ...s) {
           const n = t.call(B(this), e, ...s)
-          return I.set(n, e.sort ? e.sort() : [e]), k(n)
+          return L.set(n, e.sort ? e.sort() : [e]), k(n)
         }
   }
   function T(t) {
@@ -526,7 +539,7 @@ define(['exports'], function (t) {
       ? O(t)
       : (t instanceof IDBTransaction &&
           (function (t) {
-            if (L.has(t)) return
+            if (N.has(t)) return
             const e = new Promise((e, s) => {
               const n = () => {
                   t.removeEventListener('complete', r),
@@ -544,22 +557,21 @@ define(['exports'], function (t) {
                 t.addEventListener('error', i),
                 t.addEventListener('abort', i)
             })
-            L.set(t, e)
+            N.set(t, e)
           })(t),
-        (e = t),
-        (
+        q(
+          t,
           D ||
-          (D = [
-            IDBDatabase,
-            IDBObjectStore,
-            IDBIndex,
-            IDBCursor,
-            IDBTransaction,
-          ])
-        ).some((t) => e instanceof t)
-          ? new Proxy(t, N)
+            (D = [
+              IDBDatabase,
+              IDBObjectStore,
+              IDBIndex,
+              IDBCursor,
+              IDBTransaction,
+            ])
+        )
+          ? new Proxy(t, E)
           : t)
-    var e
   }
   function k(t) {
     if (t instanceof IDBRequest)
@@ -583,15 +595,15 @@ define(['exports'], function (t) {
               e instanceof IDBCursor && x.set(e, t)
             })
             .catch(() => {}),
-          E.set(e, t),
+          C.set(e, t),
           e
         )
       })(t)
-    if (C.has(t)) return C.get(t)
+    if (I.has(t)) return I.get(t)
     const e = T(t)
-    return e !== t && (C.set(t, e), E.set(e, t)), e
+    return e !== t && (I.set(t, e), C.set(e, t)), e
   }
-  const B = (t) => E.get(t)
+  const B = (t) => C.get(t)
   const P = ['get', 'getKey', 'getAll', 'getAllKeys', 'count'],
     M = ['put', 'add', 'delete', 'clear'],
     W = new Map()
@@ -616,11 +628,11 @@ define(['exports'], function (t) {
     }
     return W.set(e, i), i
   }
-  N = ((t) =>
-    q({}, t, {
+  E = ((t) =>
+    b({}, t, {
       get: (e, s, n) => j(e, s) || t.get(e, s, n),
       has: (e, s) => !!j(e, s) || t.has(e, s),
-    }))(N)
+    }))(E)
   try {
     self['workbox:expiration:6.5.3'] && _()
   } catch (t) {}
@@ -633,13 +645,13 @@ define(['exports'], function (t) {
     constructor(t) {
       ;(this.U = null), (this._ = t)
     }
-    L(t) {
+    N(t) {
       const e = t.createObjectStore(S, { keyPath: 'id' })
       e.createIndex('cacheName', 'cacheName', { unique: !1 }),
         e.createIndex('timestamp', 'timestamp', { unique: !1 })
     }
-    I(t) {
-      this.L(t),
+    L(t) {
+      this.N(t),
         this._ &&
           (function (t, { blocked: e } = {}) {
             const s = indexedDB.deleteDatabase(t)
@@ -652,7 +664,7 @@ define(['exports'], function (t) {
           url: (t = K(t)),
           timestamp: e,
           cacheName: this._,
-          id: this.C(t),
+          id: this.I(t),
         },
         n = (await this.getDb()).transaction(S, 'readwrite', {
           durability: 'relaxed',
@@ -661,7 +673,7 @@ define(['exports'], function (t) {
     }
     async getTimestamp(t) {
       const e = await this.getDb(),
-        s = await e.get(S, this.C(t))
+        s = await e.get(S, this.I(t))
       return null == s ? void 0 : s.timestamp
     }
     async expireEntries(t, e) {
@@ -682,7 +694,7 @@ define(['exports'], function (t) {
       for (const t of r) await s.delete(S, t.id), a.push(t.url)
       return a
     }
-    C(t) {
+    I(t) {
       return this._ + '|' + K(t)
     }
     async getDb() {
@@ -721,14 +733,14 @@ define(['exports'], function (t) {
                 .catch(() => {}),
               o
             )
-          })('workbox-expiration', 1, { upgrade: this.I.bind(this) })),
+          })('workbox-expiration', 1, { upgrade: this.L.bind(this) })),
         this.U
       )
     }
   }
   class F {
     constructor(t, e = {}) {
-      ;(this.N = !1),
+      ;(this.C = !1),
         (this.O = !1),
         (this.T = e.maxEntries),
         (this.k = e.maxAgeSeconds),
@@ -737,13 +749,13 @@ define(['exports'], function (t) {
         (this.P = new A(t))
     }
     async expireEntries() {
-      if (this.N) return void (this.O = !0)
-      this.N = !0
+      if (this.C) return void (this.O = !0)
+      this.C = !0
       const t = this.k ? Date.now() - 1e3 * this.k : 0,
         e = await this.P.expireEntries(t, this.T),
         s = await self.caches.open(this._)
       for (const t of e) await s.delete(t, this.B)
-      ;(this.N = !1), this.O && ((this.O = !1), b(this.expireEntries()))
+      ;(this.C = !1), this.O && ((this.O = !1), v(this.expireEntries()))
     }
     async updateTimestamp(t) {
       await this.P.setTimestamp(t, Date.now())
@@ -826,7 +838,8 @@ define(['exports'], function (t) {
   try {
     self['workbox:precaching:6.5.3'] && _()
   } catch (t) {}
-  function z(t) {
+  const z = '__WB_REVISION__'
+  function G(t) {
     if (!t) throw new s('add-to-cache-list-unexpected-type', { entry: t })
     if ('string' == typeof t) {
       const e = new URL(t, location.href)
@@ -840,12 +853,9 @@ define(['exports'], function (t) {
     }
     const r = new URL(n, location.href),
       i = new URL(n, location.href)
-    return (
-      r.searchParams.set('__WB_REVISION__', e),
-      { cacheKey: r.href, url: i.href }
-    )
+    return r.searchParams.set(z, e), { cacheKey: r.href, url: i.href }
   }
-  class G {
+  class V {
     constructor() {
       ;(this.updatedURLs = []),
         (this.notUpdatedURLs = []),
@@ -870,7 +880,7 @@ define(['exports'], function (t) {
         })
     }
   }
-  class V {
+  class J {
     constructor({ precacheController: t }) {
       ;(this.cacheKeyWillBeUsed = async ({ request: t, params: e }) => {
         const s =
@@ -880,8 +890,8 @@ define(['exports'], function (t) {
         (this.M = t)
     }
   }
-  let J, Q
-  async function X(t, e) {
+  let Q, X
+  async function Y(t, e) {
     let n = null
     if (t.url) {
       n = new URL(t.url).origin
@@ -896,28 +906,28 @@ define(['exports'], function (t) {
       },
       a = e ? e(i) : i,
       o = (function () {
-        if (void 0 === J) {
+        if (void 0 === Q) {
           const t = new Response('')
           if ('body' in t)
             try {
-              new Response(t.body), (J = !0)
+              new Response(t.body), (Q = !0)
             } catch (t) {
-              J = !1
+              Q = !1
             }
-          J = !1
+          Q = !1
         }
-        return J
+        return Q
       })()
         ? r.body
         : await r.blob()
     return new Response(o, a)
   }
-  class Y extends R {
+  class Z extends R {
     constructor(t = {}) {
-      ;(t.cacheName = w(t.cacheName)),
+      ;(t.cacheName = w.getPrecacheName(t.cacheName)),
         super(t),
         (this.W = !1 !== t.fallbackToNetwork),
-        this.plugins.push(Y.copyRedirectedCacheableResponsesPlugin)
+        this.plugins.push(Z.copyRedirectedCacheableResponsesPlugin)
     }
     async D(t, e) {
       const s = await e.cacheMatch(t)
@@ -961,23 +971,23 @@ define(['exports'], function (t) {
       let t = null,
         e = 0
       for (const [s, n] of this.plugins.entries())
-        n !== Y.copyRedirectedCacheableResponsesPlugin &&
-          (n === Y.defaultPrecacheCacheabilityPlugin && (t = s),
+        n !== Z.copyRedirectedCacheableResponsesPlugin &&
+          (n === Z.defaultPrecacheCacheabilityPlugin && (t = s),
           n.cacheWillUpdate && e++)
       0 === e
-        ? this.plugins.push(Y.defaultPrecacheCacheabilityPlugin)
+        ? this.plugins.push(Z.defaultPrecacheCacheabilityPlugin)
         : e > 1 && null !== t && this.plugins.splice(t, 1)
     }
   }
-  ;(Y.defaultPrecacheCacheabilityPlugin = {
+  ;(Z.defaultPrecacheCacheabilityPlugin = {
     cacheWillUpdate: async ({ response: t }) =>
       !t || t.status >= 400 ? null : t,
   }),
-    (Y.copyRedirectedCacheableResponsesPlugin = {
+    (Z.copyRedirectedCacheableResponsesPlugin = {
       cacheWillUpdate: async ({ response: t }) =>
-        t.redirected ? await X(t) : t,
+        t.redirected ? await Y(t) : t,
     })
-  class Z {
+  class tt {
     constructor({
       cacheName: t,
       plugins: e = [],
@@ -986,9 +996,9 @@ define(['exports'], function (t) {
       ;(this.A = new Map()),
         (this.F = new Map()),
         (this.H = new Map()),
-        (this.u = new Y({
-          cacheName: w(t),
-          plugins: [...e, new V({ precacheController: this })],
+        (this.u = new Z({
+          cacheName: w.getPrecacheName(t),
+          plugins: [...e, new J({ precacheController: this })],
           fallbackToNetwork: s,
         })),
         (this.install = this.install.bind(this)),
@@ -1010,7 +1020,7 @@ define(['exports'], function (t) {
         'string' == typeof n
           ? e.push(n)
           : n && void 0 === n.revision && e.push(n.url)
-        const { cacheKey: t, url: r } = z(n),
+        const { cacheKey: t, url: r } = G(n),
           i = 'string' != typeof n && n.revision ? 'reload' : 'default'
         if (this.A.has(r) && this.A.get(r) !== t)
           throw new s('add-to-cache-list-conflicting-entries', {
@@ -1032,7 +1042,7 @@ define(['exports'], function (t) {
     }
     install(t) {
       return $(t, async () => {
-        const e = new G()
+        const e = new V()
         this.strategy.plugins.push(e)
         for (const [e, s] of this.A) {
           const n = this.H.get(s),
@@ -1094,8 +1104,8 @@ define(['exports'], function (t) {
       )
     }
   }
-  const tt = () => (Q || (Q = new Z()), Q)
-  class et extends r {
+  const et = () => (X || (X = new tt()), X)
+  class st extends r {
     constructor(t, e) {
       super(({ request: s }) => {
         const n = t.getURLsToCacheKeys()
@@ -1136,6 +1146,12 @@ define(['exports'], function (t) {
       }, t.strategy)
     }
   }
+  const nt = async (t, e = '-precache-') => {
+    const s = (await self.caches.keys()).filter(
+      (s) => s.includes(e) && s.includes(self.registration.scope) && s !== t
+    )
+    return await Promise.all(s.map((t) => self.caches.delete(t))), s
+  }
   ;(t.CacheFirst = class extends R {
     async D(t, e) {
       let n,
@@ -1161,7 +1177,7 @@ define(['exports'], function (t) {
           if (!n) return null
           const r = this.G(n),
             i = this.V(s)
-          b(i.expireEntries())
+          v(i.expireEntries())
           const a = i.updateTimestamp(e.url)
           if (t)
             try {
@@ -1178,11 +1194,11 @@ define(['exports'], function (t) {
           (this.X = new Map()),
           t.purgeOnQuotaError &&
             (function (t) {
-              g.add(t)
+              y.add(t)
             })(() => this.deleteCacheAndMetadata())
       }
       V(t) {
-        if (t === d()) throw new s('expire-custom-caches-only')
+        if (t === w.getRuntimeName()) throw new s('expire-custom-caches-only')
         let e = this.X.get(t)
         return e || ((e = new F(t, this.J)), this.X.set(t, e)), e
       }
@@ -1284,16 +1300,8 @@ define(['exports'], function (t) {
     }),
     (t.cleanupOutdatedCaches = function () {
       self.addEventListener('activate', (t) => {
-        const e = w()
-        t.waitUntil(
-          (async (t, e = '-precache-') => {
-            const s = (await self.caches.keys()).filter(
-              (s) =>
-                s.includes(e) && s.includes(self.registration.scope) && s !== t
-            )
-            return await Promise.all(s.map((t) => self.caches.delete(t))), s
-          })(e).then((t) => {})
-        )
+        const e = w.getPrecacheName()
+        t.waitUntil(nt(e).then((t) => {}))
       })
     }),
     (t.clientsClaim = function () {
@@ -1301,11 +1309,11 @@ define(['exports'], function (t) {
     }),
     (t.precacheAndRoute = function (t, e) {
       !(function (t) {
-        tt().precache(t)
+        et().precache(t)
       })(t),
         (function (t) {
-          const e = tt()
-          h(new et(e, t))
+          const e = et()
+          h(new st(e, t))
         })(e)
     }),
     (t.registerRoute = h)
