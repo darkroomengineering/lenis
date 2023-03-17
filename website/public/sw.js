@@ -1,30 +1,30 @@
 if (!self.define) {
   let e,
     s = {}
-  const n = (n, c) => (
-    (n = new URL(n + '.js', c).href),
-    s[n] ||
+  const c = (c, n) => (
+    (c = new URL(c + '.js', n).href),
+    s[c] ||
       new Promise((s) => {
         if ('document' in self) {
           const e = document.createElement('script')
-          ;(e.src = n), (e.onload = s), document.head.appendChild(e)
-        } else (e = n), importScripts(n), s()
+          ;(e.src = c), (e.onload = s), document.head.appendChild(e)
+        } else (e = c), importScripts(c), s()
       }).then(() => {
-        let e = s[n]
-        if (!e) throw new Error(`Module ${n} didn’t register its module`)
+        let e = s[c]
+        if (!e) throw new Error(`Module ${c} didn’t register its module`)
         return e
       })
   )
-  self.define = (c, i) => {
+  self.define = (n, i) => {
     const a =
       e ||
       ('document' in self ? document.currentScript.src : '') ||
       location.href
     if (s[a]) return
     let t = {}
-    const r = (e) => n(e, a),
-      f = { module: { uri: a }, exports: t, require: r }
-    s[a] = Promise.all(c.map((e) => f[e] || r(e))).then((e) => (i(...e), t))
+    const r = (e) => c(e, a),
+      o = { module: { uri: a }, exports: t, require: r }
+    s[a] = Promise.all(n.map((e) => o[e] || r(e))).then((e) => (i(...e), t))
   }
 }
 define(['./workbox-588899ac'], function (e) {
@@ -34,14 +34,6 @@ define(['./workbox-588899ac'], function (e) {
     e.clientsClaim(),
     e.precacheAndRoute(
       [
-        {
-          url: '/_next/static/19y2GlHI4b1y9_bjmUPYM/_buildManifest.js',
-          revision: 'ee29dfdf7afd38d16d30b1fdf9d707b4',
-        },
-        {
-          url: '/_next/static/19y2GlHI4b1y9_bjmUPYM/_ssgManifest.js',
-          revision: 'b6652df95db52feb4daf4eca35380933',
-        },
         {
           url: '/_next/static/chunks/139-1de889f521a7e339.js',
           revision: '1de889f521a7e339',
@@ -107,8 +99,8 @@ define(['./workbox-588899ac'], function (e) {
           revision: '640f6512083393d6',
         },
         {
-          url: '/_next/static/chunks/949-852d4cf171804213.js',
-          revision: '852d4cf171804213',
+          url: '/_next/static/chunks/949-ba95dd261ec80765.js',
+          revision: 'ba95dd261ec80765',
         },
         {
           url: '/_next/static/chunks/fb7d5399.79cfd94b6314e301.js',
@@ -123,8 +115,8 @@ define(['./workbox-588899ac'], function (e) {
           revision: '49b9cef85e85f34d',
         },
         {
-          url: '/_next/static/chunks/pages/_app-fee982ddb5daf432.js',
-          revision: 'fee982ddb5daf432',
+          url: '/_next/static/chunks/pages/_app-ecf1c080d4b33be7.js',
+          revision: 'ecf1c080d4b33be7',
         },
         {
           url: '/_next/static/chunks/pages/_error-a4ba2246ff8fb532.js',
@@ -177,6 +169,14 @@ define(['./workbox-588899ac'], function (e) {
         {
           url: '/_next/static/css/df4862f22178cc0c.css',
           revision: 'df4862f22178cc0c',
+        },
+        {
+          url: '/_next/static/qIoH3vBMDHjyWPUPZtExk/_buildManifest.js',
+          revision: '6f872a0187b25df14c38f28980c4bb23',
+        },
+        {
+          url: '/_next/static/qIoH3vBMDHjyWPUPZtExk/_ssgManifest.js',
+          revision: 'b6652df95db52feb4daf4eca35380933',
         },
         {
           url: '/android-chrome-192x192.png',
@@ -276,8 +276,8 @@ define(['./workbox-588899ac'], function (e) {
             cacheWillUpdate: async ({
               request: e,
               response: s,
-              event: n,
-              state: c,
+              event: c,
+              state: n,
             }) =>
               s && 'opaqueredirect' === s.type
                 ? new Response(s.body, {

@@ -58,7 +58,7 @@ function MyApp({ Component, pageProps }) {
   }, [lenis, overflow])
 
   useEffect(() => {
-    if (!isMobile) setOverflow(true)
+    if (isMobile) setOverflow(true)
   }, [isMobile])
 
   useEffect(() => {
