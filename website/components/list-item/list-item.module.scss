@@ -10,8 +10,10 @@
     overflow: hidden;
     display: flex;
     justify-content: space-between;
+    flex-direction: column;
 
     @include desktop {
+      flex-direction: row;
       align-items: center;
       padding: desktop-vw(16px) 0;
     }
@@ -54,6 +56,7 @@
     transition: transform 600ms var(--ease-out-expo);
     // will-change: transform;
     overflow: hidden;
+    flex-shrink: 0;
 
     .text {
       font-weight: 500;
@@ -62,6 +65,7 @@
       letter-spacing: -0.03em;
 
       @include mobile {
+        max-width: 70%;
         margin-bottom: mobile-vw(8px);
       }
 
@@ -75,6 +79,10 @@
       aspect-ratio: 1 / 1;
       margin-left: auto;
       width: mobile-vw(19px);
+
+      @include mobile {
+        flex-shrink: 0;
+      }
 
       @include desktop {
         transform: translate(-20%, 20%);
