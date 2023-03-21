@@ -19,16 +19,16 @@
   "devDependencies": {
     "@size-limit/preset-small-lib": "^8.2.4",
     "husky": "^8.0.3",
-    "lint-staged": "^13.1.2",
+    "lint-staged": "^13.2.0",
     "microbundle": "^0.15.1",
+    "npm-run-all": "^4.1.5",
     "path": "^0.12.7",
-    "prettier": "^2.8.4",
-    "rimraf": "^4.3.1",
+    "prettier": "^2.8.6",
+    "rimraf": "^4.4.0",
     "size-limit": "^8.2.4",
     "stats.js": "^0.17.0",
-    "typescript": "^4.9.5",
-    "npm-run-all": "^4.1.5",
-    "vite": "^4.1.4"
+    "typescript": "^5.0.2",
+    "vite": "^4.2.1"
   },
   "author": "studio-freight",
   "repository": {

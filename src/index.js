@@ -261,7 +261,7 @@ export default class Lenis {
       duration = this.options.duration,
       easing = this.options.easing,
       lerp = !duration && this.options.lerp,
-      onComplete,
+      onComplete = null,
       force = false, // scroll even if stopped
       programmatic = true, // called from outside of the class
     } = {}

@@ -104,7 +104,7 @@ export default class Lenis {
         duration?: number;
         easing?: (t: number) => number;
         lerp?: number;
-        onComplete: any;
+        onComplete?: any;
         force?: boolean;
         programmatic?: boolean;
     }): void;
@@ -118,6 +118,6 @@ export default class Lenis {
     __isScrolling: any;
     __isStopped: any;
 }
-import { ObservedElement } from "./observed-element";
-import { Animate } from "./animate";
-import { VirtualScroll } from "./virtual-scroll";
+import { ObservedElement } from './observed-element';
+import { Animate } from './animate';
+import { VirtualScroll } from './virtual-scroll';
