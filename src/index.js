@@ -32,6 +32,7 @@ export default class Lenis {
    *
    * @property {Window | HTMLElement} [wrapper]
    * @property {HTMLElement} [content]
+   * @property {Window | HTMLElement | null} [listenerTarget]
    * @property {boolean} [smoothWheel]
    * @property {boolean} [smoothTouch]
    * @property {number} [duration]
@@ -55,6 +56,7 @@ export default class Lenis {
     //--legacy options--//
     wrapper = window,
     content = document.documentElement,
+    listenerTarget = null,
     smoothWheel = smooth ?? true,
     smoothTouch = false,
     duration, // in seconds
@@ -95,10 +97,16 @@ export default class Lenis {
     if (wrapper === document.documentElement || wrapper === document.body) {
       wrapper = window
     }
+    
+    // if unset, simply use the wrapper
+    if (listenerTarget === null) {
+      listenerTarget = wrapper;
+    }
 
     this.options = {
       wrapper,
       content,
+      listenerTarget,
       smoothWheel,
       smoothTouch,
       duration,
@@ -114,6 +122,7 @@ export default class Lenis {
 
     this.wrapper = new ObservedElement(wrapper)
     this.content = new ObservedElement(content)
+    this.listenerTarget = new ObservedElement(listenerTarget);
 
     this.rootElement.classList.add('lenis')
 
@@ -125,11 +134,11 @@ export default class Lenis {
     this.animate = new Animate()
     this.emitter = createNanoEvents()
 
-    this.wrapper.element.addEventListener('scroll', this.onScroll, {
+    this.listenerTarget.element.addEventListener('scroll', this.onScroll, {
       passive: false,
     })
 
-    this.virtualScroll = new VirtualScroll(wrapper, {
+    this.virtualScroll = new VirtualScroll(listenerTarget, {
       touchMultiplier,
       wheelMultiplier,
       normalizeWheel,
@@ -140,7 +149,7 @@ export default class Lenis {
   destroy() {
     this.emitter.events = {}
 
-    this.wrapper.element.removeEventListener('scroll', this.onScroll, {
+    this.listenerTarget.element.removeEventListener('scroll', this.onScroll, {
       passive: false,
     })
 
