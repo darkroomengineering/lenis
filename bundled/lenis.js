@@ -121,6 +121,73 @@
     return Animate;
   }();
 
+  function debounce(callback, delay) {
+    var timer;
+    return function () {
+      var args = arguments;
+      var context = this;
+      clearTimeout(timer);
+      timer = setTimeout(function () {
+        callback.apply(context, args);
+      }, delay);
+    };
+  }
+
+  var Dimensions = /*#__PURE__*/function () {
+    function Dimensions(wrapper, content) {
+      var _this = this;
+      this.onWindowResize = function () {
+        _this.width = window.innerWidth;
+        _this.height = window.innerHeight;
+      };
+      this.onWrapperResize = function () {
+        _this.width = _this.wrapper.clientWidth;
+        _this.height = _this.wrapper.clientHeight;
+      };
+      this.onContentResize = function () {
+        if (_this.wrapper === window) {
+          _this.scrollHeight = document.documentElement.scrollHeight;
+          _this.scrollWidth = document.documentElement.scrollWidth;
+        } else {
+          _this.scrollHeight = _this.wrapper.scrollHeight;
+          _this.scrollWidth = _this.wrapper.scrollWidth;
+        }
+      };
+      this.wrapper = wrapper;
+      this.content = content;
+      if (this.wrapper === window) {
+        window.addEventListener('resize', this.onWindowResize, false);
+        this.onWindowResize();
+      } else {
+        this.width = this.wrapper.clientWidth;
+        this.height = this.wrapper.clientHeight;
+        this.scrollHeight = this.wrapper.scrollHeight;
+        this.scrollWidth = this.wrapper.scrollWidth;
+        this.wrapperResizeObserver = new ResizeObserver(debounce(this.onWrapperResize, 100));
+        this.wrapperResizeObserver.observe(this.wrapper);
+      }
+      this.contentResizeObserver = new ResizeObserver(debounce(this.onContentResize, 100));
+      this.contentResizeObserver.observe(this.content);
+    }
+    var _proto = Dimensions.prototype;
+    _proto.destroy = function destroy() {
+      var _this$wrapperResizeOb, _this$contentResizeOb;
+      window.removeEventListener('resize', this.onWindowResize, false);
+      (_this$wrapperResizeOb = this.wrapperResizeObserver) == null ? void 0 : _this$wrapperResizeOb.disconnect();
+      (_this$contentResizeOb = this.contentResizeObserver) == null ? void 0 : _this$contentResizeOb.disconnect();
+    };
+    _createClass(Dimensions, [{
+      key: "limit",
+      get: function get() {
+        return {
+          x: this.scrollWidth - this.width,
+          y: this.scrollHeight - this.height
+        };
+      }
+    }]);
+    return Dimensions;
+  }();
+
   var createNanoEvents = function createNanoEvents() {
     return {
       events: {},
@@ -148,49 +215,6 @@
       }
     };
   };
-
-  var ObservedElement = /*#__PURE__*/function () {
-    function ObservedElement(element) {
-      var _this = this;
-      // Update the width and height properties based on the observed element's size
-      this.onResize = function (_ref) {
-        var entry = _ref[0];
-        if (entry) {
-          var _entry$contentRect = entry.contentRect,
-            width = _entry$contentRect.width,
-            height = _entry$contentRect.height;
-          _this.width = width;
-          _this.height = height;
-        }
-      };
-      // Update the width and height properties based on the window's size
-      this.onWindowResize = function () {
-        _this.width = window.innerWidth;
-        _this.height = window.innerHeight;
-      };
-      this.element = element;
-
-      // If the element is the window, add a resize event listener and trigger it initially
-      if (element === window) {
-        window.addEventListener('resize', this.onWindowResize);
-        this.onWindowResize();
-      } else {
-        // If the element is not the window, observe its size using ResizeObserver
-        this.width = this.element.offsetWidth;
-        this.height = this.element.offsetHeight;
-        this.resizeObserver = new ResizeObserver(this.onResize);
-        this.resizeObserver.observe(this.element);
-      }
-    }
-
-    // Clean up event listeners and disconnect the ResizeObserver when destroying the instance
-    var _proto = ObservedElement.prototype;
-    _proto.destroy = function destroy() {
-      window.removeEventListener('resize', this.onWindowResize);
-      this.resizeObserver.disconnect();
-    };
-    return ObservedElement;
-  }();
 
   var VirtualScroll = /*#__PURE__*/function () {
     function VirtualScroll(element, _ref) {
@@ -311,6 +335,7 @@
      *
      * @property {Window | HTMLElement} [wrapper]
      * @property {HTMLElement} [content]
+     * @property {Window | HTMLElement} [wheelEventsTarget]
      * @property {boolean} [smoothWheel]
      * @property {boolean} [smoothTouch]
      * @property {number} [duration]
@@ -336,6 +361,8 @@
         wrapper = _ref$wrapper === void 0 ? window : _ref$wrapper,
         _ref$content = _ref.content,
         content = _ref$content === void 0 ? document.documentElement : _ref$content,
+        _ref$wheelEventsTarge = _ref.wheelEventsTarget,
+        wheelEventsTarget = _ref$wheelEventsTarge === void 0 ? wrapper : _ref$wheelEventsTarge,
         _ref$smoothWheel = _ref.smoothWheel,
         smoothWheel = _ref$smoothWheel === void 0 ? smooth != null ? smooth : true : _ref$smoothWheel,
         _ref$smoothTouch = _ref.smoothTouch,
@@ -358,7 +385,7 @@
         _ref$wheelMultiplier = _ref.wheelMultiplier,
         wheelMultiplier = _ref$wheelMultiplier === void 0 ? mouseMultiplier != null ? mouseMultiplier : 1 : _ref$wheelMultiplier,
         _ref$normalizeWheel = _ref.normalizeWheel,
-        normalizeWheel = _ref$normalizeWheel === void 0 ? true : _ref$normalizeWheel;
+        normalizeWheel = _ref$normalizeWheel === void 0 ? false : _ref$normalizeWheel;
       this.onVirtualScroll = function (_ref2) {
         var type = _ref2.type,
           deltaX = _ref2.deltaX,
@@ -426,6 +453,7 @@
       this.options = {
         wrapper: wrapper,
         content: content,
+        wheelEventsTarget: wheelEventsTarget,
         smoothWheel: smoothWheel,
         smoothTouch: smoothTouch,
         duration: duration,
@@ -438,8 +466,7 @@
         wheelMultiplier: wheelMultiplier,
         normalizeWheel: normalizeWheel
       };
-      this.wrapper = new ObservedElement(wrapper);
-      this.content = new ObservedElement(content);
+      this.dimensions = new Dimensions(wrapper, content);
       this.rootElement.classList.add('lenis');
       this.velocity = 0;
       this.isStopped = false;
@@ -448,10 +475,10 @@
       this.targetScroll = this.animatedScroll = this.actualScroll;
       this.animate = new Animate();
       this.emitter = createNanoEvents();
-      this.wrapper.element.addEventListener('scroll', this.onScroll, {
+      this.options.wrapper.addEventListener('scroll', this.onScroll, {
         passive: false
       });
-      this.virtualScroll = new VirtualScroll(wrapper, {
+      this.virtualScroll = new VirtualScroll(wheelEventsTarget, {
         touchMultiplier: touchMultiplier,
         wheelMultiplier: wheelMultiplier,
         normalizeWheel: normalizeWheel
@@ -461,7 +488,7 @@
     var _proto = Lenis.prototype;
     _proto.destroy = function destroy() {
       this.emitter.events = {};
-      this.wrapper.element.removeEventListener('scroll', this.onScroll, {
+      this.options.wrapper.removeEventListener('scroll', this.onScroll, {
         passive: false
       });
       this.virtualScroll.destroy();
@@ -490,6 +517,7 @@
       this.isLocked = false;
       this.isScrolling = false;
       this.velocity = 0;
+      this.animate.stop();
     };
     _proto.start = function start() {
       this.isStopped = false;
@@ -544,9 +572,9 @@
           node = target;
         }
         if (node) {
-          if (this.wrapper.element !== window) {
+          if (this.options.wrapper !== window) {
             // nested scroll offset correction
-            var wrapperRect = this.wrapper.element.getBoundingClientRect();
+            var wrapperRect = this.options.wrapper.getBoundingClientRect();
             offset -= this.isHorizontal ? wrapperRect.left : wrapperRect.top;
           }
           var rect = node.getBoundingClientRect();
@@ -566,13 +594,13 @@
       if (immediate) {
         this.animatedScroll = this.targetScroll = target;
         this.setScroll(this.scroll);
-        this.animate.stop();
         this.reset();
         this.emit();
         onComplete == null ? void 0 : onComplete();
         return;
       }
       if (!programmatic) {
+        if (target === this.targetScroll) return;
         this.targetScroll = target;
       }
       this.animate.fromTo(this.animatedScroll, target, {
@@ -612,12 +640,12 @@
     _createClass(Lenis, [{
       key: "rootElement",
       get: function get() {
-        return this.wrapper.element === window ? this.content.element : this.wrapper.element;
+        return this.options.wrapper === window ? this.options.content : this.options.wrapper;
       }
     }, {
       key: "limit",
       get: function get() {
-        return Math.round(this.isHorizontal ? this.content.width - this.wrapper.width : this.content.height - this.wrapper.height);
+        return this.isHorizontal ? this.dimensions.limit.x : this.dimensions.limit.y;
       }
     }, {
       key: "isHorizontal",
@@ -638,7 +666,8 @@
     }, {
       key: "progress",
       get: function get() {
-        return this.scroll / this.limit;
+        // avoid progress to be NaN
+        return this.limit === 0 ? 1 : this.scroll / this.limit;
       }
     }, {
       key: "isSmooth",

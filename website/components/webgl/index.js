@@ -375,33 +375,39 @@ export function Arm() {
     return Object.values(_thresholds).sort((a, b) => a - b)
   }, [_thresholds])
 
+  const [step, setStep] = useState(0)
+
+  useEffect(() => {
+    if (step === 0) {
+      setLights({
+        light1Intensity: 0.35,
+        light2Intensity: 0.15,
+        lightsColor: '#FF98A2',
+        ambientColor: '#FF98A2',
+      })
+      setMaterial({
+        color: '#b0b0b0',
+        roughness: 0.4,
+        metalness: 1,
+      })
+    } else {
+      setLights({
+        light1Intensity: 1,
+        light2Intensity: 1,
+        lightsColor: '#efefef',
+        ambientColor: '#b0B0B0',
+      })
+      setMaterial({
+        color: '#efefef',
+        roughness: 0.4,
+        metalness: 0.6,
+      })
+    }
+  }, [step])
+
   useScroll(
     ({ scroll }) => {
-      if (scroll < _thresholds['light-start']) {
-        setLights({
-          light1Intensity: 0.35,
-          light2Intensity: 0.15,
-          lightsColor: '#FF98A2',
-          ambientColor: '#FF98A2',
-        })
-        setMaterial({
-          color: '#b0b0b0',
-          roughness: 0.4,
-          metalness: 1,
-        })
-      } else {
-        setLights({
-          light1Intensity: 1,
-          light2Intensity: 1,
-          lightsColor: '#efefef',
-          ambientColor: '#b0B0B0',
-        })
-        setMaterial({
-          color: '#efefef',
-          roughness: 0.4,
-          metalness: 0.6,
-        })
-      }
+      setStep(scroll < _thresholds['light-start'] ? 0 : 1)
     },
     [_thresholds]
   )

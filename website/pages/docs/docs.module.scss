@@ -1,0 +1,17 @@
+.page {
+  height: 100vh;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  .wrapper {
+    height: 33vw;
+    width: 33vw;
+    overflow-y: auto;
+  }
+
+  .content {
+    font-size: 1.4vw;
+  }
+}

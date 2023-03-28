@@ -12,6 +12,7 @@ export default class Lenis {
      *
      * @property {Window | HTMLElement} [wrapper]
      * @property {HTMLElement} [content]
+     * @property {Window | HTMLElement} [wheelEventsTarget]
      * @property {boolean} [smoothWheel]
      * @property {boolean} [smoothTouch]
      * @property {number} [duration]
@@ -26,13 +27,14 @@ export default class Lenis {
      *
      * @param {LenisOptions}
      */
-    constructor({ direction, gestureDirection, mouseMultiplier, smooth, wrapper, content, smoothWheel, smoothTouch, duration, easing, lerp, infinite, orientation, gestureOrientation, touchMultiplier, wheelMultiplier, normalizeWheel, }?: {
+    constructor({ direction, gestureDirection, mouseMultiplier, smooth, wrapper, content, wheelEventsTarget, smoothWheel, smoothTouch, duration, easing, lerp, infinite, orientation, gestureOrientation, touchMultiplier, wheelMultiplier, normalizeWheel, }?: {
         direction?: "vertical" | "horizontal";
         gestureDirection?: "vertical" | "horizontal" | "both";
         mouseMultiplier?: number;
         smooth?: boolean;
         wrapper?: Window | HTMLElement;
         content?: HTMLElement;
+        wheelEventsTarget?: Window | HTMLElement;
         smoothWheel?: boolean;
         smoothTouch?: boolean;
         duration?: number;
@@ -48,6 +50,7 @@ export default class Lenis {
     options: {
         wrapper: Window | HTMLElement;
         content: HTMLElement;
+        wheelEventsTarget: Window | HTMLElement;
         smoothWheel: boolean;
         smoothTouch: boolean;
         duration: number;
@@ -60,8 +63,7 @@ export default class Lenis {
         wheelMultiplier: number;
         normalizeWheel: boolean;
     };
-    wrapper: ObservedElement;
-    content: ObservedElement;
+    dimensions: Dimensions;
     velocity: number;
     set isStopped(arg: any);
     get isStopped(): any;
@@ -108,7 +110,7 @@ export default class Lenis {
         force?: boolean;
         programmatic?: boolean;
     }): void;
-    get rootElement(): any;
+    get rootElement(): Window | HTMLElement;
     get limit(): number;
     get isHorizontal(): boolean;
     get actualScroll(): any;
@@ -118,6 +120,6 @@ export default class Lenis {
     __isScrolling: any;
     __isStopped: any;
 }
-import { ObservedElement } from './observed-element';
+import { Dimensions } from './dimensions';
 import { Animate } from './animate';
 import { VirtualScroll } from './virtual-scroll';

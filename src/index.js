@@ -1,8 +1,8 @@
 import { version } from '../package.json'
 import { Animate } from './animate'
+import { Dimensions } from './dimensions'
 import { clamp, clampedModulo } from './maths'
 import { createNanoEvents } from './nanoevents'
-import { ObservedElement } from './observed-element'
 import { VirtualScroll } from './virtual-scroll'
 
 // Technical explaination
@@ -32,6 +32,7 @@ export default class Lenis {
    *
    * @property {Window | HTMLElement} [wrapper]
    * @property {HTMLElement} [content]
+   * @property {Window | HTMLElement} [wheelEventsTarget]
    * @property {boolean} [smoothWheel]
    * @property {boolean} [smoothTouch]
    * @property {number} [duration]
@@ -55,6 +56,7 @@ export default class Lenis {
     //--legacy options--//
     wrapper = window,
     content = document.documentElement,
+    wheelEventsTarget = wrapper,
     smoothWheel = smooth ?? true,
     smoothTouch = false,
     duration, // in seconds
@@ -65,7 +67,7 @@ export default class Lenis {
     gestureOrientation = gestureDirection ?? 'vertical', // vertical, horizontal, both
     touchMultiplier = 2,
     wheelMultiplier = mouseMultiplier ?? 1,
-    normalizeWheel = true,
+    normalizeWheel = false,
   } = {}) {
     // warn about legacy options
     if (direction) {
@@ -99,6 +101,7 @@ export default class Lenis {
     this.options = {
       wrapper,
       content,
+      wheelEventsTarget,
       smoothWheel,
       smoothTouch,
       duration,
@@ -112,9 +115,7 @@ export default class Lenis {
       normalizeWheel,
     }
 
-    this.wrapper = new ObservedElement(wrapper)
-    this.content = new ObservedElement(content)
-
+    this.dimensions = new Dimensions(wrapper, content)
     this.rootElement.classList.add('lenis')
 
     this.velocity = 0
@@ -125,11 +126,11 @@ export default class Lenis {
     this.animate = new Animate()
     this.emitter = createNanoEvents()
 
-    this.wrapper.element.addEventListener('scroll', this.onScroll, {
+    this.options.wrapper.addEventListener('scroll', this.onScroll, {
       passive: false,
     })
 
-    this.virtualScroll = new VirtualScroll(wrapper, {
+    this.virtualScroll = new VirtualScroll(wheelEventsTarget, {
       touchMultiplier,
       wheelMultiplier,
       normalizeWheel,
@@ -140,7 +141,7 @@ export default class Lenis {
   destroy() {
     this.emitter.events = {}
 
-    this.wrapper.element.removeEventListener('scroll', this.onScroll, {
+    this.options.wrapper.removeEventListener('scroll', this.onScroll, {
       passive: false,
     })
 
@@ -230,6 +231,7 @@ export default class Lenis {
     this.isLocked = false
     this.isScrolling = false
     this.velocity = 0
+    this.animate.stop()
   }
 
   start() {
@@ -285,9 +287,9 @@ export default class Lenis {
       }
 
       if (node) {
-        if (this.wrapper.element !== window) {
+        if (this.options.wrapper !== window) {
           // nested scroll offset correction
-          const wrapperRect = this.wrapper.element.getBoundingClientRect()
+          const wrapperRect = this.options.wrapper.getBoundingClientRect()
           offset -= this.isHorizontal ? wrapperRect.left : wrapperRect.top
         }
 
@@ -314,7 +316,6 @@ export default class Lenis {
     if (immediate) {
       this.animatedScroll = this.targetScroll = target
       this.setScroll(this.scroll)
-      this.animate.stop()
       this.reset()
       this.emit()
       onComplete?.()
@@ -322,6 +323,8 @@ export default class Lenis {
     }
 
     if (!programmatic) {
+      if (target === this.targetScroll) return
+
       this.targetScroll = target
     }
 
@@ -363,17 +366,13 @@ export default class Lenis {
   }
 
   get rootElement() {
-    return this.wrapper.element === window
-      ? this.content.element
-      : this.wrapper.element
+    return this.options.wrapper === window
+      ? this.options.content
+      : this.options.wrapper
   }
 
   get limit() {
-    return Math.round(
-      this.isHorizontal
-        ? this.content.width - this.wrapper.width
-        : this.content.height - this.wrapper.height
-    )
+    return this.isHorizontal ? this.dimensions.limit.x : this.dimensions.limit.y
   }
 
   get isHorizontal() {
@@ -394,7 +393,8 @@ export default class Lenis {
   }
 
   get progress() {
-    return this.scroll / this.limit
+    // avoid progress to be NaN
+    return this.limit === 0 ? 1 : this.scroll / this.limit
   }
 
   get isSmooth() {
