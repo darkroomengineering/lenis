@@ -30,7 +30,7 @@ This is our take on smooth scroll, lightweight, hard-working, smooth as butter s
 | IntsersectionObserver       | ❌                                                                       | ❌                                                                                             | ✅                                                                           |
 | Open source                 | ✅                                                                       | ❌                                                                                             | ✅                                                                           |
 | Built-in animation system   | ✅                                                                       | ✅                                                                                             | ❌                                                                           |
-| Size (gzip)                 | [12.1KB](https://bundlephobia.com/package/locomotive-scroll@4.1.4)      | [26.08KB](https://bundlejs.com/?q=gsap%2FScrollSmoother&treeshake=%5B%7BScrollSmoother%7D%5D) | [3.6KB](https://bundlephobia.com/package/@studio-freight/lenis@1.0.0-dev.8) |
+| Size (gzip)                 | [12.1KB](https://bundlephobia.com/package/locomotive-scroll@4.1.4)      | [26.08KB](https://bundlejs.com/?q=gsap%2FScrollSmoother&treeshake=%5B%7BScrollSmoother%7D%5D) | [3.4KB](https://bundlephobia.com/package/@studio-freight/lenis@1.0.5) |
 
 <br>
 
