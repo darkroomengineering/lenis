@@ -12,7 +12,7 @@ This is our take on smooth scroll, lightweight, hard-working, smooth as butter s
 
 - Run scroll in the main thread
 - Performant
-- Lightweight [(<4Kb gzipped)](https://bundlephobia.com/package/@studio-freight/lenis@1.0.0-dev.8)
+- Lightweight [(<4Kb gzipped)](https://bundlephobia.com/package/@studio-freight/lenis@1.0.5)
 - Keep CSS Sticky and IntersectionObserver
 - Accessibility (CMD+F page search, keyboard navigation, keep scroll position on page refresh, etc.)
 - External RAF
