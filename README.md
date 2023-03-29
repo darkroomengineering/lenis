@@ -25,7 +25,6 @@ This is our take on smooth scroll, lightweight, hard-working, smooth as butter s
 |-----------------------------|-------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------|
 | Native scrollbar            | ❌                                                                       | ✅                                                                                             | ✅                                                                           |
 | Native "scroll" inputs      | ❌                                                                       | ✅                                                                                             | ❌                                                                           |
-| Normalize scroll experience | ✅                                                                       | ❌                                                                                             | ✅                                                                           |
 | Accessibility               | ❌                                                                       | ❌                                                                                             | ✅                                                                           |
 | CSS Sticky                  | ❌                                                                       | ❌                                                                                             | ✅                                                                           |
 | IntsersectionObserver       | ❌                                                                       | ❌                                                                                             | ✅                                                                           |
@@ -50,7 +49,7 @@ import Lenis from '@studio-freight/lenis'
 
 using scripts:
 
-```htmt
+```html
 <script src="https://cdn.jsdelivr.net/gh/studio-freight/lenis@1.0.0/bundled/lenis.js"></script>
 ```
 
@@ -82,8 +81,9 @@ requestAnimationFrame(raf)
 
 | Option               | Type                 | Default                                            | Description                                                                                                                                                         |
 |----------------------|----------------------|----------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `wrapper`            | `HTMLElement|Window` | `window`                                           | The element that will be used as the scroll container                                                                                                               |
+| `wrapper`            | `HTMLElement, Window` | `window`                                           | The element that will be used as the scroll container                                                                                                               |
 | `content`            | `HTMLElement`        | `document.documentElement`                         | The element that contains the content that will be scrolled, usually `wrapper`'s direct child                                                                       |
+| `wheelEventsTarget`  | `HTMLElement, Window` | `wrapper`                       | The element that will listen to `wheel` events |
 | `lerp`               | `number`             | `0.1`                                              | Linear interpolation (lerp) intensity (between 0 and 1)                                                                                                             |
 | `duration`           | `number`             | `1.2`                                              | The duration of scroll animation (in seconds). Useless if lerp defined                                                                                              |
 | `easing`             | `function`           | `(t) => Math.min(1, 1.001 - Math.pow(2, -10 * t))` | The easing function to use for the scroll animation, our default is custom but you can pick one from [Easings.net](https://easings.net/en). Useless if lerp defined |
@@ -93,7 +93,7 @@ requestAnimationFrame(raf)
 | `smoothTouch`        | `boolean`            | `false`                                            | Whether or not to enable smooth scrolling for touch events. Note: We have disabled it by default because touch devices' native smoothness is impossible to mimic    |
 | `wheelMultiplier`    | `number`             | `1`                                                | The multiplier to use for mouse wheel events                                                                                                                        |
 | `touchMultiplier`    | `number`             | `2`                                                | The multiplier to use for touch events                                                                                                                              |
-| `normalizeWheel`     | `boolean`            | `true`                                             | Normalize wheel inputs across browsers                                                                                                                              |
+| `normalizeWheel`     | `boolean`            | `false`                                             | Normalize wheel inputs across browsers                                                                                                                              |
 | `infinite`           | `boolean`            | `false`                                            | Enable infinite scrolling!                                                                                                                                          |
 
 <br/>
