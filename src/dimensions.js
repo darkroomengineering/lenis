@@ -9,21 +9,18 @@ export class Dimensions {
       window.addEventListener('resize', this.onWindowResize, false)
       this.onWindowResize()
     } else {
-      this.width = this.wrapper.clientWidth
-      this.height = this.wrapper.clientHeight
-      this.scrollHeight = this.wrapper.scrollHeight
-      this.scrollWidth = this.wrapper.scrollWidth
-
       this.wrapperResizeObserver = new ResizeObserver(
         debounce(this.onWrapperResize, 100)
       )
       this.wrapperResizeObserver.observe(this.wrapper)
+      this.onWrapperResize()
     }
 
     this.contentResizeObserver = new ResizeObserver(
       debounce(this.onContentResize, 100)
     )
     this.contentResizeObserver.observe(this.content)
+    this.onContentResize()
   }
 
   onWindowResize = () => {
@@ -44,13 +41,10 @@ export class Dimensions {
   }
 
   onContentResize = () => {
-    if (this.wrapper === window) {
-      this.scrollHeight = document.documentElement.scrollHeight
-      this.scrollWidth = document.documentElement.scrollWidth
-    } else {
-      this.scrollHeight = this.wrapper.scrollHeight
-      this.scrollWidth = this.wrapper.scrollWidth
-    }
+    const element =
+      this.wrapper === window ? document.documentElement : this.wrapper
+    this.scrollHeight = element.scrollHeight
+    this.scrollWidth = element.scrollWidth
   }
 
   get limit() {

@@ -145,13 +145,9 @@
         _this.height = _this.wrapper.clientHeight;
       };
       this.onContentResize = function () {
-        if (_this.wrapper === window) {
-          _this.scrollHeight = document.documentElement.scrollHeight;
-          _this.scrollWidth = document.documentElement.scrollWidth;
-        } else {
-          _this.scrollHeight = _this.wrapper.scrollHeight;
-          _this.scrollWidth = _this.wrapper.scrollWidth;
-        }
+        var element = _this.wrapper === window ? document.documentElement : _this.wrapper;
+        _this.scrollHeight = element.scrollHeight;
+        _this.scrollWidth = element.scrollWidth;
       };
       this.wrapper = wrapper;
       this.content = content;
@@ -159,15 +155,13 @@
         window.addEventListener('resize', this.onWindowResize, false);
         this.onWindowResize();
       } else {
-        this.width = this.wrapper.clientWidth;
-        this.height = this.wrapper.clientHeight;
-        this.scrollHeight = this.wrapper.scrollHeight;
-        this.scrollWidth = this.wrapper.scrollWidth;
         this.wrapperResizeObserver = new ResizeObserver(debounce(this.onWrapperResize, 100));
         this.wrapperResizeObserver.observe(this.wrapper);
+        this.onWrapperResize();
       }
       this.contentResizeObserver = new ResizeObserver(debounce(this.onContentResize, 100));
       this.contentResizeObserver.observe(this.content);
+      this.onContentResize();
     }
     var _proto = Dimensions.prototype;
     _proto.destroy = function destroy() {
