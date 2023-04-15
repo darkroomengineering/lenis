@@ -58,6 +58,7 @@ $intro-duration: 2050ms;
   justify-content: space-between;
   height: 100vh;
   height: calc(100 * var(--vh));
+  height: 100svh;
   margin-bottom: mobile-vw(160px);
   position: relative;
 

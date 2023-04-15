@@ -171,13 +171,15 @@ export default function Home() {
   }, [lenis?.limit])
 
   useScroll((e) => {
-    console.log(
-      window.scrollY,
-      e.scroll,
-      e.targetScroll,
-      e.animatedScroll,
-      e.velocity
-    )
+    // console.log(
+    //   window.scrollY,
+    //   e.scroll,
+    //   e.targetScroll,
+    //   e.animatedScroll,
+    //   e.velocity
+    // )
+
+    console.log(e.scroll, e.progress)
   })
 
   const inUseRef = useRef()
