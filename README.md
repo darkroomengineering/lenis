@@ -12,7 +12,7 @@ This is our take on smooth scroll, lightweight, hard-working, smooth as butter s
 
 - Run scroll in the main thread
 - Performant
-- Lightweight [(<4Kb gzipped)](https://bundlephobia.com/package/@studio-freight/lenis@1.0.5)
+- Lightweight [(<4Kb gzipped)](https://bundlephobia.com/package/@studio-freight/lenis)
 - Keep CSS Sticky and IntersectionObserver
 - Accessibility (CMD+F page search, keyboard navigation, keep scroll position on page refresh, etc.)
 - External RAF
@@ -30,7 +30,7 @@ This is our take on smooth scroll, lightweight, hard-working, smooth as butter s
 | IntsersectionObserver       | ❌                                                                       | ❌                                                                                             | ✅                                                                           |
 | Open source                 | ✅                                                                       | ❌                                                                                             | ✅                                                                           |
 | Built-in animation system   | ✅                                                                       | ✅                                                                                             | ❌                                                                           |
-| Size (gzip)                 | [12.1KB](https://bundlephobia.com/package/locomotive-scroll@4.1.4)      | [26.08KB](https://bundlejs.com/?q=gsap%2FScrollSmoother&treeshake=%5B%7BScrollSmoother%7D%5D) | [3.4KB](https://bundlephobia.com/package/@studio-freight/lenis@1.0.5) |
+| Size (gzip)                 | [12.1KB](https://bundlephobia.com/package/locomotive-scroll)      | [26.08KB](https://bundlejs.com/?q=gsap%2FScrollSmoother&treeshake=%5B%7BScrollSmoother%7D%5D) | [3.4KB](https://bundlephobia.com/package/@studio-freight/lenis) |
 
 <br>
 
@@ -50,7 +50,7 @@ import Lenis from '@studio-freight/lenis'
 using scripts:
 
 ```html
-<script src="https://cdn.jsdelivr.net/gh/studio-freight/lenis@1.0.0/bundled/lenis.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/studio-freight/lenis@1/bundled/lenis.min.js"></script>
 ```
 
 <br>
