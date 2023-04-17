@@ -33,8 +33,7 @@ export function Layout({
   useEffect(() => {
     window.scrollTo(0, 0)
     const lenis = new Lenis({
-      // smoothTouch: true,
-      // touchMultiplier: 10,
+      smoothTouch: true,
     })
     window.lenis = lenis
     setLenis(lenis)

@@ -222,20 +222,27 @@
       // Event handler for 'touchstart' event
       this.onTouchStart = function (event) {
         var _ref2 = event.targetTouches ? event.targetTouches[0] : event,
-          pageX = _ref2.pageX,
-          pageY = _ref2.pageY;
-        _this.touchStart.x = pageX;
-        _this.touchStart.y = pageY;
+          clientX = _ref2.clientX,
+          clientY = _ref2.clientY;
+        _this.touchStart.x = clientX;
+        _this.touchStart.y = clientY;
       };
       // Event handler for 'touchmove' event
       this.onTouchMove = function (event) {
         var _ref3 = event.targetTouches ? event.targetTouches[0] : event,
-          pageX = _ref3.pageX,
-          pageY = _ref3.pageY;
-        var deltaX = -(pageX - _this.touchStart.x) * _this.touchMultiplier;
-        var deltaY = -(pageY - _this.touchStart.y) * _this.touchMultiplier;
-        _this.touchStart.x = pageX;
-        _this.touchStart.y = pageY;
+          clientX = _ref3.clientX,
+          clientY = _ref3.clientY;
+        var inertia = 0;
+        var deltaX = clientX - _this.touchStart.x;
+        var velocityX = Math.abs(deltaX);
+        var inertiaMultiplierX = Math.max(velocityX * inertia, 1);
+        var deltaY = clientY - _this.touchStart.y;
+        var velocityY = Math.abs(deltaY);
+        var inertiaMultiplierY = Math.max(velocityY * inertia, 1);
+        deltaX *= -(inertiaMultiplierX * _this.touchMultiplier);
+        deltaY *= -(inertiaMultiplierY * _this.touchMultiplier);
+        _this.touchStart.x = clientX;
+        _this.touchStart.y = clientY;
         _this.emitter.emit('scroll', {
           type: 'touch',
           deltaX: deltaX,
@@ -375,7 +382,7 @@
         _ref$gestureOrientati = _ref.gestureOrientation,
         gestureOrientation = _ref$gestureOrientati === void 0 ? gestureDirection != null ? gestureDirection : 'vertical' : _ref$gestureOrientati,
         _ref$touchMultiplier = _ref.touchMultiplier,
-        touchMultiplier = _ref$touchMultiplier === void 0 ? 2 : _ref$touchMultiplier,
+        touchMultiplier = _ref$touchMultiplier === void 0 ? 1 : _ref$touchMultiplier,
         _ref$wheelMultiplier = _ref.wheelMultiplier,
         wheelMultiplier = _ref$wheelMultiplier === void 0 ? mouseMultiplier != null ? mouseMultiplier : 1 : _ref$wheelMultiplier,
         _ref$normalizeWheel = _ref.normalizeWheel,
@@ -387,9 +394,10 @@
           event = _ref2.event;
         // keep zoom feature
         if (event.ctrlKey) return;
-
-        // keep previous/next page gesture on trackpads
-        if (_this.options.gestureOrientation === 'vertical' && deltaY === 0 || _this.options.gestureOrientation === 'horizontal' && deltaX === 0) return;
+        if (_this.options.gestureOrientation === 'vertical' && deltaY === 0 ||
+        // trackpad previous/next page gesture
+        _this.options.gestureOrientation === 'horizontal' && deltaX === 0 || type === 'touch' && _this.options.gestureOrientation === 'vertical' && _this.scroll === 0 && !_this.options.infinite && deltaY <= 0 // touch pull to refresh
+        ) return;
 
         // catch if scrolling on nested scroll elements
         if (!!event.composedPath().find(function (node) {

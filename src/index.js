@@ -65,7 +65,7 @@ export default class Lenis {
     infinite = false,
     orientation = direction ?? 'vertical', // vertical, horizontal
     gestureOrientation = gestureDirection ?? 'vertical', // vertical, horizontal, both
-    touchMultiplier = 2,
+    touchMultiplier = 1,
     wheelMultiplier = mouseMultiplier ?? 1,
     normalizeWheel = false,
   } = {}) {
@@ -171,10 +171,14 @@ export default class Lenis {
     // keep zoom feature
     if (event.ctrlKey) return
 
-    // keep previous/next page gesture on trackpads
     if (
-      (this.options.gestureOrientation === 'vertical' && deltaY === 0) ||
-      (this.options.gestureOrientation === 'horizontal' && deltaX === 0)
+      (this.options.gestureOrientation === 'vertical' && deltaY === 0) || // trackpad previous/next page gesture
+      (this.options.gestureOrientation === 'horizontal' && deltaX === 0) ||
+      (type === 'touch' &&
+        this.options.gestureOrientation === 'vertical' &&
+        this.scroll === 0 &&
+        !this.options.infinite &&
+        deltaY <= 0) // touch pull to refresh
     )
       return
 
@@ -210,7 +214,9 @@ export default class Lenis {
       delta = deltaX
     }
 
-    this.scrollTo(this.targetScroll + delta, { programmatic: false })
+    this.scrollTo(this.targetScroll + delta, {
+      programmatic: false,
+    })
   }
 
   emit() {

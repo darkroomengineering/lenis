@@ -178,7 +178,6 @@ export default function Home() {
     //   e.animatedScroll,
     //   e.velocity
     // )
-
     console.log(e.scroll, e.progress)
   })
 

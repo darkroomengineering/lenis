@@ -49,25 +49,35 @@ export class VirtualScroll {
 
   // Event handler for 'touchstart' event
   onTouchStart = (event) => {
-    const { pageX, pageY } = event.targetTouches
+    const { clientX, clientY } = event.targetTouches
       ? event.targetTouches[0]
       : event
 
-    this.touchStart.x = pageX
-    this.touchStart.y = pageY
+    this.touchStart.x = clientX
+    this.touchStart.y = clientY
   }
 
   // Event handler for 'touchmove' event
   onTouchMove = (event) => {
-    const { pageX, pageY } = event.targetTouches
+    const { clientX, clientY } = event.targetTouches
       ? event.targetTouches[0]
       : event
 
-    const deltaX = -(pageX - this.touchStart.x) * this.touchMultiplier
-    const deltaY = -(pageY - this.touchStart.y) * this.touchMultiplier
+    const inertia = 0
 
-    this.touchStart.x = pageX
-    this.touchStart.y = pageY
+    let deltaX = clientX - this.touchStart.x
+    const velocityX = Math.abs(deltaX)
+    const inertiaMultiplierX = Math.max(velocityX * inertia, 1)
+
+    let deltaY = clientY - this.touchStart.y
+    const velocityY = Math.abs(deltaY)
+    const inertiaMultiplierY = Math.max(velocityY * inertia, 1)
+
+    deltaX *= -(inertiaMultiplierX * this.touchMultiplier)
+    deltaY *= -(inertiaMultiplierY * this.touchMultiplier)
+
+    this.touchStart.x = clientX
+    this.touchStart.y = clientY
 
     this.emitter.emit('scroll', {
       type: 'touch',
