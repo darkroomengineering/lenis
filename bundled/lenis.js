@@ -240,6 +240,10 @@
           clientY = _ref2.clientY;
         _this.touchStart.x = clientX;
         _this.touchStart.y = clientY;
+        _this.lastDelta = {
+          x: 0,
+          y: 0
+        };
       };
       // Event handler for 'touchmove' event
       this.onTouchMove = function (event) {
@@ -452,12 +456,12 @@
           delta = deltaX;
         }
         var syncTouch = isTouch && _this.options.syncTouch;
-        var hasTouchInertia = isTouch && inertia && Math.abs(delta) >= 1;
+        var hasTouchInertia = isTouch && inertia && Math.abs(delta) > 1;
         if (hasTouchInertia) delta *= 33;
         _this.scrollTo(_this.targetScroll + delta, _extends({
           programmatic: false
         }, syncTouch && {
-          lerp: hasTouchInertia ? 0.1 : 1
+          lerp: hasTouchInertia ? 0.1 : 0.33 // had to leave 0.33 for safari.....
         }));
       };
       this.onScroll = function () {

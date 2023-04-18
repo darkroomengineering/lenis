@@ -61,6 +61,11 @@ export class VirtualScroll {
 
     this.touchStart.x = clientX
     this.touchStart.y = clientY
+
+    this.lastDelta = {
+      x: 0,
+      y: 0,
+    }
   }
 
   // Event handler for 'touchmove' event

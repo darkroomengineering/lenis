@@ -220,13 +220,13 @@ export default class Lenis {
     }
 
     const syncTouch = isTouch && this.options.syncTouch
-    const hasTouchInertia = isTouch && inertia && Math.abs(delta) >= 1
+    const hasTouchInertia = isTouch && inertia && Math.abs(delta) > 1
     if (hasTouchInertia) delta *= 33
 
     this.scrollTo(this.targetScroll + delta, {
       programmatic: false,
       ...(syncTouch && {
-        lerp: hasTouchInertia ? 0.1 : 1,
+        lerp: hasTouchInertia ? 0.1 : 0.33, // had to leave 0.33 for safari.....
       }),
     })
   }
