@@ -20,6 +20,20 @@
     });
     return Constructor;
   }
+  function _extends() {
+    _extends = Object.assign ? Object.assign.bind() : function (target) {
+      for (var i = 1; i < arguments.length; i++) {
+        var source = arguments[i];
+        for (var key in source) {
+          if (Object.prototype.hasOwnProperty.call(source, key)) {
+            target[key] = source[key];
+          }
+        }
+      }
+      return target;
+    };
+    return _extends.apply(this, arguments);
+  }
   function _toPrimitive(input, hint) {
     if (typeof input !== "object" || input === null) return input;
     var prim = input[Symbol.toPrimitive];
@@ -232,21 +246,27 @@
         var _ref3 = event.targetTouches ? event.targetTouches[0] : event,
           clientX = _ref3.clientX,
           clientY = _ref3.clientY;
-        var inertia = 0;
-        var deltaX = clientX - _this.touchStart.x;
-        var velocityX = Math.abs(deltaX);
-        var inertiaMultiplierX = Math.max(velocityX * inertia, 1);
-        var deltaY = clientY - _this.touchStart.y;
-        var velocityY = Math.abs(deltaY);
-        var inertiaMultiplierY = Math.max(velocityY * inertia, 1);
-        deltaX *= -(inertiaMultiplierX * _this.touchMultiplier);
-        deltaY *= -(inertiaMultiplierY * _this.touchMultiplier);
+        deltaX = -(clientX - _this.touchStart.x) * _this.touchMultiplier;
+        deltaY = -(clientY - _this.touchStart.y) * _this.touchMultiplier;
         _this.touchStart.x = clientX;
         _this.touchStart.y = clientY;
+        _this.lastDelta = {
+          x: deltaX,
+          y: deltaY
+        };
         _this.emitter.emit('scroll', {
           type: 'touch',
           deltaX: deltaX,
           deltaY: deltaY,
+          event: event
+        });
+      };
+      this.onTouchEnd = function (event) {
+        _this.emitter.emit('scroll', {
+          type: 'touch',
+          inertia: true,
+          deltaX: _this.lastDelta.x,
+          deltaY: _this.lastDelta.y,
           event: event
         });
       };
@@ -285,6 +305,9 @@
       this.element.addEventListener('touchmove', this.onTouchMove, {
         passive: false
       });
+      this.element.addEventListener('touchend', this.onTouchEnd, {
+        passive: false
+      });
     }
 
     // Add an event listener for the given event and callback
@@ -304,6 +327,9 @@
         passive: false
       });
       this.element.removeEventListener('touchmove', this.onTouchMove, {
+        passive: false
+      });
+      this.element.removeEventListener('touchend', this.onTouchEnd, {
         passive: false
       });
     };
@@ -368,6 +394,8 @@
         smoothWheel = _ref$smoothWheel === void 0 ? smooth != null ? smooth : true : _ref$smoothWheel,
         _ref$smoothTouch = _ref.smoothTouch,
         smoothTouch = _ref$smoothTouch === void 0 ? false : _ref$smoothTouch,
+        _ref$syncTouch = _ref.syncTouch,
+        _syncTouch = _ref$syncTouch === void 0 ? false : _ref$syncTouch,
         duration = _ref.duration,
         _ref$easing = _ref.easing,
         easing = _ref$easing === void 0 ? function (t) {
@@ -389,14 +417,17 @@
         normalizeWheel = _ref$normalizeWheel === void 0 ? false : _ref$normalizeWheel;
       this.onVirtualScroll = function (_ref2) {
         var type = _ref2.type,
+          inertia = _ref2.inertia,
           deltaX = _ref2.deltaX,
           deltaY = _ref2.deltaY,
           event = _ref2.event;
         // keep zoom feature
         if (event.ctrlKey) return;
+        var isTouch = type === 'touch';
+        var isWheel = type === 'wheel';
         if (_this.options.gestureOrientation === 'vertical' && deltaY === 0 ||
         // trackpad previous/next page gesture
-        _this.options.gestureOrientation === 'horizontal' && deltaX === 0 || type === 'touch' && _this.options.gestureOrientation === 'vertical' && _this.scroll === 0 && !_this.options.infinite && deltaY <= 0 // touch pull to refresh
+        _this.options.gestureOrientation === 'horizontal' && deltaX === 0 || isTouch && _this.options.gestureOrientation === 'vertical' && _this.scroll === 0 && !_this.options.infinite && deltaY <= 0 // touch pull to refresh
         ) return;
 
         // catch if scrolling on nested scroll elements
@@ -407,7 +438,7 @@
           event.preventDefault();
           return;
         }
-        _this.isSmooth = _this.options.smoothTouch && type === 'touch' || _this.options.smoothWheel && type === 'wheel';
+        _this.isSmooth = (_this.options.smoothTouch || _this.options.syncTouch) && isTouch || _this.options.smoothWheel && isWheel;
         if (!_this.isSmooth) {
           _this.isScrolling = false;
           _this.animate.stop();
@@ -420,9 +451,14 @@
         } else if (_this.options.gestureOrientation === 'horizontal') {
           delta = deltaX;
         }
-        _this.scrollTo(_this.targetScroll + delta, {
+        var syncTouch = isTouch && _this.options.syncTouch;
+        var hasTouchInertia = isTouch && inertia && Math.abs(delta) >= 1;
+        if (hasTouchInertia) delta *= 100;
+        _this.scrollTo(_this.targetScroll + delta, _extends({
           programmatic: false
-        });
+        }, syncTouch && {
+          lerp: hasTouchInertia ? 0.1 : 1
+        }));
       };
       this.onScroll = function () {
         if (!_this.isScrolling) {
@@ -458,6 +494,7 @@
         wheelEventsTarget: wheelEventsTarget,
         smoothWheel: smoothWheel,
         smoothTouch: smoothTouch,
+        syncTouch: _syncTouch,
         duration: duration,
         easing: easing,
         lerp: lerp,
@@ -585,7 +622,8 @@
       }
       if (typeof target !== 'number') return;
       target += offset;
-      target = Math.round(target);
+      // target = Math.round(target)
+
       if (this.options.infinite) {
         if (programmatic) {
           this.targetScroll = this.animatedScroll = this.scroll;

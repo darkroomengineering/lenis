@@ -59,6 +59,7 @@ export default class Lenis {
     wheelEventsTarget = wrapper,
     smoothWheel = smooth ?? true,
     smoothTouch = false,
+    syncTouch = false,
     duration, // in seconds
     easing = (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
     lerp = duration ? null : 0.1,
@@ -104,6 +105,7 @@ export default class Lenis {
       wheelEventsTarget,
       smoothWheel,
       smoothTouch,
+      syncTouch,
       duration,
       easing,
       lerp,
@@ -167,14 +169,17 @@ export default class Lenis {
     }
   }
 
-  onVirtualScroll = ({ type, deltaX, deltaY, event }) => {
+  onVirtualScroll = ({ type, inertia, deltaX, deltaY, event }) => {
     // keep zoom feature
     if (event.ctrlKey) return
+
+    const isTouch = type === 'touch'
+    const isWheel = type === 'wheel'
 
     if (
       (this.options.gestureOrientation === 'vertical' && deltaY === 0) || // trackpad previous/next page gesture
       (this.options.gestureOrientation === 'horizontal' && deltaX === 0) ||
-      (type === 'touch' &&
+      (isTouch &&
         this.options.gestureOrientation === 'vertical' &&
         this.scroll === 0 &&
         !this.options.infinite &&
@@ -196,8 +201,8 @@ export default class Lenis {
     }
 
     this.isSmooth =
-      (this.options.smoothTouch && type === 'touch') ||
-      (this.options.smoothWheel && type === 'wheel')
+      ((this.options.smoothTouch || this.options.syncTouch) && isTouch) ||
+      (this.options.smoothWheel && isWheel)
 
     if (!this.isSmooth) {
       this.isScrolling = false
@@ -214,8 +219,15 @@ export default class Lenis {
       delta = deltaX
     }
 
+    const syncTouch = isTouch && this.options.syncTouch
+    const hasTouchInertia = isTouch && inertia && Math.abs(delta) >= 1
+    if (hasTouchInertia) delta *= 100
+
     this.scrollTo(this.targetScroll + delta, {
       programmatic: false,
+      ...(syncTouch && {
+        lerp: hasTouchInertia ? 0.1 : 1,
+      }),
     })
   }
 
@@ -309,7 +321,7 @@ export default class Lenis {
     if (typeof target !== 'number') return
 
     target += offset
-    target = Math.round(target)
+    // target = Math.round(target)
 
     if (this.options.infinite) {
       if (programmatic) {

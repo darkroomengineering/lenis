@@ -25,6 +25,9 @@ export class VirtualScroll {
     this.element.addEventListener('touchmove', this.onTouchMove, {
       passive: false,
     })
+    this.element.addEventListener('touchend', this.onTouchEnd, {
+      passive: false,
+    })
   }
 
   // Add an event listener for the given event and callback
@@ -45,6 +48,9 @@ export class VirtualScroll {
     this.element.removeEventListener('touchmove', this.onTouchMove, {
       passive: false,
     })
+    this.element.removeEventListener('touchend', this.onTouchEnd, {
+      passive: false,
+    })
   }
 
   // Event handler for 'touchstart' event
@@ -63,26 +69,31 @@ export class VirtualScroll {
       ? event.targetTouches[0]
       : event
 
-    const inertia = 0
-
-    let deltaX = clientX - this.touchStart.x
-    const velocityX = Math.abs(deltaX)
-    const inertiaMultiplierX = Math.max(velocityX * inertia, 1)
-
-    let deltaY = clientY - this.touchStart.y
-    const velocityY = Math.abs(deltaY)
-    const inertiaMultiplierY = Math.max(velocityY * inertia, 1)
-
-    deltaX *= -(inertiaMultiplierX * this.touchMultiplier)
-    deltaY *= -(inertiaMultiplierY * this.touchMultiplier)
+    deltaX = -(clientX - this.touchStart.x) * this.touchMultiplier
+    deltaY = -(clientY - this.touchStart.y) * this.touchMultiplier
 
     this.touchStart.x = clientX
     this.touchStart.y = clientY
+
+    this.lastDelta = {
+      x: deltaX,
+      y: deltaY,
+    }
 
     this.emitter.emit('scroll', {
       type: 'touch',
       deltaX,
       deltaY,
+      event,
+    })
+  }
+
+  onTouchEnd = (event) => {
+    this.emitter.emit('scroll', {
+      type: 'touch',
+      inertia: true,
+      deltaX: this.lastDelta.x,
+      deltaY: this.lastDelta.y,
       event,
     })
   }

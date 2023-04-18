@@ -27,7 +27,7 @@ export default class Lenis {
      *
      * @param {LenisOptions}
      */
-    constructor({ direction, gestureDirection, mouseMultiplier, smooth, wrapper, content, wheelEventsTarget, smoothWheel, smoothTouch, duration, easing, lerp, infinite, orientation, gestureOrientation, touchMultiplier, wheelMultiplier, normalizeWheel, }?: {
+    constructor({ direction, gestureDirection, mouseMultiplier, smooth, wrapper, content, wheelEventsTarget, smoothWheel, smoothTouch, syncTouch, duration, easing, lerp, infinite, orientation, gestureOrientation, touchMultiplier, wheelMultiplier, normalizeWheel, }?: {
         direction?: "vertical" | "horizontal";
         gestureDirection?: "vertical" | "horizontal" | "both";
         mouseMultiplier?: number;
@@ -53,6 +53,7 @@ export default class Lenis {
         wheelEventsTarget: Window | HTMLElement;
         smoothWheel: boolean;
         smoothTouch: boolean;
+        syncTouch: any;
         duration: number;
         easing: (t: number) => number;
         lerp: number;
@@ -84,8 +85,9 @@ export default class Lenis {
     on(event: any, callback: any): () => void;
     off(event: any, callback: any): void;
     setScroll(scroll: any): void;
-    onVirtualScroll: ({ type, deltaX, deltaY, event }: {
+    onVirtualScroll: ({ type, inertia, deltaX, deltaY, event }: {
         type: any;
+        inertia: any;
         deltaX: any;
         deltaY: any;
         event: any;
