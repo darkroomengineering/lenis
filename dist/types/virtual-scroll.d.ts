@@ -21,5 +21,10 @@ export class VirtualScroll {
     destroy(): void;
     onTouchStart: (event: any) => void;
     onTouchMove: (event: any) => void;
+    lastDelta: {
+        x: any;
+        y: any;
+    };
+    onTouchEnd: (event: any) => void;
     onWheel: (event: any) => void;
 }
