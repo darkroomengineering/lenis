@@ -453,7 +453,7 @@
         }
         var syncTouch = isTouch && _this.options.syncTouch;
         var hasTouchInertia = isTouch && inertia && Math.abs(delta) >= 1;
-        if (hasTouchInertia) delta *= 100;
+        if (hasTouchInertia) delta *= 33;
         _this.scrollTo(_this.targetScroll + delta, _extends({
           programmatic: false
         }, syncTouch && {
