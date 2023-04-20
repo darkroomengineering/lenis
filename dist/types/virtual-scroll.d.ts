@@ -24,8 +24,8 @@ export class VirtualScroll {
         x: number;
         y: number;
     } | {
-        x: any;
-        y: any;
+        x: number;
+        y: number;
     };
     onTouchMove: (event: any) => void;
     onTouchEnd: (event: any) => void;
