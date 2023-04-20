@@ -74,8 +74,8 @@ export class VirtualScroll {
       ? event.targetTouches[0]
       : event
 
-    deltaX = -(clientX - this.touchStart.x) * this.touchMultiplier
-    deltaY = -(clientY - this.touchStart.y) * this.touchMultiplier
+    const deltaX = -(clientX - this.touchStart.x) * this.touchMultiplier
+    const deltaY = -(clientY - this.touchStart.y) * this.touchMultiplier
 
     this.touchStart.x = clientX
     this.touchStart.y = clientY

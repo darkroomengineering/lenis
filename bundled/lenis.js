@@ -250,8 +250,8 @@
         var _ref3 = event.targetTouches ? event.targetTouches[0] : event,
           clientX = _ref3.clientX,
           clientY = _ref3.clientY;
-        deltaX = -(clientX - _this.touchStart.x) * _this.touchMultiplier;
-        deltaY = -(clientY - _this.touchStart.y) * _this.touchMultiplier;
+        var deltaX = -(clientX - _this.touchStart.x) * _this.touchMultiplier;
+        var deltaY = -(clientY - _this.touchStart.y) * _this.touchMultiplier;
         _this.touchStart.x = clientX;
         _this.touchStart.y = clientY;
         _this.lastDelta = {
