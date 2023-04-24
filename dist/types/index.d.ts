@@ -15,6 +15,9 @@ export default class Lenis {
      * @property {Window | HTMLElement} [wheelEventsTarget]
      * @property {boolean} [smoothWheel]
      * @property {boolean} [smoothTouch]
+     * @property {boolean} [syncTouch]
+     * @property {number} [syncTouchLerp]
+     * @property {number} [touchInertiaMultiplier]
      * @property {number} [duration]
      * @property {EasingFunction} [easing]
      * @property {number} [lerp]
@@ -27,7 +30,7 @@ export default class Lenis {
      *
      * @param {LenisOptions}
      */
-    constructor({ direction, gestureDirection, mouseMultiplier, smooth, wrapper, content, wheelEventsTarget, smoothWheel, smoothTouch, syncTouch, duration, easing, lerp, infinite, orientation, gestureOrientation, touchMultiplier, wheelMultiplier, normalizeWheel, }?: {
+    constructor({ direction, gestureDirection, mouseMultiplier, smooth, wrapper, content, wheelEventsTarget, smoothWheel, smoothTouch, syncTouch, syncTouchLerp, touchInertiaMultiplier, duration, easing, lerp, infinite, orientation, gestureOrientation, touchMultiplier, wheelMultiplier, normalizeWheel, }?: {
         direction?: "vertical" | "horizontal";
         gestureDirection?: "vertical" | "horizontal" | "both";
         mouseMultiplier?: number;
@@ -37,6 +40,9 @@ export default class Lenis {
         wheelEventsTarget?: Window | HTMLElement;
         smoothWheel?: boolean;
         smoothTouch?: boolean;
+        syncTouch?: boolean;
+        syncTouchLerp?: number;
+        touchInertiaMultiplier?: number;
         duration?: number;
         easing?: (t: number) => number;
         lerp?: number;
@@ -53,7 +59,9 @@ export default class Lenis {
         wheelEventsTarget: Window | HTMLElement;
         smoothWheel: boolean;
         smoothTouch: boolean;
-        syncTouch: any;
+        syncTouch: boolean;
+        syncTouchLerp: number;
+        touchInertiaMultiplier: number;
         duration: number;
         easing: (t: number) => number;
         lerp: number;

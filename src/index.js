@@ -35,6 +35,9 @@ export default class Lenis {
    * @property {Window | HTMLElement} [wheelEventsTarget]
    * @property {boolean} [smoothWheel]
    * @property {boolean} [smoothTouch]
+   * @property {boolean} [syncTouch]
+   * @property {number} [syncTouchLerp]
+   * @property {number} [touchInertiaMultiplier]
    * @property {number} [duration]
    * @property {EasingFunction} [easing]
    * @property {number} [lerp]
@@ -60,6 +63,8 @@ export default class Lenis {
     smoothWheel = smooth ?? true,
     smoothTouch = false,
     syncTouch = false,
+    syncTouchLerp = 0.1,
+    touchInertiaMultiplier = 35,
     duration, // in seconds
     easing = (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
     lerp = duration ? null : 0.1,
@@ -106,6 +111,8 @@ export default class Lenis {
       smoothWheel,
       smoothTouch,
       syncTouch,
+      syncTouchLerp,
+      touchInertiaMultiplier,
       duration,
       easing,
       lerp,
@@ -221,12 +228,14 @@ export default class Lenis {
 
     const syncTouch = isTouch && this.options.syncTouch
     const hasTouchInertia = isTouch && inertia && Math.abs(delta) > 1
-    if (hasTouchInertia) delta *= 33
+    if (hasTouchInertia) {
+      delta = this.velocity * this.options.touchInertiaMultiplier
+    }
 
     this.scrollTo(this.targetScroll + delta, {
       programmatic: false,
       ...(syncTouch && {
-        lerp: hasTouchInertia ? 0.1 : 0.33, // had to leave 0.33 for safari.....
+        lerp: hasTouchInertia ? this.syncTouchLerp : 0.4, // should be 1 but had to leave 0.4 for iOS.....
       }),
     })
   }

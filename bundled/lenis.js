@@ -369,6 +369,9 @@
      * @property {Window | HTMLElement} [wheelEventsTarget]
      * @property {boolean} [smoothWheel]
      * @property {boolean} [smoothTouch]
+     * @property {boolean} [syncTouch]
+     * @property {number} [syncTouchLerp]
+     * @property {number} [touchInertiaMultiplier]
      * @property {number} [duration]
      * @property {EasingFunction} [easing]
      * @property {number} [lerp]
@@ -400,6 +403,10 @@
         smoothTouch = _ref$smoothTouch === void 0 ? false : _ref$smoothTouch,
         _ref$syncTouch = _ref.syncTouch,
         _syncTouch = _ref$syncTouch === void 0 ? false : _ref$syncTouch,
+        _ref$syncTouchLerp = _ref.syncTouchLerp,
+        syncTouchLerp = _ref$syncTouchLerp === void 0 ? 0.1 : _ref$syncTouchLerp,
+        _ref$touchInertiaMult = _ref.touchInertiaMultiplier,
+        touchInertiaMultiplier = _ref$touchInertiaMult === void 0 ? 35 : _ref$touchInertiaMult,
         duration = _ref.duration,
         _ref$easing = _ref.easing,
         easing = _ref$easing === void 0 ? function (t) {
@@ -457,11 +464,13 @@
         }
         var syncTouch = isTouch && _this.options.syncTouch;
         var hasTouchInertia = isTouch && inertia && Math.abs(delta) > 1;
-        if (hasTouchInertia) delta *= 33;
+        if (hasTouchInertia) {
+          delta = _this.velocity * _this.options.touchInertiaMultiplier;
+        }
         _this.scrollTo(_this.targetScroll + delta, _extends({
           programmatic: false
         }, syncTouch && {
-          lerp: hasTouchInertia ? 0.1 : 0.33 // had to leave 0.33 for safari.....
+          lerp: hasTouchInertia ? _this.syncTouchLerp : 0.4 // should be 1 but had to leave 0.4 for iOS.....
         }));
       };
       this.onScroll = function () {
@@ -499,6 +508,8 @@
         smoothWheel: smoothWheel,
         smoothTouch: smoothTouch,
         syncTouch: _syncTouch,
+        syncTouchLerp: syncTouchLerp,
+        touchInertiaMultiplier: touchInertiaMultiplier,
         duration: duration,
         easing: easing,
         lerp: lerp,
