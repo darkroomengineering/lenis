@@ -30,7 +30,7 @@ This is our take on smooth scroll, lightweight, hard-working, smooth as butter s
 | IntsersectionObserver       | ❌                                                                       | ❌                                                                                             | ✅                                                                           |
 | Open source                 | ✅                                                                       | ❌                                                                                             | ✅                                                                           |
 | Built-in animation system   | ✅                                                                       | ✅                                                                                             | ❌                                                                           |
-| Size (gzip)                 | [12.1KB](https://bundlephobia.com/package/locomotive-scroll)      | [26.08KB](https://bundlejs.com/?q=gsap%2FScrollSmoother&treeshake=%5B%7BScrollSmoother%7D%5D) | [3.4KB](https://bundlephobia.com/package/@studio-freight/lenis) |
+| Size (gzip)                 | [12.1KB](https://bundlephobia.com/package/locomotive-scroll)      | [32.11KB](https://bundlejs.com/?q=gsap-trial%2FScrollSmoother%2Cgsap-trial&treeshake=%5B%7BScrollSmoother%7D%5D%2C%5B%7Bgsap%7D%5D&text=%22gsap.registerPlugin%28ScrollSmoother%29%3B%22&config=%7B%22analysis%22%3Aundefined%7D) | [3.6KB](https://bundlephobia.com/package/@studio-freight/lenis) |
 
 <br>
 
@@ -130,6 +130,32 @@ requestAnimationFrame(raf)
 | Event    | Callback Arguments |
 |----------|--------------------|
 | `scroll` | Lenis instance     |
+
+<br/>
+
+## Recommended CSS
+
+```css
+html.lenis {
+  height: auto;
+}
+
+.lenis.lenis-smooth {
+  scroll-behavior: auto;
+}
+
+.lenis.lenis-smooth [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+
+.lenis.lenis-stopped {
+  overflow: hidden;
+}
+
+.lenis.lenis-scrolling iframe {
+   pointer-events: none;
+} 
+```
 
 <br/>
 
