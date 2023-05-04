@@ -38,9 +38,10 @@ export class Animate {
 
   // Set up the animation from a starting value to an ending value
   // with optional parameters for lerping, duration, easing, and onUpdate callback
+  // to value is rounded to ensure proper animation completion detection when using lerping
   fromTo(from, to, { lerp = 0.1, duration = 1, easing = (t) => t, onUpdate }) {
     this.from = this.value = from
-    this.to = to
+    this.to = Math.round(to)
     this.lerp = lerp
     this.duration = duration
     this.easing = easing
