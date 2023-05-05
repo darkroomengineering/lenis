@@ -637,8 +637,7 @@
       }
       if (typeof target !== 'number') return;
       target += offset;
-      // target = Math.round(target)
-
+      target = Math.round(target);
       if (this.options.infinite) {
         if (programmatic) {
           this.targetScroll = this.animatedScroll = this.scroll;
