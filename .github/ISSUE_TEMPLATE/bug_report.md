@@ -11,4 +11,5 @@ assignees: ''
 A clear and concise description of what the bug is.
 
 **To Reproduce**
-Try to reproduce your issue by forking this [codepen](https://codepen.io/ClementRoche/pen/VwxgZEP). If you can't reproduce it, it means your doing something wrong on your initial environnement.
+Try to reproduce your issue by forking this [codepen](https://codepen.io/ClementRoche/pen/VwxgZEP). 
+If you can't reproduce it, it means there is something wrong on your initial environment.
