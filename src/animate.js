@@ -1,4 +1,4 @@
-import { clamp, lerp } from './maths'
+import {clamp, lerp} from './maths';
 
 // Animate class to handle value animations with lerping or easing
 export class Animate {
@@ -9,7 +9,8 @@ export class Animate {
     let completed = false
 
     if (this.lerp) {
-      this.value = lerp(this.value, this.to, this.lerp)
+      const fps = 60
+      this.value = lerp(this.value, this.to, this.lerp * deltaTime * fps)
       if (Math.round(this.value) === this.to) {
         this.value = this.to
         completed = true
