@@ -49,27 +49,27 @@
     return typeof key === "symbol" ? key : String(key);
   }
 
-  var version = "1.0.11";
+  var version = "1.0.12";
 
   // Clamp a value between a minimum and maximum value
   function clamp(min, input, max) {
     return Math.max(min, Math.min(input, max));
   }
 
-  // Linearly interpolate between two values using an amount (0 <= amt <= 1)
-  function lerp(start, end, amt) {
-    return (1 - amt) * start + amt * end;
+  // Linearly interpolate between two values using an amount (0 <= t <= 1)
+  function lerp(x, y, t) {
+    return (1 - t) * x + t * y;
+  }
+
+  // http://www.rorydriscoll.com/2016/03/07/frame-rate-independent-damping-using-lerp/
+  function damp(x, y, lambda, dt) {
+    return lerp(x, y, 1 - Math.exp(-lambda * dt));
   }
 
   // Calculate the modulo of the dividend and divisor while keeping the result within the same sign as the divisor
-  function clampedModulo(dividend, divisor) {
-    var remainder = dividend % divisor;
-
-    // If the remainder and divisor have different signs, adjust the remainder
-    if (divisor > 0 && remainder < 0 || divisor < 0 && remainder > 0) {
-      remainder += divisor;
-    }
-    return remainder;
+  // https://anguscroll.com/just/just-modulo
+  function modulo(n, d) {
+    return (n % d + d) % d;
   }
 
   // Animate class to handle value animations with lerping or easing
@@ -82,7 +82,7 @@
       if (!this.isRunning) return;
       var completed = false;
       if (this.lerp) {
-        this.value = lerp(this.value, this.to, this.lerp);
+        this.value = damp(this.value, this.to, this.lerp * 60, deltaTime);
         if (Math.round(this.value) === this.to) {
           this.value = this.to;
           completed = true;
@@ -715,7 +715,7 @@
     }, {
       key: "scroll",
       get: function get() {
-        return this.options.infinite ? clampedModulo(this.animatedScroll, this.limit) : this.animatedScroll;
+        return this.options.infinite ? modulo(this.animatedScroll, this.limit) : this.animatedScroll;
       }
     }, {
       key: "progress",

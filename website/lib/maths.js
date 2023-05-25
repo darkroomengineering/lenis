@@ -6,8 +6,8 @@ function mapRange(in_min, in_max, input, out_min, out_max) {
   return ((input - in_min) * (out_max - out_min)) / (in_max - in_min) + out_min
 }
 
-function lerp(start, end, amt) {
-  return (1 - amt) * start + amt * end
+function lerp(x, y, t) {
+  return (1 - t) * x + t * y
 }
 
 function truncate(value, decimals) {

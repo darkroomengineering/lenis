@@ -8,19 +8,18 @@ export function truncate(value, decimals = 0) {
   return parseFloat(value.toFixed(decimals))
 }
 
-// Linearly interpolate between two values using an amount (0 <= amt <= 1)
-export function lerp(start, end, amt) {
-  return (1 - amt) * start + amt * end
+// Linearly interpolate between two values using an amount (0 <= t <= 1)
+export function lerp(x, y, t) {
+  return (1 - t) * x + t * y
+}
+
+// http://www.rorydriscoll.com/2016/03/07/frame-rate-independent-damping-using-lerp/
+export function damp(x, y, lambda, dt) {
+  return lerp(x, y, 1 - Math.exp(-lambda * dt))
 }
 
 // Calculate the modulo of the dividend and divisor while keeping the result within the same sign as the divisor
-export function clampedModulo(dividend, divisor) {
-  let remainder = dividend % divisor
-
-  // If the remainder and divisor have different signs, adjust the remainder
-  if ((divisor > 0 && remainder < 0) || (divisor < 0 && remainder > 0)) {
-    remainder += divisor
-  }
-
-  return remainder
+// https://anguscroll.com/just/just-modulo
+export function modulo(n, d) {
+  return ((n % d) + d) % d
 }

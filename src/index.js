@@ -1,7 +1,7 @@
 import { version } from '../package.json'
 import { Animate } from './animate'
 import { Dimensions } from './dimensions'
-import { clamp, clampedModulo } from './maths'
+import { clamp, modulo } from './maths'
 import { createNanoEvents } from './nanoevents'
 import { VirtualScroll } from './virtual-scroll'
 
@@ -415,7 +415,7 @@ export default class Lenis {
 
   get scroll() {
     return this.options.infinite
-      ? clampedModulo(this.animatedScroll, this.limit)
+      ? modulo(this.animatedScroll, this.limit)
       : this.animatedScroll
   }
 
