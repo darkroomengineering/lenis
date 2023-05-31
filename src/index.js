@@ -155,6 +155,11 @@ export default class Lenis {
     })
 
     this.virtualScroll.destroy()
+
+    this.rootElement.classList.remove('lenis')
+    this.rootElement.classList.remove('lenis-smooth')
+    this.rootElement.classList.remove('lenis-scrolling')
+    this.rootElement.classList.remove('lenis-stopped')
   }
 
   on(event, callback) {
