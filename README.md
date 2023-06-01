@@ -8,33 +8,7 @@ This is our take on smooth scroll, lightweight, hard-working, smooth as butter s
 
 <br>
 
-## Features
-
-- Run scroll in the main thread
-- Performant
-- Lightweight [(<4Kb gzipped)](https://bundlephobia.com/package/@studio-freight/lenis)
-- Keep CSS Sticky and IntersectionObserver
-- Accessibility (CMD+F page search, keyboard navigation, keep scroll position on page refresh, etc.)
-- External RAF
-- SSR proof
-- Custom scroll easing and duration
-
-<br>
-
-| Feature                   | [Locomotive-scroll](https://github.com/locomotivemtl/locomotive-scroll) | [GSAP ScrollSmoother](https://greensock.com/scrollsmoother/)                                                                                                                                                                      | [Lenis](https://github.com/studio-freight/lenis)                |
-|---------------------------|-------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-----------------------------------------------------------------|
-| Native scrollbar          | ❌                                                                       | ✅                                                                                                                                                                                                                                 | ✅                                                               |
-| Native "scroll" inputs    | ❌                                                                       | ✅                                                                                                                                                                                                                                 | ❌                                                               |
-| Accessibility             | ❌                                                                       | ❌                                                                                                                                                                                                                                 | ✅                                                               |
-| CSS Sticky                | ❌                                                                       | ❌                                                                                                                                                                                                                                 | ✅                                                               |
-| IntersectionObserver      | ❌                                                                       | ❌                                                                                                                                                                                                                                 | ✅                                                               |
-| Open source               | ✅                                                                       | ❌                                                                                                                                                                                                                                 | ✅                                                               |
-| Built-in animation system | ✅                                                                       | ✅                                                                                                                                                                                                                                 | ❌                                                               |
-| Size (gzip)               | [12.1KB](https://bundlephobia.com/package/locomotive-scroll)            | [32.11KB](https://bundlejs.com/?q=gsap-trial%2FScrollSmoother%2Cgsap-trial&treeshake=%5B%7BScrollSmoother%7D%5D%2C%5B%7Bgsap%7D%5D&text=%22gsap.registerPlugin%28ScrollSmoother%29%3B%22&config=%7B%22analysis%22%3Aundefined%7D) | [3.6KB](https://bundlephobia.com/package/@studio-freight/lenis) |
-
-<br>
-
-## Installing
+## Installation
 
 using a package manager:
 
@@ -89,7 +63,7 @@ requestAnimationFrame(raf)
 | `easing`             | `function`            | `(t) => Math.min(1, 1.001 - Math.pow(2, -10 * t))` | The easing function to use for the scroll animation, our default is custom but you can pick one from [Easings.net](https://easings.net/en). Useless if lerp defined |
 | `orientation`        | `string`              | `vertical`                                         | The orientation of the scrolling. Can be `vertical` or `horizontal`                                                                                                 |
 | `gestureOrientation` | `string`              | `vertical`                                         | The orientation of the gestures. Can be `vertical`, `horizontal` or `both`                                                                                          |
-| `smoothWheel`        | `boolean`             | `true`                                             | Whether or not to enable smooth scrolling for mouse wheel events                                                                                                    |
+| `smoothWheel`        | `boolean`             | `false`                                             | Whether or not to enable smooth scrolling for mouse wheel events                                                                                                    |
 | `smoothTouch`        | `boolean`             | `false`                                            | Whether or not to enable smooth scrolling for touch events.                                                                                                         |
 | `syncTouch`          | `boolean`             | `false`                                            | Mimic touch device scroll while allowing scroll sync (can be unstable on iOS<16)   
 | `syncTouchLerp`          | `number`             | `0.1`                                            | Lerp applied during `syncTouch` inertia                                                                                 |
@@ -234,14 +208,13 @@ gsap.ticker.add((time)=>{
 
 <br>
 
-
-
 ## Plugins
 
 - [Loconative-scroll](https://github.com/quentinhocde/loconative-scroll#how-to-switch-from-locomotive-scroll-to-loconative-scroll) by [Quentin Hocde](https://twitter.com/QuentinHocde)
 - [react-lenis](https://github.com/studio-freight/react-lenis) by [Studio Freight](https://www.studiofreight.com/)
 - [r3f-scroll-rig](https://github.com/14islands/r3f-scroll-rig) by [14islands](https://14islands.com/)
 - [Lenis Scroll Snap Plugin](https://github.com/funkhaus/lenis-scroll-snap) by [Funkhaus](https://github.com/funkhaus)
+- [locomotive-scroll](https://github.com/locomotivemtl/locomotive-scroll) by [Locomotive](https://locomotive.ca/)
 
 <br>
 
