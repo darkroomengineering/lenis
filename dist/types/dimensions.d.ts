@@ -1,14 +1,18 @@
 export class Dimensions {
-    constructor(wrapper: any, content: any);
+    constructor({ wrapper, content, autoResize }?: {
+        wrapper: any;
+        content: any;
+        autoResize?: boolean;
+    });
     wrapper: any;
     content: any;
     wrapperResizeObserver: ResizeObserver;
     contentResizeObserver: ResizeObserver;
-    onWindowResize: () => void;
+    destroy(): void;
+    resize: () => void;
+    onWrapperResize: () => void;
     width: any;
     height: any;
-    destroy(): void;
-    onWrapperResize: () => void;
     onContentResize: () => void;
     scrollHeight: any;
     scrollWidth: any;
