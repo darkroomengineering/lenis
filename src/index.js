@@ -207,7 +207,7 @@ export default class Lenis {
     if (
       !!event
         .composedPath()
-        .find((node) => node?.hasAttribute?.('data-lenis-prevent'))
+        .find((node) => node?.hasAttribute?.('data-lenis-prevent') || isTouch && node?.hasAttribute?.('data-lenis-prevent-touch') || isWheel && node?.hasAttribute?.('data-lenis-prevent-wheel'))
     )
       return
 
