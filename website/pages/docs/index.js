@@ -11,12 +11,14 @@ export default function Docs() {
       wrapper: document.querySelector('#wrapper'),
       content: document.querySelector('#content'),
       wheelEventsTarget: window,
+      autoResize: false,
     })
     setLenis(lenis)
 
-    console.log(lenis)
+    window.lenis = lenis
 
     return () => {
+      setLenis(undefined)
       lenis.destroy()
     }
   }, [])

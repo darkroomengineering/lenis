@@ -27,10 +27,11 @@ export default class Lenis {
      * @property {number} [touchMultiplier]
      * @property {number} [wheelMultiplier]
      * @property {boolean} [normalizeWheel]
+     * @property {boolean} [autoResize]
      *
      * @param {LenisOptions}
      */
-    constructor({ direction, gestureDirection, mouseMultiplier, smooth, wrapper, content, wheelEventsTarget, smoothWheel, smoothTouch, syncTouch, syncTouchLerp, touchInertiaMultiplier, duration, easing, lerp, infinite, orientation, gestureOrientation, touchMultiplier, wheelMultiplier, normalizeWheel, }?: {
+    constructor({ direction, gestureDirection, mouseMultiplier, smooth, wrapper, content, wheelEventsTarget, smoothWheel, smoothTouch, syncTouch, syncTouchLerp, touchInertiaMultiplier, duration, easing, lerp, infinite, orientation, gestureOrientation, touchMultiplier, wheelMultiplier, normalizeWheel, autoResize, }?: {
         direction?: "vertical" | "horizontal";
         gestureDirection?: "vertical" | "horizontal" | "both";
         mouseMultiplier?: number;
@@ -52,6 +53,7 @@ export default class Lenis {
         touchMultiplier?: number;
         wheelMultiplier?: number;
         normalizeWheel?: boolean;
+        autoResize?: boolean;
     });
     options: {
         wrapper: Window | HTMLElement;
@@ -71,6 +73,7 @@ export default class Lenis {
         touchMultiplier: number;
         wheelMultiplier: number;
         normalizeWheel: boolean;
+        autoResize: boolean;
     };
     dimensions: Dimensions;
     velocity: number;
@@ -100,6 +103,7 @@ export default class Lenis {
         deltaY: any;
         event: any;
     }) => void;
+    resize(): void;
     emit(): void;
     onScroll: () => void;
     direction: number;

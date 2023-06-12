@@ -47,6 +47,7 @@ export default class Lenis {
    * @property {number} [touchMultiplier]
    * @property {number} [wheelMultiplier]
    * @property {boolean} [normalizeWheel]
+   * @property {boolean} [autoResize]
    *
    * @param {LenisOptions}
    */
@@ -74,6 +75,7 @@ export default class Lenis {
     touchMultiplier = 1,
     wheelMultiplier = mouseMultiplier ?? 1,
     normalizeWheel = false,
+    autoResize = true,
   } = {}) {
     // warn about legacy options
     if (direction) {
@@ -122,9 +124,10 @@ export default class Lenis {
       touchMultiplier,
       wheelMultiplier,
       normalizeWheel,
+      autoResize,
     }
 
-    this.dimensions = new Dimensions(wrapper, content)
+    this.dimensions = new Dimensions({ wrapper, content, autoResize })
     this.rootElement.classList.add('lenis')
 
     this.velocity = 0
@@ -155,6 +158,7 @@ export default class Lenis {
     })
 
     this.virtualScroll.destroy()
+    this.dimensions.destroy()
 
     this.rootElement.classList.remove('lenis')
     this.rootElement.classList.remove('lenis-smooth')
@@ -243,6 +247,10 @@ export default class Lenis {
         lerp: hasTouchInertia ? this.syncTouchLerp : 0.4, // should be 1 but had to leave 0.4 for iOS.....
       }),
     })
+  }
+
+  resize() {
+    this.dimensions.resize()
   }
 
   emit() {

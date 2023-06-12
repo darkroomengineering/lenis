@@ -49,7 +49,7 @@
     return typeof key === "symbol" ? key : String(key);
   }
 
-  var version = "1.0.13";
+  var version = "1.0.14";
 
   // Clamp a value between a minimum and maximum value
   function clamp(min, input, max) {
@@ -148,39 +148,46 @@
   }
 
   var Dimensions = /*#__PURE__*/function () {
-    function Dimensions(wrapper, content) {
+    function Dimensions(_temp) {
       var _this = this;
-      this.onWindowResize = function () {
-        _this.width = window.innerWidth;
-        _this.height = window.innerHeight;
+      var _ref = _temp === void 0 ? {} : _temp,
+        wrapper = _ref.wrapper,
+        content = _ref.content,
+        _ref$autoResize = _ref.autoResize,
+        autoResize = _ref$autoResize === void 0 ? true : _ref$autoResize;
+      this.resize = function () {
+        _this.onWrapperResize();
+        _this.onContentResize();
       };
       this.onWrapperResize = function () {
-        _this.width = _this.wrapper.clientWidth;
-        _this.height = _this.wrapper.clientHeight;
+        if (_this.wrapper === window) {
+          _this.width = window.innerWidth;
+          _this.height = window.innerHeight;
+        } else {
+          _this.width = _this.wrapper.clientWidth;
+          _this.height = _this.wrapper.clientHeight;
+        }
       };
       this.onContentResize = function () {
-        var element = _this.wrapper === window ? document.documentElement : _this.wrapper;
-        _this.scrollHeight = element.scrollHeight;
-        _this.scrollWidth = element.scrollWidth;
+        _this.scrollHeight = _this.content.scrollHeight;
+        _this.scrollWidth = _this.content.scrollWidth;
       };
       this.wrapper = wrapper;
       this.content = content;
-      if (this.wrapper === window) {
-        window.addEventListener('resize', this.onWindowResize, false);
-        this.onWindowResize();
-      } else {
-        this.wrapperResizeObserver = new ResizeObserver(debounce(this.onWrapperResize, 100));
-        this.wrapperResizeObserver.observe(this.wrapper);
-        this.onWrapperResize();
+      if (autoResize) {
+        var resize = debounce(this.resize, 250);
+        if (this.wrapper !== window) {
+          this.wrapperResizeObserver = new ResizeObserver(resize);
+          this.wrapperResizeObserver.observe(this.wrapper);
+        }
+        this.contentResizeObserver = new ResizeObserver(resize);
+        this.contentResizeObserver.observe(this.content);
       }
-      this.contentResizeObserver = new ResizeObserver(debounce(this.onContentResize, 100));
-      this.contentResizeObserver.observe(this.content);
-      this.onContentResize();
+      this.resize();
     }
     var _proto = Dimensions.prototype;
     _proto.destroy = function destroy() {
       var _this$wrapperResizeOb, _this$contentResizeOb;
-      window.removeEventListener('resize', this.onWindowResize, false);
       (_this$wrapperResizeOb = this.wrapperResizeObserver) == null ? void 0 : _this$wrapperResizeOb.disconnect();
       (_this$contentResizeOb = this.contentResizeObserver) == null ? void 0 : _this$contentResizeOb.disconnect();
     };
@@ -381,6 +388,7 @@
      * @property {number} [touchMultiplier]
      * @property {number} [wheelMultiplier]
      * @property {boolean} [normalizeWheel]
+     * @property {boolean} [autoResize]
      *
      * @param {LenisOptions}
      */
@@ -425,7 +433,9 @@
         _ref$wheelMultiplier = _ref.wheelMultiplier,
         wheelMultiplier = _ref$wheelMultiplier === void 0 ? mouseMultiplier != null ? mouseMultiplier : 1 : _ref$wheelMultiplier,
         _ref$normalizeWheel = _ref.normalizeWheel,
-        normalizeWheel = _ref$normalizeWheel === void 0 ? false : _ref$normalizeWheel;
+        normalizeWheel = _ref$normalizeWheel === void 0 ? false : _ref$normalizeWheel,
+        _ref$autoResize = _ref.autoResize,
+        autoResize = _ref$autoResize === void 0 ? true : _ref$autoResize;
       this.onVirtualScroll = function (_ref2) {
         var type = _ref2.type,
           inertia = _ref2.inertia,
@@ -518,9 +528,14 @@
         orientation: orientation,
         touchMultiplier: touchMultiplier,
         wheelMultiplier: wheelMultiplier,
-        normalizeWheel: normalizeWheel
+        normalizeWheel: normalizeWheel,
+        autoResize: autoResize
       };
-      this.dimensions = new Dimensions(wrapper, content);
+      this.dimensions = new Dimensions({
+        wrapper: wrapper,
+        content: content,
+        autoResize: autoResize
+      });
       this.rootElement.classList.add('lenis');
       this.velocity = 0;
       this.isStopped = false;
@@ -546,6 +561,7 @@
         passive: false
       });
       this.virtualScroll.destroy();
+      this.dimensions.destroy();
       this.rootElement.classList.remove('lenis');
       this.rootElement.classList.remove('lenis-smooth');
       this.rootElement.classList.remove('lenis-scrolling');
@@ -567,6 +583,9 @@
       } else {
         this.rootElement.scrollTop = scroll;
       }
+    };
+    _proto.resize = function resize() {
+      this.dimensions.resize();
     };
     _proto.emit = function emit() {
       this.emitter.emit('scroll', this);
