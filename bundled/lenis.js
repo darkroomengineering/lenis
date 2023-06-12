@@ -453,7 +453,7 @@
 
         // catch if scrolling on nested scroll elements
         if (!!event.composedPath().find(function (node) {
-          return node == null ? void 0 : node.hasAttribute == null ? void 0 : node.hasAttribute('data-lenis-prevent');
+          return (node == null ? void 0 : node.hasAttribute == null ? void 0 : node.hasAttribute('data-lenis-prevent')) || isTouch && (node == null ? void 0 : node.hasAttribute == null ? void 0 : node.hasAttribute('data-lenis-prevent-touch')) || isWheel && (node == null ? void 0 : node.hasAttribute == null ? void 0 : node.hasAttribute('data-lenis-prevent-wheel'));
         })) return;
         if (_this.isStopped || _this.isLocked) {
           event.preventDefault();
