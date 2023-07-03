@@ -49,7 +49,7 @@
     return typeof key === "symbol" ? key : String(key);
   }
 
-  var version = "1.0.15";
+  var version = "1.0.16";
 
   // Clamp a value between a minimum and maximum value
   function clamp(min, input, max) {
@@ -203,33 +203,88 @@
     return Dimensions;
   }();
 
-  var createNanoEvents = function createNanoEvents() {
-    return {
-      events: {},
-      // Emit an event with the provided arguments
-      emit: function emit(event) {
-        var callbacks = this.events[event] || [];
-        for (var i = 0, length = callbacks.length; i < length; i++) {
-          callbacks[i].apply(callbacks, [].slice.call(arguments, 1));
-        }
-      },
-      // Register a callback for the specified event
-      on: function on(event, cb) {
-        var _this$events$event,
-          _this = this;
-        // Add the callback to the event's callback list, or create a new list with the callback
-        ((_this$events$event = this.events[event]) == null ? void 0 : _this$events$event.push(cb)) || (this.events[event] = [cb]);
-
-        // Return an unsubscribe function
-        return function () {
-          var _this$events$event2;
-          _this.events[event] = (_this$events$event2 = _this.events[event]) == null ? void 0 : _this$events$event2.filter(function (i) {
-            return cb !== i;
-          });
-        };
+  var Emitter = /*#__PURE__*/function () {
+    function Emitter() {
+      this.events = {};
+    }
+    var _proto = Emitter.prototype;
+    _proto.emit = function emit(event) {
+      var callbacks = this.events[event] || [];
+      for (var i = 0, length = callbacks.length; i < length; i++) {
+        callbacks[i].apply(callbacks, [].slice.call(arguments, 1));
       }
     };
-  };
+    _proto.on = function on(event, cb) {
+      var _this$events$event,
+        _this = this;
+      // Add the callback to the event's callback list, or create a new list with the callback
+      ((_this$events$event = this.events[event]) == null ? void 0 : _this$events$event.push(cb)) || (this.events[event] = [cb]);
+
+      // Return an unsubscribe function
+      return function () {
+        var _this$events$event2;
+        _this.events[event] = (_this$events$event2 = _this.events[event]) == null ? void 0 : _this$events$event2.filter(function (i) {
+          return cb !== i;
+        });
+      };
+    };
+    _proto.destroy = function destroy() {
+      this.events = {};
+    };
+    return Emitter;
+  }();
+
+  var OverflowObserver = /*#__PURE__*/function () {
+    function OverflowObserver(element, _temp) {
+      var _this = this;
+      var _ref = _temp === void 0 ? {} : _temp,
+        orientation = _ref.orientation;
+      this.element = element;
+      this.orientation = orientation;
+      this.emitter = new Emitter();
+      var oldClassList = Object.values(element.classList);
+      this.observer = new MutationObserver(function (_ref2) {
+        var mutation = _ref2[0];
+        if (mutation.attributeName === 'style') {
+          _this.check();
+        } else if (mutation.attributeName === 'class') {
+          var classList = Object.values(element.classList);
+          var difference = classList.filter(function (x) {
+            return !oldClassList.includes(x);
+          }).concat(oldClassList.filter(function (x) {
+            return !classList.includes(x);
+          }));
+          if (!difference.some(function (item) {
+            return ['lenis', 'lenis-scrolling', 'lenis-stopped', 'lenis-smooth'].includes(item);
+          })) {
+            _this.check();
+          }
+          oldClassList = classList;
+        }
+      });
+      this.observer.observe(element, {
+        attributes: true,
+        attributeFilter: ['style', 'class']
+      });
+    }
+    var _proto = OverflowObserver.prototype;
+    _proto.on = function on(event, callback) {
+      return this.emitter.on(event, callback);
+    };
+    _proto.check = function check() {
+      var _getComputedStyle = getComputedStyle(this.element),
+        overflowX = _getComputedStyle.overflowX,
+        overflowY = _getComputedStyle.overflowY;
+      var overflow = this.orientation === 'horizontal' ? overflowX : overflowY;
+      var isVisible = !['hidden', 'clip'].includes(overflow);
+      this.emitter.emit('change', isVisible);
+    };
+    _proto.destroy = function destroy() {
+      this.emitter.destroy();
+      this.observer.disconnect();
+    };
+    return OverflowObserver;
+  }();
 
   var VirtualScroll = /*#__PURE__*/function () {
     function VirtualScroll(element, _ref) {
@@ -306,7 +361,7 @@
         x: null,
         y: null
       };
-      this.emitter = createNanoEvents();
+      this.emitter = new Emitter();
       this.element.addEventListener('wheel', this.onWheel, {
         passive: false
       });
@@ -330,7 +385,7 @@
     // Remove all event listeners and clean up
     ;
     _proto.destroy = function destroy() {
-      this.emitter.events = {};
+      this.emitter.destroy();
       this.element.removeEventListener('wheel', this.onWheel, {
         passive: false
       });
@@ -483,6 +538,13 @@
           lerp: hasTouchInertia ? _this.syncTouchLerp : 0.4 // should be 1 but had to leave 0.4 for iOS.....
         }));
       };
+      this.onOverflowChange = function (isVisible) {
+        if (isVisible) {
+          _this.start();
+        } else {
+          _this.stop();
+        }
+      };
       this.onScroll = function () {
         if (!_this.isScrolling) {
           var lastScroll = _this.animatedScroll;
@@ -492,19 +554,6 @@
           _this.emit();
         }
       };
-      // warn about legacy options
-      if (direction) {
-        console.warn('Lenis: `direction` option is deprecated, use `orientation` instead');
-      }
-      if (gestureDirection) {
-        console.warn('Lenis: `gestureDirection` option is deprecated, use `gestureOrientation` instead');
-      }
-      if (mouseMultiplier) {
-        console.warn('Lenis: `mouseMultiplier` option is deprecated, use `wheelMultiplier` instead');
-      }
-      if (smooth) {
-        console.warn('Lenis: `smooth` option is deprecated, use `smoothWheel` instead');
-      }
       window.lenisVersion = version;
 
       // if wrapper is html or body, fallback to window
@@ -543,8 +592,8 @@
       this.isScrolling = false;
       this.targetScroll = this.animatedScroll = this.actualScroll;
       this.animate = new Animate();
-      this.emitter = createNanoEvents();
-      this.options.wrapper.addEventListener('scroll', this.onScroll, {
+      this.emitter = new Emitter();
+      wrapper.addEventListener('scroll', this.onScroll, {
         passive: false
       });
       this.virtualScroll = new VirtualScroll(wheelEventsTarget, {
@@ -553,15 +602,20 @@
         normalizeWheel: normalizeWheel
       });
       this.virtualScroll.on('scroll', this.onVirtualScroll);
+      this.overflowObserver = new OverflowObserver(this.rootElement, {
+        orientation: orientation
+      });
+      this.overflowObserver.on('change', this.onOverflowChange);
     }
     var _proto = Lenis.prototype;
     _proto.destroy = function destroy() {
-      this.emitter.events = {};
+      this.emitter.destroy();
       this.options.wrapper.removeEventListener('scroll', this.onScroll, {
         passive: false
       });
       this.virtualScroll.destroy();
       this.dimensions.destroy();
+      this.overflowObserver.destroy();
       this.rootElement.classList.remove('lenis');
       this.rootElement.classList.remove('lenis-smooth');
       this.rootElement.classList.remove('lenis-scrolling');

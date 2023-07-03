@@ -1,8 +1,9 @@
 import { version } from '../package.json'
 import { Animate } from './animate'
 import { Dimensions } from './dimensions'
+import { Emitter } from './emitter'
 import { clamp, modulo } from './maths'
-import { createNanoEvents } from './nanoevents'
+import { OverflowObserver } from './overflow-observer'
 import { VirtualScroll } from './virtual-scroll'
 
 // Technical explaination
@@ -77,28 +78,6 @@ export default class Lenis {
     normalizeWheel = false,
     autoResize = true,
   } = {}) {
-    // warn about legacy options
-    if (direction) {
-      console.warn(
-        'Lenis: `direction` option is deprecated, use `orientation` instead'
-      )
-    }
-    if (gestureDirection) {
-      console.warn(
-        'Lenis: `gestureDirection` option is deprecated, use `gestureOrientation` instead'
-      )
-    }
-    if (mouseMultiplier) {
-      console.warn(
-        'Lenis: `mouseMultiplier` option is deprecated, use `wheelMultiplier` instead'
-      )
-    }
-    if (smooth) {
-      console.warn(
-        'Lenis: `smooth` option is deprecated, use `smoothWheel` instead'
-      )
-    }
-
     window.lenisVersion = version
 
     // if wrapper is html or body, fallback to window
@@ -136,9 +115,9 @@ export default class Lenis {
     this.isScrolling = false
     this.targetScroll = this.animatedScroll = this.actualScroll
     this.animate = new Animate()
-    this.emitter = createNanoEvents()
+    this.emitter = new Emitter()
 
-    this.options.wrapper.addEventListener('scroll', this.onScroll, {
+    wrapper.addEventListener('scroll', this.onScroll, {
       passive: false,
     })
 
@@ -148,10 +127,15 @@ export default class Lenis {
       normalizeWheel,
     })
     this.virtualScroll.on('scroll', this.onVirtualScroll)
+
+    this.overflowObserver = new OverflowObserver(this.rootElement, {
+      orientation,
+    })
+    this.overflowObserver.on('change', this.onOverflowChange)
   }
 
   destroy() {
-    this.emitter.events = {}
+    this.emitter.destroy()
 
     this.options.wrapper.removeEventListener('scroll', this.onScroll, {
       passive: false,
@@ -159,6 +143,7 @@ export default class Lenis {
 
     this.virtualScroll.destroy()
     this.dimensions.destroy()
+    this.overflowObserver.destroy()
 
     this.rootElement.classList.remove('lenis')
     this.rootElement.classList.remove('lenis-smooth')
@@ -207,7 +192,12 @@ export default class Lenis {
     if (
       !!event
         .composedPath()
-        .find((node) => node?.hasAttribute?.('data-lenis-prevent') || isTouch && node?.hasAttribute?.('data-lenis-prevent-touch') || isWheel && node?.hasAttribute?.('data-lenis-prevent-wheel'))
+        .find(
+          (node) =>
+            node?.hasAttribute?.('data-lenis-prevent') ||
+            (isTouch && node?.hasAttribute?.('data-lenis-prevent-touch')) ||
+            (isWheel && node?.hasAttribute?.('data-lenis-prevent-wheel'))
+        )
     )
       return
 
@@ -247,6 +237,14 @@ export default class Lenis {
         lerp: hasTouchInertia ? this.syncTouchLerp : 0.4, // should be 1 but had to leave 0.4 for iOS.....
       }),
     })
+  }
+
+  onOverflowChange = (isVisible) => {
+    if (isVisible) {
+      this.start()
+    } else {
+      this.stop()
+    }
   }
 
   resize() {
