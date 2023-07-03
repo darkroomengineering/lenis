@@ -43,7 +43,7 @@
     "clean": "rimraf dist && rimraf bundled",
     "build:website": "vite build",
     "prebuild": "npm run clean",
-    "prepublishOnly": "npm version patch",
+    "prepublishOnly": "npm version preminor",
     "postpublish": "git push --follow-tags",
     "preversion": "npm run build",
     "prepare": "husky install",
