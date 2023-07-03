@@ -1,6 +1,6 @@
 {
   "name": "@studio-freight/lenis",
-  "version": "1.1.0-0",
+  "version": "1.0.16",
   "description": "Lenis is a smooth scroll library to normalize the scrolling experience across devices",
   "files": [
     "dist",
@@ -43,7 +43,7 @@
     "clean": "rimraf dist && rimraf bundled",
     "build:website": "vite build",
     "prebuild": "npm run clean",
-    "prepublishOnly": "npm version preminor",
+    "prepublishOnly": "npm version prepatch",
     "postpublish": "git push --follow-tags",
     "preversion": "npm run build",
     "prepare": "husky install",
