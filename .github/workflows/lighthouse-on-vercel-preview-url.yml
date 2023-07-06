@@ -24,7 +24,7 @@ jobs:
       - uses: actions/checkout@v3.5.3
       - name: Audit preview URL with Lighthouse
         id: lighthouse_audit
-        uses: treosh/lighthouse-ci-action@v9
+        uses: treosh/lighthouse-ci-action@v10
         with:
           urls: |
             "https://${{ steps.vercel_preview_url.outputs.preview_url }}"
