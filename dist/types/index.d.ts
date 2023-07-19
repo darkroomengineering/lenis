@@ -31,7 +31,7 @@ export default class Lenis {
      *
      * @param {LenisOptions}
      */
-    constructor({ direction, gestureDirection, mouseMultiplier, smooth, wrapper, content, wheelEventsTarget, smoothWheel, smoothTouch, syncTouch, syncTouchLerp, touchInertiaMultiplier, duration, easing, lerp, infinite, orientation, gestureOrientation, touchMultiplier, wheelMultiplier, normalizeWheel, autoResize, }?: {
+    constructor({ wrapper, content, wheelEventsTarget, smoothWheel, smoothTouch, syncTouch, syncTouchLerp, __iosNoInertiaSyncTouchLerp, touchInertiaMultiplier, duration, easing, lerp, infinite, orientation, gestureOrientation, touchMultiplier, wheelMultiplier, normalizeWheel, autoResize, }?: {
         direction?: "vertical" | "horizontal";
         gestureDirection?: "vertical" | "horizontal" | "both";
         mouseMultiplier?: number;
@@ -63,6 +63,7 @@ export default class Lenis {
         smoothTouch: boolean;
         syncTouch: boolean;
         syncTouchLerp: number;
+        __iosNoInertiaSyncTouchLerp: any;
         touchInertiaMultiplier: number;
         duration: number;
         easing: (t: number) => number;

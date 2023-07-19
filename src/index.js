@@ -52,53 +52,26 @@ export default class Lenis {
    * @param {LenisOptions}
    */
   constructor({
-    //--legacy options--//
-    direction,
-    gestureDirection,
-    mouseMultiplier,
-    smooth,
-    //--legacy options--//
     wrapper = window,
     content = document.documentElement,
     wheelEventsTarget = wrapper,
-    smoothWheel = smooth ?? true,
+    smoothWheel = true,
     smoothTouch = false,
     syncTouch = false,
     syncTouchLerp = 0.1,
+    __iosNoInertiaSyncTouchLerp = 0.4, // should be 1 but had to leave 0.4 for iOS (testing purpose)
     touchInertiaMultiplier = 35,
     duration, // in seconds
     easing = (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-    lerp = duration ? null : 0.1,
+    lerp = duration && 0.1,
     infinite = false,
-    orientation = direction ?? 'vertical', // vertical, horizontal
-    gestureOrientation = gestureDirection ?? 'vertical', // vertical, horizontal, both
+    orientation = 'vertical', // vertical, horizontal
+    gestureOrientation = 'vertical', // vertical, horizontal, both
     touchMultiplier = 1,
-    wheelMultiplier = mouseMultiplier ?? 1,
+    wheelMultiplier = 1,
     normalizeWheel = false,
     autoResize = true,
   } = {}) {
-    // warn about legacy options
-    if (direction) {
-      console.warn(
-        'Lenis: `direction` option is deprecated, use `orientation` instead'
-      )
-    }
-    if (gestureDirection) {
-      console.warn(
-        'Lenis: `gestureDirection` option is deprecated, use `gestureOrientation` instead'
-      )
-    }
-    if (mouseMultiplier) {
-      console.warn(
-        'Lenis: `mouseMultiplier` option is deprecated, use `wheelMultiplier` instead'
-      )
-    }
-    if (smooth) {
-      console.warn(
-        'Lenis: `smooth` option is deprecated, use `smoothWheel` instead'
-      )
-    }
-
     window.lenisVersion = version
 
     // if wrapper is html or body, fallback to window
@@ -114,6 +87,7 @@ export default class Lenis {
       smoothTouch,
       syncTouch,
       syncTouchLerp,
+      __iosNoInertiaSyncTouchLerp,
       touchInertiaMultiplier,
       duration,
       easing,
@@ -249,7 +223,9 @@ export default class Lenis {
     this.scrollTo(this.targetScroll + delta, {
       programmatic: false,
       ...(syncTouch && {
-        lerp: hasTouchInertia ? this.syncTouchLerp : 0.4, // should be 1 but had to leave 0.4 for iOS.....
+        lerp: hasTouchInertia
+          ? this.syncTouchLerp
+          : this.options.__iosNoInertiaSyncTouchLerp,
       }),
     })
   }
