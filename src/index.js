@@ -1,8 +1,8 @@
 import { version } from '../package.json'
 import { Animate } from './animate'
 import { Dimensions } from './dimensions'
+import { Emitter } from './emitter'
 import { clamp, modulo } from './maths'
-import { createNanoEvents } from './nanoevents'
 import { VirtualScroll } from './virtual-scroll'
 
 // Technical explaination
@@ -136,7 +136,7 @@ export default class Lenis {
     this.isScrolling = false
     this.targetScroll = this.animatedScroll = this.actualScroll
     this.animate = new Animate()
-    this.emitter = createNanoEvents()
+    this.emitter = new Emitter()
 
     this.options.wrapper.addEventListener('scroll', this.onScroll, {
       passive: false,
@@ -151,7 +151,7 @@ export default class Lenis {
   }
 
   destroy() {
-    this.emitter.events = {}
+    this.emitter.destroy()
 
     this.options.wrapper.removeEventListener('scroll', this.onScroll, {
       passive: false,
@@ -207,7 +207,12 @@ export default class Lenis {
     if (
       !!event
         .composedPath()
-        .find((node) => node?.hasAttribute?.('data-lenis-prevent') || isTouch && node?.hasAttribute?.('data-lenis-prevent-touch') || isWheel && node?.hasAttribute?.('data-lenis-prevent-wheel'))
+        .find(
+          (node) =>
+            node?.hasAttribute?.('data-lenis-prevent') ||
+            (isTouch && node?.hasAttribute?.('data-lenis-prevent-touch')) ||
+            (isWheel && node?.hasAttribute?.('data-lenis-prevent-wheel'))
+        )
     )
       return
 
@@ -412,7 +417,7 @@ export default class Lenis {
   }
 
   get limit() {
-    return this.isHorizontal ? this.dimensions.limit.x : this.dimensions.limit.y
+    return this.dimensions.limit[this.isHorizontal ? 'x' : 'y']
   }
 
   get isHorizontal() {

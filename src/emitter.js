@@ -1,15 +1,15 @@
-export let createNanoEvents = () => ({
-  events: {},
+export class Emitter {
+  constructor() {
+    this.events = {}
+  }
 
-  // Emit an event with the provided arguments
   emit(event, ...args) {
     let callbacks = this.events[event] || []
     for (let i = 0, length = callbacks.length; i < length; i++) {
       callbacks[i](...args)
     }
-  },
+  }
 
-  // Register a callback for the specified event
   on(event, cb) {
     // Add the callback to the event's callback list, or create a new list with the callback
     this.events[event]?.push(cb) || (this.events[event] = [cb])
@@ -18,5 +18,9 @@ export let createNanoEvents = () => ({
     return () => {
       this.events[event] = this.events[event]?.filter((i) => cb !== i)
     }
-  },
-})
+  }
+
+  destroy() {
+    this.events = {}
+  }
+}

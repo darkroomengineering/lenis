@@ -49,7 +49,7 @@
     return typeof key === "symbol" ? key : String(key);
   }
 
-  var version = "1.0.15";
+  var version = "1.0.16";
 
   // Clamp a value between a minimum and maximum value
   function clamp(min, input, max) {
@@ -203,33 +203,36 @@
     return Dimensions;
   }();
 
-  var createNanoEvents = function createNanoEvents() {
-    return {
-      events: {},
-      // Emit an event with the provided arguments
-      emit: function emit(event) {
-        var callbacks = this.events[event] || [];
-        for (var i = 0, length = callbacks.length; i < length; i++) {
-          callbacks[i].apply(callbacks, [].slice.call(arguments, 1));
-        }
-      },
-      // Register a callback for the specified event
-      on: function on(event, cb) {
-        var _this$events$event,
-          _this = this;
-        // Add the callback to the event's callback list, or create a new list with the callback
-        ((_this$events$event = this.events[event]) == null ? void 0 : _this$events$event.push(cb)) || (this.events[event] = [cb]);
-
-        // Return an unsubscribe function
-        return function () {
-          var _this$events$event2;
-          _this.events[event] = (_this$events$event2 = _this.events[event]) == null ? void 0 : _this$events$event2.filter(function (i) {
-            return cb !== i;
-          });
-        };
+  var Emitter = /*#__PURE__*/function () {
+    function Emitter() {
+      this.events = {};
+    }
+    var _proto = Emitter.prototype;
+    _proto.emit = function emit(event) {
+      var callbacks = this.events[event] || [];
+      for (var i = 0, length = callbacks.length; i < length; i++) {
+        callbacks[i].apply(callbacks, [].slice.call(arguments, 1));
       }
     };
-  };
+    _proto.on = function on(event, cb) {
+      var _this$events$event,
+        _this = this;
+      // Add the callback to the event's callback list, or create a new list with the callback
+      ((_this$events$event = this.events[event]) == null ? void 0 : _this$events$event.push(cb)) || (this.events[event] = [cb]);
+
+      // Return an unsubscribe function
+      return function () {
+        var _this$events$event2;
+        _this.events[event] = (_this$events$event2 = _this.events[event]) == null ? void 0 : _this$events$event2.filter(function (i) {
+          return cb !== i;
+        });
+      };
+    };
+    _proto.destroy = function destroy() {
+      this.events = {};
+    };
+    return Emitter;
+  }();
 
   var VirtualScroll = /*#__PURE__*/function () {
     function VirtualScroll(element, _ref) {
@@ -306,7 +309,7 @@
         x: null,
         y: null
       };
-      this.emitter = createNanoEvents();
+      this.emitter = new Emitter();
       this.element.addEventListener('wheel', this.onWheel, {
         passive: false
       });
@@ -330,7 +333,7 @@
     // Remove all event listeners and clean up
     ;
     _proto.destroy = function destroy() {
-      this.emitter.events = {};
+      this.emitter.destroy();
       this.element.removeEventListener('wheel', this.onWheel, {
         passive: false
       });
@@ -543,7 +546,7 @@
       this.isScrolling = false;
       this.targetScroll = this.animatedScroll = this.actualScroll;
       this.animate = new Animate();
-      this.emitter = createNanoEvents();
+      this.emitter = new Emitter();
       this.options.wrapper.addEventListener('scroll', this.onScroll, {
         passive: false
       });
@@ -556,7 +559,7 @@
     }
     var _proto = Lenis.prototype;
     _proto.destroy = function destroy() {
-      this.emitter.events = {};
+      this.emitter.destroy();
       this.options.wrapper.removeEventListener('scroll', this.onScroll, {
         passive: false
       });
@@ -722,7 +725,7 @@
     }, {
       key: "limit",
       get: function get() {
-        return this.isHorizontal ? this.dimensions.limit.x : this.dimensions.limit.y;
+        return this.dimensions.limit[this.isHorizontal ? 'x' : 'y'];
       }
     }, {
       key: "isHorizontal",

@@ -1,5 +1,5 @@
+import { Emitter } from './emitter'
 import { clamp } from './maths'
-import { createNanoEvents } from './nanoevents'
 
 export class VirtualScroll {
   constructor(
@@ -16,7 +16,7 @@ export class VirtualScroll {
       y: null,
     }
 
-    this.emitter = createNanoEvents()
+    this.emitter = new Emitter()
 
     this.element.addEventListener('wheel', this.onWheel, { passive: false })
     this.element.addEventListener('touchstart', this.onTouchStart, {
@@ -37,7 +37,7 @@ export class VirtualScroll {
 
   // Remove all event listeners and clean up
   destroy() {
-    this.emitter.events = {}
+    this.emitter.destroy()
 
     this.element.removeEventListener('wheel', this.onWheel, {
       passive: false,

@@ -86,11 +86,7 @@ export default class Lenis {
     targetScroll: any;
     animatedScroll: any;
     animate: Animate;
-    emitter: {
-        events: {};
-        emit(event: any, ...args: any[]): void;
-        on(event: any, cb: any): () => void;
-    };
+    emitter: Emitter;
     virtualScroll: VirtualScroll;
     destroy(): void;
     on(event: any, callback: any): () => void;
@@ -136,4 +132,5 @@ export default class Lenis {
 }
 import { Dimensions } from './dimensions';
 import { Animate } from './animate';
+import { Emitter } from './emitter';
 import { VirtualScroll } from './virtual-scroll';
