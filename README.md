@@ -184,6 +184,8 @@ html.lenis {
 
 #### GSAP ScrollTrigger integration
 ```js
+const lenis = new Lenis()
+
 lenis.on('scroll', ScrollTrigger.update)
 
 gsap.ticker.add((time)=>{
