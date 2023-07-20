@@ -49,7 +49,7 @@
     return typeof key === "symbol" ? key : String(key);
   }
 
-  var version = "1.0.17";
+  var version = "1.0.18";
 
   // Clamp a value between a minimum and maximum value
   function clamp(min, input, max) {
