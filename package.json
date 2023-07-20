@@ -45,7 +45,7 @@
     "prebuild": "npm run clean",
     "prepublishOnly": "npm version patch",
     "postpublish": "git push --follow-tags",
-    "preversion": "npm run build",
+    "version": "npm run build",
     "prepare": "husky install",
     "watch": "microbundle watch -i src/ --o ./bundled/lenis.js --no-sourcemap --no-pkg-main --external none --name Lenis --format umd --no-compress",
     "build": "npm-run-all --parallel build:dist build:bundle build:types",
