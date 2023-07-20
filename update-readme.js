@@ -10,8 +10,8 @@ fs.readFile(readmePath, 'utf8', (err, data) => {
   }
 
   const updatedReadme = data.replace(
-    /@[0-9]+\.[0-9]+\.[0-9]+/i,
-    '@' + packageJson.version
+    /lenis@[0-9]+\.[0-9]+\.[0-9]+/i,
+    'lenis@' + packageJson.version
   )
 
   fs.writeFile(readmePath, updatedReadme, 'utf8', (err) => {
