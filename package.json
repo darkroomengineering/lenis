@@ -44,7 +44,7 @@
     "build:website": "vite build",
     "prebuild": "npm run clean",
     "patch": "npm version patch",
-    "prepublishOnly": "patch",
+    "prepublishOnly": "npm run patch",
     "git:add": "git add .",
     "git:commit": "git commit -m \"chore: release $(npm run version --silent)\" --no-verify",
     "git:push": "git push --follow-tags --no-verify",
