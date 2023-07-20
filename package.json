@@ -46,7 +46,7 @@
     "patch": "npm version patch",
     "prepublishOnly": "npm run patch",
     "git:add": "git add .",
-    "version": "npm-run-all build && readme && git:add",
+    "version": "npm-run-all build readme git:add",
     "prepare": "husky install",
     "readme": "node update-readme.js",
     "watch": "microbundle watch -i src/ --o ./bundled/lenis.js --no-sourcemap --no-pkg-main --external none --name Lenis --format umd --no-compress",
