@@ -25,11 +25,6 @@ export default class Lenis {
    * @typedef {'vertical' | 'horizontal' | 'both'} GestureOrientation
    *
    * @typedef LenisOptions
-   * @property {Orientation} [direction]
-   * @property {GestureOrientation} [gestureDirection]
-   * @property {number} [mouseMultiplier]
-   * @property {boolean} [smooth]
-   *
    * @property {Window | HTMLElement} [wrapper]
    * @property {HTMLElement} [content]
    * @property {Window | HTMLElement} [wheelEventsTarget]

@@ -5,11 +5,6 @@ export default class Lenis {
      * @typedef {'vertical' | 'horizontal' | 'both'} GestureOrientation
      *
      * @typedef LenisOptions
-     * @property {Orientation} [direction]
-     * @property {GestureOrientation} [gestureDirection]
-     * @property {number} [mouseMultiplier]
-     * @property {boolean} [smooth]
-     *
      * @property {Window | HTMLElement} [wrapper]
      * @property {HTMLElement} [content]
      * @property {Window | HTMLElement} [wheelEventsTarget]
@@ -32,10 +27,6 @@ export default class Lenis {
      * @param {LenisOptions}
      */
     constructor({ wrapper, content, wheelEventsTarget, smoothWheel, smoothTouch, syncTouch, syncTouchLerp, __iosNoInertiaSyncTouchLerp, touchInertiaMultiplier, duration, easing, lerp, infinite, orientation, gestureOrientation, touchMultiplier, wheelMultiplier, normalizeWheel, autoResize, }?: {
-        direction?: "vertical" | "horizontal";
-        gestureDirection?: "vertical" | "horizontal" | "both";
-        mouseMultiplier?: number;
-        smooth?: boolean;
         wrapper?: Window | HTMLElement;
         content?: HTMLElement;
         wheelEventsTarget?: Window | HTMLElement;

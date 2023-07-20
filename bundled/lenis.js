@@ -49,7 +49,7 @@
     return typeof key === "symbol" ? key : String(key);
   }
 
-  var version = "1.0.16";
+  var version = "1.0.17";
 
   // Clamp a value between a minimum and maximum value
   function clamp(min, input, max) {
@@ -369,11 +369,6 @@
      * @typedef {'vertical' | 'horizontal' | 'both'} GestureOrientation
      *
      * @typedef LenisOptions
-     * @property {Orientation} [direction]
-     * @property {GestureOrientation} [gestureDirection]
-     * @property {number} [mouseMultiplier]
-     * @property {boolean} [smooth]
-     *
      * @property {Window | HTMLElement} [wrapper]
      * @property {HTMLElement} [content]
      * @property {Window | HTMLElement} [wheelEventsTarget]
