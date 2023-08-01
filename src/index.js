@@ -5,7 +5,7 @@ import { Emitter } from './emitter'
 import { clamp, modulo } from './maths'
 import { VirtualScroll } from './virtual-scroll'
 
-// Technical explaination
+// Technical explanation
 // - listen to 'wheel' events
 // - prevent 'wheel' event to prevent scroll
 // - normalize wheel delta
@@ -15,7 +15,7 @@ import { VirtualScroll } from './virtual-scroll'
 
 export default class Lenis {
   // isScrolling = true when scroll is animating
-  // isStopped = true if user should not be able to scroll - enable/disable programatically
+  // isStopped = true if user should not be able to scroll - enable/disable programmatically
   // isSmooth = true if scroll should be animated
   // isLocked = same as isStopped but enabled/disabled when scroll reaches target
 

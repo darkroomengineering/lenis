@@ -93,6 +93,30 @@ requestAnimationFrame(raf)
 - `lock`(`boolean`): whether or not to prevent user from scrolling until target reached
 - `onComplete`(`function`): called when target is reached -->
 
+## Instance Props
+
+| Property                | Type          | Description                                                 |
+|-------------------------|---------------|-------------------------------------------------------------|
+| `animatedScroll`        | `number`      | Current scroll value                                        |
+| `dimensions`            | `object`      | Dimensions instance                                         |
+| `direction`             | `number`      | `0`: stopped, `1`: scrolling up, `-1`: scrolling down       |
+| `emitter`               | `object`      | Emitter instance                                            |
+| `options`               | `object`      | Instance options                                            |
+| `targetScroll`          | `number`      | Target scroll value                                         |
+| `time`                  | `number`      | Time elapsed since instance creation                        |
+| `actualScroll`          | `number`      | Current scroll value registered by the browser              |
+| `velocity`              | `number`      | Current scroll velocity                                     |
+| `isHorizontal` (getter) | `boolean`     | Whether or not the instance is horizontal                   |
+| `isScrolling` (getter)  | `boolean`     | Whether or not the scroll is being animated                 |
+| `isSmooth` (getter)     | `boolean`     | Whether or not the scroll is animated                       |
+| `isStopped` (getter)    | `boolean`     | Whether or not the user should be able to scroll            |
+| `limit` (getter)        | `number`      | Maximum scroll value                                        |
+| `progress` (getter)     | `number`      | Scroll progress from `0` to `1`                             |
+| `rootElement` (getter)  | `HTMLElement` | Element on which Lenis is instanced                         |
+| `scroll` (getter)       | `number`      | Current scroll value (handles infinite scroll if activated) |
+
+<br/>
+
 ## Instance Methods
 
 | Method                      | Description                                                                     | Arguments                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
@@ -133,8 +157,8 @@ html.lenis {
 }
 
 .lenis.lenis-scrolling iframe {
-   pointer-events: none;
-} 
+  pointer-events: none;
+}
 ```
 
 <br/>
