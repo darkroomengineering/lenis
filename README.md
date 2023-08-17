@@ -252,7 +252,6 @@ gsap.ticker.lagSmoothing(0)
 
 ## Lenis in use
 
-- [Wyre](https://www.sendwyre.com/) by [Studio Freight](https://www.studiofreight.com/)
 - [Lunchbox](https://lunchbox.io/) by [Studio Freight](https://www.studiofreight.com/)
 - [Easol](https://easol.com/) by [Studio Freight](https://www.studiofreight.com/)
 - [Repeat](https://getrepeat.io/) by [Studio Freight](https://www.studiofreight.com/)
