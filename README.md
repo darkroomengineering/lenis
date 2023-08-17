@@ -254,7 +254,6 @@ gsap.ticker.lagSmoothing(0)
 
 - [Lunchbox](https://lunchbox.io/) by [Studio Freight](https://www.studiofreight.com/)
 - [Easol](https://easol.com/) by [Studio Freight](https://www.studiofreight.com/)
-- [Repeat](https://getrepeat.io/) by [Studio Freight](https://www.studiofreight.com/)
 - [Dragonfly](https://dragonfly.xyz/) by [Studio Freight](https://www.studiofreight.com/)
 - [Yuga Labs](https://yuga.com/) by [Antinomy Studio](https://antinomy.studio/)
 - [Quentin Hocde's Portfolio](https://quentinhocde.com) by [Quentin Hocde](https://twitter.com/QuentinHocde)
