@@ -49,7 +49,7 @@
     return typeof key === "symbol" ? key : String(key);
   }
 
-  var version = "1.0.15";
+  var version = "1.0.19";
 
   // Clamp a value between a minimum and maximum value
   function clamp(min, input, max) {
@@ -203,33 +203,36 @@
     return Dimensions;
   }();
 
-  var createNanoEvents = function createNanoEvents() {
-    return {
-      events: {},
-      // Emit an event with the provided arguments
-      emit: function emit(event) {
-        var callbacks = this.events[event] || [];
-        for (var i = 0, length = callbacks.length; i < length; i++) {
-          callbacks[i].apply(callbacks, [].slice.call(arguments, 1));
-        }
-      },
-      // Register a callback for the specified event
-      on: function on(event, cb) {
-        var _this$events$event,
-          _this = this;
-        // Add the callback to the event's callback list, or create a new list with the callback
-        ((_this$events$event = this.events[event]) == null ? void 0 : _this$events$event.push(cb)) || (this.events[event] = [cb]);
-
-        // Return an unsubscribe function
-        return function () {
-          var _this$events$event2;
-          _this.events[event] = (_this$events$event2 = _this.events[event]) == null ? void 0 : _this$events$event2.filter(function (i) {
-            return cb !== i;
-          });
-        };
+  var Emitter = /*#__PURE__*/function () {
+    function Emitter() {
+      this.events = {};
+    }
+    var _proto = Emitter.prototype;
+    _proto.emit = function emit(event) {
+      var callbacks = this.events[event] || [];
+      for (var i = 0, length = callbacks.length; i < length; i++) {
+        callbacks[i].apply(callbacks, [].slice.call(arguments, 1));
       }
     };
-  };
+    _proto.on = function on(event, cb) {
+      var _this$events$event,
+        _this = this;
+      // Add the callback to the event's callback list, or create a new list with the callback
+      ((_this$events$event = this.events[event]) == null ? void 0 : _this$events$event.push(cb)) || (this.events[event] = [cb]);
+
+      // Return an unsubscribe function
+      return function () {
+        var _this$events$event2;
+        _this.events[event] = (_this$events$event2 = _this.events[event]) == null ? void 0 : _this$events$event2.filter(function (i) {
+          return cb !== i;
+        });
+      };
+    };
+    _proto.destroy = function destroy() {
+      this.events = {};
+    };
+    return Emitter;
+  }();
 
   var VirtualScroll = /*#__PURE__*/function () {
     function VirtualScroll(element, _ref) {
@@ -306,7 +309,7 @@
         x: null,
         y: null
       };
-      this.emitter = createNanoEvents();
+      this.emitter = new Emitter();
       this.element.addEventListener('wheel', this.onWheel, {
         passive: false
       });
@@ -330,7 +333,7 @@
     // Remove all event listeners and clean up
     ;
     _proto.destroy = function destroy() {
-      this.emitter.events = {};
+      this.emitter.destroy();
       this.element.removeEventListener('wheel', this.onWheel, {
         passive: false
       });
@@ -366,11 +369,6 @@
      * @typedef {'vertical' | 'horizontal' | 'both'} GestureOrientation
      *
      * @typedef LenisOptions
-     * @property {Orientation} [direction]
-     * @property {GestureOrientation} [gestureDirection]
-     * @property {number} [mouseMultiplier]
-     * @property {boolean} [smooth]
-     *
      * @property {Window | HTMLElement} [wrapper]
      * @property {HTMLElement} [content]
      * @property {Window | HTMLElement} [wheelEventsTarget]
@@ -395,10 +393,6 @@
     function Lenis(_temp) {
       var _this = this;
       var _ref = _temp === void 0 ? {} : _temp,
-        direction = _ref.direction,
-        gestureDirection = _ref.gestureDirection,
-        mouseMultiplier = _ref.mouseMultiplier,
-        smooth = _ref.smooth,
         _ref$wrapper = _ref.wrapper,
         wrapper = _ref$wrapper === void 0 ? window : _ref$wrapper,
         _ref$content = _ref.content,
@@ -406,13 +400,15 @@
         _ref$wheelEventsTarge = _ref.wheelEventsTarget,
         wheelEventsTarget = _ref$wheelEventsTarge === void 0 ? wrapper : _ref$wheelEventsTarge,
         _ref$smoothWheel = _ref.smoothWheel,
-        smoothWheel = _ref$smoothWheel === void 0 ? smooth != null ? smooth : true : _ref$smoothWheel,
+        smoothWheel = _ref$smoothWheel === void 0 ? true : _ref$smoothWheel,
         _ref$smoothTouch = _ref.smoothTouch,
         smoothTouch = _ref$smoothTouch === void 0 ? false : _ref$smoothTouch,
         _ref$syncTouch = _ref.syncTouch,
         _syncTouch = _ref$syncTouch === void 0 ? false : _ref$syncTouch,
         _ref$syncTouchLerp = _ref.syncTouchLerp,
         syncTouchLerp = _ref$syncTouchLerp === void 0 ? 0.1 : _ref$syncTouchLerp,
+        _ref$__iosNoInertiaSy = _ref.__iosNoInertiaSyncTouchLerp,
+        __iosNoInertiaSyncTouchLerp = _ref$__iosNoInertiaSy === void 0 ? 0.4 : _ref$__iosNoInertiaSy,
         _ref$touchInertiaMult = _ref.touchInertiaMultiplier,
         touchInertiaMultiplier = _ref$touchInertiaMult === void 0 ? 35 : _ref$touchInertiaMult,
         duration = _ref.duration,
@@ -421,17 +417,17 @@
           return Math.min(1, 1.001 - Math.pow(2, -10 * t));
         } : _ref$easing,
         _ref$lerp = _ref.lerp,
-        lerp = _ref$lerp === void 0 ? duration ? null : 0.1 : _ref$lerp,
+        lerp = _ref$lerp === void 0 ? duration && 0.1 : _ref$lerp,
         _ref$infinite = _ref.infinite,
         infinite = _ref$infinite === void 0 ? false : _ref$infinite,
         _ref$orientation = _ref.orientation,
-        orientation = _ref$orientation === void 0 ? direction != null ? direction : 'vertical' : _ref$orientation,
+        orientation = _ref$orientation === void 0 ? 'vertical' : _ref$orientation,
         _ref$gestureOrientati = _ref.gestureOrientation,
-        gestureOrientation = _ref$gestureOrientati === void 0 ? gestureDirection != null ? gestureDirection : 'vertical' : _ref$gestureOrientati,
+        gestureOrientation = _ref$gestureOrientati === void 0 ? 'vertical' : _ref$gestureOrientati,
         _ref$touchMultiplier = _ref.touchMultiplier,
         touchMultiplier = _ref$touchMultiplier === void 0 ? 1 : _ref$touchMultiplier,
         _ref$wheelMultiplier = _ref.wheelMultiplier,
-        wheelMultiplier = _ref$wheelMultiplier === void 0 ? mouseMultiplier != null ? mouseMultiplier : 1 : _ref$wheelMultiplier,
+        wheelMultiplier = _ref$wheelMultiplier === void 0 ? 1 : _ref$wheelMultiplier,
         _ref$normalizeWheel = _ref.normalizeWheel,
         normalizeWheel = _ref$normalizeWheel === void 0 ? false : _ref$normalizeWheel,
         _ref$autoResize = _ref.autoResize,
@@ -480,7 +476,7 @@
         _this.scrollTo(_this.targetScroll + delta, _extends({
           programmatic: false
         }, syncTouch && {
-          lerp: hasTouchInertia ? _this.syncTouchLerp : 0.4 // should be 1 but had to leave 0.4 for iOS.....
+          lerp: hasTouchInertia ? _this.syncTouchLerp : _this.options.__iosNoInertiaSyncTouchLerp
         }));
       };
       this.onScroll = function () {
@@ -492,19 +488,6 @@
           _this.emit();
         }
       };
-      // warn about legacy options
-      if (direction) {
-        console.warn('Lenis: `direction` option is deprecated, use `orientation` instead');
-      }
-      if (gestureDirection) {
-        console.warn('Lenis: `gestureDirection` option is deprecated, use `gestureOrientation` instead');
-      }
-      if (mouseMultiplier) {
-        console.warn('Lenis: `mouseMultiplier` option is deprecated, use `wheelMultiplier` instead');
-      }
-      if (smooth) {
-        console.warn('Lenis: `smooth` option is deprecated, use `smoothWheel` instead');
-      }
       window.lenisVersion = version;
 
       // if wrapper is html or body, fallback to window
@@ -519,6 +502,7 @@
         smoothTouch: smoothTouch,
         syncTouch: _syncTouch,
         syncTouchLerp: syncTouchLerp,
+        __iosNoInertiaSyncTouchLerp: __iosNoInertiaSyncTouchLerp,
         touchInertiaMultiplier: touchInertiaMultiplier,
         duration: duration,
         easing: easing,
@@ -543,7 +527,7 @@
       this.isScrolling = false;
       this.targetScroll = this.animatedScroll = this.actualScroll;
       this.animate = new Animate();
-      this.emitter = createNanoEvents();
+      this.emitter = new Emitter();
       this.options.wrapper.addEventListener('scroll', this.onScroll, {
         passive: false
       });
@@ -556,7 +540,7 @@
     }
     var _proto = Lenis.prototype;
     _proto.destroy = function destroy() {
-      this.emitter.events = {};
+      this.emitter.destroy();
       this.options.wrapper.removeEventListener('scroll', this.onScroll, {
         passive: false
       });
@@ -722,7 +706,7 @@
     }, {
       key: "limit",
       get: function get() {
-        return this.isHorizontal ? this.dimensions.limit.x : this.dimensions.limit.y;
+        return this.dimensions.limit[this.isHorizontal ? 'x' : 'y'];
       }
     }, {
       key: "isHorizontal",

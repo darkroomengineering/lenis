@@ -1,11 +1,11 @@
 import { version } from '../package.json'
 import { Animate } from './animate'
 import { Dimensions } from './dimensions'
+import { Emitter } from './emitter'
 import { clamp, modulo } from './maths'
-import { createNanoEvents } from './nanoevents'
 import { VirtualScroll } from './virtual-scroll'
 
-// Technical explaination
+// Technical explanation
 // - listen to 'wheel' events
 // - prevent 'wheel' event to prevent scroll
 // - normalize wheel delta
@@ -15,7 +15,7 @@ import { VirtualScroll } from './virtual-scroll'
 
 export default class Lenis {
   // isScrolling = true when scroll is animating
-  // isStopped = true if user should not be able to scroll - enable/disable programatically
+  // isStopped = true if user should not be able to scroll - enable/disable programmatically
   // isSmooth = true if scroll should be animated
   // isLocked = same as isStopped but enabled/disabled when scroll reaches target
 
@@ -25,11 +25,6 @@ export default class Lenis {
    * @typedef {'vertical' | 'horizontal' | 'both'} GestureOrientation
    *
    * @typedef LenisOptions
-   * @property {Orientation} [direction]
-   * @property {GestureOrientation} [gestureDirection]
-   * @property {number} [mouseMultiplier]
-   * @property {boolean} [smooth]
-   *
    * @property {Window | HTMLElement} [wrapper]
    * @property {HTMLElement} [content]
    * @property {Window | HTMLElement} [wheelEventsTarget]
@@ -52,53 +47,26 @@ export default class Lenis {
    * @param {LenisOptions}
    */
   constructor({
-    //--legacy options--//
-    direction,
-    gestureDirection,
-    mouseMultiplier,
-    smooth,
-    //--legacy options--//
     wrapper = window,
     content = document.documentElement,
     wheelEventsTarget = wrapper,
-    smoothWheel = smooth ?? true,
+    smoothWheel = true,
     smoothTouch = false,
     syncTouch = false,
     syncTouchLerp = 0.1,
+    __iosNoInertiaSyncTouchLerp = 0.4, // should be 1 but had to leave 0.4 for iOS (testing purpose)
     touchInertiaMultiplier = 35,
     duration, // in seconds
     easing = (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-    lerp = duration ? null : 0.1,
+    lerp = duration && 0.1,
     infinite = false,
-    orientation = direction ?? 'vertical', // vertical, horizontal
-    gestureOrientation = gestureDirection ?? 'vertical', // vertical, horizontal, both
+    orientation = 'vertical', // vertical, horizontal
+    gestureOrientation = 'vertical', // vertical, horizontal, both
     touchMultiplier = 1,
-    wheelMultiplier = mouseMultiplier ?? 1,
+    wheelMultiplier = 1,
     normalizeWheel = false,
     autoResize = true,
   } = {}) {
-    // warn about legacy options
-    if (direction) {
-      console.warn(
-        'Lenis: `direction` option is deprecated, use `orientation` instead'
-      )
-    }
-    if (gestureDirection) {
-      console.warn(
-        'Lenis: `gestureDirection` option is deprecated, use `gestureOrientation` instead'
-      )
-    }
-    if (mouseMultiplier) {
-      console.warn(
-        'Lenis: `mouseMultiplier` option is deprecated, use `wheelMultiplier` instead'
-      )
-    }
-    if (smooth) {
-      console.warn(
-        'Lenis: `smooth` option is deprecated, use `smoothWheel` instead'
-      )
-    }
-
     window.lenisVersion = version
 
     // if wrapper is html or body, fallback to window
@@ -114,6 +82,7 @@ export default class Lenis {
       smoothTouch,
       syncTouch,
       syncTouchLerp,
+      __iosNoInertiaSyncTouchLerp,
       touchInertiaMultiplier,
       duration,
       easing,
@@ -136,7 +105,7 @@ export default class Lenis {
     this.isScrolling = false
     this.targetScroll = this.animatedScroll = this.actualScroll
     this.animate = new Animate()
-    this.emitter = createNanoEvents()
+    this.emitter = new Emitter()
 
     this.options.wrapper.addEventListener('scroll', this.onScroll, {
       passive: false,
@@ -151,7 +120,7 @@ export default class Lenis {
   }
 
   destroy() {
-    this.emitter.events = {}
+    this.emitter.destroy()
 
     this.options.wrapper.removeEventListener('scroll', this.onScroll, {
       passive: false,
@@ -207,7 +176,12 @@ export default class Lenis {
     if (
       !!event
         .composedPath()
-        .find((node) => node?.hasAttribute?.('data-lenis-prevent') || isTouch && node?.hasAttribute?.('data-lenis-prevent-touch') || isWheel && node?.hasAttribute?.('data-lenis-prevent-wheel'))
+        .find(
+          (node) =>
+            node?.hasAttribute?.('data-lenis-prevent') ||
+            (isTouch && node?.hasAttribute?.('data-lenis-prevent-touch')) ||
+            (isWheel && node?.hasAttribute?.('data-lenis-prevent-wheel'))
+        )
     )
       return
 
@@ -244,7 +218,9 @@ export default class Lenis {
     this.scrollTo(this.targetScroll + delta, {
       programmatic: false,
       ...(syncTouch && {
-        lerp: hasTouchInertia ? this.syncTouchLerp : 0.4, // should be 1 but had to leave 0.4 for iOS.....
+        lerp: hasTouchInertia
+          ? this.syncTouchLerp
+          : this.options.__iosNoInertiaSyncTouchLerp,
       }),
     })
   }
@@ -412,7 +388,7 @@ export default class Lenis {
   }
 
   get limit() {
-    return this.isHorizontal ? this.dimensions.limit.x : this.dimensions.limit.y
+    return this.dimensions.limit[this.isHorizontal ? 'x' : 'y']
   }
 
   get isHorizontal() {

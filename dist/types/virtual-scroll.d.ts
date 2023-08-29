@@ -12,11 +12,7 @@ export class VirtualScroll {
         x: any;
         y: any;
     };
-    emitter: {
-        events: {};
-        emit(event: any, ...args: any[]): void;
-        on(event: any, cb: any): () => void;
-    };
+    emitter: Emitter;
     on(event: any, callback: any): () => void;
     destroy(): void;
     onTouchStart: (event: any) => void;
@@ -31,3 +27,4 @@ export class VirtualScroll {
     onTouchEnd: (event: any) => void;
     onWheel: (event: any) => void;
 }
+import { Emitter } from './emitter';

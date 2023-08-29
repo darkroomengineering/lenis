@@ -25,7 +25,7 @@ import Lenis from '@studio-freight/lenis'
 using scripts:
 
 ```html
-<script src="https://cdn.jsdelivr.net/gh/studio-freight/lenis@1/bundled/lenis.min.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/studio-freight/lenis@1.0.19/bundled/lenis.min.js"></script> 
 ```
 
 <br>
@@ -93,6 +93,30 @@ requestAnimationFrame(raf)
 - `lock`(`boolean`): whether or not to prevent user from scrolling until target reached
 - `onComplete`(`function`): called when target is reached -->
 
+## Instance Props
+
+| Property                | Type          | Description                                                 |
+|-------------------------|---------------|-------------------------------------------------------------|
+| `animatedScroll`        | `number`      | Current scroll value                                        |
+| `dimensions`            | `object`      | Dimensions instance                                         |
+| `direction`             | `number`      | `0`: stopped, `1`: scrolling up, `-1`: scrolling down       |
+| `emitter`               | `object`      | Emitter instance                                            |
+| `options`               | `object`      | Instance options                                            |
+| `targetScroll`          | `number`      | Target scroll value                                         |
+| `time`                  | `number`      | Time elapsed since instance creation                        |
+| `actualScroll`          | `number`      | Current scroll value registered by the browser              |
+| `velocity`              | `number`      | Current scroll velocity                                     |
+| `isHorizontal` (getter) | `boolean`     | Whether or not the instance is horizontal                   |
+| `isScrolling` (getter)  | `boolean`     | Whether or not the scroll is being animated                 |
+| `isSmooth` (getter)     | `boolean`     | Whether or not the scroll is animated                       |
+| `isStopped` (getter)    | `boolean`     | Whether or not the user should be able to scroll            |
+| `limit` (getter)        | `number`      | Maximum scroll value                                        |
+| `progress` (getter)     | `number`      | Scroll progress from `0` to `1`                             |
+| `rootElement` (getter)  | `HTMLElement` | Element on which Lenis is instanced                         |
+| `scroll` (getter)       | `number`      | Current scroll value (handles infinite scroll if activated) |
+
+<br/>
+
 ## Instance Methods
 
 | Method                      | Description                                                                     | Arguments                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
@@ -133,8 +157,8 @@ html.lenis {
 }
 
 .lenis.lenis-scrolling iframe {
-   pointer-events: none;
-} 
+  pointer-events: none;
+}
 ```
 
 <br/>
@@ -184,11 +208,15 @@ html.lenis {
 
 #### GSAP ScrollTrigger integration
 ```js
+const lenis = new Lenis()
+
 lenis.on('scroll', ScrollTrigger.update)
 
 gsap.ticker.add((time)=>{
   lenis.raf(time * 1000)
 })
+
+gsap.ticker.lagSmoothing(0)
 ```
 
 <br>
@@ -219,15 +247,14 @@ gsap.ticker.add((time)=>{
 - [Lenis Scroll Snap Plugin](https://github.com/funkhaus/lenis-scroll-snap) by [Funkhaus](https://github.com/funkhaus)
 - [locomotive-scroll](https://github.com/locomotivemtl/locomotive-scroll) by [Locomotive](https://locomotive.ca/)
 - [vue-lenis](https://github.com/zeokku/vue-lenis) by [ZEOKKU](https://zeokku.com/)
+- [nuxt-lenis](https://www.npmjs.com/package/nuxt-lenis) by [Milkshake Studio](https://milkshake.studio/)
 
 <br>
 
 ## Lenis in use
 
-- [Wyre](https://www.sendwyre.com/) by [Studio Freight](https://www.studiofreight.com/)
 - [Lunchbox](https://lunchbox.io/) by [Studio Freight](https://www.studiofreight.com/)
 - [Easol](https://easol.com/) by [Studio Freight](https://www.studiofreight.com/)
-- [Repeat](https://getrepeat.io/) by [Studio Freight](https://www.studiofreight.com/)
 - [Dragonfly](https://dragonfly.xyz/) by [Studio Freight](https://www.studiofreight.com/)
 - [Yuga Labs](https://yuga.com/) by [Antinomy Studio](https://antinomy.studio/)
 - [Quentin Hocde's Portfolio](https://quentinhocde.com) by [Quentin Hocde](https://twitter.com/QuentinHocde)

@@ -5,11 +5,6 @@ export default class Lenis {
      * @typedef {'vertical' | 'horizontal' | 'both'} GestureOrientation
      *
      * @typedef LenisOptions
-     * @property {Orientation} [direction]
-     * @property {GestureOrientation} [gestureDirection]
-     * @property {number} [mouseMultiplier]
-     * @property {boolean} [smooth]
-     *
      * @property {Window | HTMLElement} [wrapper]
      * @property {HTMLElement} [content]
      * @property {Window | HTMLElement} [wheelEventsTarget]
@@ -31,11 +26,7 @@ export default class Lenis {
      *
      * @param {LenisOptions}
      */
-    constructor({ direction, gestureDirection, mouseMultiplier, smooth, wrapper, content, wheelEventsTarget, smoothWheel, smoothTouch, syncTouch, syncTouchLerp, touchInertiaMultiplier, duration, easing, lerp, infinite, orientation, gestureOrientation, touchMultiplier, wheelMultiplier, normalizeWheel, autoResize, }?: {
-        direction?: "vertical" | "horizontal";
-        gestureDirection?: "vertical" | "horizontal" | "both";
-        mouseMultiplier?: number;
-        smooth?: boolean;
+    constructor({ wrapper, content, wheelEventsTarget, smoothWheel, smoothTouch, syncTouch, syncTouchLerp, __iosNoInertiaSyncTouchLerp, touchInertiaMultiplier, duration, easing, lerp, infinite, orientation, gestureOrientation, touchMultiplier, wheelMultiplier, normalizeWheel, autoResize, }?: {
         wrapper?: Window | HTMLElement;
         content?: HTMLElement;
         wheelEventsTarget?: Window | HTMLElement;
@@ -63,6 +54,7 @@ export default class Lenis {
         smoothTouch: boolean;
         syncTouch: boolean;
         syncTouchLerp: number;
+        __iosNoInertiaSyncTouchLerp: any;
         touchInertiaMultiplier: number;
         duration: number;
         easing: (t: number) => number;
@@ -86,11 +78,7 @@ export default class Lenis {
     targetScroll: any;
     animatedScroll: any;
     animate: Animate;
-    emitter: {
-        events: {};
-        emit(event: any, ...args: any[]): void;
-        on(event: any, cb: any): () => void;
-    };
+    emitter: Emitter;
     virtualScroll: VirtualScroll;
     destroy(): void;
     on(event: any, callback: any): () => void;
@@ -136,4 +124,5 @@ export default class Lenis {
 }
 import { Dimensions } from './dimensions';
 import { Animate } from './animate';
+import { Emitter } from './emitter';
 import { VirtualScroll } from './virtual-scroll';
