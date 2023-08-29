@@ -3425,7 +3425,7 @@ packages:
       chalk: 2.4.2
       find-root: 1.1.0
       lodash: 4.17.21
-      semver: 5.7.1
+      semver: 5.7.2
     dev: true
 
   /ejs@3.1.9:
@@ -6051,8 +6051,8 @@ packages:
     engines: {node: '>=0.10.0'}
     dev: false
 
-  /semver@5.7.1:
-    resolution: {integrity: sha512-sauaDf/PZdVgrLTNYHRtpXa1iRiKcaebiKQ1BJdpQlWH2lCvexQdX55snPFyK7QzpudqbCI0qXFfOasHdyNDGQ==}
+  /semver@5.7.2:
+    resolution: {integrity: sha512-cBznnQ9KjJqU67B52RMC65CMarK2600WFnbkcaiwWq3xy/5haFJlshgnpjovMVJ+Hff49d8GEn0b87C5pDQ10g==}
     hasBin: true
     dev: true
 
