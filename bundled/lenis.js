@@ -229,8 +229,8 @@
       };
     };
     _proto.off = function off(event, callback) {
-      var _this$emitter$events$;
-      this.emitter.events[event] = (_this$emitter$events$ = this.emitter.events[event]) == null ? void 0 : _this$emitter$events$.filter(function (i) {
+      var _this$events$event3;
+      this.events[event] = (_this$events$event3 = this.events[event]) == null ? void 0 : _this$events$event3.filter(function (i) {
         return callback !== i;
       });
     };
