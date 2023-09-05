@@ -140,9 +140,7 @@ export default class Lenis {
   }
 
   off(event, callback) {
-    this.emitter.events[event] = this.emitter.events[event]?.filter(
-      (i) => callback !== i
-    )
+    return this.emitter.off(event, callback)
   }
 
   setScroll(scroll) {
@@ -154,12 +152,12 @@ export default class Lenis {
     }
   }
 
-  onVirtualScroll = ({ type, inertia, deltaX, deltaY, event }) => {
+  onVirtualScroll = ({ deltaX, deltaY, event }) => {
     // keep zoom feature
     if (event.ctrlKey) return
 
-    const isTouch = type === 'touch'
-    const isWheel = type === 'wheel'
+    const isTouch = event instanceof TouchEvent
+    const isWheel = event instanceof WheelEvent
 
     if (
       (this.options.gestureOrientation === 'vertical' && deltaY === 0) || // trackpad previous/next page gesture
@@ -173,15 +171,17 @@ export default class Lenis {
       return
 
     // catch if scrolling on nested scroll elements
+    let composedPath = event.composedPath()
+    composedPath = composedPath.slice(0, composedPath.indexOf(this.rootElement)) // remove parents elements
+
     if (
-      !!event
-        .composedPath()
-        .find(
-          (node) =>
-            node?.hasAttribute?.('data-lenis-prevent') ||
-            (isTouch && node?.hasAttribute?.('data-lenis-prevent-touch')) ||
-            (isWheel && node?.hasAttribute?.('data-lenis-prevent-wheel'))
-        )
+      !!composedPath.find(
+        (node) =>
+          node.hasAttribute?.('data-lenis-prevent') ||
+          (isTouch && node.hasAttribute?.('data-lenis-prevent-touch')) ||
+          (isWheel && node.hasAttribute?.('data-lenis-prevent-wheel')) ||
+          node.classList?.contains('lenis') // nested lenis instance
+      )
     )
       return
 
@@ -210,7 +210,8 @@ export default class Lenis {
     }
 
     const syncTouch = isTouch && this.options.syncTouch
-    const hasTouchInertia = isTouch && inertia && Math.abs(delta) > 1
+    const isTouchEnd = isTouch && event.type === 'touchend'
+    const hasTouchInertia = isTouchEnd && Math.abs(delta) > 1
     if (hasTouchInertia) {
       delta = this.velocity * this.options.touchInertiaMultiplier
     }

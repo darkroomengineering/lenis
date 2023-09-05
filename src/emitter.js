@@ -20,6 +20,12 @@ export class Emitter {
     }
   }
 
+  off(event, callback) {
+    this.emitter.events[event] = this.emitter.events[event]?.filter(
+      (i) => callback !== i
+    )
+  }
+
   destroy() {
     this.events = {}
   }

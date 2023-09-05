@@ -84,9 +84,7 @@ export default class Lenis {
     on(event: any, callback: any): () => void;
     off(event: any, callback: any): void;
     setScroll(scroll: any): void;
-    onVirtualScroll: ({ type, inertia, deltaX, deltaY, event }: {
-        type: any;
-        inertia: any;
+    onVirtualScroll: ({ deltaX, deltaY, event }: {
         deltaX: any;
         deltaY: any;
         event: any;

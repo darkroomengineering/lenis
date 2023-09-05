@@ -4,13 +4,24 @@ import Lenis from '../../../bundled/lenis.js'
 import s from './docs.module.scss'
 
 export default function Docs() {
+  const [rootLenis, setRootLenis] = useState()
   const [lenis, setLenis] = useState()
+
+  useEffect(() => {
+    const lenis = new Lenis({})
+    setRootLenis(lenis)
+
+    return () => {
+      setRootLenis(undefined)
+      lenis.destroy()
+    }
+  }, [])
 
   useEffect(() => {
     const lenis = new Lenis({
       wrapper: document.querySelector('#wrapper'),
       content: document.querySelector('#content'),
-      wheelEventsTarget: window,
+      // wheelEventsTarget: window,
       autoResize: false,
     })
     setLenis(lenis)
@@ -30,6 +41,7 @@ export default function Docs() {
   }, [lenis])
 
   useFrame((time) => {
+    rootLenis?.raf(time)
     lenis?.raf(time)
   }, [])
 

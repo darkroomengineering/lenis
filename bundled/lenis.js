@@ -228,6 +228,12 @@
         });
       };
     };
+    _proto.off = function off(event, callback) {
+      var _this$emitter$events$;
+      this.emitter.events[event] = (_this$emitter$events$ = this.emitter.events[event]) == null ? void 0 : _this$emitter$events$.filter(function (i) {
+        return callback !== i;
+      });
+    };
     _proto.destroy = function destroy() {
       this.events = {};
     };
@@ -269,7 +275,6 @@
           y: deltaY
         };
         _this.emitter.emit('scroll', {
-          type: 'touch',
           deltaX: deltaX,
           deltaY: deltaY,
           event: event
@@ -277,8 +282,6 @@
       };
       this.onTouchEnd = function (event) {
         _this.emitter.emit('scroll', {
-          type: 'touch',
-          inertia: true,
           deltaX: _this.lastDelta.x,
           deltaY: _this.lastDelta.y,
           event: event
@@ -295,7 +298,6 @@
         deltaX *= _this.wheelMultiplier;
         deltaY *= _this.wheelMultiplier;
         _this.emitter.emit('scroll', {
-          type: 'wheel',
           deltaX: deltaX,
           deltaY: deltaY,
           event: event
@@ -350,7 +352,7 @@
     return VirtualScroll;
   }();
 
-  // Technical explaination
+  // Technical explanation
   // - listen to 'wheel' events
   // - prevent 'wheel' event to prevent scroll
   // - normalize wheel delta
@@ -359,7 +361,7 @@
   // - if animation is not running, listen to 'scroll' events (native context)
   var Lenis = /*#__PURE__*/function () {
     // isScrolling = true when scroll is animating
-    // isStopped = true if user should not be able to scroll - enable/disable programatically
+    // isStopped = true if user should not be able to scroll - enable/disable programmatically
     // isSmooth = true if scroll should be animated
     // isLocked = same as isStopped but enabled/disabled when scroll reaches target
 
@@ -433,24 +435,27 @@
         _ref$autoResize = _ref.autoResize,
         autoResize = _ref$autoResize === void 0 ? true : _ref$autoResize;
       this.onVirtualScroll = function (_ref2) {
-        var type = _ref2.type,
-          inertia = _ref2.inertia,
-          deltaX = _ref2.deltaX,
+        var deltaX = _ref2.deltaX,
           deltaY = _ref2.deltaY,
           event = _ref2.event;
         // keep zoom feature
         if (event.ctrlKey) return;
-        var isTouch = type === 'touch';
-        var isWheel = type === 'wheel';
+        var isTouch = event instanceof TouchEvent;
+        var isWheel = event instanceof WheelEvent;
         if (_this.options.gestureOrientation === 'vertical' && deltaY === 0 ||
         // trackpad previous/next page gesture
         _this.options.gestureOrientation === 'horizontal' && deltaX === 0 || isTouch && _this.options.gestureOrientation === 'vertical' && _this.scroll === 0 && !_this.options.infinite && deltaY <= 0 // touch pull to refresh
         ) return;
 
         // catch if scrolling on nested scroll elements
-        if (!!event.composedPath().find(function (node) {
-          return (node == null ? void 0 : node.hasAttribute == null ? void 0 : node.hasAttribute('data-lenis-prevent')) || isTouch && (node == null ? void 0 : node.hasAttribute == null ? void 0 : node.hasAttribute('data-lenis-prevent-touch')) || isWheel && (node == null ? void 0 : node.hasAttribute == null ? void 0 : node.hasAttribute('data-lenis-prevent-wheel'));
-        })) return;
+        var composedPath = event.composedPath();
+        composedPath = composedPath.slice(0, composedPath.indexOf(_this.rootElement)); // remove parents elements
+
+        if (!!composedPath.find(function (node) {
+          var _node$classList;
+          return (node.hasAttribute == null ? void 0 : node.hasAttribute('data-lenis-prevent')) || isTouch && (node.hasAttribute == null ? void 0 : node.hasAttribute('data-lenis-prevent-touch')) || isWheel && (node.hasAttribute == null ? void 0 : node.hasAttribute('data-lenis-prevent-wheel')) || ((_node$classList = node.classList) == null ? void 0 : _node$classList.contains('lenis'));
+        } // nested lenis instance
+        )) return;
         if (_this.isStopped || _this.isLocked) {
           event.preventDefault();
           return;
@@ -469,7 +474,8 @@
           delta = deltaX;
         }
         var syncTouch = isTouch && _this.options.syncTouch;
-        var hasTouchInertia = isTouch && inertia && Math.abs(delta) > 1;
+        var isTouchEnd = isTouch && event.type === 'touchend';
+        var hasTouchInertia = isTouchEnd && Math.abs(delta) > 1;
         if (hasTouchInertia) {
           delta = _this.velocity * _this.options.touchInertiaMultiplier;
         }
@@ -555,10 +561,7 @@
       return this.emitter.on(event, callback);
     };
     _proto.off = function off(event, callback) {
-      var _this$emitter$events$;
-      this.emitter.events[event] = (_this$emitter$events$ = this.emitter.events[event]) == null ? void 0 : _this$emitter$events$.filter(function (i) {
-        return callback !== i;
-      });
+      return this.emitter.off(event, callback);
     };
     _proto.setScroll = function setScroll(scroll) {
       // apply scroll value immediately

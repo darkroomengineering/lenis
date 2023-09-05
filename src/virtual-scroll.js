@@ -86,7 +86,6 @@ export class VirtualScroll {
     }
 
     this.emitter.emit('scroll', {
-      type: 'touch',
       deltaX,
       deltaY,
       event,
@@ -95,8 +94,6 @@ export class VirtualScroll {
 
   onTouchEnd = (event) => {
     this.emitter.emit('scroll', {
-      type: 'touch',
-      inertia: true,
       deltaX: this.lastDelta.x,
       deltaY: this.lastDelta.y,
       event,
@@ -115,6 +112,6 @@ export class VirtualScroll {
     deltaX *= this.wheelMultiplier
     deltaY *= this.wheelMultiplier
 
-    this.emitter.emit('scroll', { type: 'wheel', deltaX, deltaY, event })
+    this.emitter.emit('scroll', { deltaX, deltaY, event })
   }
 }
