@@ -156,8 +156,8 @@ export default class Lenis {
     // keep zoom feature
     if (event.ctrlKey) return
 
-    const isTouch = event instanceof TouchEvent
-    const isWheel = event instanceof WheelEvent
+    const isTouch = event.type.includes('touch')
+    const isWheel = event.type.includes('wheel')
 
     if (
       (this.options.gestureOrientation === 'vertical' && deltaY === 0) || // trackpad previous/next page gesture

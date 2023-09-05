@@ -440,8 +440,8 @@
           event = _ref2.event;
         // keep zoom feature
         if (event.ctrlKey) return;
-        var isTouch = event instanceof TouchEvent;
-        var isWheel = event instanceof WheelEvent;
+        var isTouch = event.type.includes('touch');
+        var isWheel = event.type.includes('wheel');
         if (_this.options.gestureOrientation === 'vertical' && deltaY === 0 ||
         // trackpad previous/next page gesture
         _this.options.gestureOrientation === 'horizontal' && deltaX === 0 || isTouch && _this.options.gestureOrientation === 'vertical' && _this.scroll === 0 && !_this.options.infinite && deltaY <= 0 // touch pull to refresh
