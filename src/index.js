@@ -446,4 +446,12 @@ export default class Lenis {
       this.__isStopped = value
     }
   }
+
+  get className() {
+    let className = 'lenis'
+    if (this.isStopped) className += ' lenis-stopped'
+    if (this.isScrolling) className += ' lenis-scrolling'
+    if (this.isSmooth) className += ' lenis-smooth'
+    return className
+  }
 }

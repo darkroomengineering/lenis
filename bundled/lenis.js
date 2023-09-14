@@ -766,6 +766,15 @@
           this.__isStopped = value;
         }
       }
+    }, {
+      key: "className",
+      get: function get() {
+        var className = 'lenis';
+        if (this.isStopped) className += ' lenis-stopped';
+        if (this.isScrolling) className += ' lenis-scrolling';
+        if (this.isSmooth) className += ' lenis-smooth';
+        return className;
+      }
     }]);
     return Lenis;
   }();

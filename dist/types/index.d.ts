@@ -119,6 +119,7 @@ export default class Lenis {
     __isSmooth: any;
     __isScrolling: any;
     __isStopped: any;
+    get className(): string;
 }
 import { Dimensions } from './dimensions';
 import { Animate } from './animate';
