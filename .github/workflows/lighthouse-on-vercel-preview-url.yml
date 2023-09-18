@@ -54,7 +54,7 @@ jobs:
             ].join('\n')
              core.setOutput("comment", comment);
       - name: Create commit comment
-        uses: peter-evans/commit-comment@v2
+        uses: peter-evans/commit-comment@v3
         with:
           body: |
             "${{ steps.format_lighthouse_score.outputs.comment }}"
