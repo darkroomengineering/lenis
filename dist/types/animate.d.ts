@@ -3,10 +3,11 @@ export class Animate {
     value: any;
     stop(): void;
     isRunning: boolean;
-    fromTo(from: any, to: any, { lerp, duration, easing, onUpdate }: {
+    fromTo(from: any, to: any, { lerp, duration, easing, onStart, onUpdate }: {
         lerp?: number;
         duration?: number;
         easing?: (t: any) => any;
+        onStart: any;
         onUpdate: any;
     }): void;
     from: any;
