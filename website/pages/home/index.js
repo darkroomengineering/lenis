@@ -96,6 +96,20 @@ export default function Home() {
     [lenis]
   )
 
+  useEffect(() => {
+    if (!lenis) return
+
+    function onClassNameChange(lenis) {
+      console.log(lenis.className)
+    }
+
+    lenis.on('className change', onClassNameChange)
+
+    return () => {
+      lenis.off('className change', onClassNameChange)
+    }
+  }, [lenis])
+
   useScroll(({ scroll }) => {
     setHasScrolled(scroll > 10)
     if (!zoomWrapperRect.top) return
@@ -171,14 +185,8 @@ export default function Home() {
   }, [lenis?.limit])
 
   useScroll((e) => {
-    // console.log(
-    //   window.scrollY,
-    //   e.scroll,
-    //   e.targetScroll,
-    //   e.animatedScroll,
-    //   e.velocity
-    // )
-    console.log(e.scroll, e.progress)
+    console.log(window.scrollY, e.scroll, e.isScrolling, e.velocity, e.isLocked)
+    // console.log(e.isScrolling)
   })
 
   const inUseRef = useRef()

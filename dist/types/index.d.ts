@@ -12,6 +12,7 @@ export default class Lenis {
      * @property {boolean} [smoothTouch]
      * @property {boolean} [syncTouch]
      * @property {number} [syncTouchLerp]
+     * @property {number} [__iosNoInertiaSyncTouchLerp]
      * @property {number} [touchInertiaMultiplier]
      * @property {number} [duration]
      * @property {EasingFunction} [easing]
@@ -34,6 +35,7 @@ export default class Lenis {
         smoothTouch?: boolean;
         syncTouch?: boolean;
         syncTouchLerp?: number;
+        __iosNoInertiaSyncTouchLerp?: number;
         touchInertiaMultiplier?: number;
         duration?: number;
         easing?: (t: number) => number;
@@ -54,7 +56,7 @@ export default class Lenis {
         smoothTouch: boolean;
         syncTouch: boolean;
         syncTouchLerp: number;
-        __iosNoInertiaSyncTouchLerp: any;
+        __iosNoInertiaSyncTouchLerp: number;
         touchInertiaMultiplier: number;
         duration: number;
         easing: (t: number) => number;
@@ -67,6 +69,8 @@ export default class Lenis {
         normalizeWheel: boolean;
         autoResize: boolean;
     };
+    animate: Animate;
+    emitter: Emitter;
     dimensions: Dimensions;
     velocity: number;
     set isStopped(arg: any);
@@ -77,8 +81,6 @@ export default class Lenis {
     get isScrolling(): any;
     targetScroll: any;
     animatedScroll: any;
-    animate: Animate;
-    emitter: Emitter;
     virtualScroll: VirtualScroll;
     destroy(): void;
     on(event: any, callback: any): () => void;
@@ -120,8 +122,9 @@ export default class Lenis {
     __isScrolling: any;
     __isStopped: any;
     get className(): string;
+    toggleClass(name: any, value: any): void;
 }
-import { Dimensions } from './dimensions';
 import { Animate } from './animate';
 import { Emitter } from './emitter';
+import { Dimensions } from './dimensions';
 import { VirtualScroll } from './virtual-scroll';

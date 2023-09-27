@@ -24,7 +24,8 @@ export class Animate {
     }
 
     // Call the onUpdate callback with the current value and completed status
-    this.onUpdate?.(this.value, { completed })
+
+    this.onUpdate?.(this.value, completed)
 
     if (completed) {
       this.stop()
@@ -38,7 +39,11 @@ export class Animate {
 
   // Set up the animation from a starting value to an ending value
   // with optional parameters for lerping, duration, easing, and onUpdate callback
-  fromTo(from, to, { lerp = 0.1, duration = 1, easing = (t) => t, onUpdate }) {
+  fromTo(
+    from,
+    to,
+    { lerp = 0.1, duration = 1, easing = (t) => t, onStart, onUpdate }
+  ) {
     this.from = this.value = from
     this.to = to
     this.lerp = lerp
@@ -47,6 +52,7 @@ export class Animate {
     this.currentTime = 0
     this.isRunning = true
 
+    onStart?.()
     this.onUpdate = onUpdate
   }
 }
