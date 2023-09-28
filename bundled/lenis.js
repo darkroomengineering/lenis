@@ -444,7 +444,7 @@
         if (event.ctrlKey) return;
         var isTouch = event.type.includes('touch');
         var isWheel = event.type.includes('wheel');
-        if (deltaX === 0 && deltaY === 0 ||
+        if (_this.options.gestureOrientation === 'both' && deltaX === 0 && deltaY === 0 ||
         // "touchend" events prevents "click"
         _this.options.gestureOrientation === 'vertical' && deltaY === 0 ||
         // trackpad previous/next page gesture

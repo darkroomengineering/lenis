@@ -161,7 +161,9 @@ export default class Lenis {
     const isWheel = event.type.includes('wheel')
 
     if (
-      (deltaX === 0 && deltaY === 0) || // "touchend" events prevents "click"
+      (this.options.gestureOrientation === 'both' &&
+        deltaX === 0 &&
+        deltaY === 0) || // "touchend" events prevents "click"
       (this.options.gestureOrientation === 'vertical' && deltaY === 0) || // trackpad previous/next page gesture
       (this.options.gestureOrientation === 'horizontal' && deltaX === 0) ||
       (isTouch &&
