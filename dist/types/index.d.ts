@@ -7,7 +7,8 @@ export default class Lenis {
      * @typedef LenisOptions
      * @property {Window | HTMLElement} [wrapper]
      * @property {HTMLElement} [content]
-     * @property {Window | HTMLElement} [wheelEventsTarget]
+     * @property {Window | HTMLElement} [wheelEventsTarget] // deprecated
+     * @property {Window | HTMLElement} [eventsTarget]
      * @property {boolean} [smoothWheel]
      * @property {boolean} [smoothTouch]
      * @property {boolean} [syncTouch]
@@ -27,10 +28,11 @@ export default class Lenis {
      *
      * @param {LenisOptions}
      */
-    constructor({ wrapper, content, wheelEventsTarget, smoothWheel, smoothTouch, syncTouch, syncTouchLerp, __iosNoInertiaSyncTouchLerp, touchInertiaMultiplier, duration, easing, lerp, infinite, orientation, gestureOrientation, touchMultiplier, wheelMultiplier, normalizeWheel, autoResize, }?: {
+    constructor({ wrapper, content, wheelEventsTarget, eventsTarget, smoothWheel, smoothTouch, syncTouch, syncTouchLerp, __iosNoInertiaSyncTouchLerp, touchInertiaMultiplier, duration, easing, lerp, infinite, orientation, gestureOrientation, touchMultiplier, wheelMultiplier, normalizeWheel, autoResize, }?: {
         wrapper?: Window | HTMLElement;
         content?: HTMLElement;
         wheelEventsTarget?: Window | HTMLElement;
+        eventsTarget?: Window | HTMLElement;
         smoothWheel?: boolean;
         smoothTouch?: boolean;
         syncTouch?: boolean;
@@ -52,6 +54,7 @@ export default class Lenis {
         wrapper: Window | HTMLElement;
         content: HTMLElement;
         wheelEventsTarget: Window | HTMLElement;
+        eventsTarget: Window | HTMLElement;
         smoothWheel: boolean;
         smoothTouch: boolean;
         syncTouch: boolean;
@@ -73,6 +76,7 @@ export default class Lenis {
     emitter: Emitter;
     dimensions: Dimensions;
     velocity: number;
+    isLocked: boolean;
     set isStopped(arg: any);
     get isStopped(): any;
     set isSmooth(arg: any);
@@ -96,7 +100,6 @@ export default class Lenis {
     onScroll: () => void;
     direction: number;
     reset(): void;
-    isLocked: boolean;
     start(): void;
     stop(): void;
     raf(time: any): void;

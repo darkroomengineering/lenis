@@ -58,7 +58,7 @@ requestAnimationFrame(raf)
 |----------------------|-----------------------|----------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | `wrapper`            | `HTMLElement, Window` | `window`                                           | The element that will be used as the scroll container                                                                                                               |
 | `content`            | `HTMLElement`         | `document.documentElement`                         | The element that contains the content that will be scrolled, usually `wrapper`'s direct child                                                                       |
-| `wheelEventsTarget`  | `HTMLElement, Window` | `wrapper`                                          | The element that will listen to `wheel` events                                                                                                                      |
+| `eventsTarget`       | `HTMLElement, Window` | `wrapper`                                          | The element that will listen to `wheel` and `touch` events                                                                                                          |
 | `lerp`               | `number`              | `0.1`                                              | Linear interpolation (lerp) intensity (between 0 and 1)                                                                                                             |
 | `duration`           | `number`              | `1.2`                                              | The duration of scroll animation (in seconds). Useless if lerp defined                                                                                              |
 | `easing`             | `function`            | `(t) => Math.min(1, 1.001 - Math.pow(2, -10 * t))` | The easing function to use for the scroll animation, our default is custom but you can pick one from [Easings.net](https://easings.net/en). Useless if lerp defined |
@@ -99,7 +99,7 @@ requestAnimationFrame(raf)
 |-------------------------|---------------|-------------------------------------------------------------|
 | `animatedScroll`        | `number`      | Current scroll value                                        |
 | `dimensions`            | `object`      | Dimensions instance                                         |
-| `direction`             | `number`      | `0`: stopped, `1`: scrolling up, `-1`: scrolling down       |
+| `direction`             | `number`      | `1`: scrolling up, `-1`: scrolling down                     |
 | `emitter`               | `object`      | Emitter instance                                            |
 | `options`               | `object`      | Instance options                                            |
 | `targetScroll`          | `number`      | Target scroll value                                         |
@@ -114,6 +114,7 @@ requestAnimationFrame(raf)
 | `progress` (getter)     | `number`      | Scroll progress from `0` to `1`                             |
 | `rootElement` (getter)  | `HTMLElement` | Element on which Lenis is instanced                         |
 | `scroll` (getter)       | `number`      | Current scroll value (handles infinite scroll if activated) |
+| `className` (getter)    | `string`      | `rootElement` className                                     |
 
 <br/>
 

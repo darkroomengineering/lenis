@@ -27,7 +27,8 @@ export default class Lenis {
    * @typedef LenisOptions
    * @property {Window | HTMLElement} [wrapper]
    * @property {HTMLElement} [content]
-   * @property {Window | HTMLElement} [wheelEventsTarget]
+   * @property {Window | HTMLElement} [wheelEventsTarget] // deprecated
+   * @property {Window | HTMLElement} [eventsTarget]
    * @property {boolean} [smoothWheel]
    * @property {boolean} [smoothTouch]
    * @property {boolean} [syncTouch]
@@ -50,7 +51,8 @@ export default class Lenis {
   constructor({
     wrapper = window,
     content = document.documentElement,
-    wheelEventsTarget = wrapper,
+    wheelEventsTarget = wrapper, // deprecated
+    eventsTarget = wheelEventsTarget,
     smoothWheel = true,
     smoothTouch = false,
     syncTouch = false,
@@ -59,7 +61,7 @@ export default class Lenis {
     touchInertiaMultiplier = 35,
     duration, // in seconds
     easing = (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-    lerp = duration && 0.1,
+    lerp = !duration && 0.1,
     infinite = false,
     orientation = 'vertical', // vertical, horizontal
     gestureOrientation = 'vertical', // vertical, horizontal, both
@@ -79,6 +81,7 @@ export default class Lenis {
       wrapper,
       content,
       wheelEventsTarget,
+      eventsTarget,
       smoothWheel,
       smoothTouch,
       syncTouch,
@@ -103,8 +106,9 @@ export default class Lenis {
     this.toggleClass('lenis', true)
 
     this.velocity = 0
+    this.isLocked = false
     this.isStopped = false
-    this.isSmooth = smoothWheel || smoothTouch
+    this.isSmooth = syncTouch || smoothWheel || smoothTouch
     this.isScrolling = false
     this.targetScroll = this.animatedScroll = this.actualScroll
 
@@ -112,7 +116,7 @@ export default class Lenis {
       passive: false,
     })
 
-    this.virtualScroll = new VirtualScroll(wheelEventsTarget, {
+    this.virtualScroll = new VirtualScroll(eventsTarget, {
       touchMultiplier,
       wheelMultiplier,
       normalizeWheel,
@@ -289,7 +293,7 @@ export default class Lenis {
       programmatic = true, // called from outside of the class
     } = {}
   ) {
-    if (this.isStopped && !force) return
+    if ((this.isStopped || this.isLocked) && !force) return
 
     // keywords
     if (['top', 'left', 'start'].includes(target)) {
@@ -338,7 +342,6 @@ export default class Lenis {
       this.animatedScroll = this.targetScroll = target
       this.setScroll(this.scroll)
       this.reset()
-      this.emit()
       onComplete?.(this)
       return
     }
@@ -378,10 +381,7 @@ export default class Lenis {
         if (completed) {
           // avoid emitting twice (onScroll)
           requestAnimationFrame(() => {
-            this.isScrolling = false
-            this.velocity = 0
-
-            if (lock) this.isLocked = false
+            this.reset()
             this.emit()
             onComplete?.(this)
           })

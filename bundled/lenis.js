@@ -374,7 +374,8 @@
      * @typedef LenisOptions
      * @property {Window | HTMLElement} [wrapper]
      * @property {HTMLElement} [content]
-     * @property {Window | HTMLElement} [wheelEventsTarget]
+     * @property {Window | HTMLElement} [wheelEventsTarget] // deprecated
+     * @property {Window | HTMLElement} [eventsTarget]
      * @property {boolean} [smoothWheel]
      * @property {boolean} [smoothTouch]
      * @property {boolean} [syncTouch]
@@ -403,6 +404,8 @@
         content = _ref$content === void 0 ? document.documentElement : _ref$content,
         _ref$wheelEventsTarge = _ref.wheelEventsTarget,
         wheelEventsTarget = _ref$wheelEventsTarge === void 0 ? wrapper : _ref$wheelEventsTarge,
+        _ref$eventsTarget = _ref.eventsTarget,
+        eventsTarget = _ref$eventsTarget === void 0 ? wheelEventsTarget : _ref$eventsTarget,
         _ref$smoothWheel = _ref.smoothWheel,
         smoothWheel = _ref$smoothWheel === void 0 ? true : _ref$smoothWheel,
         _ref$smoothTouch = _ref.smoothTouch,
@@ -421,7 +424,7 @@
           return Math.min(1, 1.001 - Math.pow(2, -10 * t));
         } : _ref$easing,
         _ref$lerp = _ref.lerp,
-        lerp = _ref$lerp === void 0 ? duration && 0.1 : _ref$lerp,
+        lerp = _ref$lerp === void 0 ? !duration && 0.1 : _ref$lerp,
         _ref$infinite = _ref.infinite,
         infinite = _ref$infinite === void 0 ? false : _ref$infinite,
         _ref$orientation = _ref.orientation,
@@ -508,6 +511,7 @@
         wrapper: wrapper,
         content: content,
         wheelEventsTarget: wheelEventsTarget,
+        eventsTarget: eventsTarget,
         smoothWheel: smoothWheel,
         smoothTouch: smoothTouch,
         syncTouch: _syncTouch,
@@ -534,14 +538,15 @@
       });
       this.toggleClass('lenis', true);
       this.velocity = 0;
+      this.isLocked = false;
       this.isStopped = false;
-      this.isSmooth = smoothWheel || smoothTouch;
+      this.isSmooth = _syncTouch || smoothWheel || smoothTouch;
       this.isScrolling = false;
       this.targetScroll = this.animatedScroll = this.actualScroll;
       this.options.wrapper.addEventListener('scroll', this.onScroll, {
         passive: false
       });
-      this.virtualScroll = new VirtualScroll(wheelEventsTarget, {
+      this.virtualScroll = new VirtualScroll(eventsTarget, {
         touchMultiplier: touchMultiplier,
         wheelMultiplier: wheelMultiplier,
         normalizeWheel: normalizeWheel
@@ -622,7 +627,7 @@
         force = _ref3$force === void 0 ? false : _ref3$force,
         _ref3$programmatic = _ref3.programmatic,
         programmatic = _ref3$programmatic === void 0 ? true : _ref3$programmatic;
-      if (this.isStopped && !force) return;
+      if ((this.isStopped || this.isLocked) && !force) return;
 
       // keywords
       if (['top', 'left', 'start'].includes(target)) {
@@ -663,7 +668,6 @@
         this.animatedScroll = this.targetScroll = target;
         this.setScroll(this.scroll);
         this.reset();
-        this.emit();
         onComplete == null ? void 0 : onComplete(this);
         return;
       }
@@ -696,9 +700,7 @@
           if (completed) {
             // avoid emitting twice (onScroll)
             requestAnimationFrame(function () {
-              _this2.isScrolling = false;
-              _this2.velocity = 0;
-              if (lock) _this2.isLocked = false;
+              _this2.reset();
               _this2.emit();
               onComplete == null ? void 0 : onComplete(_this2);
             });
