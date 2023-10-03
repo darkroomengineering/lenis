@@ -166,48 +166,21 @@ html.lenis {
 
 ## Considerations
 
-#### Make sure `scroll-behavior` is set to `auto` or not set at all
-
-```css
-.lenis.lenis-smooth {
-  scroll-behavior: auto;
-}
-```
-
-#### Keep HTML elements default sized, this is necessary for Webflow implementation ([see issue](https://github.com/studio-freight/lenis/issues/10))
-
-```css
-html.lenis {
-  height: auto;
-}
-```
-
-#### Use the `data-lenis-prevent` attribute on nested scroll elements. In addition, we advise you to add `overscroll-behavior: contain` on this element
-
+### Nested scroll
 ```html
 <div data-lenis-prevent>scroll content</div>
+
+<div data-lenis-prevent-wheel>scroll content</div>
+
+<div data-lenis-prevent-touch>scroll content</div>
 ```
 
-```css
-.lenis.lenis-smooth [data-lenis-prevent] {
-  overscroll-behavior: contain;
-}
-```
-
-#### Manually use `lenis.scrollTo('#anchor')` on anchor link click ([see issue](https://github.com/studio-freight/lenis/issues/19))
-
+### Anchor links
 ```html
 <a href="#anchor" onclick="lenis.scrollTo('#anchor')">scroll to anchor</a>
 ```
 
-#### Hide overflow when lenis is stopped
-```css
-.lenis.lenis-stopped {
-  overflow: hidden;
-}
-```
-
-#### GSAP ScrollTrigger integration
+### GSAP ScrollTrigger integration
 ```js
 const lenis = new Lenis()
 
