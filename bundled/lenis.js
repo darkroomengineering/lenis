@@ -565,6 +565,7 @@
       this.toggleClass('lenis-smooth', false);
       this.toggleClass('lenis-scrolling', false);
       this.toggleClass('lenis-stopped', false);
+      this.toggleClass('lenis-locked', false);
     };
     _proto.on = function on(event, callback) {
       return this.emitter.on(event, callback);
@@ -778,10 +779,22 @@
         }
       }
     }, {
+      key: "isLocked",
+      get: function get() {
+        return this.__isLocked;
+      },
+      set: function set(value) {
+        if (this.__isLocked !== value) {
+          this.__isLocked = value;
+          this.toggleClass('lenis-locked', value);
+        }
+      }
+    }, {
       key: "className",
       get: function get() {
         var className = 'lenis';
         if (this.isStopped) className += ' lenis-stopped';
+        if (this.isLocked) className += ' lenis-locked';
         if (this.isScrolling) className += ' lenis-scrolling';
         if (this.isSmooth) className += ' lenis-smooth';
         return className;

@@ -138,6 +138,7 @@ export default class Lenis {
     this.toggleClass('lenis-smooth', false)
     this.toggleClass('lenis-scrolling', false)
     this.toggleClass('lenis-stopped', false)
+    this.toggleClass('lenis-locked', false)
   }
 
   on(event, callback) {
@@ -455,9 +456,21 @@ export default class Lenis {
     }
   }
 
+  get isLocked() {
+    return this.__isLocked
+  }
+
+  set isLocked(value) {
+    if (this.__isLocked !== value) {
+      this.__isLocked = value
+      this.toggleClass('lenis-locked', value)
+    }
+  }
+
   get className() {
     let className = 'lenis'
     if (this.isStopped) className += ' lenis-stopped'
+    if (this.isLocked) className += ' lenis-locked'
     if (this.isScrolling) className += ' lenis-scrolling'
     if (this.isSmooth) className += ' lenis-smooth'
     return className

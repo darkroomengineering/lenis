@@ -1,14 +1,19 @@
-html {
-  overflow: overlay;
-  //   &:not(.dev) {
-  //   scrollbar-width: none !important;
+html.lenis {
+  height: auto;
+}
 
-  //   body {
-  //     -ms-overflow-style: none;
-  //   }
-  //   body::-webkit-scrollbar {
-  //     width: 0 !important;
-  //     height: 0 !important;
-  //   }
-  //   }
+.lenis.lenis-smooth {
+  scroll-behavior: auto;
+}
+
+.lenis.lenis-smooth [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+
+.lenis.lenis-stopped {
+  overflow: hidden;
+}
+
+.lenis.lenis-scrolling iframe {
+  pointer-events: none;
 }

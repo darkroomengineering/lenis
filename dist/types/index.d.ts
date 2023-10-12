@@ -76,7 +76,8 @@ export default class Lenis {
     emitter: Emitter;
     dimensions: Dimensions;
     velocity: number;
-    isLocked: boolean;
+    set isLocked(arg: any);
+    get isLocked(): any;
     set isStopped(arg: any);
     get isStopped(): any;
     set isSmooth(arg: any);
@@ -124,6 +125,7 @@ export default class Lenis {
     __isSmooth: any;
     __isScrolling: any;
     __isStopped: any;
+    __isLocked: any;
     get className(): string;
     toggleClass(name: any, value: any): void;
 }
