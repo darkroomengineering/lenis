@@ -104,7 +104,11 @@ export class VirtualScroll {
   onWheel = (event) => {
     let { deltaX, deltaY } = event
 
-    if (this.normalizeWheel) {
+    if (typeof this.normalizeWheel === 'function') {
+      const normalized = this.normalizeWheel(event)
+      deltaX = normalized.deltaX
+      deltaY = normalized.deltaY
+    } else if (this.normalizeWheel) {
       deltaX = clamp(-100, deltaX, 100)
       deltaY = clamp(-100, deltaY, 100)
     }
