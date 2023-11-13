@@ -71,7 +71,7 @@ export function CustomHead({ title = '', description, image, keywords }) {
           locale: 'en_US',
           images: [
             {
-              url: image ? image.url : 'https://lenis.studiofreight.com/og.jpg',
+              url: image ? image.url : 'https://lenis.studiofreight.com/og.png',
               width: image ? image.width : 1200,
               height: image ? image.height : 630,
               alt: title,
