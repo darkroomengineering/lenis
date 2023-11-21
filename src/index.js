@@ -112,7 +112,7 @@ export default class Lenis {
     this.isScrolling = false
     this.targetScroll = this.animatedScroll = this.actualScroll
 
-    this.options.wrapper.addEventListener('scroll', this.onScroll, {
+    this.options.wrapper.addEventListener('scroll', this.onNativeScroll, {
       passive: false,
     })
 
@@ -127,7 +127,7 @@ export default class Lenis {
   destroy() {
     this.emitter.destroy()
 
-    this.options.wrapper.removeEventListener('scroll', this.onScroll, {
+    this.options.wrapper.removeEventListener('scroll', this.onNativeScroll, {
       passive: false,
     })
 
@@ -243,7 +243,9 @@ export default class Lenis {
     this.emitter.emit('scroll', this)
   }
 
-  onScroll = () => {
+  onNativeScroll = () => {
+    if (this.__preventNextScrollEvent) return
+
     if (!this.isScrolling) {
       const lastScroll = this.animatedScroll
       this.animatedScroll = this.targetScroll = this.actualScroll
@@ -256,6 +258,7 @@ export default class Lenis {
   reset() {
     this.isLocked = false
     this.isScrolling = false
+    this.animatedScroll = this.targetScroll = this.actualScroll
     this.velocity = 0
     this.animate.stop()
   }
@@ -380,11 +383,14 @@ export default class Lenis {
         if (!completed) this.emit()
 
         if (completed) {
-          // avoid emitting twice (onScroll)
+          this.reset()
+          this.emit()
+          onComplete?.(this)
+
+          // avoid emitting event twice
+          this.__preventNextScrollEvent = true
           requestAnimationFrame(() => {
-            this.reset()
-            this.emit()
-            onComplete?.(this)
+            delete this.__preventNextScrollEvent
           })
         }
       },

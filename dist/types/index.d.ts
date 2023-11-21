@@ -98,7 +98,7 @@ export default class Lenis {
     }) => void;
     resize(): void;
     emit(): void;
-    onScroll: () => void;
+    onNativeScroll: () => void;
     direction: number;
     reset(): void;
     start(): void;
@@ -116,6 +116,7 @@ export default class Lenis {
         force?: boolean;
         programmatic?: boolean;
     }): void;
+    __preventNextScrollEvent: boolean;
     get rootElement(): Window | HTMLElement;
     get limit(): number;
     get isHorizontal(): boolean;

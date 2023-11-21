@@ -1,4 +1,4 @@
-import { useRect } from '@studio-freight/hamo'
+import { useFrame, useRect } from '@studio-freight/hamo'
 import cn from 'clsx'
 
 import { Button } from 'components/button'
@@ -186,8 +186,11 @@ export default function Home() {
 
   useScroll((e) => {
     console.log(window.scrollY, e.scroll, e.isScrolling, e.velocity, e.isLocked)
-    // console.log(e.isScrolling)
   })
+
+  useFrame(() => {
+    console.log('frame', window.scrollY, lenis?.scroll, lenis?.isScrolling)
+  }, 1)
 
   const inUseRef = useRef()
 

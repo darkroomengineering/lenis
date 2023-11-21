@@ -24,7 +24,6 @@ export class Animate {
     }
 
     // Call the onUpdate callback with the current value and completed status
-
     this.onUpdate?.(this.value, completed)
 
     if (completed) {

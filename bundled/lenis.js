@@ -96,7 +96,6 @@
       }
 
       // Call the onUpdate callback with the current value and completed status
-
       (_this$onUpdate = this.onUpdate) == null ? void 0 : _this$onUpdate.call(this, this.value, completed);
       if (completed) {
         this.stop();
@@ -492,7 +491,8 @@
           lerp: hasTouchInertia ? _this.syncTouchLerp : _this.options.__iosNoInertiaSyncTouchLerp
         }));
       };
-      this.onScroll = function () {
+      this.onNativeScroll = function () {
+        if (_this.__preventNextScrollEvent) return;
         if (!_this.isScrolling) {
           var lastScroll = _this.animatedScroll;
           _this.animatedScroll = _this.targetScroll = _this.actualScroll;
@@ -543,7 +543,7 @@
       this.isSmooth = _syncTouch || smoothWheel || smoothTouch;
       this.isScrolling = false;
       this.targetScroll = this.animatedScroll = this.actualScroll;
-      this.options.wrapper.addEventListener('scroll', this.onScroll, {
+      this.options.wrapper.addEventListener('scroll', this.onNativeScroll, {
         passive: false
       });
       this.virtualScroll = new VirtualScroll(eventsTarget, {
@@ -556,7 +556,7 @@
     var _proto = Lenis.prototype;
     _proto.destroy = function destroy() {
       this.emitter.destroy();
-      this.options.wrapper.removeEventListener('scroll', this.onScroll, {
+      this.options.wrapper.removeEventListener('scroll', this.onNativeScroll, {
         passive: false
       });
       this.virtualScroll.destroy();
@@ -590,6 +590,7 @@
     _proto.reset = function reset() {
       this.isLocked = false;
       this.isScrolling = false;
+      this.animatedScroll = this.targetScroll = this.actualScroll;
       this.velocity = 0;
       this.animate.stop();
     };
@@ -699,11 +700,14 @@
           }
           if (!completed) _this2.emit();
           if (completed) {
-            // avoid emitting twice (onScroll)
+            _this2.reset();
+            _this2.emit();
+            onComplete == null ? void 0 : onComplete(_this2);
+
+            // avoid emitting event twice
+            _this2.__preventNextScrollEvent = true;
             requestAnimationFrame(function () {
-              _this2.reset();
-              _this2.emit();
-              onComplete == null ? void 0 : onComplete(_this2);
+              delete _this2.__preventNextScrollEvent;
             });
           }
         }

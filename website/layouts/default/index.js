@@ -34,7 +34,7 @@ export function Layout({
     window.scrollTo(0, 0)
     const lenis = new Lenis({
       // gestureOrientation: 'both',
-      // smoothWheel: false,
+      smoothWheel: true,
       // smoothTouch: true,
       syncTouch: true,
     })
@@ -96,7 +96,7 @@ export function Layout({
 
   useFrame((time) => {
     lenis?.raf(time)
-  }, [])
+  }, 0)
 
   return (
     <>
