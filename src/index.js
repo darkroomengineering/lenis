@@ -23,6 +23,7 @@ export default class Lenis {
    * @typedef {(t: number) => number} EasingFunction
    * @typedef {'vertical' | 'horizontal'} Orientation
    * @typedef {'vertical' | 'horizontal' | 'both'} GestureOrientation
+   * @typedef {(e: WheelEvent) => {deltaX: number, deltaY:number}} NormalizeWheelHandler
    *
    * @typedef LenisOptions
    * @property {Window | HTMLElement} [wrapper]
@@ -43,7 +44,7 @@ export default class Lenis {
    * @property {GestureOrientation} [gestureOrientation]
    * @property {number} [touchMultiplier]
    * @property {number} [wheelMultiplier]
-   * @property {boolean} [normalizeWheel]
+   * @property {boolean | NormalizeWheelHandler} [normalizeWheel]
    * @property {boolean} [autoResize]
    *
    * @param {LenisOptions}
