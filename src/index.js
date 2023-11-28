@@ -399,7 +399,7 @@ export default class Lenis {
 
   get rootElement() {
     return this.options.wrapper === window
-      ? this.options.content
+      ? document.documentElement
       : this.options.wrapper
   }
 

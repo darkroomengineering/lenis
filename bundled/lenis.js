@@ -720,7 +720,7 @@
     _createClass(Lenis, [{
       key: "rootElement",
       get: function get() {
-        return this.options.wrapper === window ? this.options.content : this.options.wrapper;
+        return this.options.wrapper === window ? document.documentElement : this.options.wrapper;
       }
     }, {
       key: "limit",

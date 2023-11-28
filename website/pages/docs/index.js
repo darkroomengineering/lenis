@@ -35,10 +35,15 @@ export default function Docs() {
   }, [])
 
   useEffect(() => {
-    lenis?.on('scroll', (e) => {
-      console.log(e.scroll, e.limit, e.progress)
+    rootLenis?.on('scroll', (e) => {
+      console.log(
+        window.scrollY,
+        e.scroll,
+        Math.floor(e.scroll),
+        e.actualScroll
+      )
     })
-  }, [lenis])
+  }, [rootLenis])
 
   useFrame((time) => {
     rootLenis?.raf(time)
