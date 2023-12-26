@@ -1,0 +1,47 @@
+{
+  "name": "@studio-freight/lenis",
+  "version": "0.0.4",
+  "description": "Lenis is a smooth scroll library to normalize and smooth the scrolling experience across devices",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/studio-freight/lenis.git"
+  },
+  "bugs": {
+    "url": "https://github.com/studio-freight/lenis/issues"
+  },
+  "scripts": {
+    "dev": "npm-run-all --parallel watch playground",
+    "playground": "npm run dev --prefix ./playground",
+    "build": "npm-run-all --parallel build:dist build:types",
+    "build:dist": "rollup --bundleConfigAsCjs -c",
+    "build:types": "tsc --allowJs -d --emitDeclarationOnly --declarationDir ./dist/types --removeComments ./src/index.js",
+    "watch:dist": "rollup --bundleConfigAsCjs -c -w",
+    "watch:types": "tsc --allowJs -d --emitDeclarationOnly --declarationDir ./dist/types --removeComments --watch ./src/index.js",
+    "watch": "npm-run-all --parallel watch:dist watch:types",
+    "readme": "node update-readme.js",
+    "git:push": "cross-var git add -A && git commit -m \"$npm_package_name@$npm_package_version\" && git push && git push --tags",
+    "git:tag": "cross-var git tag -a $npm_package_name@$npm_package_version -m \"$npm_package_name@$npm_package_version\"",
+    "preversion": "git add -A && git commit -m \"$npm_package_name@$npm_package_version\"",
+    "postversion": "npm-run-all build git:tag git:push"
+  },
+  "sideEffects": false,
+  "source": "src/index.js",
+  "main": "dist/lenis.umd.js",
+  "unpkg": "dist/lenis.umd.js",
+  "module": "dist/lenis.esm.js",
+  "types": "dist/types/index.d.ts",
+  "exports": {
+    "./types": "./dist/types/index.d.ts",
+    "./package.json": "./package.json",
+    ".": {
+      "import": {
+        "types": "./dist/types/index.d.ts",
+        "default": "./dist/lenis.esm.js"
+      },
+      "require": {
+        "types": "./dist/types/index.d.ts",
+        "default": "./dist/lenis.cjs.js"
+      }
+    }
+  }
+}

@@ -1,93 +1,30 @@
 {
-  "name": "@studio-freight/lenis",
-  "version": "1.0.29",
-  "description": "Lenis is a smooth scroll library to normalize the scrolling experience across devices",
-  "files": [
-    "dist",
-    "bundled"
+  "name": "lenis-monorepo",
+  "version": "0.0.1",
+  "private": true,
+  "workspaces": [
+    "packages/*"
   ],
-  "sideEffects": false,
-  "source": "src/lenis.js",
-  "main": "dist/lenis.js",
-  "umd:main": "dist/lenis.umd.js",
-  "module": "dist/lenis.mjs",
-  "types": "dist/types/index.d.ts",
-  "exports": {
-    "types": "./dist/types/index.d.ts",
-    "require": "./dist/lenis.js",
-    "default": "./dist/lenis.modern.mjs"
-  },
   "devDependencies": {
-    "@size-limit/preset-small-lib": "^8.2.4",
-    "husky": "^8.0.3",
-    "lint-staged": "^13.2.0",
-    "microbundle": "^0.15.1",
+    "@babel/core": "^7.23.6",
+    "@babel/preset-react": "^7.23.3",
+    "@rollup/plugin-babel": "^6.0.4",
+    "@rollup/plugin-commonjs": "^25.0.7",
+    "@rollup/plugin-json": "^6.1.0",
+    "@rollup/plugin-node-resolve": "^15.2.3",
+    "@rollup/plugin-replace": "^5.0.5",
+    "@rollup/plugin-terser": "^0.4.4",
+    "@rollup/plugin-typescript": "^9.0.1",
+    "@rollup/pluginutils": "^5.1.0",
     "npm-run-all": "^4.1.5",
-    "path": "^0.12.7",
-    "prettier": "^2.8.6",
-    "rimraf": "^4.4.0",
-    "size-limit": "^8.2.4",
-    "stats.js": "^0.17.0",
-    "typescript": "^5.0.2",
-    "vite": "^4.2.1"
+    "rollup": "^4.9.1",
+    "rollup-plugin-exclude-dependencies-from-bundle": "^1.1.23",
+    "rollup-plugin-preserve-directives": "^0.2.0",
+    "tslib": "^2.6.2",
+    "typescript": "^5.3.3",
+    "cross-var": "^1.1.0"
   },
-  "author": "studio-freight",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/studio-freight/lenis.git"
-  },
-  "scripts": {
-    "dev": "npm-run-all --parallel watch dev:website",
-    "dev:website": "npm run dev:website --prefix ./website",
-    "size": "size-limit",
-    "clean": "rimraf dist && rimraf bundled",
-    "build:website": "vite build",
-    "prebuild": "npm run clean",
-    "patch": "npm version patch",
-    "prepublishOnly": "npm run patch",
-    "git:add": "git add .",
-    "git:push": "git push",
-    "git:push-tags": "git push --tags",
-    "version": "npm-run-all build readme git:add",
-    "postversion": "npm-run-all git:push git:push-tags",
-    "prepare": "husky install",
-    "readme": "node update-readme.js",
-    "watch": "microbundle watch -i src/ --o ./bundled/lenis.js --no-sourcemap --no-pkg-main --external none --name Lenis --format umd --no-compress",
-    "build": "npm-run-all --parallel build:dist build:bundle build:types",
-    "build:types": "tsc --allowJs -d --emitDeclarationOnly --declarationDir ./dist/types --removeComments ./src/index.js",
-    "build:dist": "microbundle build -i src/ --o ./dist",
-    "build:bundle": "npm-run-all build:bundle-full build:bundle-min",
-    "build:bundle-full": "microbundle build -i src/ --o ./bundled/lenis.js --no-sourcemap --no-pkg-main --external none --name Lenis --format umd --no-compress",
-    "build:bundle-min": "microbundle build -i src/ --o ./bundled/lenis.min.js --no-sourcemap --no-pkg-main --external none --name Lenis --format umd"
-  },
-  "bugs": {
-    "url": "https://github.com/studio-freight/lenis/issues"
-  },
-  "homepage": "https://github.com/studio-freight/lenis#readme",
-  "keywords": [
-    "smooth",
-    "scroll"
-  ],
-  "size-limit": [
-    {
-      "limit": "4.5 kB",
-      "path": "dist/lenis.js"
-    },
-    {
-      "limit": "4.5 kB",
-      "path": "dist/lenis.mjs"
-    },
-    {
-      "limit": "4.5 kB",
-      "path": "dist/lenis.modern.mjs"
-    },
-    {
-      "limit": "4.5 kB",
-      "path": "dist/lenis.umd.js"
-    }
-  ],
-  "lint-staged": {
-    "*.js": "eslint --cache --fix",
-    "*.{js,css,scss,md}": "prettier --write"
+  "overrides": {
+    "rollup": "^4.9.0"
   }
 }
