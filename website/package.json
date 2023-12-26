@@ -3,8 +3,7 @@
   "version": "1.0.0",
   "description": "Lenis is a smooth scroll library to normalize the scrolling experience across devices",
   "scripts": {
-    "dev": "npm run dev --prefix ..",
-    "dev:website": "next dev",
+    "dev": "next dev",
     "build": "next build",
     "start": "next start",
     "lint": "eslint --cache --fix",
