@@ -1,6 +1,6 @@
 {
   "name": "@studio-freight/lenis",
-  "version": "0.0.4",
+  "version": "1.0.29",
   "description": "Lenis is a smooth scroll library to normalize and smooth the scrolling experience across devices",
   "repository": {
     "type": "git",
@@ -22,7 +22,7 @@
     "git:push": "cross-var git add -A && git commit -m \"$npm_package_name@$npm_package_version\" && git push && git push --tags",
     "git:tag": "cross-var git tag -a $npm_package_name@$npm_package_version -m \"$npm_package_name@$npm_package_version\"",
     "preversion": "git add -A && git commit -m \"$npm_package_name@$npm_package_version\"",
-    "postversion": "npm-run-all build git:tag git:push"
+    "postversion": "npm-run-all build readme git:tag git:push"
   },
   "sideEffects": false,
   "source": "src/index.js",
