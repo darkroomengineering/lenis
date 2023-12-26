@@ -9,6 +9,9 @@
   "bugs": {
     "url": "https://github.com/studio-freight/lenis/issues"
   },
+  "files": [
+    "dist/**/*"
+  ],
   "scripts": {
     "dev": "npm-run-all --parallel watch playground",
     "playground": "npm run dev --prefix ./playground",
