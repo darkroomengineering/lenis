@@ -1,7 +1,7 @@
 const fs = require('fs')
 const packageJson = require('./package.json')
 
-const readmePath = '../../README.md'
+const readmePath = './README.md'
 
 fs.readFile(readmePath, 'utf8', (err, data) => {
   if (err) {
