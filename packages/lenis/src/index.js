@@ -43,7 +43,7 @@ export default class Lenis {
    * @property {GestureOrientation} [gestureOrientation]
    * @property {number} [touchMultiplier]
    * @property {number} [wheelMultiplier]
-   * @property {boolean} [normalizeWheel]
+   * @property {boolean} [normalizeWheel] 
    * @property {boolean} [autoResize]
    *
    * @param {LenisOptions}
@@ -67,7 +67,7 @@ export default class Lenis {
     gestureOrientation = 'vertical', // vertical, horizontal, both
     touchMultiplier = 1,
     wheelMultiplier = 1,
-    normalizeWheel = false,
+    normalizeWheel = false, // deprecated
     autoResize = true,
   } = {}) {
     window.lenisVersion = version
