@@ -1,9 +1,10 @@
 [![LENIS](https://assets.studiofreight.com/lenis/header.png)](https://github.com/studio-freight/lenis)
 
-[![npm version](https://img.shields.io/badge/dynamic/json?color=blue&label=npm&prefix=v&query=version&suffix=%20&url=https://raw.githubusercontent.com/studio-freight/lenis/main/packages/lenis/package.json)](https://www.npmjs.com/package/@studio-freight/lenis)
-[![download](https://img.shields.io/npm/dm/%40studio-freight%2Flenis
+[![npm version](https://img.shields.io/npm/v/%40studio-freight%2Flenis?color=ff98a2
 )](https://www.npmjs.com/package/@studio-freight/lenis)
-[![gzip](https://img.shields.io/bundlephobia/minzip/@studio-freight/lenis?label=size)](https://bundlephobia.com/package/@studio-freight/lenis)
+[![download](https://img.shields.io/npm/dm/%40studio-freight%2Flenis?color=ff98a2
+)](https://www.npmjs.com/package/@studio-freight/lenis)
+[![gzip](https://img.shields.io/bundlephobia/minzip/@studio-freight/lenis?label=size&color=ff98a2)](https://bundlephobia.com/package/@studio-freight/lenis)
 
 ## Introduction
 
