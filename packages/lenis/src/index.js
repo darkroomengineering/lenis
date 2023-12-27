@@ -33,7 +33,7 @@ export default class Lenis {
    * @property {boolean} [smoothTouch]
    * @property {boolean} [syncTouch]
    * @property {number} [syncTouchLerp]
-   * @property {number} [__iosNoInertiaSyncTouchLerp]
+  //  * @property {number} [__iosNoInertiaSyncTouchLerp]
    * @property {number} [touchInertiaMultiplier]
    * @property {number} [duration]
    * @property {EasingFunction} [easing]
@@ -56,8 +56,8 @@ export default class Lenis {
     smoothWheel = true,
     smoothTouch = false,
     syncTouch = false,
-    syncTouchLerp = 0.1,
-    __iosNoInertiaSyncTouchLerp = 0.4, // should be 1 but had to leave 0.4 for iOS (testing purpose)
+    syncTouchLerp = 0.075,
+    // __iosNoInertiaSyncTouchLerp = 0.4, // should be 1 but had to leave 0.4 for iOS (testing purpose)
     touchInertiaMultiplier = 35,
     duration, // in seconds
     easing = (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
@@ -86,7 +86,7 @@ export default class Lenis {
       smoothTouch,
       syncTouch,
       syncTouchLerp,
-      __iosNoInertiaSyncTouchLerp,
+      // __iosNoInertiaSyncTouchLerp,
       touchInertiaMultiplier,
       duration,
       easing,
@@ -165,19 +165,32 @@ export default class Lenis {
     const isTouch = event.type.includes('touch')
     const isWheel = event.type.includes('wheel')
 
-    if (
-      (this.options.gestureOrientation === 'both' &&
-        deltaX === 0 &&
-        deltaY === 0) || // "touchend" events prevents "click"
-      (this.options.gestureOrientation === 'vertical' && deltaY === 0) || // trackpad previous/next page gesture
-      (this.options.gestureOrientation === 'horizontal' && deltaX === 0) ||
-      (isTouch &&
-        this.options.gestureOrientation === 'vertical' &&
-        this.scroll === 0 &&
-        !this.options.infinite &&
-        deltaY <= 0) // touch pull to refresh
-    )
+    const isTapToStop =
+      (this.options.smoothTouch || this.options.syncTouch) &&
+      isTouch &&
+      event.type === 'touchstart'
+
+    if (isTapToStop) {
+      this.reset()
       return
+    }
+
+    const isClick = deltaX === 0 && deltaY === 0 // click event
+
+    // const isPullToRefresh =
+    //   this.options.gestureOrientation === 'vertical' &&
+    //   this.scroll === 0 &&
+    //   !this.options.infinite &&
+    //   deltaY <= 5 // touch pull to refresh, not reliable yet
+
+    const isUnknownGesture =
+      (this.options.gestureOrientation === 'vertical' && deltaY === 0) ||
+      (this.options.gestureOrientation === 'horizontal' && deltaX === 0)
+
+    if (isClick || isUnknownGesture) {
+      // console.log('prevent')
+      return
+    }
 
     // catch if scrolling on nested scroll elements
     let composedPath = event.composedPath()
@@ -220,18 +233,24 @@ export default class Lenis {
 
     const syncTouch = isTouch && this.options.syncTouch
     const isTouchEnd = isTouch && event.type === 'touchend'
-    const hasTouchInertia = isTouchEnd && Math.abs(delta) > 1
+
+    const hasTouchInertia = isTouchEnd && Math.abs(delta) > 5
+
     if (hasTouchInertia) {
       delta = this.velocity * this.options.touchInertiaMultiplier
     }
 
     this.scrollTo(this.targetScroll + delta, {
       programmatic: false,
-      ...(syncTouch && {
-        lerp: hasTouchInertia
-          ? this.syncTouchLerp
-          : this.options.__iosNoInertiaSyncTouchLerp,
-      }),
+      ...(syncTouch
+        ? {
+            lerp: hasTouchInertia ? this.options.syncTouchLerp : 1,
+          }
+        : {
+            lerp: this.options.lerp,
+            duration: this.options.duration,
+            easing: this.options.easing,
+          }),
     })
   }
 

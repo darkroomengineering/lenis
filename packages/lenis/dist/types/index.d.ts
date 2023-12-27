@@ -1,5 +1,5 @@
 export default class Lenis {
-    constructor({ wrapper, content, wheelEventsTarget, eventsTarget, smoothWheel, smoothTouch, syncTouch, syncTouchLerp, __iosNoInertiaSyncTouchLerp, touchInertiaMultiplier, duration, easing, lerp, infinite, orientation, gestureOrientation, touchMultiplier, wheelMultiplier, normalizeWheel, autoResize, }?: {
+    constructor({ wrapper, content, wheelEventsTarget, eventsTarget, smoothWheel, smoothTouch, syncTouch, syncTouchLerp, touchInertiaMultiplier, duration, easing, lerp, infinite, orientation, gestureOrientation, touchMultiplier, wheelMultiplier, normalizeWheel, autoResize, }?: {
         wrapper?: Window | HTMLElement;
         content?: HTMLElement;
         wheelEventsTarget?: Window | HTMLElement;
@@ -8,7 +8,6 @@ export default class Lenis {
         smoothTouch?: boolean;
         syncTouch?: boolean;
         syncTouchLerp?: number;
-        __iosNoInertiaSyncTouchLerp?: number;
         touchInertiaMultiplier?: number;
         duration?: number;
         easing?: (t: number) => number;
@@ -30,7 +29,6 @@ export default class Lenis {
         smoothTouch: boolean;
         syncTouch: boolean;
         syncTouchLerp: number;
-        __iosNoInertiaSyncTouchLerp: number;
         touchInertiaMultiplier: number;
         duration: number;
         easing: (t: number) => number;

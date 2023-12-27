@@ -28,6 +28,8 @@ body {
   place-items: center;
   min-width: 320px;
   min-height: 100vh;
+  height: 300vh;
+  background-color: red;
 }
 
 h1 {
@@ -38,7 +40,7 @@ h1 {
 #app {
   max-width: 1280px;
   margin: 0 auto;
-  padding: 2rem;
+  /* padding: 2rem; */
   text-align: center;
 }
 
@@ -92,5 +94,40 @@ button:focus-visible {
   }
   button {
     background-color: #f9f9f9;
+  }
+}
+
+.controls {
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+}
+
+.controls button {
+  display: block;
+  font-size: 1em;
+  padding: 1em;
+  margin: 1em;
+  background-color: beige;
+  color: black;
+}
+
+.subtract:disabled {
+  opacity: 0.2;
+}
+
+.mover {
+  height: 3vw;
+  position: absolute;
+  z-index: 0;
+}
+
+.border {
+  border: 1px solid black;
+}
+
+@media (max-width: 600px) {
+  .controls button {
+    min-width: 20vw;
   }
 }

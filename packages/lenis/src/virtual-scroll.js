@@ -66,6 +66,12 @@ export class VirtualScroll {
       x: 0,
       y: 0,
     }
+
+    this.emitter.emit('scroll', {
+      deltaX: 0,
+      deltaY: 0,
+      event,
+    })
   }
 
   // Event handler for 'touchmove' event
