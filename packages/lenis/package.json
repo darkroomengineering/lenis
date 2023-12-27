@@ -30,7 +30,7 @@
   "sideEffects": false,
   "source": "src/index.js",
   "main": "dist/lenis.umd.js",
-  "unpkg": "dist/lenis.umd.js",
+  "unpkg": "dist/lenis.min.js",
   "module": "dist/lenis.esm.js",
   "types": "dist/types/index.d.ts",
   "exports": {
