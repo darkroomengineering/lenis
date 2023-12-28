@@ -1,4 +1,4 @@
-import Lenis from '../dist/lenis.esm.js'
+import Lenis from '../dist/lenis.mjs'
 import { setupCounter } from './counter.js'
 // import './jank.js'
 import javascriptLogo from './javascript.svg'
