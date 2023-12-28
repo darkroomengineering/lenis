@@ -1,6 +1,6 @@
 {
   "name": "@studio-freight/react-lenis",
-  "version": "0.0.38",
+  "version": "0.0.39",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/studio-freight/lenis.git"
@@ -23,7 +23,7 @@
     "git:commit": "git add -A && cross-var git commit -m \"$npm_package_name@$npm_package_version\"",
     "git:tag": "cross-var git tag -a $npm_package_name@$npm_package_version -m \"$npm_package_name@$npm_package_version\"",
     "git:push": "git push && git push --tags",
-    "postversion": "npm-run-all build readme git:commit git:tag git:push"
+    "postversion": "npm-run-all build git:commit git:tag git:push"
   },
   "sideEffects": false,
   "source": "src/index.jsx",
