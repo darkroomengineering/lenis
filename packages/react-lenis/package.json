@@ -29,7 +29,7 @@
   "source": "src/index.jsx",
   "main": "dist/react-lenis.umd.js",
   "unpkg": "dist/react-lenis.umd.js",
-  "module": "dist/react-lenis.esm.js",
+  "module": "dist/react-lenis.mjs",
   "types": "dist/types/index.d.ts",
   "exports": {
     "./types": "./dist/types/index.d.ts",
@@ -37,7 +37,7 @@
     ".": {
       "import": {
         "types": "./dist/types/index.d.ts",
-        "default": "./dist/react-lenis.esm.js"
+        "default": "./dist/react-lenis.mjs"
       },
       "require": {
         "types": "./dist/types/index.d.ts",
