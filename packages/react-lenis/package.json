@@ -9,7 +9,7 @@
     "url": "https://github.com/studio-freight/lenis/issues"
   },
   "files": [
-    "dist/**/*"
+    "dist"
   ],
   "scripts": {
     "dev": "npm-run-all --parallel watch playground",
@@ -20,10 +20,10 @@
     "watch:dist": "rollup --bundleConfigAsCjs -c -w",
     "watch:types": "tsc --target esnext --allowJs -d --emitDeclarationOnly --declarationDir ./dist/types --removeComments --watch ./src/index.jsx",
     "watch": "npm-run-all --parallel watch:dist watch:types",
-    "git:push": "cross-var git add -A && git commit -m \"$npm_package_name@$npm_package_version\" && git push && git push --tags",
+    "git:commit": "git add -A && cross-var git commit -m \"$npm_package_name@$npm_package_version\"",
     "git:tag": "cross-var git tag -a $npm_package_name@$npm_package_version -m \"$npm_package_name@$npm_package_version\"",
-    "preversion": "git add -A && git commit -m \"$npm_package_name@$npm_package_version\"",
-    "postversion": "npm-run-all build git:tag git:push"
+    "git:push": "git push && git push --tags",
+    "postversion": "npm-run-all build readme git:commit git:tag git:push"
   },
   "sideEffects": false,
   "source": "src/index.jsx",
