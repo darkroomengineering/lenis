@@ -1,10 +1,7 @@
 import { Float, useGLTF } from '@react-three/drei'
 import { Canvas, useFrame, useThree } from '@react-three/fiber'
 import { useFrame as useRaf } from '@studio-freight/hamo'
-import { useScroll } from 'hooks/use-scroll'
 import { button, useControls } from 'leva'
-import { mapRange } from 'lib/maths'
-import { useStore } from 'lib/store'
 import { Suspense, useEffect, useMemo, useRef, useState } from 'react'
 import {
   Color,
@@ -15,6 +12,11 @@ import {
   Vector2,
   Vector3,
 } from 'three'
+
+import { useScroll } from 'hooks/use-scroll'
+import { mapRange } from 'lib/maths'
+import { useStore } from 'lib/store'
+
 import fragmentShader from './particles/fragment.glsl'
 import vertexShader from './particles/vertex.glsl'
 

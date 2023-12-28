@@ -6,6 +6,6 @@ Make sure the grid is added in `<Layout>` component, in order to match the grid 
 
 ## Example
 
-```javascript
+```jsx
 <GridDebugger />
 ```

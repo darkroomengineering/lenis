@@ -1,7 +1,9 @@
 import cn from 'clsx'
+import dynamic from 'next/dynamic'
+
 import { Button } from 'components/button'
 import { Link } from 'components/link'
-import dynamic from 'next/dynamic'
+
 import s from './footer.module.scss'
 
 const GitHub = dynamic(() => import('icons/github.svg'), { ssr: false })

@@ -1,7 +1,9 @@
 import { useMediaQuery } from '@studio-freight/hamo'
 import cn from 'clsx'
-import { useStore } from 'lib/store'
 import { useEffect, useState } from 'react'
+
+import { useStore } from 'lib/store'
+
 import s from './intro.module.scss'
 
 export const Intro = () => {

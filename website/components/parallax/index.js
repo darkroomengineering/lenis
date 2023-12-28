@@ -1,7 +1,8 @@
 import { gsap } from 'gsap'
-import { mapRange } from 'lib/maths'
 import { useEffect, useRef } from 'react'
 import { useWindowSize } from 'react-use'
+
+import { mapRange } from 'lib/maths'
 
 export function Parallax({
   className,

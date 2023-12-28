@@ -1,6 +1,7 @@
 import { useMediaQuery } from '@studio-freight/hamo'
 import cn from 'clsx'
 import { useMemo, useState } from 'react'
+
 import s from './grid-debugger.module.scss'
 
 export const GridDebugger = () => {

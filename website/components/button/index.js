@@ -1,6 +1,7 @@
 import cn from 'clsx'
 import { Link } from 'components/link'
 import dynamic from 'next/dynamic'
+
 import s from './button.module.scss'
 
 const Arrow = dynamic(() => import('icons/arrow-buttons.svg'), { ssr: false })

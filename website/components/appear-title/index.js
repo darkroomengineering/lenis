@@ -4,6 +4,7 @@ import { gsap } from 'gsap'
 import { SplitText } from 'gsap/dist/SplitText'
 import { useEffect, useRef, useState } from 'react'
 import { useIntersection, useWindowSize } from 'react-use'
+
 import s from './appear-title.module.scss'
 
 gsap.registerPlugin(SplitText)

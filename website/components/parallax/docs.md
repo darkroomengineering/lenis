@@ -3,7 +3,7 @@ Parallax uses GSAP ScrollTrigger under the hood.
 speed: parallax speed relative to viewport width.
 position: use 'top' if element is visible on first screen of your page.
 
-```javascript
+```jsx
 import dynamic from 'next/dynamic'
 const Parallax = dynamic(
   () => import('components/parallax').then((mod) => mod.Parallax),

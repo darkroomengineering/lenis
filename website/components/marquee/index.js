@@ -1,4 +1,5 @@
 import cn from 'clsx'
+
 import s from './marquee.module.scss'
 
 const Marquee = ({

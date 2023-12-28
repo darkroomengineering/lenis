@@ -1,14 +1,16 @@
 import { useDebug } from '@studio-freight/hamo'
 import { raf } from '@studio-freight/tempus'
-import { RealViewport } from 'components/real-viewport'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/dist/ScrollTrigger'
-import { useScroll } from 'hooks/use-scroll'
-import { GTM_ID } from 'lib/analytics'
-import { useStore } from 'lib/store'
 import dynamic from 'next/dynamic'
 import Script from 'next/script'
 import { useEffect } from 'react'
+
+import { RealViewport } from 'components/real-viewport'
+import { useScroll } from 'hooks/use-scroll'
+import { GTM_ID } from 'lib/analytics'
+import { useStore } from 'lib/store'
+
 import 'styles/global.scss'
 
 if (typeof window !== 'undefined') {

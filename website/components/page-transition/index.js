@@ -1,7 +1,8 @@
 import gsap from 'gsap'
-import { useStore } from 'lib/store'
 import { useRouter } from 'next/router'
 import { useEffect, useRef, useState } from 'react'
+
+import { useStore } from 'lib/store'
 import s from './page-transition.module.scss'
 
 export const PageTransition = () => {

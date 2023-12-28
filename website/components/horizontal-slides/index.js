@@ -1,10 +1,11 @@
 import { useMediaQuery, useRect } from '@studio-freight/hamo'
 import cn from 'clsx'
 import gsap from 'gsap'
-import { useScroll } from 'hooks/use-scroll'
-import { clamp, mapRange } from 'lib/maths'
 import { useEffect, useRef, useState } from 'react'
 import { useWindowSize } from 'react-use'
+
+import { useScroll } from 'hooks/use-scroll'
+import { clamp, mapRange } from 'lib/maths'
 
 import s from './horizontal-slides.module.scss'
 

@@ -1,8 +1,9 @@
 import { useScroll } from 'hooks/use-scroll'
-import { clamp, mapRange } from 'lib/maths'
-import { useStore } from 'lib/store'
 import { useEffect, useRef, useState } from 'react'
 import { useWindowSize } from 'react-use'
+
+import { clamp, mapRange } from 'lib/maths'
+import { useStore } from 'lib/store'
 import s from './scrollbar.module.scss'
 
 export function Scrollbar({}) {

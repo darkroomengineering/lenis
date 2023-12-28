@@ -1,12 +1,12 @@
 import { useRect } from '@studio-freight/hamo'
 import cn from 'clsx'
+import dynamic from 'next/dynamic'
+import { useRef, useState } from 'react'
+import { useWindowSize } from 'react-use'
 
 import { Card } from 'components/card'
 import { useScroll } from 'hooks/use-scroll'
 import { clamp, mapRange } from 'lib/maths'
-import dynamic from 'next/dynamic'
-import { useRef, useState } from 'react'
-import { useWindowSize } from 'react-use'
 
 const AppearTitle = dynamic(
   () => import('components/appear-title').then((mod) => mod.AppearTitle),

@@ -1,4 +1,5 @@
 import cn from 'clsx'
+
 import s from './card.module.scss'
 
 export const Card = ({

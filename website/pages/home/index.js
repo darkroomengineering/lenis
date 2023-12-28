@@ -1,5 +1,9 @@
 import { useFrame, useRect } from '@studio-freight/hamo'
 import cn from 'clsx'
+import { button, useControls } from 'leva'
+import dynamic from 'next/dynamic'
+import { useEffect, useRef, useState } from 'react'
+import { useIntersection, useWindowSize } from 'react-use'
 
 import { Button } from 'components/button'
 import { Card } from 'components/card'
@@ -9,12 +13,9 @@ import { ListItem } from 'components/list-item'
 import { projects } from 'content/projects'
 import { useScroll } from 'hooks/use-scroll'
 import { Layout } from 'layouts/default'
-import { button, useControls } from 'leva'
 import { clamp, mapRange } from 'lib/maths'
 import { useStore } from 'lib/store'
-import dynamic from 'next/dynamic'
-import { useEffect, useRef, useState } from 'react'
-import { useIntersection, useWindowSize } from 'react-use'
+
 import s from './home.module.scss'
 
 const SFDR = dynamic(() => import('icons/sfdr.svg'), { ssr: false })
