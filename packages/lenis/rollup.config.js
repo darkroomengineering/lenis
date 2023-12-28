@@ -1,37 +1,37 @@
-import json from "@rollup/plugin-json"
-import terser from "@rollup/plugin-terser"
+import json from '@rollup/plugin-json'
+import terser from '@rollup/plugin-terser'
 
 export default [
   {
-    input: "src/index.js",
+    input: 'src/index.js',
     output: [
       {
-        file: "dist/lenis.cjs.js",
-        format: "cjs",
+        file: 'dist/lenis.cjs.js',
+        format: 'cjs',
         strict: true,
-        name: "Lenis",
+        name: 'Lenis',
         sourcemap: true,
-        exports: "auto",
+        exports: 'auto',
       },
       {
-        file: "dist/lenis.esm.js",
-        format: "esm",
+        file: 'dist/lenis.mjs',
+        format: 'esm',
         strict: true,
-        name: "Lenis",
-        sourcemap: true,
-      },
-      {
-        file: "dist/lenis.umd.js",
-        format: "umd",
-        strict: true,
-        name: "Lenis",
+        name: 'Lenis',
         sourcemap: true,
       },
       {
-        file: "dist/lenis.min.js",
-        format: "umd",
+        file: 'dist/lenis.umd.js',
+        format: 'umd',
         strict: true,
-        name: "Lenis",
+        name: 'Lenis',
+        sourcemap: true,
+      },
+      {
+        file: 'dist/lenis.min.js',
+        format: 'umd',
+        strict: true,
+        name: 'Lenis',
         sourcemap: false,
         plugins: [
           terser({
@@ -40,8 +40,11 @@ export default [
         ],
       },
     ],
-    plugins: [terser({
-      keep_classnames: true,
-    }), json()],
+    plugins: [
+      terser({
+        keep_classnames: true,
+      }),
+      json(),
+    ],
   },
 ]

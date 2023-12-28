@@ -28,7 +28,7 @@ import Lenis from '@studio-freight/lenis'
 using scripts:
 
 ```html
-<script src="https://unpkg.com/@studio-freight/lenis@1.0.32/dist/lenis.min.js"></script> 
+<script src="https://unpkg.com/@studio-freight/lenis@1.0.33/dist/lenis.min.js"></script> 
 ```
 
 <br>
