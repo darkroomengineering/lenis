@@ -5,6 +5,8 @@ import { Emitter } from './emitter'
 import { clamp, modulo } from './maths'
 import { VirtualScroll } from './virtual-scroll'
 
+export * from "./types"
+
 // Technical explanation
 // - listen to 'wheel' events
 // - prevent 'wheel' event to prevent scroll
@@ -20,33 +22,7 @@ export default class Lenis {
   // isLocked = same as isStopped but enabled/disabled when scroll reaches target
 
   /**
-   * @typedef {(t: number) => number} EasingFunction
-   * @typedef {'vertical' | 'horizontal'} Orientation
-   * @typedef {'vertical' | 'horizontal' | 'both'} GestureOrientation
-   *
-   * @typedef LenisOptions
-   * @property {Window | HTMLElement} [wrapper]
-   * @property {HTMLElement} [content]
-   * @property {Window | HTMLElement} [wheelEventsTarget] // deprecated
-   * @property {Window | HTMLElement} [eventsTarget]
-   * @property {boolean} [smoothWheel]
-   * @property {boolean} [smoothTouch]
-   * @property {boolean} [syncTouch]
-   * @property {number} [syncTouchLerp]
-  //  * @property {number} [__iosNoInertiaSyncTouchLerp]
-   * @property {number} [touchInertiaMultiplier]
-   * @property {number} [duration]
-   * @property {EasingFunction} [easing]
-   * @property {number} [lerp]
-   * @property {boolean} [infinite]
-   * @property {Orientation} [orientation]
-   * @property {GestureOrientation} [gestureOrientation]
-   * @property {number} [touchMultiplier]
-   * @property {number} [wheelMultiplier]
-   * @property {boolean} [normalizeWheel] 
-   * @property {boolean} [autoResize]
-   *
-   * @param {LenisOptions}
+   * @param {import('./types').LenisOptions} options
    */
   constructor({
     wrapper = window,
@@ -63,8 +39,8 @@ export default class Lenis {
     easing = (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
     lerp = !duration && 0.1,
     infinite = false,
-    orientation = 'vertical', // vertical, horizontal
     gestureOrientation = 'vertical', // vertical, horizontal, both
+    orientation = 'vertical', // vertical, horizontal
     touchMultiplier = 1,
     wheelMultiplier = 1,
     normalizeWheel = false, // deprecated
