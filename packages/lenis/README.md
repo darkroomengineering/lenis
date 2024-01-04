@@ -14,6 +14,8 @@ This is our take on smooth scroll, lightweight, hard-working, smooth as butter s
 
 ## Installation
 
+### JavaScript
+
 using a package manager:
 
 ```bash
@@ -30,6 +32,12 @@ using scripts:
 ```html
 <script src="https://unpkg.com/@studio-freight/lenis@1.0.33/dist/lenis.min.js"></script> 
 ```
+
+<br/>
+
+### React
+
+See documentation for [react-lenis](https://github.com/studio-freight/lenis/tree/main/packages/react-lenis).
 
 <br>
 
@@ -52,6 +60,8 @@ function raf(time) {
 requestAnimationFrame(raf)
 ```
 
+
+
 <br/>
 
 
@@ -70,10 +80,10 @@ requestAnimationFrame(raf)
 | `smoothWheel`        | `boolean`             | `true`                                             | Whether or not to enable smooth scrolling for mouse wheel events                                                                                                    |
 | `smoothTouch`        | `boolean`             | `false`                                            | Whether or not to enable smooth scrolling for touch events.                                                                                                         |
 | `syncTouch`          | `boolean`             | `false`                                            | Mimic touch device scroll while allowing scroll sync (can be unstable on iOS<16)   
-| `syncTouchLerp`          | `number`             | `0.1`                                            | Lerp applied during `syncTouch` inertia                                                                                 |
+| `syncTouchLerp`          | `number`             | `0.075`                                            | Lerp applied during `syncTouch` inertia                                                                                 |
 | `touchInertiaMultiplier`          | `number`             | `35`                                            | Manage the the strength of `syncTouch` inertia                                                                                 |
 | `wheelMultiplier`    | `number`              | `1`                                                | The multiplier to use for mouse wheel events                                                                                                                        |
-| `touchMultiplier`    | `number`              | `2`                                                | The multiplier to use for touch events                                                                                                                              |
+| `touchMultiplier`    | `number`              | `1`                                                | The multiplier to use for touch events                                                                                                                              |
 | `normalizeWheel`     | `boolean`             | `false`                                            | Normalize wheel inputs across browsers (not reliable atm)                                                                                                                       |
 | `infinite`           | `boolean`             | `false`                                            | Enable infinite scrolling!                                                                                                                                          |
 | `autoResize`           | `boolean`             | `true`                                            | Resize instance automatically       based on `ResizeObserver`. If `false` you must resize manually using `.resize()`                                                                                                     |
@@ -219,7 +229,7 @@ gsap.ticker.lagSmoothing(0)
 ## Plugins
 
 - [Loconative-scroll](https://github.com/quentinhocde/loconative-scroll#how-to-switch-from-locomotive-scroll-to-loconative-scroll) by [Quentin Hocde](https://twitter.com/QuentinHocde)
-- [react-lenis](https://github.com/studio-freight/react-lenis) by [Studio Freight](https://www.studiofreight.com/)
+- [react-lenis](https://github.com/studio-freight/lenis/tree/main/packages/react-lenis) by [Studio Freight](https://www.studiofreight.com/)
 - [r3f-scroll-rig](https://github.com/14islands/r3f-scroll-rig) by [14islands](https://14islands.com/)
 - [Lenis Scroll Snap Plugin](https://github.com/funkhaus/lenis-scroll-snap) by [Funkhaus](https://github.com/funkhaus)
 - [locomotive-scroll](https://github.com/locomotivemtl/locomotive-scroll) by [Locomotive](https://locomotive.ca/)
