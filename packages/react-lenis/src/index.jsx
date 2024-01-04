@@ -1,8 +1,9 @@
-"use client"
+'use client'
 
-import { useFrame } from "@studio-freight/hamo"
-import Lenis from "@studio-freight/lenis"
-import PropTypes from "prop-types" // ES6
+import { useFrame } from '@studio-freight/hamo'
+import Lenis from '@studio-freight/lenis'
+import cn from 'clsx'
+import PropTypes from 'prop-types' // ES6
 import React, {
   createContext,
   forwardRef,
@@ -12,9 +13,8 @@ import React, {
   useImperativeHandle,
   useRef,
   useState,
-} from "react"
-import { create } from "zustand"
-import cn from "clsx"
+} from 'react'
+import { create } from 'zustand'
 
 export const LenisContext = createContext()
 
@@ -89,7 +89,15 @@ const ReactLenis = forwardRef(
       )
     }, [])
 
-    useImperativeHandle(ref, () => lenis, [lenis])
+    useImperativeHandle(
+      ref,
+      () => ({
+        wrapper: wrapperRef.current,
+        content: contentRef.current,
+        lenis,
+      }),
+      [lenis]
+    )
 
     useEffect(() => {
       const lenis = new Lenis({
@@ -127,10 +135,10 @@ const ReactLenis = forwardRef(
     }, [])
 
     useEffect(() => {
-      lenis?.on("scroll", onScroll)
+      lenis?.on('scroll', onScroll)
 
       return () => {
-        lenis?.off("scroll", onScroll)
+        lenis?.off('scroll', onScroll)
       }
     }, [lenis, onScroll])
 
@@ -142,10 +150,10 @@ const ReactLenis = forwardRef(
     useEffect(() => {
       onClassNameChange()
 
-      lenis?.on("className change", onClassNameChange)
+      lenis?.on('className change', onClassNameChange)
 
       return () => {
-        lenis?.off("className change", onClassNameChange)
+        lenis?.off('className change', onClassNameChange)
       }
     }, [lenis, onClassNameChange])
 
@@ -166,7 +174,7 @@ const ReactLenis = forwardRef(
     )
   }
 )
-ReactLenis.displayName = "ReactLenis"
+ReactLenis.displayName = 'ReactLenis'
 
 ReactLenis.propTypes = {
   children: PropTypes.node,
@@ -177,7 +185,7 @@ ReactLenis.propTypes = {
   className: PropTypes.string,
 }
 
-export { ReactLenis, ReactLenis as Lenis }
+export { ReactLenis as Lenis, ReactLenis }
 export default ReactLenis
 
 /**
@@ -238,7 +246,6 @@ export default ReactLenis
  * @property {boolean=} [infinite=false] enable infinite scroll
  * @property {boolean=} [autoResize=true]
  */
-
 
 /**
  * @typedef {Object} Dimensions

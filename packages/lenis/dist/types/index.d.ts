@@ -14,17 +14,17 @@ export default class Lenis {
         lerp?: number;
         infinite?: boolean;
         orientation?: "vertical" | "horizontal";
-        gestureOrientation?: "both" | "vertical" | "horizontal";
+        gestureOrientation?: "vertical" | "horizontal" | "both";
         touchMultiplier?: number;
         wheelMultiplier?: number;
         normalizeWheel?: boolean;
         autoResize?: boolean;
     });
     options: {
-        wrapper: HTMLElement | Window;
+        wrapper: Window | HTMLElement;
         content: HTMLElement;
-        wheelEventsTarget: HTMLElement | Window;
-        eventsTarget: HTMLElement | Window;
+        wheelEventsTarget: Window | HTMLElement;
+        eventsTarget: Window | HTMLElement;
         smoothWheel: boolean;
         smoothTouch: boolean;
         syncTouch: boolean;
@@ -34,7 +34,7 @@ export default class Lenis {
         easing: (t: number) => number;
         lerp: number;
         infinite: boolean;
-        gestureOrientation: "both" | "vertical" | "horizontal";
+        gestureOrientation: "vertical" | "horizontal" | "both";
         orientation: "vertical" | "horizontal";
         touchMultiplier: number;
         wheelMultiplier: number;
@@ -86,7 +86,7 @@ export default class Lenis {
         programmatic?: boolean;
     }): void;
     __preventNextScrollEvent: boolean;
-    get rootElement(): HTMLElement | Window;
+    get rootElement(): Window | HTMLElement;
     get limit(): number;
     get isHorizontal(): boolean;
     get actualScroll(): any;

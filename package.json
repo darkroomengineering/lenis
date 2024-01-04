@@ -5,6 +5,10 @@
   "workspaces": [
     "packages/*"
   ],
+  "scripts": {
+    "dev:lenis": "npm run dev --prefix ./packages/lenis",
+    "dev:react-lenis": "npm run dev --prefix ./packages/react-lenis"
+  },
   "devDependencies": {
     "@babel/core": "^7.23.6",
     "@babel/preset-react": "^7.23.3",

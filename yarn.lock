@@ -458,11 +458,6 @@
     rimraf "^5.0.1"
     zustand "^4.4.7"
 
-"@studio-freight/lenis@^1.0.29":
-  version "1.0.29"
-  resolved "https://registry.yarnpkg.com/@studio-freight/lenis/-/lenis-1.0.29.tgz#d7fcbf16c2ca1ddcb0d19007851e2920006985d4"
-  integrity sha512-z/qS8ato5m2wlxQREYj5iALcxMrhhm06vEiLqYzLI+3HmpPzPscmJ8cXNiay4bj692vOot2hyTA3WP++AQVoKA==
-
 "@studio-freight/tempus@^0.0.38":
   version "0.0.38"
   resolved "https://registry.yarnpkg.com/@studio-freight/tempus/-/tempus-0.0.38.tgz#170e0b3de4b123917b04943dd95e7c452ec63e39"
