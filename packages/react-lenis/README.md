@@ -1,23 +1,6 @@
-<!-- [![Bibliotheca](https://assets.studiofreight.com/bibliotheca/header.png)](https://github.com/studio-freight/bibliotheca) -->
-
-<!-- <p align="center">
-  <a aria-label="Vercel logo" href="https://vercel.com">
-    <img src="https://badgen.net/badge/icon/Next?icon=zeit&label&color=black&labelColor=black">
-  </a>
-  <br/>
-  <a aria-label="NPM version" href="https://www.npmjs.com/package/swr">
-    <img alt="" src="https://badgen.net/npm/v/swr?color=black&labelColor=black">
-  </a>
-  <a aria-label="Package size" href="https://bundlephobia.com/result?p=swr">
-    <img alt="" src="https://badgen.net/bundlephobia/minzip/swr?color=black&labelColor=black">
-  </a>
-  <a aria-label="License" href="https://github.com/vercel/swr/blob/main/LICENSE">
-    <img alt="" src="https://badgen.net/npm/license/swr?color=black&labelColor=black">
-  </a>
-</p> -->
-
 ![NPM Version](https://img.shields.io/npm/v/%40studio-freight%2Freact-lenis?colorA=000000&colorB=ff98a2)
 ![NPM Downloads](https://img.shields.io/npm/dm/%40studio-freight%2Freact-lenis?colorA=000000&colorB=ff98a2)
+
 
 ## Introduction
 react-lenis provides a `<ReactLenis>` component that creates a [Lenis](https://github.com/studio-freight/lenis) instance and provides it to its children via context. This allows you to use Lenis in your React app without worrying about passing the instance down through props. It also provides a `useLenis` hook that allows you to access the Lenis instance from any component in your app.
