@@ -57,7 +57,7 @@ export default [
         babelHelpers: 'bundled',
         presets: ['@babel/preset-react'],
         exclude: 'node_modules/**',
-        extensions: ['.js', '.jsx'],
+        extensions: ['.js', '.jsx', 'ts', 'tsx'],
       }),
       commonjs(),
       // replace({
@@ -71,6 +71,9 @@ export default [
         // },
       }),
       json(),
+      // typescript({
+      //   tsconfig: './tsconfig.json',
+      // }),
     ],
   },
 ]

@@ -18,17 +18,14 @@
     "@rollup/plugin-node-resolve": "^15.2.3",
     "@rollup/plugin-replace": "^5.0.5",
     "@rollup/plugin-terser": "^0.4.4",
-    "@rollup/plugin-typescript": "^9.0.1",
+    "@rollup/plugin-typescript": "^11.1.5",
     "@rollup/pluginutils": "^5.1.0",
+    "cross-var": "^1.1.0",
     "npm-run-all": "^4.1.5",
     "rollup": "^4.9.1",
     "rollup-plugin-exclude-dependencies-from-bundle": "^1.1.23",
     "rollup-plugin-preserve-directives": "^0.2.0",
     "tslib": "^2.6.2",
-    "typescript": "^5.3.3",
-    "cross-var": "^1.1.0"
-  },
-  "overrides": {
-    "rollup": "^4.9.0"
+    "typescript": "^5.3.3"
   }
 }

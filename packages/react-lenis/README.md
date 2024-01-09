@@ -16,6 +16,10 @@
   </a>
 </p> -->
 
+![NPM Version](https://img.shields.io/npm/v/%40studio-freight%2Freact-lenis?colorA=000000&colorB=ff98a2)
+![NPM Downloads](https://img.shields.io/npm/dm/%40studio-freight%2Freact-lenis?colorA=000000&colorB=ff98a2)
+
+
 ## Introduction
 react-lenis provides a `<ReactLenis>` component that creates a [Lenis](https://github.com/studio-freight/lenis) instance and provides it to its children via context. This allows you to use Lenis in your React app without worrying about passing the instance down through props. It also provides a `useLenis` hook that allows you to access the Lenis instance from any component in your app.
 
@@ -82,7 +86,7 @@ function Component() {
   
   useEffect(() => {
     function update(time) {
-      lenisRef.current?.raf(time * 1000)
+      lenisRef.current.lenis?.raf(time * 1000)
     }
   
     gsap.ticker.add(update)
