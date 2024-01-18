@@ -33,17 +33,12 @@ using scripts:
 <script src="https://unpkg.com/@studio-freight/lenis@1.0.33/dist/lenis.min.js"></script> 
 ```
 
-<br/>
-
-### React
-
-See documentation for [react-lenis](https://github.com/studio-freight/lenis/tree/main/packages/react-lenis).
 
 <br>
 
 ## Setup
 
-Basic setup:
+### Basic:
 
 ```js
 const lenis = new Lenis()
@@ -59,6 +54,27 @@ function raf(time) {
 
 requestAnimationFrame(raf)
 ```
+
+### GSAP ScrollTrigger:
+```js
+const lenis = new Lenis()
+
+lenis.on('scroll', (e) => {
+  console.log(e)
+})
+
+lenis.on('scroll', ScrollTrigger.update)
+
+gsap.ticker.add((time)=>{
+  lenis.raf(time * 1000)
+})
+
+gsap.ticker.lagSmoothing(0)
+```
+
+### React:
+See documentation for [react-lenis](https://github.com/studio-freight/lenis/tree/main/packages/react-lenis).
+
 
 
 
@@ -190,19 +206,6 @@ html.lenis {
 ### Anchor links
 ```html
 <a href="#anchor" onclick="lenis.scrollTo('#anchor')">scroll to anchor</a>
-```
-
-### GSAP ScrollTrigger integration
-```js
-const lenis = new Lenis()
-
-lenis.on('scroll', ScrollTrigger.update)
-
-gsap.ticker.add((time)=>{
-  lenis.raf(time * 1000)
-})
-
-gsap.ticker.lagSmoothing(0)
 ```
 
 <br>
