@@ -78,7 +78,6 @@ requestAnimationFrame(raf)
 | `orientation`        | `string`              | `vertical`                                         | The orientation of the scrolling. Can be `vertical` or `horizontal`                                                                                                 |
 | `gestureOrientation` | `string`              | `vertical`                                         | The orientation of the gestures. Can be `vertical`, `horizontal` or `both`                                                                                          |
 | `smoothWheel`        | `boolean`             | `true`                                             | Whether or not to enable smooth scrolling for mouse wheel events                                                                                                    |
-| `smoothTouch`        | `boolean`             | `false`                                            | Whether or not to enable smooth scrolling for touch events.                                                                                                         |
 | `syncTouch`          | `boolean`             | `false`                                            | Mimic touch device scroll while allowing scroll sync (can be unstable on iOS<16)   
 | `syncTouchLerp`          | `number`             | `0.075`                                            | Lerp applied during `syncTouch` inertia                                                                                 |
 | `touchInertiaMultiplier`          | `number`             | `35`                                            | Manage the the strength of `syncTouch` inertia                                                                                 |
@@ -159,7 +158,7 @@ html.lenis {
 }
 
 .lenis.lenis-smooth {
-  scroll-behavior: auto;
+  scroll-behavior: auto !important;
 }
 
 .lenis.lenis-smooth [data-lenis-prevent] {
