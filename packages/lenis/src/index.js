@@ -30,7 +30,6 @@ export default class Lenis {
    * @property {Window | HTMLElement} [wheelEventsTarget] // deprecated
    * @property {Window | HTMLElement} [eventsTarget]
    * @property {boolean} [smoothWheel]
-   * @property {boolean} [smoothTouch]
    * @property {boolean} [syncTouch]
    * @property {number} [syncTouchLerp]
   //  * @property {number} [__iosNoInertiaSyncTouchLerp]
@@ -54,7 +53,6 @@ export default class Lenis {
     wheelEventsTarget = wrapper, // deprecated
     eventsTarget = wheelEventsTarget,
     smoothWheel = true,
-    smoothTouch = false,
     syncTouch = false,
     syncTouchLerp = 0.075,
     // __iosNoInertiaSyncTouchLerp = 0.4, // should be 1 but had to leave 0.4 for iOS (testing purpose)
@@ -83,7 +81,6 @@ export default class Lenis {
       wheelEventsTarget,
       eventsTarget,
       smoothWheel,
-      smoothTouch,
       syncTouch,
       syncTouchLerp,
       // __iosNoInertiaSyncTouchLerp,
@@ -108,7 +105,7 @@ export default class Lenis {
     this.velocity = 0
     this.isLocked = false
     this.isStopped = false
-    this.isSmooth = syncTouch || smoothWheel || smoothTouch
+    this.isSmooth = syncTouch || smoothWheel
     this.isScrolling = false
     this.targetScroll = this.animatedScroll = this.actualScroll
 
@@ -166,9 +163,7 @@ export default class Lenis {
     const isWheel = event.type.includes('wheel')
 
     const isTapToStop =
-      (this.options.smoothTouch || this.options.syncTouch) &&
-      isTouch &&
-      event.type === 'touchstart'
+      this.options.syncTouch && isTouch && event.type === 'touchstart'
 
     if (isTapToStop) {
       this.reset()
@@ -213,7 +208,7 @@ export default class Lenis {
     }
 
     this.isSmooth =
-      ((this.options.smoothTouch || this.options.syncTouch) && isTouch) ||
+      (this.options.syncTouch && isTouch) ||
       (this.options.smoothWheel && isWheel)
 
     if (!this.isSmooth) {

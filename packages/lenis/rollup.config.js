@@ -36,6 +36,7 @@ export default [
         plugins: [
           terser({
             module: true,
+            keep_classnames: true,
           }),
         ],
       },
