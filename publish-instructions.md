@@ -1,6 +1,8 @@
 ## DEPLOY
 - yarn version --no-git-tag-version --patch
+- yarn version --no-git-tag-version --patch --preid dev
 - npm publish
+- npm publish --tag dev
 
 
 ## UTILS
