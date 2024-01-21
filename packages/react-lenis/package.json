@@ -14,12 +14,12 @@
   "scripts": {
     "dev": "npm-run-all --parallel watch playground",
     "playground": "npm run dev --prefix ./playground",
-    "build": "npm-run-all --parallel build:dist build:types",
+    "build": "npm-run-all --parallel build:dist",
     "build:dist": "rollup --bundleConfigAsCjs -c",
     "build:types": "tsc --target esnext --allowJs -d --emitDeclarationOnly --declarationDir ./dist/types --removeComments ./src/index.jsx",
     "watch:dist": "rollup --bundleConfigAsCjs -c -w",
-    "watch:types": "tsc --target esnext --allowJs -d --emitDeclarationOnly --declarationDir ./dist/types --removeComments --watch ./src/index.jsx",
-    "watch": "npm-run-all --parallel watch:dist watch:types",
+    "watch:types": "tsc --target esnext --allowJs -d --emitDeclarationOnly --declarationDir ./dist/types --removeComments --watch ./src/index.jsx --jsx react",
+    "watch": "npm-run-all --parallel watch:dist",
     "git:commit": "git add -A && cross-var git commit -m \"$npm_package_name@$npm_package_version\"",
     "git:tag": "cross-var git tag -a $npm_package_name@$npm_package_version -m \"$npm_package_name@$npm_package_version\"",
     "git:push": "git push && git push --tags",
@@ -46,8 +46,8 @@
     }
   },
   "dependencies": {
-    "@studio-freight/hamo": "^0.6.24",
-    "@studio-freight/lenis": "^1.0.33",
+    "@studio-freight/hamo": "^0.6.28",
+    "@studio-freight/lenis": "^1.0.35-dev.0",
     "clsx": "^2.0.0",
     "prop-types": "^15.8.1",
     "zustand": "^4.4.7"

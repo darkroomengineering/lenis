@@ -3,6 +3,7 @@ import commonjs from '@rollup/plugin-commonjs'
 import json from '@rollup/plugin-json'
 import resolve from '@rollup/plugin-node-resolve'
 import terser from '@rollup/plugin-terser'
+import typescript from '@rollup/plugin-typescript'
 // import replace from "@rollup/plugin-replace"
 import excludeDependenciesFromBundle from 'rollup-plugin-exclude-dependencies-from-bundle'
 // const preserveDirectives = require("rollup-plugin-preserve-directives").default
@@ -13,12 +14,11 @@ const globals = {
   '@studio-freight/lenis': 'Lenis',
   zustand: 'zustand',
   clsx: 'cn',
-  'prop-types': 'PropTypes',
 }
 
 export default [
   {
-    input: 'src/index.jsx',
+    input: 'src/index.tsx',
     output: [
       {
         file: 'dist/react-lenis.cjs.js',
@@ -71,9 +71,9 @@ export default [
         // },
       }),
       json(),
-      // typescript({
-      //   tsconfig: './tsconfig.json',
-      // }),
+      typescript({
+        tsconfig: './tsconfig.json',
+      }),
     ],
   },
 ]
