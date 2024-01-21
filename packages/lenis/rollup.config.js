@@ -1,9 +1,10 @@
 import json from '@rollup/plugin-json'
 import terser from '@rollup/plugin-terser'
+import typescript from '@rollup/plugin-typescript'
 
 export default [
   {
-    input: 'src/index.js',
+    input: 'src/index.ts',
     output: [
       {
         file: 'dist/lenis.cjs.js',
@@ -46,6 +47,9 @@ export default [
         keep_classnames: true,
       }),
       json(),
+      typescript({
+        tsconfig: './tsconfig.json',
+      }),
     ],
   },
 ]

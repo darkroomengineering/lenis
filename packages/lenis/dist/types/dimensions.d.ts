@@ -2,12 +2,12 @@ export class Dimensions {
     constructor({ wrapper, content, autoResize }?: {
         wrapper: any;
         content: any;
-        autoResize?: boolean;
+        autoResize?: boolean | undefined;
     });
     wrapper: any;
     content: any;
-    wrapperResizeObserver: ResizeObserver;
-    contentResizeObserver: ResizeObserver;
+    wrapperResizeObserver: ResizeObserver | undefined;
+    contentResizeObserver: ResizeObserver | undefined;
     destroy(): void;
     resize: () => void;
     onWrapperResize: () => void;

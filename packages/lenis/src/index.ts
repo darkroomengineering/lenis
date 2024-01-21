@@ -13,40 +13,37 @@ import { VirtualScroll } from './virtual-scroll'
 // - animate scroll to targetScroll (smooth context)
 // - if animation is not running, listen to 'scroll' events (native context)
 
+type EasingFunction = (t: number) => number
+type Orientation = 'vertical' | 'horizontal'
+type GestureOrientation = 'vertical' | 'horizontal' | 'both'
+
+export type LenisOptions = {
+  wrapper?: Window | HTMLElement
+  content?: HTMLElement
+  wheelEventsTarget?: Window | HTMLElement
+  eventsTarget?: Window | HTMLElement
+  smoothWheel?: boolean
+  syncTouch?: boolean
+  syncTouchLerp?: number
+  touchInertiaMultiplier?: number
+  duration?: number
+  easing?: EasingFunction
+  lerp?: number
+  infinite?: boolean
+  orientation?: Orientation
+  gestureOrientation?: GestureOrientation
+  touchMultiplier?: number
+  wheelMultiplier?: number
+  normalizeWheel?: boolean
+  autoResize?: boolean
+}
+
 export default class Lenis {
   // isScrolling = true when scroll is animating
   // isStopped = true if user should not be able to scroll - enable/disable programmatically
   // isSmooth = true if scroll should be animated
   // isLocked = same as isStopped but enabled/disabled when scroll reaches target
 
-  /**
-   * @typedef {(t: number) => number} EasingFunction
-   * @typedef {'vertical' | 'horizontal'} Orientation
-   * @typedef {'vertical' | 'horizontal' | 'both'} GestureOrientation
-   *
-   * @typedef LenisOptions
-   * @property {Window | HTMLElement} [wrapper]
-   * @property {HTMLElement} [content]
-   * @property {Window | HTMLElement} [wheelEventsTarget] // deprecated
-   * @property {Window | HTMLElement} [eventsTarget]
-   * @property {boolean} [smoothWheel]
-   * @property {boolean} [syncTouch]
-   * @property {number} [syncTouchLerp]
-  //  * @property {number} [__iosNoInertiaSyncTouchLerp]
-   * @property {number} [touchInertiaMultiplier]
-   * @property {number} [duration]
-   * @property {EasingFunction} [easing]
-   * @property {number} [lerp]
-   * @property {boolean} [infinite]
-   * @property {Orientation} [orientation]
-   * @property {GestureOrientation} [gestureOrientation]
-   * @property {number} [touchMultiplier]
-   * @property {number} [wheelMultiplier]
-   * @property {boolean} [normalizeWheel] 
-   * @property {boolean} [autoResize]
-   *
-   * @param {LenisOptions}
-   */
   constructor({
     wrapper = window,
     content = document.documentElement,
@@ -55,7 +52,6 @@ export default class Lenis {
     smoothWheel = true,
     syncTouch = false,
     syncTouchLerp = 0.075,
-    // __iosNoInertiaSyncTouchLerp = 0.4, // should be 1 but had to leave 0.4 for iOS (testing purpose)
     touchInertiaMultiplier = 35,
     duration, // in seconds
     easing = (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
@@ -67,7 +63,7 @@ export default class Lenis {
     wheelMultiplier = 1,
     normalizeWheel = false, // deprecated
     autoResize = true,
-  } = {}) {
+  }: LenisOptions = {}) {
     window.lenisVersion = version
 
     // if wrapper is html or body, fallback to window
@@ -138,11 +134,11 @@ export default class Lenis {
     this.toggleClass('lenis-locked', false)
   }
 
-  on(event, callback) {
+  on(event: string, callback: Function) {
     return this.emitter.on(event, callback)
   }
 
-  off(event, callback) {
+  off(event: string, callback: Function) {
     return this.emitter.off(event, callback)
   }
 
@@ -290,7 +286,7 @@ export default class Lenis {
     this.reset()
   }
 
-  raf(time) {
+  raf(time: number) {
     const deltaTime = time - (this.time || time)
     this.time = time
 
@@ -298,7 +294,7 @@ export default class Lenis {
   }
 
   scrollTo(
-    target,
+    target: number | string | HTMLElement,
     {
       offset = 0,
       immediate = false,
@@ -309,6 +305,16 @@ export default class Lenis {
       onComplete = null,
       force = false, // scroll even if stopped
       programmatic = true, // called from outside of the class
+    }?: {
+      offset?: number
+      immediate?: boolean
+      lock?: boolean
+      duration?: number
+      easing?: EasingFunction
+      lerp?: number
+      onComplete?: () => void
+      force?: boolean
+      programmatic?: boolean
     } = {}
   ) {
     if ((this.isStopped || this.isLocked) && !force) return
