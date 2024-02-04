@@ -1,7 +1,7 @@
 import Lenis, { LenisOptions } from '@studio-freight/lenis';
 import { ForwardRefExoticComponent, PropsWithoutRef, ReactNode, RefAttributes } from 'react';
 export declare const LenisContext: Lenis | null;
-export declare function useLenis(callback: any, deps?: never[], priority?: number): any;
+export declare function useLenis(callback: (lenis: Lenis) => void, deps?: Array<any>, priority?: number): Lenis;
 type ForwardRefComponent<P, T> = ForwardRefExoticComponent<PropsWithoutRef<P> & RefAttributes<T>>;
 type Props = {
     root?: boolean;
