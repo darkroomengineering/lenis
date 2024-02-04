@@ -39,10 +39,10 @@ export type LenisOptions = {
 }
 
 export default class Lenis {
-  // isScrolling = true when scroll is animating
-  // isStopped = true if user should not be able to scroll - enable/disable programmatically
-  // isSmooth = true if scroll should be animated
-  // isLocked = same as isStopped but enabled/disabled when scroll reaches target
+  #isSmooth: boolean = false // true if scroll should be animated
+  #isScrolling: boolean = false // true when scroll is animating
+  #isStopped: boolean = false // true if user should not be able to scroll - enable/disable programmatically
+  #isLocked: boolean = false // same as isStopped but enabled/disabled when scroll reaches target
 
   constructor({
     wrapper = window,
@@ -79,7 +79,6 @@ export default class Lenis {
       smoothWheel,
       syncTouch,
       syncTouchLerp,
-      // __iosNoInertiaSyncTouchLerp,
       touchInertiaMultiplier,
       duration,
       easing,
@@ -142,7 +141,7 @@ export default class Lenis {
     return this.emitter.off(event, callback)
   }
 
-  setScroll(scroll) {
+  private setScroll(scroll) {
     // apply scroll value immediately
     if (this.isHorizontal) {
       this.rootElement.scrollLeft = scroll
@@ -151,7 +150,7 @@ export default class Lenis {
     }
   }
 
-  onVirtualScroll = ({ deltaX, deltaY, event }) => {
+  private onVirtualScroll = ({ deltaX, deltaY, event }) => {
     // keep zoom feature
     if (event.ctrlKey) return
 
@@ -249,11 +248,11 @@ export default class Lenis {
     this.dimensions.resize()
   }
 
-  emit() {
+  private emit() {
     this.emitter.emit('scroll', this)
   }
 
-  onNativeScroll = () => {
+  private onNativeScroll = () => {
     if (this.__preventNextScrollEvent) return
 
     if (!this.isScrolling) {
@@ -265,7 +264,7 @@ export default class Lenis {
     }
   }
 
-  reset() {
+  private reset() {
     this.isLocked = false
     this.isScrolling = false
     this.animatedScroll = this.targetScroll = this.actualScroll
@@ -302,17 +301,17 @@ export default class Lenis {
       duration = this.options.duration,
       easing = this.options.easing,
       lerp = !duration && this.options.lerp,
-      onComplete = null,
+      onComplete,
       force = false, // scroll even if stopped
       programmatic = true, // called from outside of the class
-    }?: {
+    }: {
       offset?: number
       immediate?: boolean
       lock?: boolean
       duration?: number
       easing?: EasingFunction
       lerp?: number
-      onComplete?: () => void
+      onComplete?: (lenis: Lenis) => void
       force?: boolean
       programmatic?: boolean
     } = {}
@@ -385,7 +384,7 @@ export default class Lenis {
         if (lock) this.isLocked = true
         this.isScrolling = true
       },
-      onUpdate: (value, completed) => {
+      onUpdate: (value: number, completed: boolean) => {
         this.isScrolling = true
 
         // updated
@@ -450,45 +449,45 @@ export default class Lenis {
   }
 
   get isSmooth() {
-    return this.__isSmooth
+    return this.#isSmooth
   }
 
-  set isSmooth(value) {
-    if (this.__isSmooth !== value) {
-      this.__isSmooth = value
+  private set isSmooth(value: boolean) {
+    if (this.#isSmooth !== value) {
+      this.#isSmooth = value
       this.toggleClass('lenis-smooth', value)
     }
   }
 
   get isScrolling() {
-    return this.__isScrolling
+    return this.#isScrolling
   }
 
-  set isScrolling(value) {
-    if (this.__isScrolling !== value) {
-      this.__isScrolling = value
+  private set isScrolling(value: boolean) {
+    if (this.#isScrolling !== value) {
+      this.#isScrolling = value
       this.toggleClass('lenis-scrolling', value)
     }
   }
 
   get isStopped() {
-    return this.__isStopped
+    return this.#isStopped
   }
 
-  set isStopped(value) {
-    if (this.__isStopped !== value) {
-      this.__isStopped = value
+  private set isStopped(value: boolean) {
+    if (this.#isStopped !== value) {
+      this.#isStopped = value
       this.toggleClass('lenis-stopped', value)
     }
   }
 
   get isLocked() {
-    return this.__isLocked
+    return this.#isLocked
   }
 
-  set isLocked(value) {
-    if (this.__isLocked !== value) {
-      this.__isLocked = value
+  private set isLocked(value: boolean) {
+    if (this.#isLocked !== value) {
+      this.#isLocked = value
       this.toggleClass('lenis-locked', value)
     }
   }
@@ -502,7 +501,7 @@ export default class Lenis {
     return className
   }
 
-  toggleClass(name, value) {
+  private toggleClass(name: string, value: boolean) {
     this.rootElement.classList.toggle(name, value)
     this.emitter.emit('className change', this)
   }

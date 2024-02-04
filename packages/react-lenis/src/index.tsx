@@ -3,9 +3,10 @@
 import { useFrame } from '@studio-freight/hamo'
 import Lenis, { LenisOptions } from '@studio-freight/lenis'
 import cn from 'clsx'
-import React, {
+import {
   ForwardRefExoticComponent,
   PropsWithoutRef,
+  ReactNode,
   RefAttributes,
   createContext,
   forwardRef,
@@ -18,7 +19,7 @@ import React, {
 } from 'react'
 import { create } from 'zustand'
 
-export const LenisContext = createContext()
+export const LenisContext = createContext(null) as Lenis | null
 
 const useRoot = create(() => ({}))
 
@@ -29,7 +30,7 @@ function useCurrentLenis() {
   return local ?? root
 }
 
-export function useLenis(callback: Function, deps = [], priority = 0) {
+export function useLenis(callback, deps = [], priority = 0) {
   const { lenis, addCallback, removeCallback } = useCurrentLenis()
 
   useEffect(() => {
@@ -56,7 +57,7 @@ type Props = {
   autoRaf?: boolean
   rafPriority?: number
   className?: string
-  children?: React.ReactNode
+  children?: ReactNode
   props?: any
 }
 
@@ -79,7 +80,7 @@ const ReactLenis: ForwardRefComponent<Props, LenisRef> = forwardRef<
       rafPriority = 0,
       className,
       ...props
-    },
+    }: Props,
     ref
   ) => {
     const wrapperRef = useRef()
@@ -154,8 +155,9 @@ const ReactLenis: ForwardRefComponent<Props, LenisRef> = forwardRef<
     }, [lenis, onScroll])
 
     const onClassNameChange = useCallback(() => {
-      if (wrapperRef.current)
+      if (wrapperRef.current) {
         wrapperRef.current.className = cn(lenis?.className, className)
+      }
     }, [lenis, className])
 
     useEffect(() => {

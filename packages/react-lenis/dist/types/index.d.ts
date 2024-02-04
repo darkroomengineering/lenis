@@ -1,7 +1,7 @@
 import Lenis, { LenisOptions } from '@studio-freight/lenis';
-import React, { ForwardRefExoticComponent, PropsWithoutRef, RefAttributes } from 'react';
-export declare const LenisContext: any;
-export declare function useLenis(callback: Function, deps?: never[], priority?: number): any;
+import { ForwardRefExoticComponent, PropsWithoutRef, ReactNode, RefAttributes } from 'react';
+export declare const LenisContext: Lenis | null;
+export declare function useLenis(callback: any, deps?: never[], priority?: number): any;
 type ForwardRefComponent<P, T> = ForwardRefExoticComponent<PropsWithoutRef<P> & RefAttributes<T>>;
 type Props = {
     root?: boolean;
@@ -9,7 +9,7 @@ type Props = {
     autoRaf?: boolean;
     rafPriority?: number;
     className?: string;
-    children?: React.ReactNode;
+    children?: ReactNode;
     props?: any;
 };
 type LenisRef = {

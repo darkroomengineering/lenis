@@ -13,6 +13,11 @@ export default [
         name: 'Lenis',
         sourcemap: true,
         exports: 'auto',
+        plugins: [
+          terser({
+            keep_classnames: true,
+          }),
+        ],
       },
       {
         file: 'dist/lenis.mjs',
@@ -20,6 +25,11 @@ export default [
         strict: true,
         name: 'Lenis',
         sourcemap: true,
+        plugins: [
+          terser({
+            keep_classnames: true,
+          }),
+        ],
       },
       {
         file: 'dist/lenis.umd.js',
@@ -27,6 +37,18 @@ export default [
         strict: true,
         name: 'Lenis',
         sourcemap: true,
+        plugins: [
+          terser({
+            keep_classnames: true,
+          }),
+        ],
+      },
+      {
+        file: 'dist/lenis.js',
+        format: 'umd',
+        strict: true,
+        name: 'Lenis',
+        sourcemap: false,
       },
       {
         file: 'dist/lenis.min.js',
@@ -43,9 +65,6 @@ export default [
       },
     ],
     plugins: [
-      terser({
-        keep_classnames: true,
-      }),
       json(),
       typescript({
         tsconfig: './tsconfig.json',
