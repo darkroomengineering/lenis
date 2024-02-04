@@ -3,7 +3,7 @@
 import { useFrame } from '@studio-freight/hamo'
 import Lenis, { LenisOptions } from '@studio-freight/lenis'
 import cn from 'clsx'
-import {
+import React, {
   ForwardRefExoticComponent,
   PropsWithoutRef,
   ReactNode,
