@@ -19,7 +19,7 @@ import React, {
 } from 'react'
 import { create } from 'zustand'
 
-export const LenisContext = createContext(null) as Lenis | null
+export const LenisContext = createContext() as Lenis | undefined
 
 const useRoot = create(() => ({}))
 
@@ -34,7 +34,7 @@ export function useLenis(
   callback: (lenis: Lenis) => void,
   deps: Array<any> = [],
   priority = 0
-): Lenis {
+): Lenis | undefined {
   const { lenis, addCallback, removeCallback } = useCurrentLenis()
 
   useEffect(() => {
