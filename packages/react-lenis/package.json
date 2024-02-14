@@ -1,6 +1,6 @@
 {
   "name": "@studio-freight/react-lenis",
-  "version": "0.0.44-dev.3",
+  "version": "0.0.43",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/studio-freight/lenis.git"
