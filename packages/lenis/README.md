@@ -19,7 +19,7 @@ This is our take on smooth scroll, lightweight, hard-working, smooth as butter s
 using a package manager:
 
 ```bash
-$ npm i @studio-freight/lenis
+npm i @studio-freight/lenis
 ```
 ```js
 import Lenis from '@studio-freight/lenis'
