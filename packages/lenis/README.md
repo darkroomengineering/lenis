@@ -100,7 +100,7 @@ See documentation for [react-lenis](https://github.com/studio-freight/lenis/tree
 | `wheelMultiplier`    | `number`              | `1`                                                | The multiplier to use for mouse wheel events                                                                                                                        |
 | `touchMultiplier`    | `number`              | `1`                                                | The multiplier to use for touch events                                                                                                                              |
 | `normalizeWheel`     | `boolean`             | `false`                                            | Normalize wheel inputs across browsers (not reliable atm)                                                                                                                       |
-| `infinite`           | `boolean`             | `false`                                            | Enable infinite scrolling!                                                                                                                                          |
+| `infinite`           | `boolean`             | `false`                                            | Enable infinite scrolling! ([See example](https://codepen.io/ClementRoche/pen/OJqBLod))                                                                                                                                         |
 | `autoResize`           | `boolean`             | `true`                                            | Resize instance automatically       based on `ResizeObserver`. If `false` you must resize manually using `.resize()`                                                                                                     |
 
 <br/>
@@ -203,6 +203,8 @@ html.lenis {
 <div data-lenis-prevent-touch>scroll content</div>
 ```
 
+[See modal example](https://codepen.io/ClementRoche/pen/PoLdjpw)
+
 ### Anchor links
 ```html
 <a href="#anchor" onclick="lenis.scrollTo('#anchor')">scroll to anchor</a>
@@ -213,7 +215,7 @@ html.lenis {
 ## Limitations
 
 - no support for CSS scroll-snap
-- capped to 60fps on Safari ([source](https://bugs.webkit.org/show_bug.cgi?id=173434))
+- capped to 60fps on Safari ([source](https://bugs.webkit.org/show_bug.cgi?id=173434)) and 30fps on low power mode
 - smooth scroll will stop working over iframe since they don't forward wheel events
 - position fixed seems to lag on MacOS Safari pre-M1 ([source](https://github.com/studio-freight/lenis/issues/103))
 
