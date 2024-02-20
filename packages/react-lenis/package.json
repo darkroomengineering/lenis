@@ -3,10 +3,10 @@
   "version": "0.0.44",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/studio-freight/lenis.git"
+    "url": "git+https://github.com/darkroomengineering/lenis.git"
   },
   "bugs": {
-    "url": "https://github.com/studio-freight/lenis/issues"
+    "url": "https://github.com/darkroomengineering/lenis/issues"
   },
   "files": [
     "dist"

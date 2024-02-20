@@ -20,7 +20,7 @@ The usual process for Next.js based apps/websites:
 
 ## Stack
 
-- [Lenis](https://github.com/studio-freight/lenis) // in this case we're using the local /bundled version, instead of the npm package.
+- [Lenis](https://github.com/darkroomengineering/lenis) // in this case we're using the local /bundled version, instead of the npm package.
 - [Tempus](https://github.com/studio-freight/tempus)
 - [Hamo](https://github.com/studio-freight/hamo)
 - [PNPM](https://pnpm.io/)

@@ -3,7 +3,7 @@
 
 
 ## Introduction
-react-lenis provides a `<ReactLenis>` component that creates a [Lenis](https://github.com/studio-freight/lenis) instance and provides it to its children via context. This allows you to use Lenis in your React app without worrying about passing the instance down through props. It also provides a `useLenis` hook that allows you to access the Lenis instance from any component in your app.
+react-lenis provides a `<ReactLenis>` component that creates a [Lenis](https://github.com/darkroomengineering/lenis) instance and provides it to its children via context. This allows you to use Lenis in your React app without worrying about passing the instance down through props. It also provides a `useLenis` hook that allows you to access the Lenis instance from any component in your app.
 
 
 <br/>
@@ -41,7 +41,7 @@ function Layout() {
 <br/>
 
 ## Props
-- `options`: [Lenis options](https://github.com/studio-freight/lenis#instance-settings).
+- `options`: [Lenis options](https://github.com/darkroomengineering/lenis#instance-settings).
 - `root`: Lenis will be instanciate using `<html>` scroll. Default: `false`.
 - `autoRaf`: if `false`, `lenis.raf` needs to be called manually. Default: `true`.
 - `rAFpriority`: [Tempus](https://github.com/studio-freight/tempus#readme) execution priority. Default: `0`.

@@ -267,7 +267,7 @@ export default function Home() {
             className={cn(s.cta, introOut && s.in)}
             arrow
             icon={<GitHub />}
-            href="https://github.com/studio-freight/lenis"
+            href="https://github.com/darkroomengineering/lenis"
           >
             Check it out on github
           </Button>
@@ -414,7 +414,7 @@ export default function Home() {
               Lenis is an{' '}
               <Link
                 className="contrast semi-bold"
-                href="https://github.com/studio-freight/lenis"
+                href="https://github.com/darkroomengineering/lenis"
               >
                 open-source library
               </Link>{' '}

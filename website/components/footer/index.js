@@ -28,7 +28,7 @@ export const Footer = () => {
           className={s.cta}
           arrow
           icon={<GitHub />}
-          href="https://github.com/studio-freight/lenis"
+          href="https://github.com/darkroomengineering/lenis"
         >
           Let's build together
         </Button>
@@ -83,7 +83,7 @@ export const Footer = () => {
           className={cn(s.cta, 'hide-on-desktop')}
           arrow
           icon={<GitHub />}
-          href="https://github.com/studio-freight/lenis"
+          href="https://github.com/darkroomengineering/lenis"
         >
           Let's build together
         </Button>

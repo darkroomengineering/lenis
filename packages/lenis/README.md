@@ -1,4 +1,4 @@
-[![LENIS](https://assets.studiofreight.com/lenis/header.png)](https://github.com/studio-freight/lenis)
+[![LENIS](https://assets.studiofreight.com/lenis/header.png)](https://github.com/darkroomengineering/lenis)
 
 [![npm](https://img.shields.io/npm/v/%40studio-freight%2Flenis?colorA=000000&colorB=ff98a2
 )](https://www.npmjs.com/package/@studio-freight/lenis)
@@ -73,7 +73,7 @@ gsap.ticker.lagSmoothing(0)
 ```
 
 ### React:
-See documentation for [react-lenis](https://github.com/studio-freight/lenis/tree/main/packages/react-lenis).
+See documentation for [react-lenis](https://github.com/darkroomengineering/lenis/tree/main/packages/react-lenis).
 
 
 
@@ -217,7 +217,7 @@ html.lenis {
 - no support for CSS scroll-snap
 - capped to 60fps on Safari ([source](https://bugs.webkit.org/show_bug.cgi?id=173434)) and 30fps on low power mode
 - smooth scroll will stop working over iframe since they don't forward wheel events
-- position fixed seems to lag on MacOS Safari pre-M1 ([source](https://github.com/studio-freight/lenis/issues/103))
+- position fixed seems to lag on MacOS Safari pre-M1 ([source](https://github.com/darkroomengineering/lenis/issues/103))
 
 <br>
 
@@ -233,7 +233,7 @@ html.lenis {
 ## Plugins
 
 - [Loconative-scroll](https://github.com/quentinhocde/loconative-scroll#how-to-switch-from-locomotive-scroll-to-loconative-scroll) by [Quentin Hocde](https://twitter.com/QuentinHocde)
-- [react-lenis](https://github.com/studio-freight/lenis/tree/main/packages/react-lenis) by [Studio Freight](https://www.studiofreight.com/)
+- [react-lenis](https://github.com/darkroomengineering/lenis/tree/main/packages/react-lenis) by [Studio Freight](https://www.studiofreight.com/)
 - [r3f-scroll-rig](https://github.com/14islands/r3f-scroll-rig) by [14islands](https://14islands.com/)
 - [Lenis Scroll Snap Plugin](https://github.com/funkhaus/lenis-scroll-snap) by [Funkhaus](https://github.com/funkhaus)
 - [locomotive-scroll](https://github.com/locomotivemtl/locomotive-scroll) by [Locomotive](https://locomotive.ca/)

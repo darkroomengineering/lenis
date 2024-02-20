@@ -4,10 +4,10 @@
   "description": "Lenis is a smooth scroll library to normalize and smooth the scrolling experience across devices",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/studio-freight/lenis.git"
+    "url": "git+https://github.com/darkroomengineering/lenis.git"
   },
   "bugs": {
-    "url": "https://github.com/studio-freight/lenis/issues"
+    "url": "https://github.com/darkroomengineering/lenis/issues"
   },
   "files": [
     "dist"
