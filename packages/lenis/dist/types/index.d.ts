@@ -22,7 +22,10 @@ export type LenisOptions = {
     autoResize?: boolean;
 };
 export default class Lenis {
-    #private;
+    __isSmooth: boolean;
+    __isScrolling: boolean;
+    __isStopped: boolean;
+    __isLocked: boolean;
     constructor({ wrapper, content, wheelEventsTarget, eventsTarget, smoothWheel, syncTouch, syncTouchLerp, touchInertiaMultiplier, duration, easing, lerp, infinite, orientation, gestureOrientation, touchMultiplier, wheelMultiplier, normalizeWheel, autoResize, }?: LenisOptions);
     destroy(): void;
     on(event: string, callback: Function): any;
@@ -62,6 +65,6 @@ export default class Lenis {
     get isLocked(): boolean;
     private set isLocked(value);
     get className(): string;
-    private toggleClass;
+    private toggleClassName;
 }
 export {};
