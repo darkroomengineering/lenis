@@ -1,8 +1,9 @@
 export class Dimensions {
-    constructor({ wrapper, content, autoResize }?: {
+    constructor({ wrapper, content, autoResize, debounce: debounceValue, }?: {
         wrapper: any;
         content: any;
         autoResize?: boolean | undefined;
+        debounce?: number | undefined;
     });
     wrapper: any;
     content: any;

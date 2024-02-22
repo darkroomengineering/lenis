@@ -26,7 +26,7 @@ export default class Lenis {
     __isScrolling: boolean;
     __isStopped: boolean;
     __isLocked: boolean;
-    constructor({ wrapper, content, wheelEventsTarget, eventsTarget, smoothWheel, syncTouch, syncTouchLerp, touchInertiaMultiplier, duration, easing, lerp, infinite, orientation, gestureOrientation, touchMultiplier, wheelMultiplier, normalizeWheel, autoResize, }?: LenisOptions);
+    constructor({ wrapper, content, wheelEventsTarget, eventsTarget, smoothWheel, syncTouch, syncTouchLerp, touchInertiaMultiplier, duration, easing, lerp, infinite, orientation, gestureOrientation, touchMultiplier, wheelMultiplier, normalizeWheel, autoResize, __experimental__naiveDimensions, }?: LenisOptions);
     destroy(): void;
     on(event: string, callback: Function): any;
     off(event: string, callback: Function): any;

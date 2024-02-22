@@ -96,14 +96,21 @@
   }
 
   class Dimensions {
-    constructor({ wrapper, content, autoResize = true } = {}) {
+    constructor({
+      wrapper,
+      content,
+      autoResize = true,
+      debounce: debounceValue = 250,
+    } = {}) {
       this.wrapper = wrapper;
       this.content = content;
 
       if (autoResize) {
-        const resize = debounce(this.resize, 250);
+        const resize = debounce(this.resize, debounceValue);
 
-        if (this.wrapper !== window) {
+        if (this.wrapper === window) {
+          window.addEventListener('resize', resize, false);
+        } else {
           this.wrapperResizeObserver = new ResizeObserver(resize);
           this.wrapperResizeObserver.observe(this.wrapper);
         }
@@ -118,6 +125,7 @@
     destroy() {
       this.wrapperResizeObserver?.disconnect();
       this.contentResizeObserver?.disconnect();
+      window.removeEventListener('resize', resize, false);
     }
 
     resize = () => {
@@ -136,8 +144,13 @@
     }
 
     onContentResize = () => {
-      this.scrollHeight = this.content.scrollHeight;
-      this.scrollWidth = this.content.scrollWidth;
+      if (this.wrapper === window) {
+        this.scrollHeight = this.content.scrollHeight;
+        this.scrollWidth = this.content.scrollWidth;
+      } else {
+        this.scrollHeight = this.wrapper.scrollHeight;
+        this.scrollWidth = this.wrapper.scrollWidth;
+      }
     }
 
     get limit() {
@@ -301,7 +314,7 @@
   }
 
   class Lenis {
-      constructor({ wrapper = window, content = document.documentElement, wheelEventsTarget = wrapper, eventsTarget = wheelEventsTarget, smoothWheel = true, syncTouch = false, syncTouchLerp = 0.075, touchInertiaMultiplier = 35, duration, easing = (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)), lerp = !duration && 0.1, infinite = false, orientation = 'vertical', gestureOrientation = 'vertical', touchMultiplier = 1, wheelMultiplier = 1, normalizeWheel = false, autoResize = true, } = {}) {
+      constructor({ wrapper = window, content = document.documentElement, wheelEventsTarget = wrapper, eventsTarget = wheelEventsTarget, smoothWheel = true, syncTouch = false, syncTouchLerp = 0.075, touchInertiaMultiplier = 35, duration, easing = (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)), lerp = !duration && 0.1, infinite = false, orientation = 'vertical', gestureOrientation = 'vertical', touchMultiplier = 1, wheelMultiplier = 1, normalizeWheel = false, autoResize = true, __experimental__naiveDimensions = false, } = {}) {
           this.__isSmooth = false;
           this.__isScrolling = false;
           this.__isStopped = false;
@@ -325,11 +338,12 @@
               let composedPath = event.composedPath();
               composedPath = composedPath.slice(0, composedPath.indexOf(this.rootElement));
               if (!!composedPath.find((node) => {
-                  var _a, _b, _c, _d;
+                  var _a, _b, _c, _d, _e;
                   return ((_a = node.hasAttribute) === null || _a === void 0 ? void 0 : _a.call(node, 'data-lenis-prevent')) ||
                       (isTouch && ((_b = node.hasAttribute) === null || _b === void 0 ? void 0 : _b.call(node, 'data-lenis-prevent-touch'))) ||
                       (isWheel && ((_c = node.hasAttribute) === null || _c === void 0 ? void 0 : _c.call(node, 'data-lenis-prevent-wheel'))) ||
-                      ((_d = node.classList) === null || _d === void 0 ? void 0 : _d.contains('lenis'));
+                      (((_d = node.classList) === null || _d === void 0 ? void 0 : _d.contains('lenis')) &&
+                          !((_e = node.classList) === null || _e === void 0 ? void 0 : _e.contains('lenis-stopped')));
               }))
                   return;
               if (this.isStopped || this.isLocked) {
@@ -402,6 +416,7 @@
               wheelMultiplier,
               normalizeWheel,
               autoResize,
+              __experimental__naiveDimensions,
           };
           this.animate = new Animate();
           this.emitter = new Emitter();
@@ -464,10 +479,14 @@
           this.animate.stop();
       }
       start() {
+          if (!this.isStopped)
+              return;
           this.isStopped = false;
           this.reset();
       }
       stop() {
+          if (this.isStopped)
+              return;
           this.isStopped = true;
           this.animate.stop();
           this.reset();
@@ -566,7 +585,17 @@
               : this.options.wrapper;
       }
       get limit() {
-          return this.dimensions.limit[this.isHorizontal ? 'x' : 'y'];
+          if (this.options.__experimental__naiveDimensions) {
+              if (this.isHorizontal) {
+                  return this.rootElement.scrollWidth - this.rootElement.clientWidth;
+              }
+              else {
+                  return this.rootElement.scrollHeight - this.rootElement.clientHeight;
+              }
+          }
+          else {
+              return this.dimensions.limit[this.isHorizontal ? 'x' : 'y'];
+          }
       }
       get isHorizontal() {
           return this.options.orientation === 'horizontal';

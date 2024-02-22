@@ -63,6 +63,7 @@ export default class Lenis {
     wheelMultiplier = 1,
     normalizeWheel = false, // deprecated
     autoResize = true,
+    __experimental__naiveDimensions = false,
   }: LenisOptions = {}) {
     window.lenisVersion = version
 
@@ -90,6 +91,7 @@ export default class Lenis {
       wheelMultiplier,
       normalizeWheel,
       autoResize,
+      __experimental__naiveDimensions,
     }
 
     this.animate = new Animate()
@@ -192,7 +194,8 @@ export default class Lenis {
           node.hasAttribute?.('data-lenis-prevent') ||
           (isTouch && node.hasAttribute?.('data-lenis-prevent-touch')) ||
           (isWheel && node.hasAttribute?.('data-lenis-prevent-wheel')) ||
-          node.classList?.contains('lenis') // nested lenis instance
+          (node.classList?.contains('lenis') &&
+            !node.classList?.contains('lenis-stopped')) // nested lenis instance
       )
     )
       return
@@ -273,12 +276,14 @@ export default class Lenis {
   }
 
   start() {
+    if (!this.isStopped) return
     this.isStopped = false
 
     this.reset()
   }
 
   stop() {
+    if (this.isStopped) return
     this.isStopped = true
     this.animate.stop()
 
@@ -423,7 +428,15 @@ export default class Lenis {
   }
 
   get limit() {
-    return this.dimensions.limit[this.isHorizontal ? 'x' : 'y']
+    if (this.options.__experimental__naiveDimensions) {
+      if (this.isHorizontal) {
+        return this.rootElement.scrollWidth - this.rootElement.clientWidth
+      } else {
+        return this.rootElement.scrollHeight - this.rootElement.clientHeight
+      }
+    } else {
+      return this.dimensions.limit[this.isHorizontal ? 'x' : 'y']
+    }
   }
 
   get isHorizontal() {

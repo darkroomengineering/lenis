@@ -1,14 +1,21 @@
 import { debounce } from './debounce'
 
 export class Dimensions {
-  constructor({ wrapper, content, autoResize = true } = {}) {
+  constructor({
+    wrapper,
+    content,
+    autoResize = true,
+    debounce: debounceValue = 250,
+  } = {}) {
     this.wrapper = wrapper
     this.content = content
 
     if (autoResize) {
-      const resize = debounce(this.resize, 250)
+      const resize = debounce(this.resize, debounceValue)
 
-      if (this.wrapper !== window) {
+      if (this.wrapper === window) {
+        window.addEventListener('resize', resize, false)
+      } else {
         this.wrapperResizeObserver = new ResizeObserver(resize)
         this.wrapperResizeObserver.observe(this.wrapper)
       }
@@ -23,6 +30,7 @@ export class Dimensions {
   destroy() {
     this.wrapperResizeObserver?.disconnect()
     this.contentResizeObserver?.disconnect()
+    window.removeEventListener('resize', resize, false)
   }
 
   resize = () => {
@@ -41,8 +49,13 @@ export class Dimensions {
   }
 
   onContentResize = () => {
-    this.scrollHeight = this.content.scrollHeight
-    this.scrollWidth = this.content.scrollWidth
+    if (this.wrapper === window) {
+      this.scrollHeight = this.content.scrollHeight
+      this.scrollWidth = this.content.scrollWidth
+    } else {
+      this.scrollHeight = this.wrapper.scrollHeight
+      this.scrollWidth = this.wrapper.scrollWidth
+    }
   }
 
   get limit() {

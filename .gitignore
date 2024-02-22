@@ -36,3 +36,4 @@ yarn-error.log*
 .vercel
 .eslintcache
 
+/packages/no-code
