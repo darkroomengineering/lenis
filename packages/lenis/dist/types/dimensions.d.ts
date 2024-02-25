@@ -7,6 +7,7 @@ export class Dimensions {
     });
     wrapper: any;
     content: any;
+    debouncedResize: ((...args: any[]) => void) | undefined;
     wrapperResizeObserver: ResizeObserver | undefined;
     contentResizeObserver: ResizeObserver | undefined;
     destroy(): void;

@@ -106,16 +106,16 @@
       this.content = content;
 
       if (autoResize) {
-        const resize = debounce(this.resize, debounceValue);
+        this.debouncedResize = debounce(this.resize, debounceValue);
 
         if (this.wrapper === window) {
-          window.addEventListener('resize', resize, false);
+          window.addEventListener('resize', this.debouncedResize, false);
         } else {
-          this.wrapperResizeObserver = new ResizeObserver(resize);
+          this.wrapperResizeObserver = new ResizeObserver(this.debouncedResize);
           this.wrapperResizeObserver.observe(this.wrapper);
         }
 
-        this.contentResizeObserver = new ResizeObserver(resize);
+        this.contentResizeObserver = new ResizeObserver(this.debouncedResize);
         this.contentResizeObserver.observe(this.content);
       }
 
@@ -125,7 +125,7 @@
     destroy() {
       this.wrapperResizeObserver?.disconnect();
       this.contentResizeObserver?.disconnect();
-      window.removeEventListener('resize', resize, false);
+      window.removeEventListener('resize', this.debouncedResize, false);
     }
 
     resize = () => {
