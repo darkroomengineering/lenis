@@ -106,9 +106,7 @@ export default class Lenis {
     this.isScrolling = false
     this.targetScroll = this.animatedScroll = this.actualScroll
 
-    this.options.wrapper.addEventListener('scroll', this.onNativeScroll, {
-      passive: false,
-    })
+    this.options.wrapper.addEventListener('scroll', this.onNativeScroll, false)
 
     this.virtualScroll = new VirtualScroll(eventsTarget, {
       touchMultiplier,
@@ -121,9 +119,11 @@ export default class Lenis {
   destroy() {
     this.emitter.destroy()
 
-    this.options.wrapper.removeEventListener('scroll', this.onNativeScroll, {
-      passive: false,
-    })
+    this.options.wrapper.removeEventListener(
+      'scroll',
+      this.onNativeScroll,
+      false
+    )
 
     this.virtualScroll.destroy()
     this.dimensions.destroy()
@@ -201,7 +201,7 @@ export default class Lenis {
       return
 
     if (this.isStopped || this.isLocked) {
-      event.preventDefault()
+      event.preventDefault() // this will stop forwarding the event to the parent, this is problematic
       return
     }
 

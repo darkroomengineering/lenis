@@ -428,9 +428,7 @@
           this.isSmooth = syncTouch || smoothWheel;
           this.isScrolling = false;
           this.targetScroll = this.animatedScroll = this.actualScroll;
-          this.options.wrapper.addEventListener('scroll', this.onNativeScroll, {
-              passive: false,
-          });
+          this.options.wrapper.addEventListener('scroll', this.onNativeScroll, false);
           this.virtualScroll = new VirtualScroll(eventsTarget, {
               touchMultiplier,
               wheelMultiplier,
@@ -440,9 +438,7 @@
       }
       destroy() {
           this.emitter.destroy();
-          this.options.wrapper.removeEventListener('scroll', this.onNativeScroll, {
-              passive: false,
-          });
+          this.options.wrapper.removeEventListener('scroll', this.onNativeScroll, false);
           this.virtualScroll.destroy();
           this.dimensions.destroy();
           this.toggleClassName('lenis', false);
