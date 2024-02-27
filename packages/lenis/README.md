@@ -233,7 +233,7 @@ html.lenis {
 ## Plugins
 
 - [Loconative-scroll](https://github.com/quentinhocde/loconative-scroll#how-to-switch-from-locomotive-scroll-to-loconative-scroll) by [Quentin Hocde](https://twitter.com/QuentinHocde)
-- [react-lenis](https://github.com/darkroomengineering/lenis/tree/main/packages/react-lenis) by [Studio Freight](https://www.studiofreight.com/)
+- [react-lenis](https://github.com/darkroomengineering/lenis/tree/main/packages/react-lenis) by [darkroom.engineering](https://darkroom.engineering/)
 - [r3f-scroll-rig](https://github.com/14islands/r3f-scroll-rig) by [14islands](https://14islands.com/)
 - [Lenis Scroll Snap Plugin](https://github.com/funkhaus/lenis-scroll-snap) by [Funkhaus](https://github.com/funkhaus)
 - [locomotive-scroll](https://github.com/locomotivemtl/locomotive-scroll) by [Locomotive](https://locomotive.ca/)
@@ -262,7 +262,7 @@ html.lenis {
 
 ## Authors
 
-This set of hooks is curated and maintained by the Studio Freight Darkroom team:
+This set of hooks is curated and maintained by the darkroom.engineering team:
 
 - Clément Roche ([@clementroche\_](https://twitter.com/clementroche_)) – [darkroom.engineering](https://darkroom.engineering)
 - Guido Fier ([@uido15](https://twitter.com/uido15)) – [darkroom.engineering](https://darkroom.engineering)

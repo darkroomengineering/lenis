@@ -98,12 +98,12 @@ function Component() {
 
 ## Authors
 
-This tool is maintained by the Studio Freight Darkroom team:
+This tool is maintained by the darkroom.engineering team:
 
-- Clement Roche ([@clementroche\_](https://twitter.com/clementroche_)) – [Studio Freight](https://studiofreight.com)
-- Guido Fier ([@uido15](https://twitter.com/uido15)) – [Studio Freight](https://studiofreight.com)
-- Leandro Soengas ([@lsoengas](https://twitter.com/lsoengas)) - [Studio Freight](https://studiofreight.com)
-- Franco Arza ([@arzafran](https://twitter.com/arzafran)) - [Studio Freight](https://studiofreight.com)
+- Clément Roche ([@clementroche\_](https://twitter.com/clementroche_)) – [darkroom.engineering](https://www.darkroom.engineering/)
+- Guido Fier ([@uido15](https://twitter.com/uido15)) – [darkroom.engineering](https://www.darkroom.engineering/)
+- Leandro Soengas ([@lsoengas](https://twitter.com/lsoengas)) - [darkroom.engineering](https://www.darkroom.engineering/)
+- Franco Arza ([@arzafran](https://twitter.com/arzafran)) - [darkroom.engineering](https://www.darkroom.engineering/)
 
 <br/>
 
