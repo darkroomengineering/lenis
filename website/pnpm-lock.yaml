@@ -1,8 +1,6 @@
 lockfileVersion: 5.4
 
 overrides:
-  '@radix-ui/react-portal': 0.1.4
-  '@radix-ui/react-primitive': 0.1.4
   extend-shallow: 3.0.2
   is-extendable: 1.0.1
   react-is: 18.2.0
@@ -1674,18 +1672,9 @@ packages:
         optional: true
     dependencies:
       '@babel/runtime': 7.23.9
-      '@radix-ui/react-primitive': 0.1.4_react@18.2.0
+      '@radix-ui/react-primitive': 1.0.3_biqbaboplfbrettd7655fr4n2y
       react: 18.2.0
       react-dom: 18.2.0_react@18.2.0
-    dev: false
-
-  /@radix-ui/react-compose-refs/0.1.0_react@18.2.0:
-    resolution: {integrity: sha512-eyclbh+b77k+69Dk72q3694OHrn9B3QsoIRx7ywX341U9RK1ThgQjMFZoPtmZNQTksXHLNEiefR8hGVeFyInGg==}
-    peerDependencies:
-      react: ^16.8 || ^17.0
-    dependencies:
-      '@babel/runtime': 7.23.9
-      react: 18.2.0
     dev: false
 
   /@radix-ui/react-compose-refs/1.0.1_react@18.2.0:
@@ -1730,7 +1719,7 @@ packages:
       '@babel/runtime': 7.23.9
       '@radix-ui/primitive': 1.0.1
       '@radix-ui/react-compose-refs': 1.0.1_react@18.2.0
-      '@radix-ui/react-primitive': 0.1.4_react@18.2.0
+      '@radix-ui/react-primitive': 1.0.3_biqbaboplfbrettd7655fr4n2y
       '@radix-ui/react-use-callback-ref': 1.0.1_react@18.2.0
       '@radix-ui/react-use-escape-keydown': 1.0.3_react@18.2.0
       react: 18.2.0
@@ -1769,7 +1758,7 @@ packages:
       '@radix-ui/react-arrow': 1.0.3_biqbaboplfbrettd7655fr4n2y
       '@radix-ui/react-compose-refs': 1.0.1_react@18.2.0
       '@radix-ui/react-context': 1.0.1_react@18.2.0
-      '@radix-ui/react-primitive': 0.1.4_react@18.2.0
+      '@radix-ui/react-primitive': 1.0.3_biqbaboplfbrettd7655fr4n2y
       '@radix-ui/react-use-callback-ref': 1.0.1_react@18.2.0
       '@radix-ui/react-use-layout-effect': 1.0.1_react@18.2.0
       '@radix-ui/react-use-rect': 1.0.1_react@18.2.0
@@ -1779,15 +1768,21 @@ packages:
       react-dom: 18.2.0_react@18.2.0
     dev: false
 
-  /@radix-ui/react-portal/0.1.4_biqbaboplfbrettd7655fr4n2y:
-    resolution: {integrity: sha512-MO0wRy2eYRTZ/CyOri9NANCAtAtq89DEtg90gicaTlkCfdqCLEBsLb+/q66BZQTr3xX/Vq01nnVfc/TkCqoqvw==}
+  /@radix-ui/react-portal/1.0.4_biqbaboplfbrettd7655fr4n2y:
+    resolution: {integrity: sha512-Qki+C/EuGUVCQTOTD5vzJzJuMUlewbzuKyUy+/iHM2uwGiru9gZeBJtHAPKAEkB5KWGi9mP/CHKcY0wt1aW45Q==}
     peerDependencies:
-      react: ^16.8 || ^17.0
-      react-dom: ^16.8 || ^17.0
+      '@types/react': '*'
+      '@types/react-dom': '*'
+      react: ^16.8 || ^17.0 || ^18.0
+      react-dom: ^16.8 || ^17.0 || ^18.0
+    peerDependenciesMeta:
+      '@types/react':
+        optional: true
+      '@types/react-dom':
+        optional: true
     dependencies:
       '@babel/runtime': 7.23.9
-      '@radix-ui/react-primitive': 0.1.4_react@18.2.0
-      '@radix-ui/react-use-layout-effect': 0.1.0_react@18.2.0
+      '@radix-ui/react-primitive': 1.0.3_biqbaboplfbrettd7655fr4n2y
       react: 18.2.0
       react-dom: 18.2.0_react@18.2.0
     dev: false
@@ -1812,24 +1807,23 @@ packages:
       react-dom: 18.2.0_react@18.2.0
     dev: false
 
-  /@radix-ui/react-primitive/0.1.4_react@18.2.0:
-    resolution: {integrity: sha512-6gSl2IidySupIMJFjYnDIkIWRyQdbu/AHK7rbICPani+LW4b0XdxBXc46og/iZvuwW8pjCS8I2SadIerv84xYA==}
+  /@radix-ui/react-primitive/1.0.3_biqbaboplfbrettd7655fr4n2y:
+    resolution: {integrity: sha512-yi58uVyoAcK/Nq1inRY56ZSjKypBNKTa/1mcL8qdl6oJeEaDbOldlzrGn7P6Q3Id5d+SYNGc5AJgc4vGhjs5+g==}
     peerDependencies:
-      react: ^16.8 || ^17.0
+      '@types/react': '*'
+      '@types/react-dom': '*'
+      react: ^16.8 || ^17.0 || ^18.0
+      react-dom: ^16.8 || ^17.0 || ^18.0
+    peerDependenciesMeta:
+      '@types/react':
+        optional: true
+      '@types/react-dom':
+        optional: true
     dependencies:
       '@babel/runtime': 7.23.9
-      '@radix-ui/react-slot': 0.1.2_react@18.2.0
+      '@radix-ui/react-slot': 1.0.2_react@18.2.0
       react: 18.2.0
-    dev: false
-
-  /@radix-ui/react-slot/0.1.2_react@18.2.0:
-    resolution: {integrity: sha512-ADkqfL+agEzEguU3yS26jfB50hRrwf7U4VTwAOZEmi/g+ITcBWe12yM46ueS/UCIMI9Py+gFUaAdxgxafFvY2Q==}
-    peerDependencies:
-      react: ^16.8 || ^17.0
-    dependencies:
-      '@babel/runtime': 7.23.9
-      '@radix-ui/react-compose-refs': 0.1.0_react@18.2.0
-      react: 18.2.0
+      react-dom: 18.2.0_react@18.2.0
     dev: false
 
   /@radix-ui/react-slot/1.0.2_react@18.2.0:
@@ -1866,9 +1860,9 @@ packages:
       '@radix-ui/react-dismissable-layer': 1.0.5_biqbaboplfbrettd7655fr4n2y
       '@radix-ui/react-id': 1.0.1_react@18.2.0
       '@radix-ui/react-popper': 1.1.3_biqbaboplfbrettd7655fr4n2y
-      '@radix-ui/react-portal': 0.1.4_biqbaboplfbrettd7655fr4n2y
+      '@radix-ui/react-portal': 1.0.4_biqbaboplfbrettd7655fr4n2y
       '@radix-ui/react-presence': 1.0.1_biqbaboplfbrettd7655fr4n2y
-      '@radix-ui/react-primitive': 0.1.4_react@18.2.0
+      '@radix-ui/react-primitive': 1.0.3_biqbaboplfbrettd7655fr4n2y
       '@radix-ui/react-slot': 1.0.2_react@18.2.0
       '@radix-ui/react-use-controllable-state': 1.0.1_react@18.2.0
       '@radix-ui/react-visually-hidden': 1.0.3_biqbaboplfbrettd7655fr4n2y
@@ -1914,15 +1908,6 @@ packages:
     dependencies:
       '@babel/runtime': 7.23.9
       '@radix-ui/react-use-callback-ref': 1.0.1_react@18.2.0
-      react: 18.2.0
-    dev: false
-
-  /@radix-ui/react-use-layout-effect/0.1.0_react@18.2.0:
-    resolution: {integrity: sha512-+wdeS51Y+E1q1Wmd+1xSSbesZkpVj4jsg0BojCbopWvgq5iBvixw5vgemscdh58ep98BwUbsFYnrywFhV9yrVg==}
-    peerDependencies:
-      react: ^16.8 || ^17.0
-    dependencies:
-      '@babel/runtime': 7.23.9
       react: 18.2.0
     dev: false
 
@@ -1981,7 +1966,7 @@ packages:
         optional: true
     dependencies:
       '@babel/runtime': 7.23.9
-      '@radix-ui/react-primitive': 0.1.4_react@18.2.0
+      '@radix-ui/react-primitive': 1.0.3_biqbaboplfbrettd7655fr4n2y
       react: 18.2.0
       react-dom: 18.2.0_react@18.2.0
     dev: false
@@ -5012,7 +4997,7 @@ packages:
       react: '>=16.8.0'
       react-dom: '>=16.8.0'
     dependencies:
-      '@radix-ui/react-portal': 0.1.4_biqbaboplfbrettd7655fr4n2y
+      '@radix-ui/react-portal': 1.0.4_biqbaboplfbrettd7655fr4n2y
       '@radix-ui/react-tooltip': 1.0.7_biqbaboplfbrettd7655fr4n2y
       '@stitches/react': 1.2.8_react@18.2.0
       '@use-gesture/react': 10.3.0_react@18.2.0

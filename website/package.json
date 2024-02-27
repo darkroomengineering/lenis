@@ -56,8 +56,6 @@
   },
   "pnpm": {
     "overrides": {
-      "@radix-ui/react-portal": "0.1.4",
-      "@radix-ui/react-primitive": "0.1.4",
       "extend-shallow": "3.0.2",
       "is-extendable": "1.0.1",
       "react-is": "18.2.0",
