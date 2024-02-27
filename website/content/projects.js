@@ -1,8 +1,8 @@
 export const projects = [
   {
-    title: 'Wyre',
+    title: 'Deso',
     source: 'Studio Freight',
-    href: 'https://sendwyre.com',
+    href: 'https://deso.com',
   },
   {
     title: 'Lunchbox',

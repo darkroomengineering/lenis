@@ -30,7 +30,7 @@ export function CustomHead({ title = '', description, image, keywords }) {
           name="keywords"
           content={keywords && keywords.length ? keywords.join(',') : keywords}
         />
-        <meta name="author" content="Studio Freight" />
+        <meta name="author" content="darkroom.engineering" />
         <meta name="referrer" content="no-referrer" />
         <meta name="format-detection" content="telephone=no" />
         <meta name="geo.region" content="US" />
@@ -71,7 +71,9 @@ export function CustomHead({ title = '', description, image, keywords }) {
           locale: 'en_US',
           images: [
             {
-              url: image ? image.url : 'https://lenis.studiofreight.com/og.png',
+              url: image
+                ? image.url
+                : 'https://lenis.darkroom.engineering/og.png',
               width: image ? image.width : 1200,
               height: image ? image.height : 630,
               alt: title,
@@ -82,7 +84,7 @@ export function CustomHead({ title = '', description, image, keywords }) {
           site_name: '',
         }}
         twitter={{
-          handle: '@studiofreight',
+          handle: '@darkroomdevs',
           cardType: 'summary_large_image',
         }}
       />

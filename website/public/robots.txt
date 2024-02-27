@@ -3,7 +3,7 @@ User-agent: *
 Allow: /
 
 # Host
-Host: https://lenis.studiofreight.com
+Host: https://lenis.darkroom.engineering/
 
 # Sitemaps
-Sitemap: https://lenis.studiofreight.com/sitemap.xml
+Sitemap: https://lenis.darkroom.engineering/sitemap.xml

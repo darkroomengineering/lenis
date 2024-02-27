@@ -17,7 +17,7 @@ import { useEffect, useRef, useState } from 'react'
 import { useIntersection, useWindowSize } from 'react-use'
 import s from './home.module.scss'
 
-const SFDR = dynamic(() => import('icons/sfdr.svg'), { ssr: false })
+// const SFDR = dynamic(() => import('icons/sfdr.svg'), { ssr: false })
 const GitHub = dynamic(() => import('icons/github.svg'), { ssr: false })
 
 const Parallax = dynamic(
@@ -210,7 +210,7 @@ export default function Home() {
       seo={{
         title: 'Lenis – Get smooth or die trying',
         description:
-          'A new smooth scroll library fresh out of the Studio Freight Darkroom',
+          'A smooth scroll library fresh out of the Studio Freight Darkroom',
       }}
       className={s.home}
     >
@@ -221,14 +221,14 @@ export default function Home() {
       <section className={s.hero}>
         <div className="layout-grid-inner">
           <Title className={s.title} />
-          <SFDR className={cn(s.icon, introOut && s.show)} />
+          {/* <SFDR className={cn(s.icon, introOut && s.show)} /> */}
           <span className={cn(s.sub)}>
             <HeroTextIn introOut={introOut}>
               <h2 className={cn('h3', s.subtitle)}>Smooth Scroll</h2>
             </HeroTextIn>
             <HeroTextIn introOut={introOut}>
               <h2 className={cn('p-xs', s.tm)}>
-                <span>©</span> {new Date().getFullYear()} Studio Freight
+                <span>©</span> {new Date().getFullYear()} darkroom.engineering
               </h2>
             </HeroTextIn>
           </span>
@@ -254,13 +254,13 @@ export default function Home() {
           </div>
           <h1 className={cn(s.description, 'p-s')}>
             <HeroTextIn introOut={introOut}>
-              <p className="p-s"> A new smooth scroll library</p>
+              <p className="p-s">A smooth scroll library</p>
             </HeroTextIn>
             <HeroTextIn introOut={introOut}>
-              <p className="p-s">fresh out of the</p>
+              <p className="p-s">fresh out of the darkroom</p>
             </HeroTextIn>
             <HeroTextIn introOut={introOut}>
-              <p className="p-s">Studio Freight Darkroom</p>
+              <p className="p-s">designed by Studio Freight</p>
             </HeroTextIn>
           </h1>
           <Button

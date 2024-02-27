@@ -21,11 +21,11 @@ const cards = [
   {
     text: (
       <>
-        Lightweight <br /> (under 3kb)
+        Lightweight <br /> (under 4kb)
       </>
     ),
   },
-  { text: 'Made for 2022+' },
+  { text: `Made for ${new Date().getFullYear()}+` },
   { text: 'Bring your own animation library' },
   {
     text: <>CONTROL THE SCROLL EASING DURATION</>,

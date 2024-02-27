@@ -14,12 +14,12 @@ export const Footer = () => {
           Lenis is <br />
           <span className="contrast">Open source</span>
         </p>
-        <div className={s['shameless-plug']}>
+        {/* <div className={s['shameless-plug']}>
           <p className="h4">Studio Freight</p>
           <p className="p-s">
             An independent creative <br /> studio built on principle
           </p>
-        </div>
+        </div> */}
         <p className={cn(s['last-line'], 'h1')}>
           & open to <span className="hide-on-desktop">&nbsp;</span> features,{' '}
           <br /> forks or prs &nbsp;
@@ -34,12 +34,12 @@ export const Footer = () => {
         </Button>
       </div>
       <div className={cn(s.top, 'layout-block hide-on-desktop')}>
-        <div className={s['shameless-plug']}>
+        {/* <div className={s['shameless-plug']}>
           <p className="h4">Studio Freight</p>
           <p className="p-s">
             An independent creative <br /> studio built on principle
           </p>
-        </div>
+        </div> */}
         <p className={cn(s['first-line'], 'h1')}>
           Lenis is <br />
           <span className="contrast">Open source</span>
@@ -50,34 +50,28 @@ export const Footer = () => {
         <div className={s.links}>
           <Link
             className={cn(s.link, 'p-xs')}
-            href="https://twitter.com/studiofreight"
+            href="https://twitter.com/darkroomdevs"
           >
             Twitter
           </Link>
           <Link
             className={cn(s.link, 'p-xs')}
-            href="https://github.com/studio-freight"
+            href="https://github.com/darkroomengineering"
           >
             GitHub
           </Link>
           <Link
             className={cn(s.link, 'p-xs')}
-            href="https://awwwards.com/studiofreight"
+            href="https://darkroom.engineering/"
           >
-            Awwwards
-          </Link>
-          <Link className={cn(s.link, 'p-xs')} href="https://studiofreight.com">
             Website
           </Link>
-          <Link
-            className={cn(s.link, 'p-xs')}
-            href="https://darkroom.studiofreight.com"
-          >
-            Darkroom
+          <Link className={cn(s.link, 'p-xs')} href="https://studiofreight.com">
+            Designed by Studio Freight
           </Link>
         </div>
         <p className={cn('p-xs', s.tm)}>
-          <span>©</span> {new Date().getFullYear()} Studio Freight
+          <span>©</span> {new Date().getFullYear()} darkroom.engineering
         </p>
         <Button
           className={cn(s.cta, 'hide-on-desktop')}
