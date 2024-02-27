@@ -1,4 +1,4 @@
-[![LENIS](https://assets.studiofreight.com/lenis/header.png)](https://github.com/darkroomengineering/lenis)
+[![LENIS](https://assets.darkroom.engineering/lenis/header.png)](https://github.com/darkroomengineering/lenis)
 
 [![npm](https://img.shields.io/npm/v/%40studio-freight%2Flenis?colorA=000000&colorB=ff98a2
 )](https://www.npmjs.com/package/@studio-freight/lenis)

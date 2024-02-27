@@ -28,7 +28,7 @@ const nextConfig = {
     // ADD in case you need to import SVGs in next/image component
     // dangerouslyAllowSVG: true,
     // contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
-    domains: ['images.ctfassets.net', 'assets.studiofreight.com'],
+    domains: ['images.ctfassets.net', 'assets.darkroom.engineering'],
     formats: ['image/avif', 'image/webp'],
   },
   webpack: (config, options) => {
