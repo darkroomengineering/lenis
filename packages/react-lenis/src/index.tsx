@@ -18,6 +18,9 @@ import React, {
   useState,
 } from 'react'
 import { create } from 'zustand'
+import { version } from '../package.json'
+
+if (typeof window !== 'undefined') window.reactLenisVersion = version
 
 export const LenisContext = createContext() as Lenis | null
 
