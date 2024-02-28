@@ -2180,11 +2180,6 @@ resolve@^1.10.0, resolve@^1.22.1:
     path-parse "^1.0.7"
     supports-preserve-symlinks-flag "^1.0.0"
 
-rollup-plugin-exclude-dependencies-from-bundle@^1.1.23:
-  version "1.1.23"
-  resolved "https://registry.yarnpkg.com/rollup-plugin-exclude-dependencies-from-bundle/-/rollup-plugin-exclude-dependencies-from-bundle-1.1.23.tgz#ef21f48b689a90e5af7dfb6596bbd30cee4251f4"
-  integrity sha512-nDoFtxlpajcqaLkPftoUcHxHYFd8tydHleOVubdf2JmyQtWTbhCNK05O4VGxLr7EUKSK9KeXqbWuQXkTqeJcRg==
-
 rollup-plugin-preserve-directives@^0.2.0:
   version "0.2.0"
   resolved "https://registry.yarnpkg.com/rollup-plugin-preserve-directives/-/rollup-plugin-preserve-directives-0.2.0.tgz#cc9dc34371ecf22878dc27fdd5cfb3f47b5ee088"

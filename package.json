@@ -23,7 +23,6 @@
     "cross-var": "^1.1.0",
     "npm-run-all": "^4.1.5",
     "rollup": "^4.9.1",
-    "rollup-plugin-exclude-dependencies-from-bundle": "^1.1.23",
     "rollup-plugin-preserve-directives": "^0.2.0",
     "tslib": "^2.6.2",
     "typescript": "^5.3.3"

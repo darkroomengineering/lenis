@@ -37,5 +37,6 @@ yarn-error.log*
 .eslintcache
 
 /packages/no-code
+/packages/lenify
 
 .npmrc
