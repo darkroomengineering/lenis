@@ -169,7 +169,7 @@ See documentation for [react-lenis](https://github.com/darkroomengineering/lenis
 ## Recommended CSS
 
 ```css
-html.lenis {
+html.lenis, html.lenis body {
   height: auto;
 }
 
