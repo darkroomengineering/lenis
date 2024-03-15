@@ -4,7 +4,7 @@
   (global = typeof globalThis !== 'undefined' ? globalThis : global || self, global.Lenis = factory());
 })(this, (function () { 'use strict';
 
-  var version = "1.0.39";
+  var version = "1.0.40";
 
   // Clamp a value between a minimum and maximum value
   function clamp(min, input, max) {
