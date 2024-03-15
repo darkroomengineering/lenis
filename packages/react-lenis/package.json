@@ -24,7 +24,7 @@
     "git:tag": "cross-var git tag -a $npm_package_name@$npm_package_version -m \"$npm_package_name@$npm_package_version\"",
     "git:push": "git push && git push --tags",
     "postversion": "npm-run-all build git:commit git:tag git:push",
-    "version:latest": "yarn version --no-git-tag-version",
+    "version:latest": "yarn version --no-git-tag-version --patch",
     "version:dev": "yarn version --no-git-tag-version --prerelease --preid dev"
   },
   "sideEffects": false,
@@ -49,7 +49,7 @@
   },
   "dependencies": {
     "@studio-freight/hamo": "^0.6.28",
-    "@studio-freight/lenis": "^1.0.39",
+    "@studio-freight/lenis": "^1.0.40",
     "clsx": "^2.0.0",
     "zustand": "^4.4.7"
   },
