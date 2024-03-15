@@ -34,8 +34,8 @@ function useCurrentLenis() {
 }
 
 export function useLenis(
-  callback: (lenis: Lenis) => void,
-  deps: Array<any> = [],
+  callback?: (lenis: Lenis) => void,
+  deps?: Array<any> = [],
   priority = 0
 ): Lenis | undefined {
   const { lenis, addCallback, removeCallback } = useCurrentLenis()

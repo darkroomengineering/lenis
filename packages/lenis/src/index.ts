@@ -36,6 +36,7 @@ export type LenisOptions = {
   wheelMultiplier?: number
   normalizeWheel?: boolean
   autoResize?: boolean
+  __experimental__naiveDimensions?: boolean
 }
 
 export default class Lenis {
