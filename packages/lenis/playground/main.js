@@ -5,7 +5,7 @@ import './style.css'
 
 const lenis = new Lenis({
   smoothWheel: true,
-  syncTouch: true,
+  // syncTouch: true,
 })
 
 window.lenis = lenis
@@ -27,3 +27,10 @@ requestAnimationFrame((deltaTime) => {
 })
 
 setupCounter(document.querySelector('#counter'))
+
+setInterval(() => {
+  // lenis.stop(); // stopping lenis also does not help
+  lenis.scrollTo(lenis.limit * Math.random(), {
+    lock: true,
+  })
+}, 4000)

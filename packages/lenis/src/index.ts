@@ -157,7 +157,11 @@ export default class Lenis {
     const isWheel = event.type.includes('wheel')
 
     const isTapToStop =
-      this.options.syncTouch && isTouch && event.type === 'touchstart'
+      this.options.syncTouch &&
+      isTouch &&
+      event.type === 'touchstart' &&
+      !this.isStopped &&
+      !this.isLocked
 
     if (isTapToStop) {
       this.reset()
