@@ -192,15 +192,13 @@
     }
   }
 
+  const LINE_HEIGHT = 100 / 6;
+
   class VirtualScroll {
-    constructor(
-      element,
-      { wheelMultiplier = 1, touchMultiplier = 2, normalizeWheel = false }
-    ) {
+    constructor(element, { wheelMultiplier = 1, touchMultiplier = 1 }) {
       this.element = element;
       this.wheelMultiplier = wheelMultiplier;
       this.touchMultiplier = touchMultiplier;
-      this.normalizeWheel = normalizeWheel;
 
       this.touchStart = {
         x: null,
@@ -208,6 +206,8 @@
       };
 
       this.emitter = new Emitter();
+      window.addEventListener('resize', this.onWindowResize, false);
+      this.onWindowResize();
 
       this.element.addEventListener('wheel', this.onWheel, { passive: false });
       this.element.addEventListener('touchstart', this.onTouchStart, {
@@ -229,6 +229,8 @@
     // Remove all event listeners and clean up
     destroy() {
       this.emitter.destroy();
+
+      window.removeEventListener('resize', this.onWindowResize, false);
 
       this.element.removeEventListener('wheel', this.onWheel, {
         passive: false,
@@ -299,22 +301,30 @@
 
     // Event handler for 'wheel' event
     onWheel = (event) => {
-      let { deltaX, deltaY } = event;
+      let { deltaX, deltaY, deltaMode } = event;
 
-      if (this.normalizeWheel) {
-        deltaX = clamp(-100, deltaX, 100);
-        deltaY = clamp(-100, deltaY, 100);
-      }
+      const multiplierX =
+        deltaMode === 1 ? LINE_HEIGHT : deltaMode === 2 ? this.windowWidth : 1;
+      const multiplierY =
+        deltaMode === 1 ? LINE_HEIGHT : deltaMode === 2 ? this.windowHeight : 1;
+
+      deltaX *= multiplierX;
+      deltaY *= multiplierY;
 
       deltaX *= this.wheelMultiplier;
       deltaY *= this.wheelMultiplier;
 
       this.emitter.emit('scroll', { deltaX, deltaY, event });
     }
+
+    onWindowResize = () => {
+      this.windowWidth = window.innerWidth;
+      this.windowHeight = window.innerHeight;
+    }
   }
 
   class Lenis {
-      constructor({ wrapper = window, content = document.documentElement, wheelEventsTarget = wrapper, eventsTarget = wheelEventsTarget, smoothWheel = true, syncTouch = false, syncTouchLerp = 0.075, touchInertiaMultiplier = 35, duration, easing = (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)), lerp = !duration && 0.1, infinite = false, orientation = 'vertical', gestureOrientation = 'vertical', touchMultiplier = 1, wheelMultiplier = 1, normalizeWheel = false, autoResize = true, __experimental__naiveDimensions = false, } = {}) {
+      constructor({ wrapper = window, content = document.documentElement, wheelEventsTarget = wrapper, eventsTarget = wheelEventsTarget, smoothWheel = true, syncTouch = false, syncTouchLerp = 0.075, touchInertiaMultiplier = 35, duration, easing = (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)), lerp = !duration && 0.1, infinite = false, orientation = 'vertical', gestureOrientation = 'vertical', touchMultiplier = 1, wheelMultiplier = 1, autoResize = true, __experimental__naiveDimensions = false, } = {}) {
           this.__isSmooth = false;
           this.__isScrolling = false;
           this.__isStopped = false;
@@ -414,7 +424,6 @@
               orientation,
               touchMultiplier,
               wheelMultiplier,
-              normalizeWheel,
               autoResize,
               __experimental__naiveDimensions,
           };
@@ -432,7 +441,6 @@
           this.virtualScroll = new VirtualScroll(eventsTarget, {
               touchMultiplier,
               wheelMultiplier,
-              normalizeWheel,
           });
           this.virtualScroll.on('scroll', this.onVirtualScroll);
       }

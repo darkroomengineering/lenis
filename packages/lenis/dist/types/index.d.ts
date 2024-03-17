@@ -18,7 +18,6 @@ export type LenisOptions = {
     gestureOrientation?: GestureOrientation;
     touchMultiplier?: number;
     wheelMultiplier?: number;
-    normalizeWheel?: boolean;
     autoResize?: boolean;
     __experimental__naiveDimensions?: boolean;
 };
@@ -27,7 +26,7 @@ export default class Lenis {
     __isScrolling: boolean;
     __isStopped: boolean;
     __isLocked: boolean;
-    constructor({ wrapper, content, wheelEventsTarget, eventsTarget, smoothWheel, syncTouch, syncTouchLerp, touchInertiaMultiplier, duration, easing, lerp, infinite, orientation, gestureOrientation, touchMultiplier, wheelMultiplier, normalizeWheel, autoResize, __experimental__naiveDimensions, }?: LenisOptions);
+    constructor({ wrapper, content, wheelEventsTarget, eventsTarget, smoothWheel, syncTouch, syncTouchLerp, touchInertiaMultiplier, duration, easing, lerp, infinite, orientation, gestureOrientation, touchMultiplier, wheelMultiplier, autoResize, __experimental__naiveDimensions, }?: LenisOptions);
     destroy(): void;
     on(event: string, callback: Function): any;
     off(event: string, callback: Function): any;

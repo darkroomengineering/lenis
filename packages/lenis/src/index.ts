@@ -34,7 +34,6 @@ export type LenisOptions = {
   gestureOrientation?: GestureOrientation
   touchMultiplier?: number
   wheelMultiplier?: number
-  normalizeWheel?: boolean
   autoResize?: boolean
   __experimental__naiveDimensions?: boolean
 }
@@ -62,7 +61,6 @@ export default class Lenis {
     gestureOrientation = 'vertical', // vertical, horizontal, both
     touchMultiplier = 1,
     wheelMultiplier = 1,
-    normalizeWheel = false, // deprecated
     autoResize = true,
     __experimental__naiveDimensions = false,
   }: LenisOptions = {}) {
@@ -90,7 +88,6 @@ export default class Lenis {
       orientation,
       touchMultiplier,
       wheelMultiplier,
-      normalizeWheel,
       autoResize,
       __experimental__naiveDimensions,
     }
@@ -112,7 +109,6 @@ export default class Lenis {
     this.virtualScroll = new VirtualScroll(eventsTarget, {
       touchMultiplier,
       wheelMultiplier,
-      normalizeWheel,
     })
     this.virtualScroll.on('scroll', this.onVirtualScroll)
   }

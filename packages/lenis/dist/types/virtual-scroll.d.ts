@@ -1,13 +1,11 @@
 export class VirtualScroll {
-    constructor(element: any, { wheelMultiplier, touchMultiplier, normalizeWheel }: {
+    constructor(element: any, { wheelMultiplier, touchMultiplier }: {
         wheelMultiplier?: number | undefined;
         touchMultiplier?: number | undefined;
-        normalizeWheel?: boolean | undefined;
     });
     element: any;
     wheelMultiplier: number;
     touchMultiplier: number;
-    normalizeWheel: boolean;
     touchStart: {
         x: null;
         y: null;
@@ -26,5 +24,8 @@ export class VirtualScroll {
     onTouchMove: (event: any) => void;
     onTouchEnd: (event: any) => void;
     onWheel: (event: any) => void;
+    onWindowResize: () => void;
+    windowWidth: number | undefined;
+    windowHeight: number | undefined;
 }
 import { Emitter } from './emitter';

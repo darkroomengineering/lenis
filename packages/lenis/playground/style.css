@@ -131,3 +131,9 @@ button:focus-visible {
     min-width: 20vw;
   }
 }
+
+#observer {
+  height: 50vh;
+  width: 100%;
+  background-color: blue;
+}

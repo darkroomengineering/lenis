@@ -1,15 +1,12 @@
 import { Emitter } from './emitter'
-import { clamp } from './maths'
+
+const LINE_HEIGHT = 100 / 6
 
 export class VirtualScroll {
-  constructor(
-    element,
-    { wheelMultiplier = 1, touchMultiplier = 2, normalizeWheel = false }
-  ) {
+  constructor(element, { wheelMultiplier = 1, touchMultiplier = 1 }) {
     this.element = element
     this.wheelMultiplier = wheelMultiplier
     this.touchMultiplier = touchMultiplier
-    this.normalizeWheel = normalizeWheel
 
     this.touchStart = {
       x: null,
@@ -17,6 +14,8 @@ export class VirtualScroll {
     }
 
     this.emitter = new Emitter()
+    window.addEventListener('resize', this.onWindowResize, false)
+    this.onWindowResize()
 
     this.element.addEventListener('wheel', this.onWheel, { passive: false })
     this.element.addEventListener('touchstart', this.onTouchStart, {
@@ -38,6 +37,8 @@ export class VirtualScroll {
   // Remove all event listeners and clean up
   destroy() {
     this.emitter.destroy()
+
+    window.removeEventListener('resize', this.onWindowResize, false)
 
     this.element.removeEventListener('wheel', this.onWheel, {
       passive: false,
@@ -108,16 +109,24 @@ export class VirtualScroll {
 
   // Event handler for 'wheel' event
   onWheel = (event) => {
-    let { deltaX, deltaY } = event
+    let { deltaX, deltaY, deltaMode } = event
 
-    if (this.normalizeWheel) {
-      deltaX = clamp(-100, deltaX, 100)
-      deltaY = clamp(-100, deltaY, 100)
-    }
+    const multiplierX =
+      deltaMode === 1 ? LINE_HEIGHT : deltaMode === 2 ? this.windowWidth : 1
+    const multiplierY =
+      deltaMode === 1 ? LINE_HEIGHT : deltaMode === 2 ? this.windowHeight : 1
+
+    deltaX *= multiplierX
+    deltaY *= multiplierY
 
     deltaX *= this.wheelMultiplier
     deltaY *= this.wheelMultiplier
 
     this.emitter.emit('scroll', { deltaX, deltaY, event })
+  }
+
+  onWindowResize = () => {
+    this.windowWidth = window.innerWidth
+    this.windowHeight = window.innerHeight
   }
 }
