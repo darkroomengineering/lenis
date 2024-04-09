@@ -11,7 +11,7 @@
     "noEmit": true,
     "allowJs": true,
     "removeComments": true,
-    "resolveJsonModule": true,
+    // "resolveJsonModule": true,
     "outDir": "./dist/types",
     "jsx": "react"
   },

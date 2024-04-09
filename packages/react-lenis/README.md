@@ -6,24 +6,17 @@
 react-lenis provides a `<ReactLenis>` component that creates a [Lenis](https://github.com/darkroomengineering/lenis) instance and provides it to its children via context. This allows you to use Lenis in your React app without worrying about passing the instance down through props. It also provides a `useLenis` hook that allows you to access the Lenis instance from any component in your app.
 
 
-<br/>
-
 ## Installation
 
-For npm users:
-```
+```bash
 npm i @studio-freight/react-lenis
 ```
 
-For yarn users:
-```
-yarn add @studio-freight/react-lenis
-```
-
-
 ## Usage
 
-```js
+### Basic
+
+```jsx
 import { ReactLenis, useLenis } from '@studio-freight/react-lenis'
 
 function Layout() {
@@ -38,15 +31,28 @@ function Layout() {
   )
 }
 ```
-<br/>
+
+### RSC
+```jsx
+// libs/react-lenis.js
+
+'use client'
+
+export * from '@studio-freight/react-lenis'
+```
+
+```jsx
+import { ReactLenis, useLenis } from 'libs/react-lenis'
+```
 
 ## Props
 - `options`: [Lenis options](https://github.com/darkroomengineering/lenis#instance-settings).
 - `root`: Lenis will be instanciate using `<html>` scroll. Default: `false`.
 - `autoRaf`: if `false`, `lenis.raf` needs to be called manually. Default: `true`.
-- `rAFpriority`: [Tempus](https://github.com/studio-freight/tempus#readme) execution priority. Default: `0`.
+- `rafPriority`: [Tempus](https://github.com/studio-freight/tempus#readme) execution priority. Default: `0`.
+- `className`: Class name for the wrapper div. Default: `''`.
 
-<br/>
+
 
 ## Hooks
 Once the Lenis context is set (components mounted inside `<ReactLenis>`) you can use these handy hooks:
@@ -62,7 +68,7 @@ The hook takes three argument:
 
 GSAP integration
 
-```js
+```jsx
 function Component() {
   const lenisRef = useRef()
   
@@ -87,7 +93,6 @@ function Component() {
 ```
 
 
-<br/>
 
 ## @studio-freight/react-lenis in use
 
