@@ -20,11 +20,21 @@ import React, {
 import { create } from 'zustand'
 import { version } from '../package.json'
 
+type LenisEventHandler = (lenis: Lenis) => void;
+interface LenisContextValue {
+  lenis: Lenis;
+  addCallback: (handler: LenisEventHandler, priority: number) => void;
+  removeCallback: (handler: LenisEventHandler) => void;
+}
+
+declare global {
+  interface Window { reactLenisVersion: string; }
+}
 if (typeof window !== 'undefined') window.reactLenisVersion = version
 
-export const LenisContext = createContext() as Lenis | null
+export const LenisContext = createContext<LenisContextValue | null>(null);
 
-const useRoot = create(() => ({}))
+const useRoot = create<Partial<LenisContextValue>>(() => ({}))
 
 function useCurrentLenis() {
   const local = useContext(LenisContext)
@@ -35,7 +45,7 @@ function useCurrentLenis() {
 
 export function useLenis(
   callback?: (lenis: Lenis) => void,
-  deps?: Array<any> = [],
+  deps: Array<any> = [],
   priority = 0
 ): Lenis | undefined {
   const { lenis, addCallback, removeCallback } = useCurrentLenis()
@@ -90,19 +100,22 @@ const ReactLenis: ForwardRefComponent<Props, LenisRef> = forwardRef<
     }: Props,
     ref
   ) => {
-    const wrapperRef = useRef()
-    const contentRef = useRef()
+    const wrapperRef = useRef<HTMLDivElement | null>(null)
+    const contentRef = useRef<HTMLDivElement | null>(null)
 
-    const [lenis, setLenis] = useState()
+    const [lenis, setLenis] = useState<Lenis | undefined>(undefined);
 
-    const callbacksRefs = useRef([])
+    const callbacksRefs = useRef<{
+      callback: LenisEventHandler,
+      priority: number,
+    }[]>([])
 
-    const addCallback = useCallback((callback, priority) => {
+    const addCallback: LenisContextValue["addCallback"] = useCallback((callback, priority) => {
       callbacksRefs.current.push({ callback, priority })
       callbacksRefs.current.sort((a, b) => a.priority - b.priority)
     }, [])
 
-    const removeCallback = useCallback((callback) => {
+    const removeCallback: LenisContextValue["removeCallback"] = useCallback((callback) => {
       callbacksRefs.current = callbacksRefs.current.filter(
         (cb) => cb.callback !== callback
       )
@@ -111,8 +124,8 @@ const ReactLenis: ForwardRefComponent<Props, LenisRef> = forwardRef<
     useImperativeHandle(
       ref,
       () => ({
-        wrapper: wrapperRef.current,
-        content: contentRef.current,
+        wrapper: wrapperRef.current!,
+        content: contentRef.current!,
         lenis,
       }),
       [lenis]
@@ -122,8 +135,8 @@ const ReactLenis: ForwardRefComponent<Props, LenisRef> = forwardRef<
       const lenis = new Lenis({
         ...options,
         ...(!root && {
-          wrapper: wrapperRef.current,
-          content: contentRef.current,
+          wrapper: wrapperRef.current!,
+          content: contentRef.current!,
         }),
       })
 
@@ -135,7 +148,7 @@ const ReactLenis: ForwardRefComponent<Props, LenisRef> = forwardRef<
       }
     }, [root, JSON.stringify(options)])
 
-    useFrame((time) => {
+    useFrame((time: number) => {
       if (autoRaf) {
         lenis?.raf(time)
       }
@@ -147,9 +160,9 @@ const ReactLenis: ForwardRefComponent<Props, LenisRef> = forwardRef<
       }
     }, [root, lenis, addCallback, removeCallback])
 
-    const onScroll = useCallback((e) => {
+    const onScroll = useCallback((lenisInstance: Lenis) => {
       for (let i = 0; i < callbacksRefs.current.length; i++) {
-        callbacksRefs.current[i].callback(e)
+        callbacksRefs.current[i].callback(lenisInstance)
       }
     }, [])
 
@@ -178,7 +191,7 @@ const ReactLenis: ForwardRefComponent<Props, LenisRef> = forwardRef<
     }, [lenis, onClassNameChange])
 
     return (
-      <LenisContext.Provider value={{ lenis, addCallback, removeCallback }}>
+      <LenisContext.Provider value={{ lenis: lenis!, addCallback, removeCallback }}>
         {root ? (
           children
         ) : (
