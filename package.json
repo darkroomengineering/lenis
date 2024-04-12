@@ -6,8 +6,8 @@
     "packages/*"
   ],
   "scripts": {
-    "dev:lenis": "npm run dev --prefix ./packages/lenis",
-    "dev:react-lenis": "npm run dev --prefix ./packages/react-lenis"
+    "dev:lenis": "npm run dev --prefix ./packages/core",
+    "dev:react": "npm run dev --prefix ./packages/react"
   },
   "devDependencies": {
     "@babel/core": "^7.23.6",

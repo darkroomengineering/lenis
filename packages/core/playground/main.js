@@ -1,7 +1,10 @@
-import Lenis from '../dist/lenis.mjs'
+// import Lenis from '../dist/lenis.mjs'
+import Lenis from '@studio-freight/lenis-test'
 import { setupCounter } from './counter.js'
 // import './jank.js'
 import './style.css'
+
+console.log('Lenis', Lenis)
 
 const lenis = new Lenis({
   smoothWheel: true,

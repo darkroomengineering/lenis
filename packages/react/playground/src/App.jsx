@@ -1,8 +1,12 @@
 import { useState } from 'react'
-import ReactLenis, { useLenis } from '../../dist/react-lenis.mjs'
+// import ReactLenis, { useLenis } from '../../dist/react-lenis.mjs'
+import ReactLenis, { useLenis } from '@studio-freight/lenis-test/react'
 import './App.css'
 import reactLogo from './assets/react.svg'
 import viteLogo from '/vite.svg'
+
+console.log('ReactLenis', ReactLenis)
+console.log('useLenis', useLenis)
 
 function App() {
   const [count, setCount] = useState(0)

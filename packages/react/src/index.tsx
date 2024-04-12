@@ -1,8 +1,8 @@
 'use client'
 
 import { useFrame } from '@studio-freight/hamo'
-import Lenis, { LenisOptions } from '@studio-freight/lenis'
 import cn from 'clsx'
+import Lenis, { LenisOptions } from 'core/src/index.ts'
 import React, {
   ForwardRefExoticComponent,
   PropsWithoutRef,
@@ -18,22 +18,13 @@ import React, {
   useState,
 } from 'react'
 import { create } from 'zustand'
-import { version } from '../package.json'
+// import Lenis, { LenisOptions } from '../test.ts'
 
 type LenisEventHandler = (lenis: Lenis) => void
 interface LenisContextValue {
   lenis: Lenis
   addCallback: (handler: LenisEventHandler, priority: number) => void
   removeCallback: (handler: LenisEventHandler) => void
-}
-
-declare global {
-  interface Window {
-    reactLenisVersion: string
-  }
-}
-if (typeof window !== 'undefined') {
-  window.reactLenisVersion = version
 }
 
 export const LenisContext = createContext<LenisContextValue | null>(null)
@@ -222,5 +213,6 @@ const ReactLenis: ForwardRefComponent<Props, LenisRef> = forwardRef<
   }
 )
 
-export { ReactLenis as Lenis, ReactLenis }
-export default ReactLenis
+eexport { ReactLenis as Lenis, ReactLenis }
+xport default ReactLenisexport { ReactLenis as Lenis, ReactLenis }
+

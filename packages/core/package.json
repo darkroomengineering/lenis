@@ -1,6 +1,8 @@
 {
-  "name": "@studio-freight/react-lenis",
-  "version": "0.0.47",
+  "name": "@studio-freight/lenis",
+  "version": "1.0.42",
+  "description": "Lenis is a smooth scroll library to normalize and smooth the scrolling experience across devices",
+  "license": "MIT",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/darkroomengineering/lenis.git"
@@ -16,18 +18,19 @@
     "playground": "npm run dev --prefix ./playground",
     "build": "rollup --bundleConfigAsCjs -c",
     "watch": "rollup --bundleConfigAsCjs -c -w",
+    "readme": "node update-readme.js",
     "git:commit": "git add -A && cross-var git commit -m \"$npm_package_name@$npm_package_version\"",
     "git:tag": "cross-var git tag -a $npm_package_name@$npm_package_version -m \"$npm_package_name@$npm_package_version\"",
     "git:push": "git push && git push --tags",
-    "postversion": "npm-run-all build git:commit git:tag git:push",
+    "postversion": "npm-run-all build readme git:commit git:tag git:push",
     "patch:latest": "yarn version --no-git-tag-version --patch",
     "patch:dev": "yarn version --no-git-tag-version --prerelease --preid dev"
   },
   "sideEffects": false,
-  "source": "src/index.jsx",
-  "main": "dist/react-lenis.umd.js",
-  "unpkg": "dist/react-lenis.umd.js",
-  "module": "dist/react-lenis.mjs",
+  "source": "src/index.js",
+  "main": "dist/lenis.umd.js",
+  "unpkg": "dist/lenis.min.js",
+  "module": "dist/lenis.mjs",
   "types": "dist/types/index.d.ts",
   "exports": {
     "./types": "./dist/types/index.d.ts",
@@ -35,24 +38,12 @@
     ".": {
       "import": {
         "types": "./dist/types/index.d.ts",
-        "default": "./dist/react-lenis.mjs"
+        "default": "./dist/lenis.mjs"
       },
       "require": {
         "types": "./dist/types/index.d.ts",
-        "default": "./dist/react-lenis.cjs.js"
+        "default": "./dist/lenis.cjs.js"
       }
     }
-  },
-  "dependencies": {
-    "@studio-freight/hamo": "^0.6.28",
-    "@studio-freight/lenis": "^1.0.40",
-    "@types/react": "^18.0.0",
-    "clsx": "^2.0.0",
-    "react": "^18.0.0",
-    "zustand": "^4.4.7"
-  },
-  "peerDependencies": {
-    "react": "^17 || ^18",
-    "react-dom": "^17 || ^18"
   }
 }

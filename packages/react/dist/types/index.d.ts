@@ -1,15 +1,10 @@
-import Lenis, { LenisOptions } from '@studio-freight/lenis';
 import React, { ForwardRefExoticComponent, PropsWithoutRef, ReactNode, RefAttributes } from 'react';
+import Lenis, { LenisOptions } from 'core/src/index.ts';
 type LenisEventHandler = (lenis: Lenis) => void;
 interface LenisContextValue {
     lenis: Lenis;
     addCallback: (handler: LenisEventHandler, priority: number) => void;
     removeCallback: (handler: LenisEventHandler) => void;
-}
-declare global {
-    interface Window {
-        reactLenisVersion: string;
-    }
 }
 export declare const LenisContext: React.Context<LenisContextValue | null>;
 export declare function useLenis(callback?: (lenis: Lenis) => void, deps?: Array<any>, priority?: number): Lenis | undefined;

@@ -1,5 +1,10 @@
 {
   "compilerOptions": {
+    // "baseUrl": "./",
+    "paths": {
+      "core/*": ["../core/"]
+      // "../../core/*": ["../core"]
+    },
     "target": "ES2015",
     "module": "esnext",
     "lib": ["dom", "esnext"],
@@ -11,10 +16,12 @@
     "noEmit": true,
     "allowJs": true,
     "removeComments": true,
+    // "allowImportingTsExtensions": true,
     // "resolveJsonModule": true,
     "outDir": "./dist/types",
     "jsx": "react"
   },
-  "include": ["src/index.tsx"],
+  // "include": ["**/*", "../core/src/index.ts"],
+  // "include": ["test.ts"],
   "exclude": ["node_modules"]
 }
