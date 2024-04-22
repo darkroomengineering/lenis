@@ -3,6 +3,9 @@
   "scripts": {
     "build": "npm-run-all build:rollup rename:types",
     "build:rollup": "rollup --bundleConfigAsCjs -c",
-    "rename:types": "move-file ../../dist/index.d.ts ../../dist/lenis.d.ts"
+    "watch": "npm-run-all playground watch:rollup rename:types",
+    "watch:rollup": "rollup --bundleConfigAsCjs -c -w",
+    "rename:types": "move-file ../../dist/index.d.ts ../../dist/lenis.d.ts",
+    "playground": "npm run dev --prefix ./playground"
   }
 }

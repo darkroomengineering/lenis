@@ -23,6 +23,8 @@
   ],
   "type": "module",
   "scripts": {
+    "watch:core": "npm run watch --prefix ./packages/core",
+    "watch:react": "npm run watch --prefix ./packages/react",
     "build:core": "npm run build --prefix ./packages/core",
     "build:react": "npm run build --prefix ./packages/react",
     "build": "npm-run-all clean build:core build:react",
