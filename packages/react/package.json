@@ -5,6 +5,6 @@
     "rename:types": "move-file ../../dist/index.d.ts ../../dist/lenis-react.d.ts"
   },
   "dependencies": {
-    "@studio-freight/lenis-test": "workspace:lenis*"
+    "lenis": "workspace:lenis*"
   }
 }

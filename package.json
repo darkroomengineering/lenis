@@ -1,6 +1,6 @@
 {
-  "name": "@studio-freight/lenis-test",
-  "version": "0.0.8",
+  "name": "lenis",
+  "version": "1.0.42",
   "author": "darkroom.engineering",
   "license": "MIT",
   "repository": {
@@ -76,7 +76,7 @@
     }
   },
   "dependencies": {
-    "@studio-freight/hamo": "^0.6.32",
+    "@darkroom.engineering/hamo": "^0.6.35",
     "clsx": "^2.1.0",
     "zustand": "^4.5.2"
   }

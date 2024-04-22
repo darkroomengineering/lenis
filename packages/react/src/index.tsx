@@ -1,8 +1,8 @@
 'use client'
 
 import { useFrame } from '@darkroom.engineering/hamo'
-import Lenis, { LenisOptions } from '@studio-freight/lenis-test'
 import cn from 'clsx'
+import Lenis, { LenisOptions } from 'lenis'
 import {
   ForwardRefExoticComponent,
   PropsWithoutRef,

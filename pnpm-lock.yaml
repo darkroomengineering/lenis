@@ -8,9 +8,9 @@ importers:
 
   .:
     dependencies:
-      '@studio-freight/hamo':
-        specifier: ^0.6.32
-        version: 0.6.32(react-dom@18.2.0)(react@18.2.0)
+      '@darkroom.engineering/hamo':
+        specifier: ^0.6.35
+        version: 0.6.35(react-dom@18.2.0)(react@18.2.0)
       clsx:
         specifier: ^2.1.0
         version: 2.1.0
@@ -68,7 +68,7 @@ importers:
 
   packages/react:
     dependencies:
-      '@studio-freight/lenis-test':
+      lenis:
         specifier: workspace:lenis*
         version: link:../..
 
@@ -99,6 +99,23 @@ packages:
       js-tokens: 4.0.0
       picocolors: 1.0.0
     dev: true
+
+  /@darkroom.engineering/hamo@0.6.35(react-dom@18.2.0)(react@18.2.0):
+    resolution: {integrity: sha512-KE+tIfly4FLGkbPNeVvuiVbiMHhjcDqSy/gNLujG1vgzCfRhCpfCcHpqoBUCnuuv71F79Ky7CGivgHAmaJzGrA==}
+    peerDependencies:
+      react: ^18.2.0
+      react-dom: ^18.2.0
+    dependencies:
+      '@darkroom.engineering/tempus': 0.0.46
+      just-debounce-it: 3.2.0
+      nanoevents: 9.0.0
+      react: 18.2.0
+      react-dom: 18.2.0(react@18.2.0)
+    dev: false
+
+  /@darkroom.engineering/tempus@0.0.46:
+    resolution: {integrity: sha512-s5vav3KMHYezvUCl4ee5epg0oimF6M8C9gAaKxFnFaTvX2q3ywFDryIv6XLd0mRFUt3S1uHDJqKaiEcs2ZVSvw==}
+    dev: false
 
   /@isaacs/cliui@8.0.2:
     resolution: {integrity: sha512-O8jcjabXaleOG9DQ0+ARXWZBTfnP4WNAqzuiJK7ll44AmxGKv/J2M4TPjxjY3znBCfvBXFzucm1twdyFybFqEA==}
@@ -382,23 +399,6 @@ packages:
     requiresBuild: true
     dev: true
     optional: true
-
-  /@studio-freight/hamo@0.6.32(react-dom@18.2.0)(react@18.2.0):
-    resolution: {integrity: sha512-sSEOH91R6p2PfsMyN2xeGFWOnPRGp+Yl1Uz6uU2kuPDD6auYIWFOChzFTR7aLS+TBWIi3hodBAZhs176t+6awA==}
-    peerDependencies:
-      react: ^18.2.0
-      react-dom: ^18.2.0
-    dependencies:
-      '@studio-freight/tempus': 0.0.38
-      just-debounce-it: 3.2.0
-      nanoevents: 9.0.0
-      react: 18.2.0
-      react-dom: 18.2.0(react@18.2.0)
-    dev: false
-
-  /@studio-freight/tempus@0.0.38:
-    resolution: {integrity: sha512-AO1O2fEmfUqWGjEofmPNMQRlwgZ96eB5OFsVJjeH8/RKd1/Yf4zbPnXO+r2TD4aueA6X9JRCJU2GUprI9+m8uQ==}
-    dev: false
 
   /@types/estree@1.0.5:
     resolution: {integrity: sha512-/kYRxGDLWzHOB7q+wtSUQlFrtcdUccpfy+X+9iMBpHK8QLLhx2wIPYuS5DYtR9Wa/YlZAbIovy7qVdB1Aq6Lyw==}

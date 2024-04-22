@@ -1,10 +1,10 @@
 [![LENIS](https://assets.darkroom.engineering/lenis/header.png)](https://github.com/darkroomengineering/lenis)
 
 [![npm](https://img.shields.io/npm/v/%40studio-freight%2Flenis?colorA=000000&colorB=ff98a2
-)](https://www.npmjs.com/package/@studio-freight/lenis)
+)](https://www.npmjs.com/package/lenis)
 [![downloads](https://img.shields.io/npm/dm/%40studio-freight%2Flenis?colorA=000000&colorB=ff98a2
-)](https://www.npmjs.com/package/@studio-freight/lenis)
-[![size](https://img.shields.io/bundlephobia/minzip/@studio-freight/lenis?label=size&colorA=000000&colorB=ff98a2)](https://bundlephobia.com/package/@studio-freight/lenis)
+)](https://www.npmjs.com/package/lenis)
+[![size](https://img.shields.io/bundlephobia/minzip/lenis?label=size&colorA=000000&colorB=ff98a2)](https://bundlephobia.com/package/lenis)
 
 ## Introduction
 
@@ -30,7 +30,7 @@ import Lenis from 'lenis'
 using scripts:
 
 ```html
-<script src="https://unpkg.com/lenis@0.0.9/dist/lenis.min.js"></script> 
+<script src="https://unpkg.com/lenis@0.1.1/dist/lenis.min.js"></script> 
 ```
 
 

@@ -94,10 +94,9 @@ function Component() {
 
 
 
-## @studio-freight/react-lenis in use
+## lenis/react in use
 
-- [@studio-freight/compono](https://github.com/studio-freight/compono) Our Next.js/React component library.
-- [@studio-freight/satus](https://github.com/studio-freight/satus) Our starter kit.
+- [@darkroom.engineering/satus](https://github.com/darkroomengineering/satus) Our starter kit.
 
 <br/>
 

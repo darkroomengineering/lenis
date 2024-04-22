@@ -22,7 +22,7 @@ export default [
       'react',
       'react-dom',
       'react/jsx-runtime',
-      '@studio-freight/lenis-test',
+      'lenis',
       '@darkroom.engineering/hamo',
       'clsx',
       'zustand',
