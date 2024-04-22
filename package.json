@@ -1,6 +1,6 @@
 {
   "name": "lenis",
-  "version": "1.0.43",
+  "version": "1.0.44",
   "author": "darkroom.engineering",
   "license": "MIT",
   "repository": {
@@ -28,10 +28,10 @@
     "build": "npm-run-all clean build:core build:react",
     "clean": "rimraf dist",
     "readme": "node update-readme.js",
-    "version:dev": "npm version prepatch --preid dev --force --no-git-tag-version",
-    "version:patch": "npm version patch --force --no-git-tag-version",
-    "version:minor": "npm version minor --force --no-git-tag-version",
-    "version:major": "npm version major --force --no-git-tag-version",
+    "version:dev": "npm version prepatch --preid dev --force",
+    "version:patch": "npm version patch --force",
+    "version:minor": "npm version minor --force",
+    "version:major": "npm version major --force",
     "postversion": "npm-run-all build readme",
     "publish": "npm publish",
     "publish:dev": "npm publish --tag dev"
