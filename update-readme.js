@@ -28,6 +28,6 @@ function updateVersion() {
   })
 }
 
-if (!packageJson.version.includes('-dev')) {
-  updateVersion()
-}
+// if (!packageJson.version.includes('-dev')) {
+updateVersion()
+// }
