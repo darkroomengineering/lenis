@@ -22,7 +22,7 @@ export default function Docs() {
       wrapper: document.querySelector('#wrapper'),
       content: document.querySelector('#content'),
       // wheelEventsTarget: window,
-      autoResize: false,
+      // autoResize: false,
     })
     setLenis(lenis)
 
