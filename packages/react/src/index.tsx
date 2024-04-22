@@ -1,9 +1,9 @@
 'use client'
 
-import { useFrame } from '@studio-freight/hamo'
+import { useFrame } from '@darkroom.engineering/hamo'
+import Lenis, { LenisOptions } from '@studio-freight/lenis-test'
 import cn from 'clsx'
-import Lenis, { LenisOptions } from 'core/src/index.ts'
-import React, {
+import {
   ForwardRefExoticComponent,
   PropsWithoutRef,
   ReactNode,
@@ -18,7 +18,6 @@ import React, {
   useState,
 } from 'react'
 import { create } from 'zustand'
-// import Lenis, { LenisOptions } from '../test.ts'
 
 type LenisEventHandler = (lenis: Lenis) => void
 interface LenisContextValue {
@@ -213,6 +212,5 @@ const ReactLenis: ForwardRefComponent<Props, LenisRef> = forwardRef<
   }
 )
 
-eexport { ReactLenis as Lenis, ReactLenis }
-xport default ReactLenisexport { ReactLenis as Lenis, ReactLenis }
-
+export { ReactLenis as Lenis, ReactLenis }
+export default ReactLenis

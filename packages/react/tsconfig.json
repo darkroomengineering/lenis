@@ -1,27 +1,13 @@
 {
   "compilerOptions": {
-    // "baseUrl": "./",
-    "paths": {
-      "core/*": ["../core/"]
-      // "../../core/*": ["../core"]
-    },
-    "target": "ES2015",
-    "module": "esnext",
-    "lib": ["dom", "esnext"],
-    "esModuleInterop": true,
-    "strict": true,
+    "outDir": "../../dist",
     "declaration": true,
-    "declarationDir": "./dist/types",
+    "jsx": "react-jsx",
     "moduleResolution": "node",
-    "noEmit": true,
-    "allowJs": true,
-    "removeComments": true,
-    // "allowImportingTsExtensions": true,
-    // "resolveJsonModule": true,
-    "outDir": "./dist/types",
-    "jsx": "react"
-  },
-  // "include": ["**/*", "../core/src/index.ts"],
-  // "include": ["test.ts"],
-  "exclude": ["node_modules"]
+    "module": "esnext",
+    "target": "ES2015",
+    "strict": true,
+    // "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true
+  }
 }

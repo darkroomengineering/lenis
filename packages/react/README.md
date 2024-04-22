@@ -9,7 +9,7 @@ react-lenis provides a `<ReactLenis>` component that creates a [Lenis](https://g
 ## Installation
 
 ```bash
-npm i @studio-freight/react-lenis
+npm i lenis
 ```
 
 ## Usage
@@ -17,7 +17,7 @@ npm i @studio-freight/react-lenis
 ### Basic
 
 ```jsx
-import { ReactLenis, useLenis } from '@studio-freight/react-lenis'
+import { ReactLenis, useLenis } from 'lenis/react'
 
 function Layout() {
   const lenis = useLenis(({ scroll }) => {
@@ -34,15 +34,15 @@ function Layout() {
 
 ### RSC
 ```jsx
-// libs/react-lenis.js
+// libs/lenis.js
 
 'use client'
 
-export * from '@studio-freight/react-lenis'
+export * from 'lenis/react'
 ```
 
 ```jsx
-import { ReactLenis, useLenis } from 'libs/react-lenis'
+import { ReactLenis, useLenis } from 'libs/lenis'
 ```
 
 ## Props

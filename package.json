@@ -1,30 +1,83 @@
 {
-  "name": "lenis-monorepo",
-  "version": "0.0.1",
-  "private": true,
-  "workspaces": [
-    "packages/*"
-  ],
-  "scripts": {
-    "dev:lenis": "npm run dev --prefix ./packages/core",
-    "dev:react": "npm run dev --prefix ./packages/react"
+  "name": "@studio-freight/lenis-test",
+  "version": "0.0.8",
+  "author": "darkroom.engineering",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/darkroomengineering/lenis.git"
   },
+  "bugs": {
+    "url": "https://github.com/darkroomengineering/lenis/issues"
+  },
+  "homepage": "https://github.com/darkroomengineering/lenis",
+  "funding": {
+    "type": "github",
+    "url": "https://github.com/sponsors/darkroomengineering"
+  },
+  "keywords": [
+    "scroll",
+    "smooth",
+    "lenis",
+    "react"
+  ],
+  "type": "module",
+  "scripts": {
+    "build:core": "npm run build --prefix ./packages/core",
+    "build:react": "npm run build --prefix ./packages/react",
+    "build": "npm-run-all clean build:core build:react",
+    "clean": "rimraf dist",
+    "readme": "node update-readme.js",
+    "version:dev": "npm version prepatch --preid dev --force --no-git-tag-version",
+    "version:patch": "npm version patch --force --no-git-tag-version",
+    "version:minor": "npm version minor --force --no-git-tag-version",
+    "version:major": "npm version major --force --no-git-tag-version",
+    "postversion": "npm-run-all build readme",
+    "publish": "npm publish",
+    "publish:dev": "npm publish --tag dev"
+  },
+  "files": [
+    "dist"
+  ],
   "devDependencies": {
-    "@babel/core": "^7.23.6",
-    "@babel/preset-react": "^7.23.3",
-    "@rollup/plugin-babel": "^6.0.4",
     "@rollup/plugin-commonjs": "^25.0.7",
     "@rollup/plugin-json": "^6.1.0",
     "@rollup/plugin-node-resolve": "^15.2.3",
-    "@rollup/plugin-replace": "^5.0.5",
     "@rollup/plugin-terser": "^0.4.4",
-    "@rollup/plugin-typescript": "^11.1.5",
-    "@rollup/pluginutils": "^5.1.0",
-    "cross-var": "^1.1.0",
+    "@rollup/plugin-typescript": "^11.1.6",
+    "@types/react": "^18.2.77",
+    "move-file-cli": "^3.0.0",
     "npm-run-all": "^4.1.5",
-    "rollup": "^4.9.1",
-    "rollup-plugin-preserve-directives": "^0.2.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "rimraf": "^5.0.5",
+    "rollup": "^4.14.2",
+    "rollup-plugin-dts": "^6.1.0",
     "tslib": "^2.6.2",
-    "typescript": "^5.3.3"
+    "typescript": "^5.4.5"
+  },
+  "peerDependencies": {
+    "react": ">=17.0.0",
+    "react-dom": ">=17.0.0"
+  },
+  "sideEffects": false,
+  "unpkg": "./dist/lenis.mjs",
+  "main": "./dist/lenis.mjs",
+  "module": "./dist/lenis.mjs",
+  "types": "./dist/lenis.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/lenis.d.ts",
+      "default": "./dist/lenis.mjs"
+    },
+    "./react": {
+      "types": "./dist/lenis-react.d.ts",
+      "default": "./dist/lenis-react.mjs"
+    }
+  },
+  "dependencies": {
+    "@studio-freight/hamo": "^0.6.32",
+    "clsx": "^2.1.0",
+    "zustand": "^4.5.2"
   }
 }

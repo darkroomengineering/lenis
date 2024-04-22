@@ -4,26 +4,12 @@ import typescript from '@rollup/plugin-typescript'
 
 export default [
   {
-    input: 'src/index.ts',
+    input: './src/index.ts',
     output: [
       {
-        file: 'dist/lenis.cjs.js',
-        format: 'cjs',
-        strict: true,
-        name: 'Lenis',
-        sourcemap: true,
-        exports: 'auto',
-        plugins: [
-          terser({
-            keep_classnames: true,
-          }),
-        ],
-      },
-      {
-        file: 'dist/lenis.mjs',
+        file: '../../dist/lenis.mjs',
         format: 'esm',
         strict: true,
-        name: 'Lenis',
         sourcemap: true,
         plugins: [
           terser({
@@ -32,11 +18,11 @@ export default [
         ],
       },
       {
-        file: 'dist/lenis.umd.js',
+        file: '../../dist/lenis.min.js',
         format: 'umd',
         strict: true,
-        name: 'Lenis',
         sourcemap: true,
+        name: 'Lenis',
         plugins: [
           terser({
             keep_classnames: true,
@@ -44,24 +30,11 @@ export default [
         ],
       },
       {
-        file: 'dist/lenis.js',
+        file: '../../dist/lenis.js',
         format: 'umd',
         strict: true,
+        sourcemap: true,
         name: 'Lenis',
-        sourcemap: false,
-      },
-      {
-        file: 'dist/lenis.min.js',
-        format: 'umd',
-        strict: true,
-        name: 'Lenis',
-        sourcemap: false,
-        plugins: [
-          terser({
-            module: true,
-            keep_classnames: true,
-          }),
-        ],
       },
     ],
     plugins: [

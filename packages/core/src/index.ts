@@ -1,4 +1,4 @@
-import { version } from '../package.json'
+import { version } from '../../../package.json'
 import { Animate } from './animate'
 import { Dimensions } from './dimensions'
 import { Emitter } from './emitter'

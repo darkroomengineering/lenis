@@ -1,57 +1,10 @@
 {
-  "name": "@studio-freight/react-lenis",
-  "version": "0.0.47",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/darkroomengineering/lenis.git"
-  },
-  "bugs": {
-    "url": "https://github.com/darkroomengineering/lenis/issues"
-  },
-  "files": [
-    "dist"
-  ],
   "scripts": {
-    "dev": "npm-run-all --parallel watch playground",
-    "playground": "npm run dev --prefix ./playground",
-    "build": "rollup --bundleConfigAsCjs -c",
-    "watch": "rollup --bundleConfigAsCjs -c -w",
-    "git:commit": "git add -A && cross-var git commit -m \"$npm_package_name@$npm_package_version\"",
-    "git:tag": "cross-var git tag -a $npm_package_name@$npm_package_version -m \"$npm_package_name@$npm_package_version\"",
-    "git:push": "git push && git push --tags",
-    "postversion": "npm-run-all build git:commit git:tag git:push",
-    "patch:latest": "yarn version --no-git-tag-version --patch",
-    "patch:dev": "yarn version --no-git-tag-version --prerelease --preid dev"
+    "build": "npm-run-all build:rollup rename:types",
+    "build:rollup": "rollup --bundleConfigAsCjs -c",
+    "rename:types": "move-file ../../dist/index.d.ts ../../dist/lenis-react.d.ts"
   },
-  "sideEffects": false,
-  "source": "src/index.jsx",
-  "main": "dist/react-lenis.umd.js",
-  "unpkg": "dist/react-lenis.umd.js",
-  "module": "dist/react-lenis.mjs",
-  "types": "dist/types/index.d.ts",
-  "exports": {
-    "./types": "./dist/types/index.d.ts",
-    "./package.json": "./package.json",
-    ".": {
-      "import": {
-        "types": "./dist/types/index.d.ts",
-        "default": "./dist/react-lenis.mjs"
-      },
-      "require": {
-        "types": "./dist/types/index.d.ts",
-        "default": "./dist/react-lenis.cjs.js"
-      }
-    }
-  },
-  "devDependencies": {
-    "@studio-freight/hamo": "^0.6.28",
-    "@types/react": "^18.0.0",
-    "clsx": "^2.0.0",
-    "react": "^18.0.0",
-    "zustand": "^4.4.7"
-  },
-  "peerDependencies": {
-    "react": "^17 || ^18",
-    "react-dom": "^17 || ^18"
+  "dependencies": {
+    "@studio-freight/lenis-test": "workspace:lenis*"
   }
 }

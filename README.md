@@ -19,10 +19,10 @@ This is our take on smooth scroll, lightweight, hard-working, smooth as butter s
 using a package manager:
 
 ```bash
-npm i @studio-freight/lenis
+npm i lenis
 ```
 ```js
-import Lenis from '@studio-freight/lenis'
+import Lenis from 'lenis'
 ```
 
 <br/>
@@ -30,7 +30,7 @@ import Lenis from '@studio-freight/lenis'
 using scripts:
 
 ```html
-<script src="https://unpkg.com/@studio-freight/lenis@1.0.42/dist/lenis.min.js"></script> 
+<script src="https://unpkg.com/lenis@0.0.9/dist/lenis.min.js"></script> 
 ```
 
 
@@ -73,7 +73,7 @@ gsap.ticker.lagSmoothing(0)
 ```
 
 ### React:
-See documentation for [react-lenis](https://github.com/darkroomengineering/lenis/tree/main/packages/react-lenis).
+See documentation for [lenis/react](https://github.com/darkroomengineering/lenis/tree/main/packages/react-lenis).
 
 
 
