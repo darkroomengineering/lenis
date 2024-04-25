@@ -257,14 +257,30 @@ export default class Lenis {
   }
 
   private onNativeScroll = () => {
-    if (this.__preventNextScrollEvent) return
+    if (this.__preventNextNativeScrollEvent) {
+      delete this.__preventNextNativeScrollEvent
+      return
+    }
 
     if (!this.isScrolling) {
       const lastScroll = this.animatedScroll
       this.animatedScroll = this.targetScroll = this.actualScroll
-      this.velocity = 0
+      this.velocity = this.animatedScroll - lastScroll
       this.direction = Math.sign(this.animatedScroll - lastScroll)
+      this.isNativeScroll = true
       this.emit()
+      // console.time('reset velocity')
+
+      // cancelAnimationFrame(this.test)
+      // clearTimeout(this.test)
+
+      // this.test = setTimeout(() => {
+      //   requestAnimationFrame(() => {
+      //     console.timeEnd('reset velocity')
+      //     this.velocity = 0
+      //     this.emit()
+      //   })
+      // }, 0)
     }
   }
 
@@ -375,9 +391,9 @@ export default class Lenis {
       return
     }
 
-    if (!programmatic) {
-      if (target === this.targetScroll) return
+    if (target === this.targetScroll) return
 
+    if (!programmatic) {
       this.targetScroll = target
     }
 
@@ -393,6 +409,8 @@ export default class Lenis {
       onUpdate: (value: number, completed: boolean) => {
         this.isScrolling = true
 
+        // console.log('onUpdate', this.animatedScroll, target)
+
         // updated
         this.velocity = value - this.animatedScroll
         this.direction = Math.sign(this.velocity)
@@ -405,6 +423,7 @@ export default class Lenis {
           this.targetScroll = value
         }
 
+        this.isNativeScroll = false
         if (!completed) this.emit()
 
         if (completed) {
@@ -413,10 +432,10 @@ export default class Lenis {
           onComplete?.(this)
 
           // avoid emitting event twice
-          this.__preventNextScrollEvent = true
-          requestAnimationFrame(() => {
-            delete this.__preventNextScrollEvent
-          })
+          this.__preventNextNativeScrollEvent = true
+          // requestAnimationFrame(() => {
+          //   delete this.__preventNextNativeScrollEvent
+          // })
         }
       },
     })
