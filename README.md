@@ -73,7 +73,7 @@ gsap.ticker.lagSmoothing(0)
 ```
 
 ### React:
-See documentation for [lenis/react](https://github.com/darkroomengineering/lenis/tree/main/packages/react-lenis).
+See documentation for [lenis/react](https://github.com/darkroomengineering/lenis/blob/main/packages/react/README.md).
 
 
 
