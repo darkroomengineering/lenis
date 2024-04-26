@@ -1,6 +1,6 @@
 'use client'
 
-import { useFrame } from '@darkroom.engineering/hamo'
+import Tempus from '@darkroom.engineering/tempus'
 import cn from 'clsx'
 import Lenis, { LenisOptions } from 'lenis'
 import {
@@ -150,11 +150,17 @@ const ReactLenis: ForwardRefComponent<Props, LenisRef> = forwardRef<
       }
     }, [root, JSON.stringify(options)])
 
-    useFrame((time: number) => {
-      if (autoRaf) {
+    useEffect(() => {
+      if (!lenis || !autoRaf) return
+
+      const unsubscribe = Tempus.add((time: number) => {
         lenis?.raf(time)
+      }, rafPriority)
+
+      return () => {
+        unsubscribe()
       }
-    }, rafPriority)
+    }, [lenis, autoRaf, rafPriority])
 
     useEffect(() => {
       if (root && lenis) {

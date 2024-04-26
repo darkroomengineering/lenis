@@ -23,7 +23,7 @@ export default [
       'react-dom',
       'react/jsx-runtime',
       'lenis',
-      '@darkroom.engineering/hamo',
+      '@darkroom.engineering/tempus',
       'clsx',
       'zustand',
     ],

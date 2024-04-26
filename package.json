@@ -62,6 +62,14 @@
     "react": ">=17.0.0",
     "react-dom": ">=17.0.0"
   },
+  "peerDependenciesMeta": {
+    "react": {
+      "optional": true
+    },
+    "react-dom": {
+      "optional": true
+    }
+  },
   "sideEffects": false,
   "unpkg": "./dist/lenis.mjs",
   "main": "./dist/lenis.mjs",
@@ -78,7 +86,7 @@
     }
   },
   "dependencies": {
-    "@darkroom.engineering/hamo": "^0.6.35",
+    "@darkroom.engineering/tempus": "^0.0.46",
     "clsx": "^2.1.0",
     "zustand": "^4.5.2"
   }
