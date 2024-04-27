@@ -1,6 +1,6 @@
 {
   "name": "lenis",
-  "version": "1.0.46-dev.0",
+  "version": "1.0.45-dev.1",
   "author": "darkroom.engineering",
   "license": "MIT",
   "repository": {
@@ -30,7 +30,7 @@
     "build": "npm-run-all clean build:core build:react",
     "clean": "shx rm -rf dist/*",
     "readme": "node update-readme.js",
-    "version:dev": "npm version prepatch --preid dev --force",
+    "version:dev": "npm version prerelease --preid dev --force",
     "version:patch": "npm version patch --force",
     "version:minor": "npm version minor --force",
     "version:major": "npm version major --force",
