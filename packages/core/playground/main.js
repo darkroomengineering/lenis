@@ -1,5 +1,5 @@
 import { LoremIpsum } from 'lorem-ipsum'
-import Lenis from '../../../dist/lenis.mjs'
+import Lenis from '../dist/lenis.mjs'
 import './style.css'
 
 document.querySelector('#app').innerHTML = new LoremIpsum().generateParagraphs(

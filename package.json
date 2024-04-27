@@ -23,12 +23,12 @@
   ],
   "type": "module",
   "scripts": {
-    "watch:core": "npm run watch --prefix ./packages/core",
-    "watch:react": "npm run watch --prefix ./packages/react",
+    "dev:core": "npm run dev --prefix ./packages/core",
+    "dev:react": "npm run dev --prefix ./packages/react",
     "build:core": "npm run build --prefix ./packages/core",
     "build:react": "npm run build --prefix ./packages/react",
     "build": "npm-run-all clean build:core build:react",
-    "clean": "rimraf dist",
+    "clean": "shx rm -rf dist/*",
     "readme": "node update-readme.js",
     "version:dev": "npm version prepatch --preid dev --force",
     "version:patch": "npm version patch --force",
@@ -55,6 +55,7 @@
     "rimraf": "^5.0.5",
     "rollup": "^4.14.2",
     "rollup-plugin-dts": "^6.1.0",
+    "shx": "^0.3.4",
     "tslib": "^2.6.2",
     "typescript": "^5.4.5"
   },
@@ -87,7 +88,6 @@
   },
   "dependencies": {
     "@darkroom.engineering/tempus": "^0.0.46",
-    "clsx": "^2.1.0",
-    "zustand": "^4.5.2"
+    "clsx": "^2.1.0"
   }
 }

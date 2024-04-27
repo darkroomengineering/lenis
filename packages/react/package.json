@@ -1,10 +1,9 @@
 {
   "scripts": {
-    "build": "npm-run-all build:rollup rename:types",
-    "build:rollup": "rollup --bundleConfigAsCjs -c",
-    "watch": "npm-run-all playground watch:rollup rename:types",
-    "watch:rollup": "rollup --bundleConfigAsCjs -c -w",
-    "rename:types": "move-file ../../dist/index.d.ts ../../dist/lenis-react.d.ts",
+    "build": "rollup --bundleConfigAsCjs -c",
+    "postbuild": "shx rm -rf ./dist/index.d.ts ./dist/store.d.ts && shx cp -r ./dist/* ../../dist",
+    "dev": "npm-run-all --parallel watch playground",
+    "watch": "rollup --bundleConfigAsCjs -c -w",
     "playground": "npm run dev --prefix ./playground"
   },
   "dependencies": {

@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "outDir": "../../dist",
+    "outDir": "./dist",
     "declaration": true,
     "jsx": "react-jsx",
     "moduleResolution": "node",

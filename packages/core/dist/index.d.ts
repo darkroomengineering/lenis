@@ -1,7 +1,7 @@
 type EasingFunction = (t: number) => number;
 type Orientation = 'vertical' | 'horizontal';
 type GestureOrientation = 'vertical' | 'horizontal' | 'both';
-type LenisOptions = {
+export type LenisOptions = {
     wrapper?: Window | HTMLElement;
     content?: HTMLElement;
     wheelEventsTarget?: Window | HTMLElement;
@@ -21,7 +21,7 @@ type LenisOptions = {
     autoResize?: boolean;
     __experimental__naiveDimensions?: boolean;
 };
-declare class Lenis {
+export default class Lenis {
     __isSmooth: boolean;
     __isScrolling: boolean;
     __isStopped: boolean;
@@ -72,5 +72,4 @@ declare class Lenis {
     get className(): string;
     private toggleClassName;
 }
-
-export { type LenisOptions, Lenis as default };
+export {};

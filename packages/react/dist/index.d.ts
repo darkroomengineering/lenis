@@ -1,15 +1,13 @@
-import * as react from 'react';
-import { ForwardRefExoticComponent, PropsWithoutRef, RefAttributes, ReactNode } from 'react';
 import Lenis, { LenisOptions } from 'lenis';
-
+import { ForwardRefExoticComponent, PropsWithoutRef, ReactNode, RefAttributes } from 'react';
 type LenisEventHandler = (lenis: Lenis) => void;
 interface LenisContextValue {
     lenis: Lenis;
     addCallback: (handler: LenisEventHandler, priority: number) => void;
     removeCallback: (handler: LenisEventHandler) => void;
 }
-declare const LenisContext: react.Context<LenisContextValue | null>;
-declare function useLenis(callback?: (lenis: Lenis) => void, deps?: Array<any>, priority?: number): Lenis | undefined;
+export declare const LenisContext: import("react").Context<LenisContextValue | null>;
+export declare function useLenis(callback?: (lenis: Lenis) => void, deps?: Array<any>, priority?: number): Lenis | undefined;
 type ForwardRefComponent<P, T> = ForwardRefExoticComponent<PropsWithoutRef<P> & RefAttributes<T>>;
 type Props = {
     root?: boolean;
@@ -26,5 +24,5 @@ type LenisRef = {
     lenis?: Lenis;
 };
 declare const ReactLenis: ForwardRefComponent<Props, LenisRef>;
-
-export { ReactLenis as Lenis, LenisContext, ReactLenis, ReactLenis as default, useLenis };
+export { ReactLenis as Lenis, ReactLenis };
+export default ReactLenis;
