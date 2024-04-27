@@ -37,7 +37,7 @@
         return e.name = "SuppressedError", e.error = error, e.suppressed = suppressed, e;
     };
 
-    var version = "1.0.45-dev.0";
+    var version = "1.0.45-dev.1";
 
     // Clamp a value between a minimum and maximum value
     function clamp(min, input, max) {
