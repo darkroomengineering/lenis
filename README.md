@@ -8,7 +8,13 @@
 
 ## Introduction
 
-This is our take on smooth scroll, lightweight, hard-working, smooth as butter scroll. See [Demo](https://lenis.darkroom.engineering/).
+Lenis is a lightweight, robust, and performant smooth scroll library. It's designed by [@darkroom.engineering](https://twitter.com/darkroomdevs) to be simple to use and easy to integrate into your projects. It's built with performance in mind and is optimized for modern browsers. It's perfect for creating smooth scrolling experiences on your website such as webgl scroll synching, parallax effects and much more. See [ Demo](https://lenis.darkroom.engineering/) and [Showcase](#lenis-in-use).
+
+<br/>
+
+## Sponsorship
+
+If you like Lenis, please consider [sponsoring us](https://github.com/sponsors/darkroomengineering). Your support helps us maintain the project and continue to improve it.
 
 <br>
 
