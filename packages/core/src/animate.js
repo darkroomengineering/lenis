@@ -23,12 +23,12 @@ export class Animate {
       this.value = this.from + (this.to - this.from) * easedProgress
     }
 
-    // Call the onUpdate callback with the current value and completed status
-    this.onUpdate?.(this.value, completed)
-
     if (completed) {
       this.stop()
     }
+
+    // Call the onUpdate callback with the current value and completed status
+    this.onUpdate?.(this.value, completed)
   }
 
   // Stop the animation
