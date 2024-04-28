@@ -1,6 +1,6 @@
 'use client'
 
-import { useFrame } from '@darkroom.engineering/hamo'
+import Tempus from '@darkroom.engineering/tempus'
 import cn from 'clsx'
 import Lenis, { LenisOptions } from 'lenis'
 import {
@@ -17,7 +17,7 @@ import {
   useRef,
   useState,
 } from 'react'
-import { create } from 'zustand'
+import { Store, useStore } from './store'
 
 type LenisEventHandler = (lenis: Lenis) => void
 interface LenisContextValue {
@@ -28,13 +28,13 @@ interface LenisContextValue {
 
 export const LenisContext = createContext<LenisContextValue | null>(null)
 
-const useRoot = create<Partial<LenisContextValue>>(() => ({}))
+const rootLenisContextStore = new Store({})
 
 function useCurrentLenis() {
-  const local = useContext(LenisContext)
-  const root = useRoot()
+  const localContext = useContext(LenisContext)
+  const rootContext = useStore(rootLenisContextStore)
 
-  return local ?? root
+  return localContext ?? rootContext
 }
 
 export function useLenis(
@@ -150,15 +150,19 @@ const ReactLenis: ForwardRefComponent<Props, LenisRef> = forwardRef<
       }
     }, [root, JSON.stringify(options)])
 
-    useFrame((time: number) => {
-      if (autoRaf) {
+    useEffect(() => {
+      if (!lenis || !autoRaf) return
+
+      return Tempus.add((time: number) => {
         lenis?.raf(time)
-      }
-    }, rafPriority)
+      }, rafPriority)
+    }, [lenis, autoRaf, rafPriority])
 
     useEffect(() => {
       if (root && lenis) {
-        useRoot.setState({ lenis, addCallback, removeCallback })
+        rootLenisContextStore.set({ lenis, addCallback, removeCallback })
+
+        return () => rootLenisContextStore.set({})
       }
     }, [root, lenis, addCallback, removeCallback])
 

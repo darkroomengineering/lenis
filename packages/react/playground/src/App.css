@@ -40,3 +40,8 @@
 .read-the-docs {
   color: #888;
 }
+
+.lenis {
+  height: 100vh;
+  overflow-y: auto;
+}

@@ -30,7 +30,7 @@ import Lenis from 'lenis'
 using scripts:
 
 ```html
-<script src="https://unpkg.com/lenis@1.0.44/dist/lenis.min.js"></script> 
+<script src="https://unpkg.com/lenis@1.0.45/dist/lenis.min.js"></script> 
 ```
 
 
@@ -73,7 +73,7 @@ gsap.ticker.lagSmoothing(0)
 ```
 
 ### React:
-See documentation for [lenis/react](https://github.com/darkroomengineering/lenis/tree/main/packages/react-lenis).
+See documentation for [lenis/react](https://github.com/darkroomengineering/lenis/blob/main/packages/react/README.md).
 
 
 

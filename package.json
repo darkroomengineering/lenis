@@ -1,6 +1,6 @@
 {
   "name": "lenis",
-  "version": "1.0.44",
+  "version": "1.0.45",
   "author": "darkroom.engineering",
   "license": "MIT",
   "repository": {
@@ -23,16 +23,16 @@
   ],
   "type": "module",
   "scripts": {
-    "watch:core": "npm run watch --prefix ./packages/core",
-    "watch:react": "npm run watch --prefix ./packages/react",
-    "watch:snap": "npm run watch --prefix ./packages/snap",
+    "dev:core": "npm run dev --prefix ./packages/core",
+    "dev:react": "npm run dev --prefix ./packages/react",
+    "dev:snap": "npm run dev --prefix ./packages/snap",
     "build:core": "npm run build --prefix ./packages/core",
     "build:react": "npm run build --prefix ./packages/react",
     "build:snap": "npm run build --prefix ./packages/snap",
     "build": "npm-run-all clean build:core build:react",
-    "clean": "rimraf dist",
+    "clean": "shx rm -rf dist/*",
     "readme": "node update-readme.js",
-    "version:dev": "npm version prepatch --preid dev --force",
+    "version:dev": "npm version prerelease --preid dev --force",
     "version:patch": "npm version patch --force",
     "version:minor": "npm version minor --force",
     "version:major": "npm version major --force",
@@ -57,12 +57,21 @@
     "rimraf": "^5.0.5",
     "rollup": "^4.14.2",
     "rollup-plugin-dts": "^6.1.0",
+    "shx": "^0.3.4",
     "tslib": "^2.6.2",
     "typescript": "^5.4.5"
   },
   "peerDependencies": {
     "react": ">=17.0.0",
     "react-dom": ">=17.0.0"
+  },
+  "peerDependenciesMeta": {
+    "react": {
+      "optional": true
+    },
+    "react-dom": {
+      "optional": true
+    }
   },
   "sideEffects": false,
   "unpkg": "./dist/lenis.mjs",
@@ -80,8 +89,7 @@
     }
   },
   "dependencies": {
-    "@darkroom.engineering/hamo": "^0.6.35",
-    "clsx": "^2.1.0",
-    "zustand": "^4.5.2"
+    "@darkroom.engineering/tempus": "^0.0.46",
+    "clsx": "^2.1.0"
   }
 }
