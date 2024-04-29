@@ -257,6 +257,9 @@ export default class Lenis {
   }
 
   private onNativeScroll = () => {
+    clearTimeout(this.__resetVelocityTimeout)
+    delete this.__resetVelocityTimeout
+
     if (this.__preventNextNativeScrollEvent) {
       delete this.__preventNextNativeScrollEvent
       return
@@ -267,20 +270,19 @@ export default class Lenis {
       this.animatedScroll = this.targetScroll = this.actualScroll
       this.velocity = this.animatedScroll - lastScroll
       this.direction = Math.sign(this.animatedScroll - lastScroll)
-      this.isNativeScroll = true
+      this.isSmooth = false
       this.emit()
-      // console.time('reset velocity')
 
-      // cancelAnimationFrame(this.test)
-      // clearTimeout(this.test)
+      if (velocity !== 0) {
+        // const date = Date.now()
 
-      // this.test = setTimeout(() => {
-      //   requestAnimationFrame(() => {
-      //     console.timeEnd('reset velocity')
-      //     this.velocity = 0
-      //     this.emit()
-      //   })
-      // }, 0)
+        this.__resetVelocityTimeout = setTimeout(() => {
+          // console.log('reset velocity', Date.now() - date)
+          this.velocity = 0
+          this.emit()
+        }, 400)
+      }
+      // }, 50)
     }
   }
 
@@ -423,7 +425,6 @@ export default class Lenis {
           this.targetScroll = value
         }
 
-        this.isNativeScroll = false
         if (!completed) this.emit()
 
         if (completed) {

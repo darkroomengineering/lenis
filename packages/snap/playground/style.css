@@ -100,6 +100,15 @@ button:focus-visible {
   }
 }
 
+/* html {
+  scroll-snap-type: y mandatory;
+  scroll-behavior: smooth;
+}
+
+.section {
+  scroll-snap-align: start;
+} */
+
 /* palette from https://twitter.com/tranmautritam/status/1783420779709026785 */
 
 .section {
@@ -117,7 +126,7 @@ button:focus-visible {
 }
 
 .section-1 {
-  height: 200vh;
+  height: 150vh;
 
   .inner {
     background-color: #255bec;
@@ -128,20 +137,20 @@ button:focus-visible {
   height: 50vh;
 
   .inner {
-    background-color: #b49df8;
-  }
-}
-
-.section-3 {
-  height: 100vh;
-
-  .inner {
     background-color: #f6c74d;
   }
 }
 
+.section-3 {
+  height: 80vh;
+
+  .inner {
+    background-color: #b49df8;
+  }
+}
+
 .section-4 {
-  height: 200vh;
+  height: 150vh;
 
   .inner {
     background-color: #ea6e38;

@@ -16,12 +16,11 @@ function removeParentSticky(element) {
 function addParentSticky(element) {
   if (element?.dataset?.sticky === 'true') {
     element.style.removeProperty('position')
-    element.dataset.sticky = 'true'
     delete element.dataset.sticky
   }
 
-  if (element.parentNode) {
-    addParentSticky(element.parentNode)
+  if (element.offsetParent) {
+    addParentSticky(element.offsetParent)
   }
 }
 
@@ -57,14 +56,17 @@ function scrollLeft(element, accumulator = 0) {
   return left + window.scrollX
 }
 
-const ignoreSticky = true
-const ignoreTransform = false
-
 export default class Slide {
-  constructor(element, { align = 'start', type = 'mandatory' } = {}) {
+  constructor(
+    element,
+    { align = ['start'], ignoreSticky = true, ignoreTransform = false } = {}
+  ) {
     this.element = element
-    this.align = align
-    this.type = type
+
+    this.ignoreSticky = ignoreSticky
+    this.ignoreTransform = ignoreTransform
+
+    this.align = [align].flat()
 
     this.rect = {}
 
@@ -109,8 +111,8 @@ export default class Slide {
   onWrapperResize = () => {
     let top, left
 
-    if (ignoreSticky) removeParentSticky(this.element)
-    if (ignoreTransform) {
+    if (this.ignoreSticky) removeParentSticky(this.element)
+    if (this.ignoreTransform) {
       top = offsetTop(this.element)
       left = offsetLeft(this.element)
     } else {
@@ -118,7 +120,7 @@ export default class Slide {
       top = rect.top + scrollTop(this.element)
       left = rect.left + scrollLeft(this.element)
     }
-    if (ignoreSticky) addParentSticky(this.element)
+    if (this.ignoreSticky) addParentSticky(this.element)
 
     this.setRect({ top, left })
   }
