@@ -95,12 +95,14 @@ export default class Lenis {
     this.animate = new Animate()
     this.emitter = new Emitter()
     this.dimensions = new Dimensions({ wrapper, content, autoResize })
-    this.toggleClassName('lenis', true)
+    // this.toggleClassName('lenis', true)
+    this.updateClassName()
 
     this.velocity = 0
     this.isLocked = false
     this.isStopped = false
-    this.isSmooth = syncTouch || smoothWheel
+    // this.isSmooth = syncTouch || smoothWheel
+    // this.isSmooth = false
     this.isScrolling = false
     this.targetScroll = this.animatedScroll = this.actualScroll
 
@@ -125,11 +127,13 @@ export default class Lenis {
     this.virtualScroll.destroy()
     this.dimensions.destroy()
 
-    this.toggleClassName('lenis', false)
-    this.toggleClassName('lenis-smooth', false)
-    this.toggleClassName('lenis-scrolling', false)
-    this.toggleClassName('lenis-stopped', false)
-    this.toggleClassName('lenis-locked', false)
+    this.rootElement.className = ''
+
+    // this.toggleClassName('lenis', false)
+    // this.toggleClassName('lenis-smooth', false)
+    // this.toggleClassName('lenis-scrolling', false)
+    // this.toggleClassName('lenis-stopped', false)
+    // this.toggleClassName('lenis-locked', false)
   }
 
   on(event: string, callback: Function) {
@@ -206,12 +210,12 @@ export default class Lenis {
       return
     }
 
-    this.isSmooth =
+    const isSmooth =
       (this.options.syncTouch && isTouch) ||
       (this.options.smoothWheel && isWheel)
 
-    if (!this.isSmooth) {
-      this.isScrolling = false
+    if (!isSmooth) {
+      this.isScrolling = 'native'
       this.animate.stop()
       return
     }
@@ -252,8 +256,8 @@ export default class Lenis {
     this.dimensions.resize()
   }
 
-  private emit() {
-    this.emitter.emit('scroll', this)
+  private emit(extra = {}) {
+    this.emitter.emit('scroll', this, extra)
   }
 
   private onNativeScroll = () => {
@@ -265,23 +269,30 @@ export default class Lenis {
       return
     }
 
-    if (!this.isScrolling) {
+    if (this.isScrolling === false || this.isScrolling === 'native') {
       const lastScroll = this.animatedScroll
       this.animatedScroll = this.targetScroll = this.actualScroll
       this.velocity = this.animatedScroll - lastScroll
       this.direction = Math.sign(this.animatedScroll - lastScroll)
-      this.isSmooth = false
-      this.emit()
+      // this.isSmooth = false
+      this.isScrolling = this.__hasScrolled ? 'native' : false
+      this.emit({ isSmooth: false })
 
-      if (velocity !== 0) {
+      // console.log(this.velocity)
+
+      if (this.velocity !== 0) {
         // const date = Date.now()
 
         this.__resetVelocityTimeout = setTimeout(() => {
+          console.log('reset velocity')
           // console.log('reset velocity', Date.now() - date)
           this.velocity = 0
-          this.emit()
+          this.isScrolling = false
+          this.emit({ isSmooth: false })
         }, 400)
       }
+
+      this.__hasScrolled = true
       // }, 50)
     }
   }
@@ -328,6 +339,7 @@ export default class Lenis {
       onComplete,
       force = false, // scroll even if stopped
       programmatic = true, // called from outside of the class
+      userData = {},
     }: {
       offset?: number
       immediate?: boolean
@@ -338,6 +350,7 @@ export default class Lenis {
       onComplete?: (lenis: Lenis) => void
       force?: boolean
       programmatic?: boolean
+      userData?: object
     } = {}
   ) {
     if ((this.isStopped || this.isLocked) && !force) return
@@ -406,10 +419,10 @@ export default class Lenis {
       onStart: () => {
         // started
         if (lock) this.isLocked = true
-        this.isScrolling = true
+        this.isScrolling = 'smooth'
       },
       onUpdate: (value: number, completed: boolean) => {
-        this.isScrolling = true
+        this.isScrolling = 'smooth'
 
         // console.log('onUpdate', this.animatedScroll, target)
 
@@ -425,11 +438,11 @@ export default class Lenis {
           this.targetScroll = value
         }
 
-        if (!completed) this.emit()
+        if (!completed) this.emit({ isSmooth: true, userData })
 
         if (completed) {
           this.reset()
-          this.emit()
+          this.emit({ isSmooth: true, userData })
           onComplete?.(this)
 
           // avoid emitting event twice
@@ -489,7 +502,7 @@ export default class Lenis {
   private set isSmooth(value: boolean) {
     if (this.__isSmooth !== value) {
       this.__isSmooth = value
-      this.toggleClassName('lenis-smooth', value)
+      this.updateClassName()
     }
   }
 
@@ -500,7 +513,7 @@ export default class Lenis {
   private set isScrolling(value: boolean) {
     if (this.__isScrolling !== value) {
       this.__isScrolling = value
-      this.toggleClassName('lenis-scrolling', value)
+      this.updateClassName()
     }
   }
 
@@ -511,7 +524,7 @@ export default class Lenis {
   private set isStopped(value: boolean) {
     if (this.__isStopped !== value) {
       this.__isStopped = value
-      this.toggleClassName('lenis-stopped', value)
+      this.updateClassName()
     }
   }
 
@@ -522,7 +535,7 @@ export default class Lenis {
   private set isLocked(value: boolean) {
     if (this.__isLocked !== value) {
       this.__isLocked = value
-      this.toggleClassName('lenis-locked', value)
+      this.updateClassName()
     }
   }
 
@@ -531,12 +544,20 @@ export default class Lenis {
     if (this.isStopped) className += ' lenis-stopped'
     if (this.isLocked) className += ' lenis-locked'
     if (this.isScrolling) className += ' lenis-scrolling'
-    if (this.isSmooth) className += ' lenis-smooth'
+    if (this.isScrolling === 'smooth') className += ' lenis-smooth'
+    // if (this.isScrolling === 'native') className += ' lenis-native'
+    // if (this.isSmooth) className += ' lenis-smooth'
     return className
   }
 
-  private toggleClassName(name: string, value: boolean) {
-    this.rootElement.classList.toggle(name, value)
+  private updateClassName() {
+    this.rootElement.className = this.className
     this.emitter.emit('className change', this)
   }
+
+  // private toggleClassName(name: string, value: boolean) {
+  //   // this.rootElement.classList.toggle(name, value)
+  //   this.rootElement.className = this.className
+  //   this.emitter.emit('className change', this)
+  // }
 }
