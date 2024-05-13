@@ -1,11 +1,29 @@
 import Slide from './slide'
 
+// TODO:
+// - horizontal
+// - fix trackpad snapping too soon due to velocity (fuck Apple)
+// - fix wheel scrolling after limits (see console scroll to)
+// - fix touch scroll, do not snap when not released
+
 export default class Snap {
-  constructor(lenis, { type = 'mandatory' } = {}) {
+  constructor(
+    lenis,
+    {
+      type = 'mandatory',
+      velocityThreshold = 1,
+      onSnapStart,
+      onSnapComplete,
+    } = {}
+  ) {
     this.lenis = lenis
     this.type = type
     this.elements = new Map()
     this.snaps = new Map()
+
+    this.velocityThreshold = velocityThreshold
+    this.onSnapStart = onSnapStart
+    this.onSnapComplete = onSnapComplete
 
     this.viewport = {
       width: window.innerWidth,
@@ -66,13 +84,24 @@ export default class Snap {
     this.viewport.height = window.innerHeight
   }
 
-  onScroll = ({ scroll, limit, velocity, isScrolling }, extra) => {
-    console.log('scroll', extra)
+  onScroll = (
+    { scroll, limit, lastVelocity, velocity, isScrolling, isTouching },
+    { userData, isSmooth }
+  ) => {
+    const isDecelerating = Math.abs(lastVelocity) > Math.abs(velocity)
+    const isTurningBack = Math.sign(lastVelocity) !== Math.sign(velocity)
 
-    const { userData } = extra
+    console.log({ isTouching })
 
-    if (Math.abs(velocity) < 1 && userData?.initiator !== 'snap') {
+    if (
+      Math.abs(velocity) < this.velocityThreshold &&
+      // !isTouching &&
+      isDecelerating &&
+      !isTurningBack &&
+      userData?.initiator !== 'snap'
+    ) {
       scroll = Math.ceil(scroll)
+
       // console.log('not scrolling anymore')
 
       let snaps = [0, ...this.snaps.values(), limit]
@@ -114,8 +143,18 @@ export default class Snap {
         (this.type === 'proximity' && distance <= this.viewport.height / 2)
       ) {
         // this.__isScrolling = true
+        // this.onSnapStart?.(snap)
+
+        // console.log('scroll to')
+
         this.lenis.scrollTo(snap, {
           userData: { initiator: 'snap' },
+          onStart: () => {
+            this.onSnapStart?.(snap)
+          },
+          onComplete: () => {
+            this.onSnapComplete?.(snap)
+          },
         })
       }
 

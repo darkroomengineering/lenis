@@ -10,12 +10,19 @@ import './style.css'
 
 if (true) {
   const lenis = new Lenis({
-    // lerp: 1,
+    lerp: 0.1,
   })
   window.lenis = lenis
 
   const snap = new Snap(lenis, {
     type: 'mandatory', // 'mandatory', 'proximity'
+    velocityThreshold: 1,
+    onSnapStart: (snap) => {
+      console.log('onSnapStart', snap)
+    },
+    onSnapComplete: (snap) => {
+      console.log('onSnapComplete', snap)
+    },
   })
   window.snap = snap
 

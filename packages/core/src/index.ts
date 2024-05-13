@@ -160,6 +160,8 @@ export default class Lenis {
     const isTouch = event.type.includes('touch')
     const isWheel = event.type.includes('wheel')
 
+    this.isTouching = event.type === 'touchstart' || event.type === 'touchmove'
+
     const isTapToStop =
       this.options.syncTouch &&
       isTouch &&
@@ -272,6 +274,7 @@ export default class Lenis {
     if (this.isScrolling === false || this.isScrolling === 'native') {
       const lastScroll = this.animatedScroll
       this.animatedScroll = this.targetScroll = this.actualScroll
+      this.lastVelocity = this.velocity
       this.velocity = this.animatedScroll - lastScroll
       this.direction = Math.sign(this.animatedScroll - lastScroll)
       // this.isSmooth = false
@@ -286,6 +289,7 @@ export default class Lenis {
         this.__resetVelocityTimeout = setTimeout(() => {
           console.log('reset velocity')
           // console.log('reset velocity', Date.now() - date)
+          this.lastVelocity = this.velocity
           this.velocity = 0
           this.isScrolling = false
           this.emit({ isSmooth: false })
@@ -301,7 +305,7 @@ export default class Lenis {
     this.isLocked = false
     this.isScrolling = false
     this.animatedScroll = this.targetScroll = this.actualScroll
-    this.velocity = 0
+    this.lastVelocity = this.velocity = 0
     this.animate.stop()
   }
 
@@ -336,6 +340,7 @@ export default class Lenis {
       duration = this.options.duration,
       easing = this.options.easing,
       lerp = !duration && this.options.lerp,
+      onStart,
       onComplete,
       force = false, // scroll even if stopped
       programmatic = true, // called from outside of the class
@@ -347,6 +352,7 @@ export default class Lenis {
       duration?: number
       easing?: EasingFunction
       lerp?: number
+      onStart?: (lenis: Lenis) => void
       onComplete?: (lenis: Lenis) => void
       force?: boolean
       programmatic?: boolean
@@ -406,6 +412,8 @@ export default class Lenis {
       return
     }
 
+    console.log(target, this.targetScroll)
+
     if (target === this.targetScroll) return
 
     if (!programmatic) {
@@ -420,6 +428,7 @@ export default class Lenis {
         // started
         if (lock) this.isLocked = true
         this.isScrolling = 'smooth'
+        onStart?.(this)
       },
       onUpdate: (value: number, completed: boolean) => {
         this.isScrolling = 'smooth'
@@ -427,6 +436,7 @@ export default class Lenis {
         // console.log('onUpdate', this.animatedScroll, target)
 
         // updated
+        this.lastVelocity = this.velocity
         this.velocity = value - this.animatedScroll
         this.direction = Math.sign(this.velocity)
 
