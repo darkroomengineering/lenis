@@ -86,12 +86,18 @@ export default class Snap {
 
   onScroll = (
     { scroll, limit, lastVelocity, velocity, isScrolling, isTouching },
-    { userData, isSmooth }
+    { userData, isSmooth, type }
   ) => {
-    const isDecelerating = Math.abs(lastVelocity) > Math.abs(velocity)
-    const isTurningBack = Math.sign(lastVelocity) !== Math.sign(velocity)
+    // console.log(scroll, velocity, type)
 
-    console.log({ isTouching })
+    // return
+    const isDecelerating = Math.abs(lastVelocity) > Math.abs(velocity)
+    const isTurningBack =
+      Math.sign(lastVelocity) !== Math.sign(velocity) && velocity !== 0
+
+    // console.log({ lastVelocity, velocity, isTurningBack, isDecelerating })
+
+    // console.log('onScroll')
 
     if (
       Math.abs(velocity) < this.velocityThreshold &&

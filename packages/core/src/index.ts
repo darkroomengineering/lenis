@@ -44,6 +44,15 @@ export default class Lenis {
   __isStopped: boolean = false // true if user should not be able to scroll - enable/disable programmatically
   __isLocked: boolean = false // same as isStopped but enabled/disabled when scroll reaches target
 
+  time: number
+  velocity: number
+  direction: number
+  options: LenisOptions
+  // animate: Animate
+  // emitter: Emitter
+  // dimensions: Dimensions
+  // virtualScroll: VirtualScroll
+
   constructor({
     wrapper = window,
     content = document.documentElement,
@@ -161,6 +170,15 @@ export default class Lenis {
     const isWheel = event.type.includes('wheel')
 
     this.isTouching = event.type === 'touchstart' || event.type === 'touchmove'
+    // if (event.type === 'touchend') {
+    //   console.log('touchend', this.scroll)
+    //   // this.lastVelocity = this.velocity
+    //   // this.velocity = 0
+    //   // this.isScrolling = false
+    //   this.emit({ type: 'touchend' })
+    //   // alert('touchend')
+    //   return
+    // }
 
     const isTapToStop =
       this.options.syncTouch &&
@@ -283,7 +301,7 @@ export default class Lenis {
 
       // console.log(this.velocity)
 
-      if (this.velocity !== 0) {
+      if (this.velocity !== 0 && !this.isTouching) {
         // const date = Date.now()
 
         this.__resetVelocityTimeout = setTimeout(() => {
@@ -411,8 +429,6 @@ export default class Lenis {
       onComplete?.(this)
       return
     }
-
-    console.log(target, this.targetScroll)
 
     if (target === this.targetScroll) return
 
