@@ -6,6 +6,8 @@ import Slide from './slide'
 // - fix wheel scrolling after limits (see console scroll to)
 // - fix touch scroll, do not snap when not released
 
+console.log('snaps')
+
 export default class Snap {
   constructor(
     lenis,
@@ -108,11 +110,7 @@ export default class Snap {
     ) {
       scroll = Math.ceil(scroll)
 
-      // console.log('not scrolling anymore')
-
       let snaps = [0, ...this.snaps.values(), limit]
-
-      console.log(snaps)
 
       this.elements.forEach(({ rect, align }) => {
         let snap

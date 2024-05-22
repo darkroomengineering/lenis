@@ -1,6 +1,7 @@
 // import { LoremIpsum } from 'lorem-ipsum'
 // import Snap from '../../../dist/lenis-snap.mjs'
 import Lenis from '../../core/src/index.ts'
+// import Snap from '../dist/lenis-snap.mjs'
 import Snap from '../src/index.ts'
 import './style.css'
 
