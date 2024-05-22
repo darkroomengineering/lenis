@@ -89,7 +89,6 @@
     }
   },
   "dependencies": {
-    "@darkroom.engineering/tempus": "^0.0.46",
-    "clsx": "^2.1.0"
+    "@darkroom.engineering/tempus": "^0.0.46"
   }
 }

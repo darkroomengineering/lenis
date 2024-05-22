@@ -1,7 +1,6 @@
 'use client'
 
 import Tempus from '@darkroom.engineering/tempus'
-import cn from 'clsx'
 import Lenis, { LenisOptions } from 'lenis'
 import {
   ForwardRefExoticComponent,
@@ -180,21 +179,21 @@ const ReactLenis: ForwardRefComponent<Props, LenisRef> = forwardRef<
       }
     }, [lenis, onScroll])
 
-    const onClassNameChange = useCallback(() => {
-      if (wrapperRef.current) {
-        wrapperRef.current.className = cn(lenis?.className, className)
-      }
-    }, [lenis, className])
+    // const onClassNameChange = useCallback(() => {
+    //   if (wrapperRef.current) {
+    //     wrapperRef.current.className = cn(lenis?.className, className)
+    //   }
+    // }, [lenis, className])
 
-    useEffect(() => {
-      onClassNameChange()
+    // useEffect(() => {
+    //   onClassNameChange()
 
-      lenis?.on('className change', onClassNameChange)
+    //   lenis?.on('className change', onClassNameChange)
 
-      return () => {
-        lenis?.off('className change', onClassNameChange)
-      }
-    }, [lenis, onClassNameChange])
+    //   return () => {
+    //     lenis?.off('className change', onClassNameChange)
+    //   }
+    // }, [lenis, onClassNameChange])
 
     return (
       <LenisContext.Provider
@@ -203,11 +202,7 @@ const ReactLenis: ForwardRefComponent<Props, LenisRef> = forwardRef<
         {root ? (
           children
         ) : (
-          <div
-            ref={wrapperRef}
-            className={cn(lenis?.className, className)}
-            {...props}
-          >
+          <div ref={wrapperRef} className={className} {...props}>
             <div ref={contentRef}>{children}</div>
           </div>
         )}

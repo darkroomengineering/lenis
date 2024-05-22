@@ -26,7 +26,6 @@ export default [
       'react/jsx-runtime',
       'lenis',
       '@darkroom.engineering/tempus',
-      'clsx',
     ],
     plugins: [
       typescript({
