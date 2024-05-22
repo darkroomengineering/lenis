@@ -357,6 +357,10 @@
     }
 
     var Lenis = /** @class */ (function () {
+        // animate: Animate
+        // emitter: Emitter
+        // dimensions: Dimensions
+        // virtualScroll: VirtualScroll
         function Lenis(_a) {
             var _b = _a === void 0 ? {} : _a, _c = _b.wrapper, wrapper = _c === void 0 ? window : _c, _d = _b.content, content = _d === void 0 ? document.documentElement : _d, _e = _b.wheelEventsTarget, wheelEventsTarget = _e === void 0 ? wrapper : _e, // deprecated
             _f = _b.eventsTarget, // deprecated
@@ -379,6 +383,16 @@
                     return;
                 var isTouch = event.type.includes('touch');
                 var isWheel = event.type.includes('wheel');
+                _this.isTouching = event.type === 'touchstart' || event.type === 'touchmove';
+                // if (event.type === 'touchend') {
+                //   console.log('touchend', this.scroll)
+                //   // this.lastVelocity = this.velocity
+                //   // this.velocity = 0
+                //   // this.isScrolling = false
+                //   this.emit({ type: 'touchend' })
+                //   // alert('touchend')
+                //   return
+                // }
                 var isTapToStop = _this.options.syncTouch &&
                     isTouch &&
                     event.type === 'touchstart' &&
@@ -417,11 +431,10 @@
                     event.preventDefault(); // this will stop forwarding the event to the parent, this is problematic
                     return;
                 }
-                _this.isSmooth =
-                    (_this.options.syncTouch && isTouch) ||
-                        (_this.options.smoothWheel && isWheel);
-                if (!_this.isSmooth) {
-                    _this.isScrolling = false;
+                var isSmooth = (_this.options.syncTouch && isTouch) ||
+                    (_this.options.smoothWheel && isWheel);
+                if (!isSmooth) {
+                    _this.isScrolling = 'native';
                     _this.animate.stop();
                     return;
                 }
@@ -450,14 +463,35 @@
                     })));
             };
             this.onNativeScroll = function () {
-                if (_this.__preventNextScrollEvent)
+                clearTimeout(_this.__resetVelocityTimeout);
+                delete _this.__resetVelocityTimeout;
+                if (_this.__preventNextNativeScrollEvent) {
+                    delete _this.__preventNextNativeScrollEvent;
                     return;
-                if (!_this.isScrolling) {
+                }
+                if (_this.isScrolling === false || _this.isScrolling === 'native') {
                     var lastScroll = _this.animatedScroll;
                     _this.animatedScroll = _this.targetScroll = _this.actualScroll;
-                    _this.velocity = 0;
+                    _this.lastVelocity = _this.velocity;
+                    _this.velocity = _this.animatedScroll - lastScroll;
                     _this.direction = Math.sign(_this.animatedScroll - lastScroll);
-                    _this.emit();
+                    // this.isSmooth = false
+                    _this.isScrolling = _this.__hasScrolled ? 'native' : false;
+                    _this.emit({ isSmooth: false });
+                    // console.log(this.velocity)
+                    if (_this.velocity !== 0 && !_this.isTouching) {
+                        // const date = Date.now()
+                        _this.__resetVelocityTimeout = setTimeout(function () {
+                            console.log('reset velocity');
+                            // console.log('reset velocity', Date.now() - date)
+                            _this.lastVelocity = _this.velocity;
+                            _this.velocity = 0;
+                            _this.isScrolling = false;
+                            _this.emit({ isSmooth: false });
+                        }, 400);
+                    }
+                    _this.__hasScrolled = true;
+                    // }, 50)
                 }
             };
             window.lenisVersion = version;
@@ -488,11 +522,13 @@
             this.animate = new Animate();
             this.emitter = new Emitter();
             this.dimensions = new Dimensions({ wrapper: wrapper, content: content, autoResize: autoResize });
-            this.toggleClassName('lenis', true);
+            // this.toggleClassName('lenis', true)
+            this.updateClassName();
             this.velocity = 0;
             this.isLocked = false;
             this.isStopped = false;
-            this.isSmooth = syncTouch || smoothWheel;
+            // this.isSmooth = syncTouch || smoothWheel
+            // this.isSmooth = false
             this.isScrolling = false;
             this.targetScroll = this.animatedScroll = this.actualScroll;
             this.options.wrapper.addEventListener('scroll', this.onNativeScroll, false);
@@ -507,11 +543,13 @@
             this.options.wrapper.removeEventListener('scroll', this.onNativeScroll, false);
             this.virtualScroll.destroy();
             this.dimensions.destroy();
-            this.toggleClassName('lenis', false);
-            this.toggleClassName('lenis-smooth', false);
-            this.toggleClassName('lenis-scrolling', false);
-            this.toggleClassName('lenis-stopped', false);
-            this.toggleClassName('lenis-locked', false);
+            this.cleanUpClassName();
+            // this.rootElement.className = ''
+            // this.toggleClassName('lenis', false)
+            // this.toggleClassName('lenis-smooth', false)
+            // this.toggleClassName('lenis-scrolling', false)
+            // this.toggleClassName('lenis-stopped', false)
+            // this.toggleClassName('lenis-locked', false)
         };
         Lenis.prototype.on = function (event, callback) {
             return this.emitter.on(event, callback);
@@ -531,14 +569,15 @@
         Lenis.prototype.resize = function () {
             this.dimensions.resize();
         };
-        Lenis.prototype.emit = function () {
-            this.emitter.emit('scroll', this);
+        Lenis.prototype.emit = function (extra) {
+            if (extra === void 0) { extra = {}; }
+            this.emitter.emit('scroll', this, extra);
         };
         Lenis.prototype.reset = function () {
             this.isLocked = false;
             this.isScrolling = false;
             this.animatedScroll = this.targetScroll = this.actualScroll;
-            this.velocity = 0;
+            this.lastVelocity = this.velocity = 0;
             this.animate.stop();
         };
         Lenis.prototype.start = function () {
@@ -561,9 +600,11 @@
         };
         Lenis.prototype.scrollTo = function (target, _a) {
             var _this = this;
-            var _b = _a === void 0 ? {} : _a, _c = _b.offset, offset = _c === void 0 ? 0 : _c, _d = _b.immediate, immediate = _d === void 0 ? false : _d, _e = _b.lock, lock = _e === void 0 ? false : _e, _f = _b.duration, duration = _f === void 0 ? this.options.duration : _f, _g = _b.easing, easing = _g === void 0 ? this.options.easing : _g, _h = _b.lerp, lerp = _h === void 0 ? !duration && this.options.lerp : _h, onComplete = _b.onComplete, _j = _b.force, force = _j === void 0 ? false : _j, // scroll even if stopped
+            var _b = _a === void 0 ? {} : _a, _c = _b.offset, offset = _c === void 0 ? 0 : _c, _d = _b.immediate, immediate = _d === void 0 ? false : _d, _e = _b.lock, lock = _e === void 0 ? false : _e, _f = _b.duration, duration = _f === void 0 ? this.options.duration : _f, _g = _b.easing, easing = _g === void 0 ? this.options.easing : _g, _h = _b.lerp, lerp = _h === void 0 ? !duration && this.options.lerp : _h, onStart = _b.onStart, onComplete = _b.onComplete, _j = _b.force, force = _j === void 0 ? false : _j, // scroll even if stopped
             _k = _b.programmatic, // scroll even if stopped
-            programmatic = _k === void 0 ? true : _k;
+            programmatic = _k === void 0 ? true : _k, // called from outside of the class
+            _l = _b.userData, // called from outside of the class
+            userData = _l === void 0 ? {} : _l;
             if ((this.isStopped || this.isLocked) && !force)
                 return;
             // keywords
@@ -613,9 +654,9 @@
                 onComplete === null || onComplete === void 0 ? void 0 : onComplete(this);
                 return;
             }
+            if (target === this.targetScroll)
+                return;
             if (!programmatic) {
-                if (target === this.targetScroll)
-                    return;
                 this.targetScroll = target;
             }
             this.animate.fromTo(this.animatedScroll, target, {
@@ -626,11 +667,14 @@
                     // started
                     if (lock)
                         _this.isLocked = true;
-                    _this.isScrolling = true;
+                    _this.isScrolling = 'smooth';
+                    onStart === null || onStart === void 0 ? void 0 : onStart(_this);
                 },
                 onUpdate: function (value, completed) {
-                    _this.isScrolling = true;
+                    _this.isScrolling = 'smooth';
+                    // console.log('onUpdate', this.animatedScroll, target)
                     // updated
+                    _this.lastVelocity = _this.velocity;
                     _this.velocity = value - _this.animatedScroll;
                     _this.direction = Math.sign(_this.velocity);
                     _this.animatedScroll = value;
@@ -640,16 +684,16 @@
                         _this.targetScroll = value;
                     }
                     if (!completed)
-                        _this.emit();
+                        _this.emit({ isSmooth: true, userData: userData });
                     if (completed) {
                         _this.reset();
-                        _this.emit();
+                        _this.emit({ isSmooth: true, userData: userData });
                         onComplete === null || onComplete === void 0 ? void 0 : onComplete(_this);
                         // avoid emitting event twice
-                        _this.__preventNextScrollEvent = true;
-                        requestAnimationFrame(function () {
-                            delete _this.__preventNextScrollEvent;
-                        });
+                        _this.__preventNextNativeScrollEvent = true;
+                        // requestAnimationFrame(() => {
+                        //   delete this.__preventNextNativeScrollEvent
+                        // })
                     }
                 },
             });
@@ -721,7 +765,7 @@
             set: function (value) {
                 if (this.__isSmooth !== value) {
                     this.__isSmooth = value;
-                    this.toggleClassName('lenis-smooth', value);
+                    this.updateClassName();
                 }
             },
             enumerable: false,
@@ -734,7 +778,7 @@
             set: function (value) {
                 if (this.__isScrolling !== value) {
                     this.__isScrolling = value;
-                    this.toggleClassName('lenis-scrolling', value);
+                    this.updateClassName();
                 }
             },
             enumerable: false,
@@ -747,7 +791,7 @@
             set: function (value) {
                 if (this.__isStopped !== value) {
                     this.__isStopped = value;
-                    this.toggleClassName('lenis-stopped', value);
+                    this.updateClassName();
                 }
             },
             enumerable: false,
@@ -760,7 +804,7 @@
             set: function (value) {
                 if (this.__isLocked !== value) {
                     this.__isLocked = value;
-                    this.toggleClassName('lenis-locked', value);
+                    this.updateClassName();
                 }
             },
             enumerable: false,
@@ -775,16 +819,24 @@
                     className += ' lenis-locked';
                 if (this.isScrolling)
                     className += ' lenis-scrolling';
-                if (this.isSmooth)
+                if (this.isScrolling === 'smooth')
                     className += ' lenis-smooth';
+                // if (this.isScrolling === 'native') className += ' lenis-native'
+                // if (this.isSmooth) className += ' lenis-smooth'
                 return className;
             },
             enumerable: false,
             configurable: true
         });
-        Lenis.prototype.toggleClassName = function (name, value) {
-            this.rootElement.classList.toggle(name, value);
+        Lenis.prototype.updateClassName = function () {
+            this.cleanUpClassName();
+            this.rootElement.className = "".concat(this.rootElement.className, " ").concat(this.className);
             this.emitter.emit('className change', this);
+        };
+        Lenis.prototype.cleanUpClassName = function () {
+            this.rootElement.className = this.rootElement.className
+                .replace(/lenis(-\w+)?/g, '')
+                .trim();
         };
         return Lenis;
     }());

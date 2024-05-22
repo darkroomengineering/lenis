@@ -185,9 +185,9 @@
                 _this.viewport.height = window.innerHeight;
             };
             this.onScroll = function (_a, _b) {
+                // console.log(scroll, velocity, type)
                 var scroll = _a.scroll, limit = _a.limit, lastVelocity = _a.lastVelocity, velocity = _a.velocity; _a.isScrolling; _a.isTouching;
-                var userData = _b.userData; _b.isSmooth; var type = _b.type;
-                console.log(scroll, velocity, type);
+                var userData = _b.userData; _b.isSmooth; _b.type;
                 // return
                 var isDecelerating = Math.abs(lastVelocity) > Math.abs(velocity);
                 var isTurningBack = Math.sign(lastVelocity) !== Math.sign(velocity) && velocity !== 0;
@@ -290,7 +290,7 @@
             return function () { return _this.remove(id); };
         };
         Snap.prototype.remove = function (id) {
-            this.elements.delete(element);
+            this.snaps.delete(id);
         };
         Snap.prototype.addElement = function (element, options) {
             var _this = this;

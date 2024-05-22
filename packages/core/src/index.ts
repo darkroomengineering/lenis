@@ -136,7 +136,9 @@ export default class Lenis {
     this.virtualScroll.destroy()
     this.dimensions.destroy()
 
-    this.rootElement.className = ''
+    this.cleanUpClassName()
+
+    // this.rootElement.className = ''
 
     // this.toggleClassName('lenis', false)
     // this.toggleClassName('lenis-smooth', false)
@@ -577,8 +579,16 @@ export default class Lenis {
   }
 
   private updateClassName() {
-    this.rootElement.className = this.className
+    this.cleanUpClassName()
+
+    this.rootElement.className = `${this.rootElement.className} ${this.className}`
     this.emitter.emit('className change', this)
+  }
+
+  private cleanUpClassName() {
+    this.rootElement.className = this.rootElement.className
+      .replace(/lenis(-\w+)?/g, '')
+      .trim()
   }
 
   // private toggleClassName(name: string, value: boolean) {

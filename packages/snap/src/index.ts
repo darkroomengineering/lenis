@@ -64,7 +64,7 @@ export default class Snap {
   }
 
   remove(id) {
-    this.elements.delete(element)
+    this.snaps.delete(id)
   }
 
   addElement(element, options = {}) {
@@ -112,6 +112,8 @@ export default class Snap {
 
       let snaps = [0, ...this.snaps.values(), limit]
 
+      console.log(snaps)
+
       this.elements.forEach(({ rect, align }) => {
         let snap
 
@@ -146,7 +148,7 @@ export default class Snap {
 
       if (
         this.type === 'mandatory' ||
-        (this.type === 'proximity' && distance <= this.viewport.height / 2)
+        (this.type === 'proximity' && distance <= this.viewport.height)
       ) {
         // this.__isScrolling = true
         // this.onSnapStart?.(snap)

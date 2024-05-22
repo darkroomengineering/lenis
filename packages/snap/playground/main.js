@@ -31,13 +31,13 @@ if (true) {
 
   snap.add(500)
 
-  snap.addElement(section2, {
-    align: ['start', 'end'], // 'start', 'center', 'end'
-  })
+  // snap.addElement(section2, {
+  //   align: ['start', 'end'], // 'start', 'center', 'end'
+  // })
 
-  snap.addElement(section3, {
-    align: 'center', // 'start', 'center', 'end'
-  })
+  // snap.addElement(section3, {
+  //   align: 'center', // 'start', 'center', 'end'
+  // })
 
   function raf(time) {
     lenis.raf(time)
