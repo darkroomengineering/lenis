@@ -18,6 +18,8 @@ if (true) {
   const snap = new Snap(lenis, {
     type: 'mandatory', // 'mandatory', 'proximity'
     velocityThreshold: 1,
+    // duration: 2,
+    // easing: (t) => t,
     onSnapStart: (snap) => {
       console.log('onSnapStart', snap)
     },

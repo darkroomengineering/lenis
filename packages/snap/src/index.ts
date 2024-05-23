@@ -6,19 +6,29 @@ import Slide from './slide'
 // - fix wheel scrolling after limits (see console scroll to)
 // - fix touch scroll, do not snap when not released
 
-console.log('snaps')
-
 export default class Snap {
   constructor(
     lenis,
     {
       type = 'mandatory',
+      lerp,
+      easing,
+      duration,
       velocityThreshold = 1,
       onSnapStart,
       onSnapComplete,
     } = {}
   ) {
     this.lenis = lenis
+
+    this.options = {
+      type,
+      lerp,
+      easing,
+      duration,
+      velocityThreshold,
+    }
+
     this.type = type
     this.elements = new Map()
     this.snaps = new Map()
@@ -57,6 +67,14 @@ export default class Snap {
     this.elements.forEach((slide) => slide.destroy())
   }
 
+  start() {
+    this.isStopped = false
+  }
+
+  stop() {
+    this.isStopped = true
+  }
+
   add(value) {
     const id = crypto.randomUUID()
 
@@ -90,6 +108,7 @@ export default class Snap {
     { scroll, limit, lastVelocity, velocity, isScrolling, isTouching },
     { userData, isSmooth, type }
   ) => {
+    if (this.isStopped) return
     // console.log(scroll, velocity, type)
 
     // return
@@ -154,6 +173,9 @@ export default class Snap {
         // console.log('scroll to')
 
         this.lenis.scrollTo(snap, {
+          lerp: this.options.lerp,
+          easing: this.options.easing,
+          duration: this.options.duration,
           userData: { initiator: 'snap' },
           onStart: () => {
             this.onSnapStart?.(snap)

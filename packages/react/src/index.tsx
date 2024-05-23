@@ -47,7 +47,7 @@ export function useLenis(
     if (!callback || !addCallback || !removeCallback || !lenis) return
 
     addCallback(callback, priority)
-    callback(lenis)
+    callback(lenis, {})
 
     return () => {
       removeCallback(callback)
@@ -165,9 +165,9 @@ const ReactLenis: ForwardRefComponent<Props, LenisRef> = forwardRef<
       }
     }, [root, lenis, addCallback, removeCallback])
 
-    const onScroll = useCallback((lenisInstance: Lenis) => {
+    const onScroll = useCallback((...args) => {
       for (let i = 0; i < callbacksRefs.current.length; i++) {
-        callbacksRefs.current[i].callback(lenisInstance)
+        callbacksRefs.current[i].callback(...args)
       }
     }, [])
 

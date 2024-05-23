@@ -144,14 +144,15 @@
   // - fix trackpad snapping too soon due to velocity (fuck Apple)
   // - fix wheel scrolling after limits (see console scroll to)
   // - fix touch scroll, do not snap when not released
-  console.log('snaps');
   class Snap {
-      constructor(lenis, { type = 'mandatory', velocityThreshold = 1, onSnapStart, onSnapComplete, } = {}) {
+      constructor(lenis, { type = 'mandatory', lerp, easing, duration, velocityThreshold = 1, onSnapStart, onSnapComplete, } = {}) {
           this.onWindowResize = () => {
               this.viewport.width = window.innerWidth;
               this.viewport.height = window.innerHeight;
           };
           this.onScroll = ({ scroll, limit, lastVelocity, velocity, isScrolling, isTouching }, { userData, isSmooth, type }) => {
+              if (this.isStopped)
+                  return;
               // console.log(scroll, velocity, type)
               // return
               const isDecelerating = Math.abs(lastVelocity) > Math.abs(velocity);
@@ -164,15 +165,7 @@
                   !isTurningBack &&
                   (userData === null || userData === void 0 ? void 0 : userData.initiator) !== 'snap') {
                   scroll = Math.ceil(scroll);
-                  // console.log('not scrolling anymore')
-                  // console.log(
-                  //   this.snaps,
-                  //   Array.from(this.snaps, ([_, value]) => value),
-                  //   'test'
-                  // )
-                  let snaps = [0, ...Array.from(this.snaps, ([_, value]) => value), limit];
-                  // let snaps = [0, ...this.snaps.values(), limit]
-                  console.log(snaps);
+                  let snaps = [0, ...this.snaps.values(), limit];
                   this.elements.forEach(({ rect, align }) => {
                       let snap;
                       align.forEach((align) => {
@@ -207,6 +200,9 @@
                       // this.onSnapStart?.(snap)
                       // console.log('scroll to')
                       this.lenis.scrollTo(snap, {
+                          lerp: this.options.lerp,
+                          easing: this.options.easing,
+                          duration: this.options.duration,
                           userData: { initiator: 'snap' },
                           onStart: () => {
                               var _a;
@@ -222,6 +218,13 @@
               }
           };
           this.lenis = lenis;
+          this.options = {
+              type,
+              lerp,
+              easing,
+              duration,
+              velocityThreshold,
+          };
           this.type = type;
           this.elements = new Map();
           this.snaps = new Map();
@@ -253,6 +256,12 @@
           this.lenis.off('scroll', this.onScroll);
           window.removeEventListener('resize', this.onWindowResize);
           this.elements.forEach((slide) => slide.destroy());
+      }
+      start() {
+          this.isStopped = false;
+      }
+      stop() {
+          this.isStopped = true;
       }
       add(value) {
           const id = crypto.randomUUID();

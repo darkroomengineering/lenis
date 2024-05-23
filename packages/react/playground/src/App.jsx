@@ -6,16 +6,16 @@ import './App.css'
 function App() {
   const [lorem] = useState(() => new LoremIpsum().generateParagraphs(200))
 
-  const lenis = useLenis((e) => {
-    console.log(e)
+  const lenis = useLenis((e, f) => {
+    console.log(e, f)
   })
-
   console.log(lenis)
-
   return (
     <>
       {/* <ReactLenis root /> */}
-      <ReactLenis className="wrapper">{lorem}</ReactLenis>
+      <ReactLenis className="wrapper" root>
+        {lorem}
+      </ReactLenis>
     </>
   )
 }

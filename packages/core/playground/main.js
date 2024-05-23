@@ -7,6 +7,9 @@ document.querySelector('#app').innerHTML = new LoremIpsum().generateParagraphs(
 )
 
 const lenis = new Lenis()
+lenis.on('scroll', (e, f) => {
+  console.log(e, f)
+})
 window.lenis = lenis
 
 function raf(time) {
