@@ -27,6 +27,9 @@ export class VirtualScroll {
     this.element.addEventListener('touchend', this.onTouchEnd, {
       passive: false,
     })
+    this.element.addEventListener('mousedown', this.onMouseDown, {
+      passive: false,
+    })
   }
 
   // Add an event listener for the given event and callback
@@ -50,6 +53,9 @@ export class VirtualScroll {
       passive: false,
     })
     this.element.removeEventListener('touchend', this.onTouchEnd, {
+      passive: false,
+    })
+    this.element.removeEventListener('mousedown', this.onMouseDown, {
       passive: false,
     })
   }
@@ -128,5 +134,11 @@ export class VirtualScroll {
   onWindowResize = () => {
     this.windowWidth = window.innerWidth
     this.windowHeight = window.innerHeight
+  }
+
+  onMouseDown = (event) => {
+    if (event.button === 1) {
+      this.emitter.emit('stop')
+    }
   }
 }

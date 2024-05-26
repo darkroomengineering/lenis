@@ -111,6 +111,7 @@ export default class Lenis {
       wheelMultiplier,
     })
     this.virtualScroll.on('scroll', this.onVirtualScroll)
+    this.virtualScroll.on('stop', this.onVirtualScrollStop)
   }
 
   destroy() {
@@ -246,6 +247,12 @@ export default class Lenis {
             easing: this.options.easing,
           }),
     })
+  }
+
+  private onVirtualScrollStop = () => {
+    if (this.isScrolling) {
+      this.reset()
+    }
   }
 
   resize() {
