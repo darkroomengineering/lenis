@@ -333,7 +333,7 @@
       easing = (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)), lerp = !duration && 0.1, infinite = false, orientation = 'vertical', // vertical, horizontal
       gestureOrientation = 'vertical', // vertical, horizontal, both
       touchMultiplier = 1, wheelMultiplier = 1, autoResize = true, __experimental__naiveDimensions = false, } = {}) {
-          this.__isSmooth = false; // true if scroll should be animated
+          // __isSmooth: boolean = false // true if scroll should be animated
           this.__isScrolling = false; // true when scroll is animating
           this.__isStopped = false; // true if user should not be able to scroll - enable/disable programmatically
           this.__isLocked = false; // same as isStopped but enabled/disabled when scroll reaches target
@@ -436,21 +436,17 @@
                   this.velocity = this.animatedScroll - lastScroll;
                   this.direction = Math.sign(this.animatedScroll - lastScroll);
                   // this.isSmooth = false
-                  this.isScrolling = this.__hasScrolled ? 'native' : false;
-                  this.emit({ isSmooth: false });
-                  // console.log(this.velocity)
-                  if (this.velocity !== 0 && !this.isTouching) {
-                      // const date = Date.now()
+                  this.isScrolling = this.hasScrolled ? 'native' : false;
+                  this.emit();
+                  if (this.velocity !== 0) {
                       this.__resetVelocityTimeout = setTimeout(() => {
-                          console.log('reset velocity');
-                          // console.log('reset velocity', Date.now() - date)
                           this.lastVelocity = this.velocity;
                           this.velocity = 0;
                           this.isScrolling = false;
-                          this.emit({ isSmooth: false });
+                          this.emit();
                       }, 400);
                   }
-                  this.__hasScrolled = true;
+                  // this.hasScrolled = true
                   // }, 50)
               }
           };
@@ -484,9 +480,12 @@
           this.dimensions = new Dimensions({ wrapper, content, autoResize });
           // this.toggleClassName('lenis', true)
           this.updateClassName();
-          this.velocity = 0;
+          this.userData = {};
+          this.time = 0;
+          this.velocity = this.lastVelocity = 0;
           this.isLocked = false;
           this.isStopped = false;
+          // this.hasScrolled = false
           // this.isSmooth = syncTouch || smoothWheel
           // this.isSmooth = false
           this.isScrolling = false;
@@ -529,8 +528,10 @@
       resize() {
           this.dimensions.resize();
       }
-      emit(extra = {}) {
-          this.emitter.emit('scroll', this, extra);
+      emit({ userData = {} } = {}) {
+          this.userData = userData;
+          this.emitter.emit('scroll', this);
+          this.userData = {};
       }
       reset() {
           this.isLocked = false;
@@ -627,7 +628,6 @@
               },
               onUpdate: (value, completed) => {
                   this.isScrolling = 'smooth';
-                  // console.log('onUpdate', this.animatedScroll, target)
                   // updated
                   this.lastVelocity = this.velocity;
                   this.velocity = value - this.animatedScroll;
@@ -639,10 +639,10 @@
                       this.targetScroll = value;
                   }
                   if (!completed)
-                      this.emit({ isSmooth: true, userData });
+                      this.emit({ userData });
                   if (completed) {
                       this.reset();
-                      this.emit({ isSmooth: true, userData });
+                      this.emit({ userData });
                       onComplete === null || onComplete === void 0 ? void 0 : onComplete(this);
                       // avoid emitting event twice
                       this.__preventNextNativeScrollEvent = true;
@@ -689,15 +689,15 @@
           // avoid progress to be NaN
           return this.limit === 0 ? 1 : this.scroll / this.limit;
       }
-      get isSmooth() {
-          return this.__isSmooth;
-      }
-      set isSmooth(value) {
-          if (this.__isSmooth !== value) {
-              this.__isSmooth = value;
-              this.updateClassName();
-          }
-      }
+      // get isSmooth() {
+      //   return this.__isSmooth
+      // }
+      // private set isSmooth(value: boolean) {
+      //   if (this.__isSmooth !== value) {
+      //     this.__isSmooth = value
+      //     this.updateClassName()
+      //   }
+      // }
       get isScrolling() {
           return this.__isScrolling;
       }
@@ -725,6 +725,9 @@
               this.updateClassName();
           }
       }
+      get isSmooth() {
+          return this.isScrolling === 'smooth';
+      }
       get className() {
           let className = 'lenis';
           if (this.isStopped)
@@ -741,8 +744,9 @@
       }
       updateClassName() {
           this.cleanUpClassName();
-          this.rootElement.className = `${this.rootElement.className} ${this.className}`;
-          this.emitter.emit('className change', this);
+          this.rootElement.className =
+              `${this.rootElement.className} ${this.className}`.trim();
+          // this.emitter.emit('className change', this)
       }
       cleanUpClassName() {
           this.rootElement.className = this.rootElement.className

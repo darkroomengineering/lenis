@@ -104,10 +104,15 @@ export default class Snap {
     this.viewport.height = window.innerHeight
   }
 
-  onScroll = (
-    { scroll, limit, lastVelocity, velocity, isScrolling, isTouching },
-    { userData, isSmooth, type }
-  ) => {
+  onScroll = ({
+    scroll,
+    limit,
+    lastVelocity,
+    velocity,
+    isScrolling,
+    isTouching,
+    userData,
+  }) => {
     if (this.isStopped) return
     // console.log(scroll, velocity, type)
 

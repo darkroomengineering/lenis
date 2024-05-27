@@ -16,17 +16,14 @@ declare class Snap {
     addElement(element: any, options?: {}): () => void;
     removeElement(id: any): void;
     onWindowResize: () => void;
-    onScroll: ({ scroll, limit, lastVelocity, velocity, isScrolling, isTouching }: {
+    onScroll: ({ scroll, limit, lastVelocity, velocity, isScrolling, isTouching, userData, }: {
         scroll: any;
         limit: any;
         lastVelocity: any;
         velocity: any;
         isScrolling: any;
         isTouching: any;
-    }, { userData, isSmooth, type }: {
         userData: any;
-        isSmooth: any;
-        type: any;
     }) => void;
 }
 

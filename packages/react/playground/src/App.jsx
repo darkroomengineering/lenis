@@ -6,8 +6,8 @@ import './App.css'
 function App() {
   const [lorem] = useState(() => new LoremIpsum().generateParagraphs(200))
 
-  const lenis = useLenis((e, f) => {
-    console.log(e, f)
+  const lenis = useLenis((e) => {
+    console.log(e)
   })
   console.log(lenis)
   return (

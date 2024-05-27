@@ -47,7 +47,7 @@ export function useLenis(
     if (!callback || !addCallback || !removeCallback || !lenis) return
 
     addCallback(callback, priority)
-    callback(lenis, {})
+    callback(lenis)
 
     return () => {
       removeCallback(callback)

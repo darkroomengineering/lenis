@@ -150,7 +150,7 @@
               this.viewport.width = window.innerWidth;
               this.viewport.height = window.innerHeight;
           };
-          this.onScroll = ({ scroll, limit, lastVelocity, velocity, isScrolling, isTouching }, { userData, isSmooth, type }) => {
+          this.onScroll = ({ scroll, limit, lastVelocity, velocity, isScrolling, isTouching, userData, }) => {
               if (this.isStopped)
                   return;
               // console.log(scroll, velocity, type)
