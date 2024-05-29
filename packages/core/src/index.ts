@@ -139,7 +139,7 @@ export default class Lenis {
     this.direction = 0
     this.time = 0
 
-    this.options.wrapper?.addEventListener('scroll', this.onNativeScroll, false)
+    this.options.wrapper.addEventListener('scroll', this.onNativeScroll, false)
 
     this.virtualScroll = new VirtualScroll(eventsTarget, {
       touchMultiplier,
@@ -151,7 +151,7 @@ export default class Lenis {
   destroy() {
     this.emitter.destroy()
 
-    this.options.wrapper?.removeEventListener(
+    this.options.wrapper.removeEventListener(
       'scroll',
       this.onNativeScroll,
       false
