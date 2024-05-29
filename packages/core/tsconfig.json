@@ -12,6 +12,8 @@
     "noImplicitOverride": true,
     "module": "NodeNext",
     "outDir": "dist",
+    "removeComments": true,
+    "preserveConstEnums": true,
     "sourceMap": true,
     "declaration": true,
     "composite": true,
