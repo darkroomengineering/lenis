@@ -19,6 +19,7 @@ type LenisOptions = {
     touchMultiplier?: number;
     wheelMultiplier?: number;
     autoResize?: boolean;
+    prevent?: boolean | ((node: Element) => boolean);
     __experimental__naiveDimensions?: boolean;
 };
 declare class Lenis {
@@ -37,7 +38,7 @@ declare class Lenis {
     eventsTarget, smoothWheel, syncTouch, syncTouchLerp, touchInertiaMultiplier, duration, // in seconds
     easing, lerp, infinite, orientation, // vertical, horizontal
     gestureOrientation, // vertical, horizontal, both
-    touchMultiplier, wheelMultiplier, autoResize, __experimental__naiveDimensions, }?: LenisOptions);
+    touchMultiplier, wheelMultiplier, autoResize, prevent, __experimental__naiveDimensions, }?: LenisOptions);
     destroy(): void;
     on(event: string, callback: Function): any;
     off(event: string, callback: Function): any;

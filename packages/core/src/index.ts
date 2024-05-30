@@ -35,7 +35,7 @@ export type LenisOptions = {
   touchMultiplier?: number
   wheelMultiplier?: number
   autoResize?: boolean
-  prevent?: string[] | (node: Element) => boolean
+  prevent?: boolean | ((node: Element) => boolean)
   __experimental__naiveDimensions?: boolean
 }
 

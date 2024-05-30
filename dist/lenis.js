@@ -332,7 +332,7 @@
       eventsTarget = wheelEventsTarget, smoothWheel = true, syncTouch = false, syncTouchLerp = 0.075, touchInertiaMultiplier = 35, duration, // in seconds
       easing = (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)), lerp = !duration && 0.1, infinite = false, orientation = 'vertical', // vertical, horizontal
       gestureOrientation = 'vertical', // vertical, horizontal, both
-      touchMultiplier = 1, wheelMultiplier = 1, autoResize = true, __experimental__naiveDimensions = false, } = {}) {
+      touchMultiplier = 1, wheelMultiplier = 1, autoResize = true, prevent = false, __experimental__naiveDimensions = false, } = {}) {
           // __isSmooth: boolean = false // true if scroll should be animated
           this.__isScrolling = false; // true when scroll is animating
           this.__isStopped = false; // true if user should not be able to scroll - enable/disable programmatically
@@ -379,7 +379,8 @@
               composedPath = composedPath.slice(0, composedPath.indexOf(this.rootElement)); // remove parents elements
               if (!!composedPath.find((node) => {
                   var _a, _b, _c, _d, _e;
-                  return ((_a = node.hasAttribute) === null || _a === void 0 ? void 0 : _a.call(node, 'data-lenis-prevent')) ||
+                  return this.options.prevent(node) ||
+                      ((_a = node.hasAttribute) === null || _a === void 0 ? void 0 : _a.call(node, 'data-lenis-prevent')) ||
                       (isTouch && ((_b = node.hasAttribute) === null || _b === void 0 ? void 0 : _b.call(node, 'data-lenis-prevent-touch'))) ||
                       (isWheel && ((_c = node.hasAttribute) === null || _c === void 0 ? void 0 : _c.call(node, 'data-lenis-prevent-wheel'))) ||
                       (((_d = node.classList) === null || _d === void 0 ? void 0 : _d.contains('lenis')) &&
@@ -473,6 +474,7 @@
               touchMultiplier,
               wheelMultiplier,
               autoResize,
+              prevent,
               __experimental__naiveDimensions,
           };
           this.animate = new Animate();
