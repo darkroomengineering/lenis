@@ -4,7 +4,7 @@
   (global = typeof globalThis !== 'undefined' ? globalThis : global || self, global.Lenis = factory());
 })(this, (function () { 'use strict';
 
-  var version = "1.1.0";
+  var version = "1.1.1";
 
   // Clamp a value between a minimum and maximum value
   function clamp(min, input, max) {
@@ -377,9 +377,10 @@
               // catch if scrolling on nested scroll elements
               let composedPath = event.composedPath();
               composedPath = composedPath.slice(0, composedPath.indexOf(this.rootElement)); // remove parents elements
+              const prevent = this.options.prevent;
               if (!!composedPath.find((node) => {
                   var _a, _b, _c, _d, _e;
-                  return this.options.prevent(node) ||
+                  return (typeof prevent === 'function' ? prevent === null || prevent === void 0 ? void 0 : prevent(node) : prevent) ||
                       ((_a = node.hasAttribute) === null || _a === void 0 ? void 0 : _a.call(node, 'data-lenis-prevent')) ||
                       (isTouch && ((_b = node.hasAttribute) === null || _b === void 0 ? void 0 : _b.call(node, 'data-lenis-prevent-touch'))) ||
                       (isWheel && ((_c = node.hasAttribute) === null || _c === void 0 ? void 0 : _c.call(node, 'data-lenis-prevent-wheel'))) ||
