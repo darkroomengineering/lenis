@@ -171,6 +171,7 @@ See documentation for [lenis/react](https://github.com/darkroomengineering/lenis
 | `targetScroll`          | `number`          | Target scroll value                                                        |
 | `time`                  | `number`          | Time elapsed since instance creation                                       |
 | `actualScroll`          | `number`          | Current scroll value registered by the browser                             |
+| `lastVelocity`          | `number`          | last scroll velocity                                                       |
 | `velocity`              | `number`          | Current scroll velocity                                                    |
 | `isHorizontal` (getter) | `boolean`         | Whether or not the instance is horizontal                                  |
 | `isScrolling` (getter)  | `boolean, string` | Whether or not the scroll is being animated, `smooth`, `native` or `false` |
