@@ -1,6 +1,6 @@
 {
   "name": "lenis",
-  "version": "1.0.45",
+  "version": "1.0.46-dev.0",
   "author": "darkroom.engineering",
   "license": "MIT",
   "repository": {
@@ -25,9 +25,11 @@
   "scripts": {
     "dev:core": "npm run dev --prefix ./packages/core",
     "dev:react": "npm run dev --prefix ./packages/react",
+    "dev:snap": "npm run dev --prefix ./packages/snap",
     "build:core": "npm run build --prefix ./packages/core",
     "build:react": "npm run build --prefix ./packages/react",
-    "build": "npm-run-all clean build:core build:react",
+    "build:snap": "npm run build --prefix ./packages/snap",
+    "build": "npm-run-all clean build:core build:react build:snap",
     "clean": "shx rm -rf dist/*",
     "readme": "node update-readme.js",
     "version:dev": "npm version prerelease --preid dev --force",
@@ -48,7 +50,6 @@
     "@rollup/plugin-terser": "^0.4.4",
     "@rollup/plugin-typescript": "^11.1.6",
     "@types/react": "^18.2.77",
-    "move-file-cli": "^3.0.0",
     "npm-run-all": "^4.1.5",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
@@ -84,10 +85,13 @@
     "./react": {
       "types": "./dist/lenis-react.d.ts",
       "default": "./dist/lenis-react.mjs"
+    },
+    "./snap": {
+      "types": "./dist/lenis-snap.d.ts",
+      "default": "./dist/lenis-snap.mjs"
     }
   },
   "dependencies": {
-    "@darkroom.engineering/tempus": "^0.0.46",
-    "clsx": "^2.1.0"
+    "@darkroom.engineering/tempus": "^0.0.46"
   }
 }

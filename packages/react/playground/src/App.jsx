@@ -9,13 +9,13 @@ function App() {
   const lenis = useLenis((e) => {
     console.log(e)
   })
-
   console.log(lenis)
-
   return (
     <>
       {/* <ReactLenis root /> */}
-      <ReactLenis className="wrapper">{lorem}</ReactLenis>
+      <ReactLenis className="wrapper" root>
+        {lorem}
+      </ReactLenis>
     </>
   )
 }

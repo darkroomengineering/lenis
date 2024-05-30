@@ -191,7 +191,7 @@ html.lenis, html.lenis body {
   overflow: hidden;
 }
 
-.lenis.lenis-scrolling iframe {
+.lenis.lenis-smooth iframe {
   pointer-events: none;
 }
 ```

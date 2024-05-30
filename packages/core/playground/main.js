@@ -1,5 +1,5 @@
 import { LoremIpsum } from 'lorem-ipsum'
-import Lenis from '../dist/lenis.mjs'
+import Lenis from '../src/index.ts'
 import './style.css'
 
 document.querySelector('#app').innerHTML = new LoremIpsum().generateParagraphs(
@@ -7,6 +7,9 @@ document.querySelector('#app').innerHTML = new LoremIpsum().generateParagraphs(
 )
 
 const lenis = new Lenis()
+lenis.on('scroll', (e) => {
+  console.log(e.userData, e.velocity, e.isScrolling)
+})
 window.lenis = lenis
 
 function raf(time) {

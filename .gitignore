@@ -41,3 +41,4 @@ yarn-error.log*
 
 /packages/core/dist
 /packages/react/dist
+/packages/snap/dist

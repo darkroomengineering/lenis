@@ -22,10 +22,17 @@ type LenisOptions = {
     __experimental__naiveDimensions?: boolean;
 };
 declare class Lenis {
-    __isSmooth: boolean;
-    __isScrolling: boolean;
+    __isScrolling: boolean | 'native' | 'smooth';
     __isStopped: boolean;
     __isLocked: boolean;
+    time: number;
+    userData: object;
+    lastVelocity: number;
+    velocity: number;
+    direction: 1 | -1 | undefined;
+    options: LenisOptions;
+    targetScroll: number;
+    animatedScroll: number;
     constructor({ wrapper, content, wheelEventsTarget, // deprecated
     eventsTarget, smoothWheel, syncTouch, syncTouchLerp, touchInertiaMultiplier, duration, // in seconds
     easing, lerp, infinite, orientation, // vertical, horizontal
@@ -43,34 +50,37 @@ declare class Lenis {
     start(): void;
     stop(): void;
     raf(time: number): void;
-    scrollTo(target: number | string | HTMLElement, { offset, immediate, lock, duration, easing, lerp, onComplete, force, // scroll even if stopped
-    programmatic, }?: {
+    scrollTo(target: number | string | HTMLElement, { offset, immediate, lock, duration, easing, lerp, onStart, onComplete, force, // scroll even if stopped
+    programmatic, // called from outside of the class
+    userData, }?: {
         offset?: number;
         immediate?: boolean;
         lock?: boolean;
         duration?: number;
         easing?: EasingFunction;
         lerp?: number;
+        onStart?: (lenis: Lenis) => void;
         onComplete?: (lenis: Lenis) => void;
         force?: boolean;
         programmatic?: boolean;
+        userData?: object;
     }): void;
-    get rootElement(): any;
+    get rootElement(): Window | HTMLElement;
     get limit(): any;
     get isHorizontal(): boolean;
-    get actualScroll(): any;
-    get scroll(): any;
+    get actualScroll(): number;
+    get scroll(): number;
     get progress(): number;
-    get isSmooth(): boolean;
-    private set isSmooth(value);
     get isScrolling(): boolean;
     private set isScrolling(value);
     get isStopped(): boolean;
     private set isStopped(value);
     get isLocked(): boolean;
     private set isLocked(value);
+    get isSmooth(): boolean;
     get className(): string;
-    private toggleClassName;
+    private updateClassName;
+    private cleanUpClassName;
 }
 
 export { type LenisOptions, Lenis as default };

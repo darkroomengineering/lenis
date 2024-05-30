@@ -39,10 +39,23 @@ export type LenisOptions = {
 }
 
 export default class Lenis {
-  __isSmooth: boolean = false // true if scroll should be animated
-  __isScrolling: boolean = false // true when scroll is animating
+  // __isSmooth: boolean = false // true if scroll should be animated
+  __isScrolling: boolean | 'native' | 'smooth' = false // true when scroll is animating
   __isStopped: boolean = false // true if user should not be able to scroll - enable/disable programmatically
   __isLocked: boolean = false // same as isStopped but enabled/disabled when scroll reaches target
+
+  time: number
+  userData: object
+  lastVelocity: number
+  velocity: number
+  direction: 1 | -1 | undefined
+  options: LenisOptions
+  targetScroll: number
+  animatedScroll: number
+  // animate: Animate
+  // emitter: Emitter
+  // dimensions: Dimensions
+  // virtualScroll: VirtualScroll
 
   constructor({
     wrapper = window,
@@ -95,12 +108,17 @@ export default class Lenis {
     this.animate = new Animate()
     this.emitter = new Emitter()
     this.dimensions = new Dimensions({ wrapper, content, autoResize })
-    this.toggleClassName('lenis', true)
+    // this.toggleClassName('lenis', true)
+    this.updateClassName()
 
-    this.velocity = 0
+    this.userData = {}
+    this.time = 0
+    this.velocity = this.lastVelocity = 0
     this.isLocked = false
     this.isStopped = false
-    this.isSmooth = syncTouch || smoothWheel
+    // this.hasScrolled = false
+    // this.isSmooth = syncTouch || smoothWheel
+    // this.isSmooth = false
     this.isScrolling = false
     this.targetScroll = this.animatedScroll = this.actualScroll
 
@@ -125,11 +143,15 @@ export default class Lenis {
     this.virtualScroll.destroy()
     this.dimensions.destroy()
 
-    this.toggleClassName('lenis', false)
-    this.toggleClassName('lenis-smooth', false)
-    this.toggleClassName('lenis-scrolling', false)
-    this.toggleClassName('lenis-stopped', false)
-    this.toggleClassName('lenis-locked', false)
+    this.cleanUpClassName()
+
+    // this.rootElement.className = ''
+
+    // this.toggleClassName('lenis', false)
+    // this.toggleClassName('lenis-smooth', false)
+    // this.toggleClassName('lenis-scrolling', false)
+    // this.toggleClassName('lenis-stopped', false)
+    // this.toggleClassName('lenis-locked', false)
   }
 
   on(event: string, callback: Function) {
@@ -155,6 +177,17 @@ export default class Lenis {
 
     const isTouch = event.type.includes('touch')
     const isWheel = event.type.includes('wheel')
+
+    this.isTouching = event.type === 'touchstart' || event.type === 'touchmove'
+    // if (event.type === 'touchend') {
+    //   console.log('touchend', this.scroll)
+    //   // this.lastVelocity = this.velocity
+    //   // this.velocity = 0
+    //   // this.isScrolling = false
+    //   this.emit({ type: 'touchend' })
+    //   // alert('touchend')
+    //   return
+    // }
 
     const isTapToStop =
       this.options.syncTouch &&
@@ -206,12 +239,12 @@ export default class Lenis {
       return
     }
 
-    this.isSmooth =
+    const isSmooth =
       (this.options.syncTouch && isTouch) ||
       (this.options.smoothWheel && isWheel)
 
-    if (!this.isSmooth) {
-      this.isScrolling = false
+    if (!isSmooth) {
+      this.isScrolling = 'native'
       this.animate.stop()
       return
     }
@@ -252,19 +285,42 @@ export default class Lenis {
     this.dimensions.resize()
   }
 
-  private emit() {
+  private emit({ userData = {} } = {}) {
+    this.userData = userData
     this.emitter.emit('scroll', this)
+    this.userData = {}
   }
 
   private onNativeScroll = () => {
-    if (this.__preventNextScrollEvent) return
+    clearTimeout(this.__resetVelocityTimeout)
+    delete this.__resetVelocityTimeout
 
-    if (!this.isScrolling) {
+    if (this.__preventNextNativeScrollEvent) {
+      delete this.__preventNextNativeScrollEvent
+      return
+    }
+
+    if (this.isScrolling === false || this.isScrolling === 'native') {
       const lastScroll = this.animatedScroll
       this.animatedScroll = this.targetScroll = this.actualScroll
-      this.velocity = 0
+      this.lastVelocity = this.velocity
+      this.velocity = this.animatedScroll - lastScroll
       this.direction = Math.sign(this.animatedScroll - lastScroll)
+      // this.isSmooth = false
+      this.isScrolling = this.hasScrolled ? 'native' : false
       this.emit()
+
+      if (this.velocity !== 0) {
+        this.__resetVelocityTimeout = setTimeout(() => {
+          this.lastVelocity = this.velocity
+          this.velocity = 0
+          this.isScrolling = false
+          this.emit()
+        }, 400)
+      }
+
+      // this.hasScrolled = true
+      // }, 50)
     }
   }
 
@@ -272,7 +328,7 @@ export default class Lenis {
     this.isLocked = false
     this.isScrolling = false
     this.animatedScroll = this.targetScroll = this.actualScroll
-    this.velocity = 0
+    this.lastVelocity = this.velocity = 0
     this.animate.stop()
   }
 
@@ -307,9 +363,11 @@ export default class Lenis {
       duration = this.options.duration,
       easing = this.options.easing,
       lerp = !duration && this.options.lerp,
+      onStart,
       onComplete,
       force = false, // scroll even if stopped
       programmatic = true, // called from outside of the class
+      userData = {},
     }: {
       offset?: number
       immediate?: boolean
@@ -317,9 +375,11 @@ export default class Lenis {
       duration?: number
       easing?: EasingFunction
       lerp?: number
+      onStart?: (lenis: Lenis) => void
       onComplete?: (lenis: Lenis) => void
       force?: boolean
       programmatic?: boolean
+      userData?: object
     } = {}
   ) {
     if ((this.isStopped || this.isLocked) && !force) return
@@ -375,9 +435,9 @@ export default class Lenis {
       return
     }
 
-    if (!programmatic) {
-      if (target === this.targetScroll) return
+    if (target === this.targetScroll) return
 
+    if (!programmatic) {
       this.targetScroll = target
     }
 
@@ -388,12 +448,14 @@ export default class Lenis {
       onStart: () => {
         // started
         if (lock) this.isLocked = true
-        this.isScrolling = true
+        this.isScrolling = 'smooth'
+        onStart?.(this)
       },
       onUpdate: (value: number, completed: boolean) => {
-        this.isScrolling = true
+        this.isScrolling = 'smooth'
 
         // updated
+        this.lastVelocity = this.velocity
         this.velocity = value - this.animatedScroll
         this.direction = Math.sign(this.velocity)
 
@@ -405,18 +467,18 @@ export default class Lenis {
           this.targetScroll = value
         }
 
-        if (!completed) this.emit()
+        if (!completed) this.emit({ userData })
 
         if (completed) {
           this.reset()
-          this.emit()
+          this.emit({ userData })
           onComplete?.(this)
 
           // avoid emitting event twice
-          this.__preventNextScrollEvent = true
-          requestAnimationFrame(() => {
-            delete this.__preventNextScrollEvent
-          })
+          this.__preventNextNativeScrollEvent = true
+          // requestAnimationFrame(() => {
+          //   delete this.__preventNextNativeScrollEvent
+          // })
         }
       },
     })
@@ -444,34 +506,34 @@ export default class Lenis {
     return this.options.orientation === 'horizontal'
   }
 
-  get actualScroll() {
+  get actualScroll(): number {
     // value browser takes into account
     return this.isHorizontal
       ? this.rootElement.scrollLeft
       : this.rootElement.scrollTop
   }
 
-  get scroll() {
+  get scroll(): number {
     return this.options.infinite
       ? modulo(this.animatedScroll, this.limit)
       : this.animatedScroll
   }
 
-  get progress() {
+  get progress(): number {
     // avoid progress to be NaN
     return this.limit === 0 ? 1 : this.scroll / this.limit
   }
 
-  get isSmooth() {
-    return this.__isSmooth
-  }
+  // get isSmooth() {
+  //   return this.__isSmooth
+  // }
 
-  private set isSmooth(value: boolean) {
-    if (this.__isSmooth !== value) {
-      this.__isSmooth = value
-      this.toggleClassName('lenis-smooth', value)
-    }
-  }
+  // private set isSmooth(value: boolean) {
+  //   if (this.__isSmooth !== value) {
+  //     this.__isSmooth = value
+  //     this.updateClassName()
+  //   }
+  // }
 
   get isScrolling() {
     return this.__isScrolling
@@ -480,7 +542,7 @@ export default class Lenis {
   private set isScrolling(value: boolean) {
     if (this.__isScrolling !== value) {
       this.__isScrolling = value
-      this.toggleClassName('lenis-scrolling', value)
+      this.updateClassName()
     }
   }
 
@@ -491,7 +553,7 @@ export default class Lenis {
   private set isStopped(value: boolean) {
     if (this.__isStopped !== value) {
       this.__isStopped = value
-      this.toggleClassName('lenis-stopped', value)
+      this.updateClassName()
     }
   }
 
@@ -502,8 +564,12 @@ export default class Lenis {
   private set isLocked(value: boolean) {
     if (this.__isLocked !== value) {
       this.__isLocked = value
-      this.toggleClassName('lenis-locked', value)
+      this.updateClassName()
     }
+  }
+
+  get isSmooth() {
+    return this.isScrolling === 'smooth'
   }
 
   get className() {
@@ -511,12 +577,29 @@ export default class Lenis {
     if (this.isStopped) className += ' lenis-stopped'
     if (this.isLocked) className += ' lenis-locked'
     if (this.isScrolling) className += ' lenis-scrolling'
-    if (this.isSmooth) className += ' lenis-smooth'
+    if (this.isScrolling === 'smooth') className += ' lenis-smooth'
+    // if (this.isScrolling === 'native') className += ' lenis-native'
+    // if (this.isSmooth) className += ' lenis-smooth'
     return className
   }
 
-  private toggleClassName(name: string, value: boolean) {
-    this.rootElement.classList.toggle(name, value)
-    this.emitter.emit('className change', this)
+  private updateClassName() {
+    this.cleanUpClassName()
+
+    this.rootElement.className =
+      `${this.rootElement.className} ${this.className}`.trim()
+    // this.emitter.emit('className change', this)
   }
+
+  private cleanUpClassName() {
+    this.rootElement.className = this.rootElement.className
+      .replace(/lenis(-\w+)?/g, '')
+      .trim()
+  }
+
+  // private toggleClassName(name: string, value: boolean) {
+  //   // this.rootElement.classList.toggle(name, value)
+  //   this.rootElement.className = this.className
+  //   this.emitter.emit('className change', this)
+  // }
 }
