@@ -35,6 +35,7 @@ export type LenisOptions = {
   touchMultiplier?: number
   wheelMultiplier?: number
   autoResize?: boolean
+  prevent?: string[] | (node: Element) => boolean
   __experimental__naiveDimensions?: boolean
 }
 
@@ -75,6 +76,7 @@ export default class Lenis {
     touchMultiplier = 1,
     wheelMultiplier = 1,
     autoResize = true,
+    prevent = false,
     __experimental__naiveDimensions = false,
   }: LenisOptions = {}) {
     window.lenisVersion = version
@@ -102,6 +104,7 @@ export default class Lenis {
       touchMultiplier,
       wheelMultiplier,
       autoResize,
+      prevent,
       __experimental__naiveDimensions,
     }
 
@@ -225,6 +228,7 @@ export default class Lenis {
     if (
       !!composedPath.find(
         (node) =>
+          this.options.prevent(node) ||
           node.hasAttribute?.('data-lenis-prevent') ||
           (isTouch && node.hasAttribute?.('data-lenis-prevent-touch')) ||
           (isWheel && node.hasAttribute?.('data-lenis-prevent-wheel')) ||

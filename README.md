@@ -61,6 +61,30 @@ function raf(time) {
 requestAnimationFrame(raf)
 ```
 
+Add the following CSS to your project:
+
+```css
+html.lenis, html.lenis body {
+  height: auto;
+}
+
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+
+.lenis.lenis-smooth [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+
+.lenis.lenis-stopped {
+  overflow: hidden;
+}
+
+.lenis.lenis-smooth iframe {
+  pointer-events: none;
+}
+```
+
 ### GSAP ScrollTrigger:
 ```js
 const lenis = new Lenis()
@@ -170,31 +194,6 @@ See documentation for [lenis/react](https://github.com/darkroomengineering/lenis
 |----------|--------------------|
 | `scroll` | Lenis instance     |
 
-<br/>
-
-## Recommended CSS
-
-```css
-html.lenis, html.lenis body {
-  height: auto;
-}
-
-.lenis.lenis-smooth {
-  scroll-behavior: auto !important;
-}
-
-.lenis.lenis-smooth [data-lenis-prevent] {
-  overscroll-behavior: contain;
-}
-
-.lenis.lenis-stopped {
-  overflow: hidden;
-}
-
-.lenis.lenis-smooth iframe {
-  pointer-events: none;
-}
-```
 
 <br/>
 
