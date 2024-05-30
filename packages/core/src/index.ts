@@ -225,10 +225,12 @@ export default class Lenis {
     let composedPath = event.composedPath()
     composedPath = composedPath.slice(0, composedPath.indexOf(this.rootElement)) // remove parents elements
 
+    const prevent = this.options.prevent
+
     if (
       !!composedPath.find(
         (node) =>
-          this.options.prevent(node) ||
+          (typeof prevent === 'function' ? prevent?.(node) : prevent) ||
           node.hasAttribute?.('data-lenis-prevent') ||
           (isTouch && node.hasAttribute?.('data-lenis-prevent-touch')) ||
           (isWheel && node.hasAttribute?.('data-lenis-prevent-wheel')) ||
