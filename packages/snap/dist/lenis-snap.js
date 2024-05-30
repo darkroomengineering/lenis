@@ -22,13 +22,28 @@
   function addParentSticky(element) {
     if (element?.dataset?.sticky === 'true') {
       element.style.removeProperty('position');
-      element.dataset.sticky = 'true';
       delete element.dataset.sticky;
     }
 
-    if (element.parentNode) {
-      addParentSticky(element.parentNode);
+    if (element.offsetParent) {
+      addParentSticky(element.offsetParent);
     }
+  }
+
+  function offsetTop(element, accumulator = 0) {
+    const top = accumulator + element.offsetTop;
+    if (element.offsetParent) {
+      return offsetTop(element.offsetParent, top)
+    }
+    return top
+  }
+
+  function offsetLeft(element, accumulator = 0) {
+    const left = accumulator + element.offsetLeft;
+    if (element.offsetParent) {
+      return offsetLeft(element.offsetParent, left)
+    }
+    return left
   }
 
   function scrollTop(element, accumulator = 0) {
@@ -48,10 +63,16 @@
   }
 
   class Slide {
-    constructor(element, { align = 'start', type = 'mandatory' } = {}) {
+    constructor(
+      element,
+      { align = ['start'], ignoreSticky = true, ignoreTransform = false } = {}
+    ) {
       this.element = element;
-      this.align = align;
-      this.type = type;
+
+      this.ignoreSticky = ignoreSticky;
+      this.ignoreTransform = ignoreTransform;
+
+      this.align = [align].flat();
 
       this.rect = {};
 
@@ -96,13 +117,16 @@
     onWrapperResize = () => {
       let top, left;
 
-      removeParentSticky(this.element);
-      {
+      if (this.ignoreSticky) removeParentSticky(this.element);
+      if (this.ignoreTransform) {
+        top = offsetTop(this.element);
+        left = offsetLeft(this.element);
+      } else {
         const rect = this.element.getBoundingClientRect();
         top = rect.top + scrollTop(this.element);
         left = rect.left + scrollLeft(this.element);
       }
-      addParentSticky(this.element);
+      if (this.ignoreSticky) addParentSticky(this.element);
 
       this.setRect({ top, left });
     }
@@ -115,46 +139,98 @@
     }
   }
 
-  var Snap = /** @class */ (function () {
-      function Snap(lenis) {
-          var _this = this;
-          this.onWindowResize = function () {
-              _this.viewport.width = window.innerWidth;
-              _this.viewport.height = window.innerHeight;
+  // TODO:
+  // - horizontal
+  // - fix trackpad snapping too soon due to velocity (fuck Apple)
+  // - fix wheel scrolling after limits (see console scroll to)
+  // - fix touch scroll, do not snap when not released
+  class Snap {
+      constructor(lenis, { type = 'mandatory', lerp, easing, duration, velocityThreshold = 1, onSnapStart, onSnapComplete, } = {}) {
+          this.onWindowResize = () => {
+              this.viewport.width = window.innerWidth;
+              this.viewport.height = window.innerHeight;
           };
-          this.onScroll = function (e) {
-              console.log(e.isNativeScroll, e.velocity);
-              // console.log('scroll', e.isScrolling)
-              // console.log('scroll', e.scroll, e.velocity, e.isScrolling)
-              if (e.velocity === 0) {
-                  // console.log('not scrolling anymore')
-                  _this.elements.forEach(function (_a) {
-                      var rect = _a.rect; _a.type; var align = _a.align;
-                      var snap;
-                      if (align === 'start') {
-                          snap = rect.top;
-                      }
-                      else if (align === 'center') {
-                          snap = rect.top + rect.height / 2 - _this.viewport.height / 2;
-                      }
-                      else if (align === 'end') {
-                          snap = rect.top + rect.height - _this.viewport.height;
-                      }
-                      console.log('snap', snap);
-                      // setTimeout(() => {
-                      // console.log('scroll to', slide.rect.top + slide.rect.height / 2)
-                      // }, 0)
-                      // console.log(
-                      //   e.scroll,
-                      //   slide.type,
-                      //   slide.align,
-                      //   slide.rect.top + slide.rect.height / 2
-                      // )
+          this.onScroll = ({ scroll, limit, lastVelocity, velocity, isScrolling, isTouching, userData, }) => {
+              if (this.isStopped)
+                  return;
+              // console.log(scroll, velocity, type)
+              // return
+              const isDecelerating = Math.abs(lastVelocity) > Math.abs(velocity);
+              const isTurningBack = Math.sign(lastVelocity) !== Math.sign(velocity) && velocity !== 0;
+              // console.log({ lastVelocity, velocity, isTurningBack, isDecelerating })
+              // console.log('onScroll')
+              if (Math.abs(velocity) < this.velocityThreshold &&
+                  // !isTouching &&
+                  isDecelerating &&
+                  !isTurningBack &&
+                  (userData === null || userData === void 0 ? void 0 : userData.initiator) !== 'snap') {
+                  scroll = Math.ceil(scroll);
+                  let snaps = [0, ...this.snaps.values(), limit];
+                  this.elements.forEach(({ rect, align }) => {
+                      let snap;
+                      align.forEach((align) => {
+                          if (align === 'start') {
+                              snap = rect.top;
+                          }
+                          else if (align === 'center') {
+                              snap = rect.top + rect.height / 2 - this.viewport.height / 2;
+                          }
+                          else if (align === 'end') {
+                              snap = rect.top + rect.height - this.viewport.height;
+                          }
+                          if (snap !== undefined) {
+                              snaps.push(Math.ceil(snap));
+                          }
+                      });
                   });
+                  snaps = snaps.sort((a, b) => Math.abs(a) - Math.abs(b));
+                  let prevSnap = snaps.findLast((snap) => snap <= scroll);
+                  if (prevSnap === undefined)
+                      prevSnap = snaps[0];
+                  const distanceToPrevSnap = Math.abs(scroll - prevSnap);
+                  let nextSnap = snaps.find((snap) => snap >= scroll);
+                  if (nextSnap === undefined)
+                      nextSnap = snaps[snaps.length - 1];
+                  const distanceToNextSnap = Math.abs(scroll - nextSnap);
+                  const snap = distanceToPrevSnap < distanceToNextSnap ? prevSnap : nextSnap;
+                  const distance = Math.abs(scroll - snap);
+                  if (this.type === 'mandatory' ||
+                      (this.type === 'proximity' && distance <= this.viewport.height)) {
+                      // this.__isScrolling = true
+                      // this.onSnapStart?.(snap)
+                      // console.log('scroll to')
+                      this.lenis.scrollTo(snap, {
+                          lerp: this.options.lerp,
+                          easing: this.options.easing,
+                          duration: this.options.duration,
+                          userData: { initiator: 'snap' },
+                          onStart: () => {
+                              var _a;
+                              (_a = this.onSnapStart) === null || _a === void 0 ? void 0 : _a.call(this, snap);
+                          },
+                          onComplete: () => {
+                              var _a;
+                              (_a = this.onSnapComplete) === null || _a === void 0 ? void 0 : _a.call(this, snap);
+                          },
+                      });
+                  }
+                  // console.timeEnd('scroll')
               }
           };
           this.lenis = lenis;
+          this.options = {
+              type,
+              lerp,
+              easing,
+              duration,
+              velocityThreshold,
+          };
+          this.type = type;
           this.elements = new Map();
+          this.snaps = new Map();
+          this.velocityThreshold = velocityThreshold;
+          this.onSnapStart = onSnapStart;
+          this.onSnapComplete = onSnapComplete;
           this.viewport = {
               width: window.innerWidth,
               height: window.innerHeight,
@@ -163,20 +239,47 @@
           window.addEventListener('resize', this.onWindowResize);
           this.lenis.on('scroll', this.onScroll);
       }
-      Snap.prototype.destroy = function () {
+      // debug() {
+      //   const element = document.createElement('div')
+      //   element.style.cssText = `
+      //     position: fixed;
+      //     background: red;
+      //     border-bottom: 1px solid red;
+      //     left: 0;
+      //     right: 0;
+      //     top: 0;
+      //     z-index: 9999;
+      //   `
+      //   document.body.appendChild(element)
+      // }
+      destroy() {
           this.lenis.off('scroll', this.onScroll);
           window.removeEventListener('resize', this.onWindowResize);
-          this.elements.forEach(function (slide) { return slide.destroy(); });
-      };
-      Snap.prototype.add = function (element, options) {
-          if (options === void 0) { options = {}; }
-          this.elements.set(element, new Slide(element, options));
-      };
-      Snap.prototype.remove = function (element) {
-          this.elements.delete(element);
-      };
-      return Snap;
-  }());
+          this.elements.forEach((slide) => slide.destroy());
+      }
+      start() {
+          this.isStopped = false;
+      }
+      stop() {
+          this.isStopped = true;
+      }
+      add(value) {
+          const id = crypto.randomUUID();
+          this.snaps.set(id, value);
+          return () => this.remove(id);
+      }
+      remove(id) {
+          this.snaps.delete(id);
+      }
+      addElement(element, options = {}) {
+          const id = crypto.randomUUID();
+          this.elements.set(id, new Slide(element, options));
+          return () => this.removeElement(id);
+      }
+      removeElement(id) {
+          this.elements.delete(id);
+      }
+  }
 
   return Snap;
 
