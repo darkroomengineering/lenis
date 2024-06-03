@@ -44,3 +44,4 @@ yarn-error.log*
 
 .rollup.cache
 dist/src
+/packages/snap/dist

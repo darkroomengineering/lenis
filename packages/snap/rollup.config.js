@@ -8,7 +8,7 @@ export default [
     input: './src/index.ts',
     output: [
       {
-        file: './dist/lenis.mjs',
+        file: './dist/lenis-snap.mjs',
         format: 'esm',
         strict: true,
         sourcemap: true,
@@ -21,7 +21,7 @@ export default [
         ],
       },
       {
-        file: './dist/lenis.min.js',
+        file: './dist/lenis-snap.min.js',
         format: 'umd',
         strict: true,
         sourcemap: true,
@@ -34,7 +34,7 @@ export default [
         ],
       },
       {
-        file: './dist/lenis.js',
+        file: './dist/lenis-snap.js',
         format: 'umd',
         strict: true,
         sourcemap: true,
@@ -49,8 +49,8 @@ export default [
     ],
   },
   {
-    input: './dist/src/index.d.ts',
-    output: [{ file: './dist/lenis.d.ts', format: 'esm' }],
+    input: './dist/index.d.ts',
+    output: [{ file: './dist/lenis-snap.d.ts', format: 'esm' }],
     plugins: [dts()],
   },
 ]

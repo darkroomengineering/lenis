@@ -106,28 +106,45 @@ type LenisOptions = Partial<{
     touchMultiplier: number;
     wheelMultiplier: number;
     autoResize: boolean;
+    prevent: boolean | ((node: Element) => boolean);
     __experimental__naiveDimensions: boolean;
 }>;
 type LenisEvents = 'scroll';
+type ScrollStatus = boolean | 'native' | 'smooth';
+type ScrollToParams = Partial<{
+    offset: number;
+    immediate: boolean;
+    lock: boolean;
+    duration: number;
+    easing: EasingFunction;
+    lerp: number;
+    onStart: (lenis: Lenis) => void;
+    onComplete: (lenis: Lenis) => void;
+    force: boolean;
+    programmatic: boolean;
+}>;
 declare class Lenis {
-    __isSmooth: boolean;
-    __isScrolling: boolean;
+    __isScrolling: ScrollStatus;
     __isStopped: boolean;
     __isLocked: boolean;
     __preventNextScrollEvent: boolean;
+    __resetVelocityTimeout: number;
+    __preventNextNativeScrollEvent: boolean;
     options: Overwrite<LenisOptions, {
         wrapper: NonNullable<LenisOptions['wrapper']>;
     }>;
     animate: Animate;
     emitter: Emitter;
     dimensions: Dimensions;
+    lastVelocity: number;
     velocity: number;
     direction: number;
     targetScroll: number;
     animatedScroll: number;
     virtualScroll: VirtualScroll;
     time: number;
-    constructor({ wrapper, content, wheelEventsTarget, eventsTarget, smoothWheel, syncTouch, syncTouchLerp, touchInertiaMultiplier, duration, easing, lerp, infinite, orientation, gestureOrientation, touchMultiplier, wheelMultiplier, autoResize, __experimental__naiveDimensions, }?: LenisOptions);
+    isTouching: boolean;
+    constructor({ wrapper, content, wheelEventsTarget, eventsTarget, smoothWheel, syncTouch, syncTouchLerp, touchInertiaMultiplier, duration, easing, lerp, infinite, orientation, gestureOrientation, touchMultiplier, wheelMultiplier, autoResize, prevent, __experimental__naiveDimensions, }?: LenisOptions);
     destroy(): void;
     on(event: LenisEvents, callback: (lenis: Lenis) => unknown): () => void;
     off(event: LenisEvents, callback: (lenis: Lenis) => unknown): void;
@@ -140,33 +157,23 @@ declare class Lenis {
     start(): void;
     stop(): void;
     raf(time: number): void;
-    scrollTo(target: number | string | HTMLElement, { offset, immediate, lock, duration, easing, lerp, onComplete, force, programmatic, }?: {
-        offset?: number;
-        immediate?: boolean;
-        lock?: boolean;
-        duration?: number;
-        easing?: EasingFunction;
-        lerp?: number;
-        onComplete?: (lenis: Lenis) => void;
-        force?: boolean;
-        programmatic?: boolean;
-    }): void;
+    scrollTo(target: number | string | HTMLElement, { offset, immediate, lock, duration, easing, lerp, onStart, onComplete, force, programmatic, }?: ScrollToParams): void;
     get rootElement(): HTMLElement;
     get limit(): number;
     get isHorizontal(): boolean;
     get actualScroll(): number;
     get scroll(): number;
     get progress(): number;
-    get isSmooth(): boolean;
-    private set isSmooth(value);
-    get isScrolling(): boolean;
+    get isScrolling(): ScrollStatus;
     private set isScrolling(value);
     get isStopped(): boolean;
     private set isStopped(value);
     get isLocked(): boolean;
     private set isLocked(value);
+    get isSmooth(): boolean;
     get className(): string;
-    private toggleClassName;
+    private updateClassName;
+    private cleanUpClassName;
 }
 
 export { type LenisEvents, type LenisOptions, Lenis as default };
