@@ -41,4 +41,7 @@ yarn-error.log*
 
 /packages/core/dist
 /packages/react/dist
+
+.rollup.cache
+dist/src
 /packages/snap/dist
