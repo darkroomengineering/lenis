@@ -75,7 +75,7 @@ export default class Lenis {
   dimensions: Dimensions
   lastVelocity: number
   velocity: number
-  direction: number
+  direction: 0 | 1 | -1
 
   targetScroll: number
   animatedScroll: number
@@ -352,7 +352,9 @@ export default class Lenis {
       this.animatedScroll = this.targetScroll = this.actualScroll
       this.lastVelocity = this.velocity
       this.velocity = this.animatedScroll - lastScroll
-      this.direction = Math.sign(this.animatedScroll - lastScroll)
+      this.direction = Math.sign(
+        this.animatedScroll - lastScroll
+      ) as Lenis['direction']
       // this.isSmooth = false
       this.isScrolling = false
       this.emit()
@@ -500,7 +502,7 @@ export default class Lenis {
         // updated
         this.lastVelocity = this.velocity
         this.velocity = value - this.animatedScroll
-        this.direction = Math.sign(this.velocity)
+        this.direction = Math.sign(this.velocity) as Lenis['direction']
 
         this.animatedScroll = value
         this.setScroll(this.scroll)
