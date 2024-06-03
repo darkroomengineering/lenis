@@ -12,7 +12,7 @@ const lenis = new Lenis({
   // },
 })
 lenis.on('scroll', (e) => {
-  // console.log(e.userData, e.velocity, e.isScrolling)
+  console.log(e.velocity, e.isScrolling)
 })
 window.lenis = lenis
 

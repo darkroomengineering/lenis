@@ -313,7 +313,8 @@ export default class Lenis {
       this.velocity = this.animatedScroll - lastScroll
       this.direction = Math.sign(this.animatedScroll - lastScroll)
       // this.isSmooth = false
-      this.isScrolling = this.hasScrolled ? 'native' : false
+      // this.isScrolling = this.hasScrolled ? 'native' : false
+      this.isScrolling = 'native'
       this.emit()
 
       if (this.velocity !== 0) {
