@@ -55,6 +55,7 @@ type ScrollToParams = Partial<{
   onComplete: (lenis: Lenis) => void
   force: boolean
   programmatic: boolean
+  userData: Lenis['userData']
 }>
 
 export default class Lenis {
@@ -76,6 +77,7 @@ export default class Lenis {
   lastVelocity: number
   velocity: number
   direction: 0 | 1 | -1
+  userData: Record<string, unknown>
 
   targetScroll: number
   animatedScroll: number
@@ -145,6 +147,8 @@ export default class Lenis {
     this.dimensions = new Dimensions({ wrapper, content, autoResize })
     // this.toggleClassName('lenis', true)
     this.updateClassName()
+
+    this.userData = {}
 
     this.time = 0
     this.velocity = this.lastVelocity = 0
@@ -332,8 +336,10 @@ export default class Lenis {
     this.dimensions.resize()
   }
 
-  private emit() {
+  private emit({ userData = {} } = {}) {
+    this.userData = userData
     this.emitter.emit('scroll', this)
+    this.userData = {}
   }
 
   private onNativeScroll = () => {
@@ -356,7 +362,7 @@ export default class Lenis {
         this.animatedScroll - lastScroll
       ) as Lenis['direction']
       // this.isSmooth = false
-      this.isScrolling = false
+      this.isScrolling = 'native'
       this.emit()
 
       if (this.velocity !== 0) {
@@ -416,6 +422,7 @@ export default class Lenis {
       onComplete,
       force = false, // scroll even if stopped
       programmatic = true, // called from outside of the class
+      userData,
     }: ScrollToParams = {}
   ) {
     if ((this.isStopped || this.isLocked) && !force) return
@@ -512,11 +519,11 @@ export default class Lenis {
           this.targetScroll = value
         }
 
-        if (!completed) this.emit()
+        if (!completed) this.emit({ userData })
 
         if (completed) {
           this.reset()
-          this.emit()
+          this.emit({ userData })
           onComplete?.(this)
 
           // avoid emitting event twice
