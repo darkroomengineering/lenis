@@ -6,5 +6,8 @@
     "dev": "npm-run-all --parallel watch playground",
     "watch": "rollup --bundleConfigAsCjs -c -w",
     "playground": "npm run dev --prefix ./playground"
+  },
+  "dependencies": {
+    "lenis": "workspace:lenis*"
   }
 }

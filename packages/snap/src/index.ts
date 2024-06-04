@@ -1,4 +1,6 @@
-import Slide from './slide'
+import Lenis from 'lenis'
+import { SnapElement, SnapElementOptions } from './element'
+import { uid, UID } from './uid'
 
 // TODO:
 // - horizontal
@@ -6,9 +8,31 @@ import Slide from './slide'
 // - fix wheel scrolling after limits (see console scroll to)
 // - fix touch scroll, do not snap when not released
 
+type Viewport = {
+  width: number
+  height: number
+}
+
+export type SnapOptions = {
+  type?: 'mandatory' | 'proximity'
+  lerp?: number
+  easing?: (t: number) => number
+  duration?: number
+  velocityThreshold?: number
+  onSnapStart?: (t: number) => number
+  onSnapComplete?: (t: number) => number
+}
+
 export default class Snap {
+  lenis: Lenis
+  options: SnapOptions
+  elements: Map<UID, SnapElement>
+  snaps: Map<UID, number>
+  viewport: Viewport
+  isStopped: Boolean = false
+
   constructor(
-    lenis,
+    lenis: Lenis,
     {
       type = 'mandatory',
       lerp,
@@ -17,7 +41,7 @@ export default class Snap {
       velocityThreshold = 1,
       onSnapStart,
       onSnapComplete,
-    } = {}
+    }: SnapOptions = {},
   ) {
     this.lenis = lenis
 
@@ -27,15 +51,12 @@ export default class Snap {
       easing,
       duration,
       velocityThreshold,
+      onSnapStart,
+      onSnapComplete,
     }
 
-    this.type = type
     this.elements = new Map()
     this.snaps = new Map()
-
-    this.velocityThreshold = velocityThreshold
-    this.onSnapStart = onSnapStart
-    this.onSnapComplete = onSnapComplete
 
     this.viewport = {
       width: window.innerWidth,
@@ -64,7 +85,7 @@ export default class Snap {
   destroy() {
     this.lenis.off('scroll', this.onScroll)
     window.removeEventListener('resize', this.onWindowResize)
-    this.elements.forEach((slide) => slide.destroy())
+    this.elements.forEach((element) => element.destroy())
   }
 
   start() {
@@ -75,27 +96,27 @@ export default class Snap {
     this.isStopped = true
   }
 
-  add(value) {
-    const id = crypto.randomUUID()
+  add(value: number) {
+    const id = uid()
 
     this.snaps.set(id, value)
 
     return () => this.remove(id)
   }
 
-  remove(id) {
+  remove(id: UID) {
     this.snaps.delete(id)
   }
 
-  addElement(element, options = {}) {
-    const id = crypto.randomUUID()
+  addElement(element: HTMLElement, options = {} as SnapElementOptions) {
+    const id = uid()
 
-    this.elements.set(id, new Slide(element, options))
+    this.elements.set(id, new SnapElement(element, options))
 
     return () => this.removeElement(id)
   }
 
-  removeElement(id) {
+  removeElement(id: UID) {
     this.elements.delete(id)
   }
 
@@ -110,8 +131,8 @@ export default class Snap {
     lastVelocity,
     velocity,
     isScrolling,
-    isTouching,
     userData,
+    isHorizontal,
   }) => {
     if (this.isStopped) return
     // console.log(scroll, velocity, type)
@@ -126,7 +147,7 @@ export default class Snap {
     // console.log('onScroll')
 
     if (
-      Math.abs(velocity) < this.velocityThreshold &&
+      Math.abs(velocity) < this.options.velocityThreshold &&
       // !isTouching &&
       isDecelerating &&
       !isTurningBack &&
@@ -134,10 +155,10 @@ export default class Snap {
     ) {
       scroll = Math.ceil(scroll)
 
-      let snaps = [0, ...this.snaps.values(), limit]
+      let snaps = [0, ...this.snaps.values(), limit] as number[]
 
       this.elements.forEach(({ rect, align }) => {
-        let snap
+        let snap: number | undefined
 
         align.forEach((align) => {
           if (align === 'start') {
@@ -169,8 +190,8 @@ export default class Snap {
       const distance = Math.abs(scroll - snap)
 
       if (
-        this.type === 'mandatory' ||
-        (this.type === 'proximity' && distance <= this.viewport.height)
+        this.options.type === 'mandatory' ||
+        (this.options.type === 'proximity' && distance <= this.viewport.height)
       ) {
         // this.__isScrolling = true
         // this.onSnapStart?.(snap)
@@ -183,10 +204,10 @@ export default class Snap {
           duration: this.options.duration,
           userData: { initiator: 'snap' },
           onStart: () => {
-            this.onSnapStart?.(snap)
+            this.options.onSnapStart?.(snap)
           },
           onComplete: () => {
-            this.onSnapComplete?.(snap)
+            this.options.onSnapComplete?.(snap)
           },
         })
       }
