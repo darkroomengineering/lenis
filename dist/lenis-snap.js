@@ -65,7 +65,7 @@
   class Slide {
     constructor(
       element,
-      { align = ['start'], ignoreSticky = true, ignoreTransform = false } = {}
+      { align = ['start'], ignoreSticky = true, ignoreTransform = false } = {},
     ) {
       this.element = element;
 
@@ -139,18 +139,19 @@
     }
   }
 
-  // TODO:
-  // - horizontal
-  // - fix trackpad snapping too soon due to velocity (fuck Apple)
-  // - fix wheel scrolling after limits (see console scroll to)
-  // - fix touch scroll, do not snap when not released
+  let index = 0;
+  function uid() {
+      return index++;
+  }
+
   class Snap {
       constructor(lenis, { type = 'mandatory', lerp, easing, duration, velocityThreshold = 1, onSnapStart, onSnapComplete, } = {}) {
+          this.isStopped = false;
           this.onWindowResize = () => {
               this.viewport.width = window.innerWidth;
               this.viewport.height = window.innerHeight;
           };
-          this.onScroll = ({ scroll, limit, lastVelocity, velocity, isScrolling, isTouching, userData, }) => {
+          this.onScroll = ({ scroll, limit, lastVelocity, velocity, isScrolling, userData, isHorizontal, }) => {
               if (this.isStopped)
                   return;
               // console.log(scroll, velocity, type)
@@ -159,7 +160,7 @@
               const isTurningBack = Math.sign(lastVelocity) !== Math.sign(velocity) && velocity !== 0;
               // console.log({ lastVelocity, velocity, isTurningBack, isDecelerating })
               // console.log('onScroll')
-              if (Math.abs(velocity) < this.velocityThreshold &&
+              if (Math.abs(velocity) < this.options.velocityThreshold &&
                   // !isTouching &&
                   isDecelerating &&
                   !isTurningBack &&
@@ -194,8 +195,8 @@
                   const distanceToNextSnap = Math.abs(scroll - nextSnap);
                   const snap = distanceToPrevSnap < distanceToNextSnap ? prevSnap : nextSnap;
                   const distance = Math.abs(scroll - snap);
-                  if (this.type === 'mandatory' ||
-                      (this.type === 'proximity' && distance <= this.viewport.height)) {
+                  if (this.options.type === 'mandatory' ||
+                      (this.options.type === 'proximity' && distance <= this.viewport.height)) {
                       // this.__isScrolling = true
                       // this.onSnapStart?.(snap)
                       // console.log('scroll to')
@@ -205,12 +206,12 @@
                           duration: this.options.duration,
                           userData: { initiator: 'snap' },
                           onStart: () => {
-                              var _a;
-                              (_a = this.onSnapStart) === null || _a === void 0 ? void 0 : _a.call(this, snap);
+                              var _a, _b;
+                              (_b = (_a = this.options).onSnapStart) === null || _b === void 0 ? void 0 : _b.call(_a, snap);
                           },
                           onComplete: () => {
-                              var _a;
-                              (_a = this.onSnapComplete) === null || _a === void 0 ? void 0 : _a.call(this, snap);
+                              var _a, _b;
+                              (_b = (_a = this.options).onSnapComplete) === null || _b === void 0 ? void 0 : _b.call(_a, snap);
                           },
                       });
                   }
@@ -224,13 +225,11 @@
               easing,
               duration,
               velocityThreshold,
+              onSnapStart,
+              onSnapComplete,
           };
-          this.type = type;
           this.elements = new Map();
           this.snaps = new Map();
-          this.velocityThreshold = velocityThreshold;
-          this.onSnapStart = onSnapStart;
-          this.onSnapComplete = onSnapComplete;
           this.viewport = {
               width: window.innerWidth,
               height: window.innerHeight,
@@ -264,7 +263,7 @@
           this.isStopped = true;
       }
       add(value) {
-          const id = crypto.randomUUID();
+          const id = uid();
           this.snaps.set(id, value);
           return () => this.remove(id);
       }
@@ -272,7 +271,7 @@
           this.snaps.delete(id);
       }
       addElement(element, options = {}) {
-          const id = crypto.randomUUID();
+          const id = uid();
           this.elements.set(id, new Slide(element, options));
           return () => this.removeElement(id);
       }

@@ -18,7 +18,7 @@ export type SnapOptions = {
   lerp?: number
   easing?: (t: number) => number
   duration?: number
-  velocityThreshold?: number
+  velocityThreshold?: number 
   onSnapStart?: (t: number) => number
   onSnapComplete?: (t: number) => number
 }
