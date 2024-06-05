@@ -4,7 +4,7 @@
   (global = typeof globalThis !== 'undefined' ? globalThis : global || self, global.Lenis = factory());
 })(this, (function () { 'use strict';
 
-  var version = "1.1.1";
+  var version = "1.1.2";
 
   // Clamp a value between a minimum and maximum value
   function clamp(min, input, max) {
@@ -438,7 +438,8 @@
                   this.velocity = this.animatedScroll - lastScroll;
                   this.direction = Math.sign(this.animatedScroll - lastScroll);
                   // this.isSmooth = false
-                  this.isScrolling = this.hasScrolled ? 'native' : false;
+                  // this.isScrolling = this.hasScrolled ? 'native' : false
+                  this.isScrolling = 'native';
                   this.emit();
                   if (this.velocity !== 0) {
                       this.__resetVelocityTimeout = setTimeout(() => {

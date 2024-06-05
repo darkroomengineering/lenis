@@ -19,6 +19,7 @@ type Rect = {
 declare class SnapElement {
     element: HTMLElement;
     options: SnapElementOptions;
+    align: string[];
     rect: Rect;
     wrapperResizeObserver: ResizeObserver;
     resizeObserver: ResizeObserver;

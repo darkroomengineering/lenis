@@ -157,10 +157,14 @@
                                 snap = rect.top;
                             }
                             else if (align === 'center') {
-                                snap = rect.top + rect.height / 2 - this.viewport.height / 2;
+                                snap = isHorizontal
+                                    ? rect.left + rect.width / 2 - this.viewport.width / 2
+                                    : rect.top + rect.height / 2 - this.viewport.height / 2;
                             }
                             else if (align === 'end') {
-                                snap = rect.top + rect.height - this.viewport.height;
+                                snap = isHorizontal
+                                    ? rect.left + rect.width - this.viewport.width
+                                    : rect.top + rect.height - this.viewport.height;
                             }
                             if (snap !== undefined) {
                                 snaps.push(Math.ceil(snap));
