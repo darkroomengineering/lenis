@@ -20,9 +20,9 @@ If you like Lenis, please consider [sponsoring us](https://github.com/sponsors/d
 
 ## Packages
 
-- [lenis](https://github.com/darkroomengineering/lenis)
-- [lenis/react](https://github.com/darkroomengineering/lenis/tree/main/packages/react)
-- [lenis/snap](https://github.com/darkroomengineering/lenis/tree/main/packages/snap)
+- [lenis](https://github.com/darkroomengineering/lenis/blob/main/README.md)
+- [lenis/react](https://github.com/darkroomengineering/lenis/blob/main/packages/react/README.md)
+- [lenis/snap](https://github.com/darkroomengineering/lenis/tree/main/packages/snap/README.md)
 
 
 <br>
@@ -229,7 +229,7 @@ See documentation for [lenis/react](https://github.com/darkroomengineering/lenis
 
 ## Limitations
 
-- no support for CSS scroll-snap ([lenis/snap](https://github.com/darkroomengineering/lenis/tree/main/packages/snap))
+- no support for CSS scroll-snap ([lenis/snap](https://github.com/darkroomengineering/lenis/tree/main/packages/snap/README.md))
 - capped to 60fps on Safari ([source](https://bugs.webkit.org/show_bug.cgi?id=173434)) and 30fps on low power mode
 - smooth scroll will stop working over iframe since they don't forward wheel events
 - position fixed seems to lag on MacOS Safari pre-M1 ([source](https://github.com/darkroomengineering/lenis/issues/103))

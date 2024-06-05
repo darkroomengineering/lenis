@@ -1,12 +1,13 @@
 import Lenis from 'lenis'
 import { SnapElement, SnapElementOptions } from './element'
-import { uid, UID } from './uid'
+import { UID, uid } from './uid'
 
 // TODO:
 // - horizontal
 // - fix trackpad snapping too soon due to velocity (fuck Apple)
 // - fix wheel scrolling after limits (see console scroll to)
 // - fix touch scroll, do not snap when not released
+// - arrow, spacebar
 
 type Viewport = {
   width: number
@@ -18,7 +19,7 @@ export type SnapOptions = {
   lerp?: number
   easing?: (t: number) => number
   duration?: number
-  velocityThreshold?: number 
+  velocityThreshold?: number
   onSnapStart?: (t: number) => number
   onSnapComplete?: (t: number) => number
 }
@@ -41,7 +42,7 @@ export default class Snap {
       velocityThreshold = 1,
       onSnapStart,
       onSnapComplete,
-    }: SnapOptions = {},
+    }: SnapOptions = {}
   ) {
     this.lenis = lenis
 
@@ -164,9 +165,13 @@ export default class Snap {
           if (align === 'start') {
             snap = rect.top
           } else if (align === 'center') {
-            snap = rect.top + rect.height / 2 - this.viewport.height / 2
+            snap = isHorizontal
+              ? rect.left + rect.width / 2 - this.viewport.width / 2
+              : rect.top + rect.height / 2 - this.viewport.height / 2
           } else if (align === 'end') {
-            snap = rect.top + rect.height - this.viewport.height
+            snap = isHorizontal
+              ? rect.left + rect.width - this.viewport.width
+              : rect.top + rect.height - this.viewport.height
           }
 
           if (snap !== undefined) {

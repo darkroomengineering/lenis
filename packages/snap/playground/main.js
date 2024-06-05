@@ -33,7 +33,7 @@ if (true) {
   const section2 = document.querySelector('.section-2')
   const section3 = document.querySelector('.section-3')
 
-  snap.add(500)
+  // snap.add(500)
 
   snap.addElement(section2, {
     align: ['start', 'end'], // 'start', 'center', 'end'

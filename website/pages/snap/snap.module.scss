@@ -1,0 +1,49 @@
+.page {
+  background-color: #000;
+}
+
+.section {
+  padding: 24px;
+
+  .inner {
+    height: 100%;
+    width: 100%;
+    border-radius: 16px;
+  }
+
+  &-1 {
+    height: 150vh;
+
+    .inner {
+      background-color: #ff98a2;
+    }
+  }
+
+  &-2 {
+    height: 50vh;
+
+    .inner {
+      background-color: #d585a9;
+    }
+  }
+
+  &-3 {
+    height: 80vh;
+
+    .inner {
+      background-color: #a378a4;
+    }
+  }
+
+  &-4 {
+    height: 150vh;
+
+    .inner {
+      background-color: #726a93;
+    }
+  }
+
+  &:not(:last-child) {
+    margin-bottom: -24px;
+  }
+}

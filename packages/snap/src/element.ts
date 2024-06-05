@@ -77,6 +77,7 @@ type Rect = {
 export class SnapElement {
   element: HTMLElement
   options: SnapElementOptions
+  align: string[]
   // @ts-ignore
   rect: Rect = {}
   wrapperResizeObserver: ResizeObserver
