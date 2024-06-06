@@ -1,4 +1,5 @@
 import cn from 'clsx'
+import { CustomHead } from 'components/custom-head'
 import { useEffect, useRef } from 'react'
 import Snap from '../../../dist/lenis-snap.mjs'
 import Lenis from '../../../dist/lenis.mjs'
@@ -10,6 +11,9 @@ export default function Page() {
   useEffect(() => {
     const lenis = new Lenis({
       lerp: 0.1,
+      prevent: (node) => {
+        node.nodeName === 'VERCEL-LIVE-FEEDBACK'
+      },
     })
     window.lenis = lenis
 
@@ -49,18 +53,28 @@ export default function Page() {
   }, [])
 
   return (
-    <div className={s.page}>
-      {Array.from({ length: 4 }).map((_, index) => (
-        <section
-          key={index}
-          className={cn(s.section, s[`section-${index + 1}`])}
-          ref={(node) => {
-            sectionRefs.current[index] = node
-          }}
-        >
-          <div className={s.inner}></div>
-        </section>
-      ))}
-    </div>
+    <>
+      <CustomHead
+        {...{
+          title: 'Lenis – Get smooth or die trying',
+          description:
+            'A smooth scroll library fresh out of darkroom.engineering.',
+        }}
+      />
+
+      <div className={s.page}>
+        {Array.from({ length: 4 }).map((_, index) => (
+          <section
+            key={index}
+            className={cn(s.section, s[`section-${index + 1}`])}
+            ref={(node) => {
+              sectionRefs.current[index] = node
+            }}
+          >
+            <div className={s.inner}></div>
+          </section>
+        ))}
+      </div>
+    </>
   )
 }
