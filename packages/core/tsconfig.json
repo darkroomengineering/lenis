@@ -3,7 +3,14 @@
     "outDir": "./dist",
     "declaration": true,
     "target": "es2015",
-    "allowJs": true
+    "allowJs": true,
+    "lib": ["esnext", "dom", "dom.iterable"],
+    "moduleResolution": "node",
+    "module": "esnext",
+    "esModuleInterop": true,
+    "noUnusedParameters": true,
+    "strict": true,
+    "removeComments": true
   },
   "include": ["src"]
 }

@@ -7,12 +7,14 @@ document.querySelector('#app').innerHTML = new LoremIpsum().generateParagraphs(
 )
 
 const lenis = new Lenis({
+  // duration: 2,
+  // easing: (t) => t,
   // prevent: () => {
   //   return true
   // },
 })
 lenis.on('scroll', (e) => {
-  console.log(e.velocity, e.isScrolling)
+  console.log(e.scroll, e.velocity, e.isScrolling, e.userData)
 })
 window.lenis = lenis
 

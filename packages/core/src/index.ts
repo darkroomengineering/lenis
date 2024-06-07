@@ -16,32 +16,33 @@ import { VirtualScroll } from './virtual-scroll'
 type EasingFunction = (t: number) => number
 type Orientation = 'vertical' | 'horizontal'
 type GestureOrientation = 'vertical' | 'horizontal' | 'both'
+type Scrolling = boolean | 'native' | 'smooth'
 
-export type LenisOptions = {
-  wrapper?: Window | HTMLElement
-  content?: HTMLElement
-  wheelEventsTarget?: Window | HTMLElement
-  eventsTarget?: Window | HTMLElement
-  smoothWheel?: boolean
-  syncTouch?: boolean
-  syncTouchLerp?: number
-  touchInertiaMultiplier?: number
-  duration?: number
-  easing?: EasingFunction
-  lerp?: number
-  infinite?: boolean
-  orientation?: Orientation
-  gestureOrientation?: GestureOrientation
-  touchMultiplier?: number
-  wheelMultiplier?: number
-  autoResize?: boolean
-  prevent?: boolean | ((node: Element) => boolean)
-  __experimental__naiveDimensions?: boolean
-}
+export type LenisOptions = Partial<{
+  wrapper: Window | HTMLElement
+  content: HTMLElement
+  wheelEventsTarget: Window | HTMLElement
+  eventsTarget: Window | HTMLElement
+  smoothWheel: boolean
+  syncTouch: boolean
+  syncTouchLerp: number
+  touchInertiaMultiplier: number
+  duration: number
+  easing: EasingFunction
+  lerp: number
+  infinite: boolean
+  orientation: Orientation
+  gestureOrientation: GestureOrientation
+  touchMultiplier: number
+  wheelMultiplier: number
+  autoResize: boolean
+  prevent: boolean | ((node: Element) => boolean)
+  __experimental__naiveDimensions: boolean
+}>
 
 export default class Lenis {
   // __isSmooth: boolean = false // true if scroll should be animated
-  __isScrolling: boolean | 'native' | 'smooth' = false // true when scroll is animating
+  __isScrolling: Scrolling = false // true when scroll is animating
   __isStopped: boolean = false // true if user should not be able to scroll - enable/disable programmatically
   __isLocked: boolean = false // same as isStopped but enabled/disabled when scroll reaches target
 
@@ -49,7 +50,7 @@ export default class Lenis {
   userData: object
   lastVelocity: number
   velocity: number
-  direction: 1 | -1 | undefined
+  direction: 1 | -1 | 0 = 0
   options: LenisOptions
   targetScroll: number
   animatedScroll: number
@@ -69,7 +70,7 @@ export default class Lenis {
     touchInertiaMultiplier = 35,
     duration, // in seconds
     easing = (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-    lerp = !duration && 0.1,
+    lerp = 0.1,
     infinite = false,
     orientation = 'vertical', // vertical, horizontal
     gestureOrientation = 'vertical', // vertical, horizontal, both
@@ -79,10 +80,15 @@ export default class Lenis {
     prevent = false,
     __experimental__naiveDimensions = false,
   }: LenisOptions = {}) {
+    // @ts-expect-error
     window.lenisVersion = version
 
     // if wrapper is html or body, fallback to window
-    if (wrapper === document.documentElement || wrapper === document.body) {
+    if (
+      !wrapper ||
+      wrapper === document.documentElement ||
+      wrapper === document.body
+    ) {
       wrapper = window
     }
 
@@ -165,7 +171,7 @@ export default class Lenis {
     return this.emitter.off(event, callback)
   }
 
-  private setScroll(scroll) {
+  private setScroll(scroll: number) {
     // apply scroll value immediately
     if (this.isHorizontal) {
       this.rootElement.scrollLeft = scroll
@@ -174,7 +180,15 @@ export default class Lenis {
     }
   }
 
-  private onVirtualScroll = ({ deltaX, deltaY, event }) => {
+  private onVirtualScroll = ({
+    deltaX,
+    deltaY,
+    event,
+  }: {
+    deltaX: number
+    deltaY: number
+    event: WheelEvent | TouchEvent
+  }) => {
     // keep zoom feature
     if (event.ctrlKey) return
 
@@ -230,12 +244,13 @@ export default class Lenis {
     if (
       !!composedPath.find(
         (node) =>
-          (typeof prevent === 'function' ? prevent?.(node) : prevent) ||
-          node.hasAttribute?.('data-lenis-prevent') ||
-          (isTouch && node.hasAttribute?.('data-lenis-prevent-touch')) ||
-          (isWheel && node.hasAttribute?.('data-lenis-prevent-wheel')) ||
-          (node.classList?.contains('lenis') &&
-            !node.classList?.contains('lenis-stopped')) // nested lenis instance
+          node instanceof Element &&
+          ((typeof prevent === 'function' ? prevent?.(node) : prevent) ||
+            node.hasAttribute?.('data-lenis-prevent') ||
+            (isTouch && node.hasAttribute?.('data-lenis-prevent-touch')) ||
+            (isWheel && node.hasAttribute?.('data-lenis-prevent-wheel')) ||
+            (node.classList?.contains('lenis') &&
+              !node.classList?.contains('lenis-stopped'))) // nested lenis instance
       )
     )
       return
@@ -291,10 +306,8 @@ export default class Lenis {
     this.dimensions.resize()
   }
 
-  private emit({ userData = {} } = {}) {
-    this.userData = userData
+  private emit() {
     this.emitter.emit('scroll', this)
-    this.userData = {}
   }
 
   private onNativeScroll = () => {
@@ -311,9 +324,10 @@ export default class Lenis {
       this.animatedScroll = this.targetScroll = this.actualScroll
       this.lastVelocity = this.velocity
       this.velocity = this.animatedScroll - lastScroll
-      this.direction = Math.sign(this.animatedScroll - lastScroll)
+      this.direction = Math.sign(
+        this.animatedScroll - lastScroll
+      ) as Lenis['direction']
       // this.isSmooth = false
-      // this.isScrolling = this.hasScrolled ? 'native' : false
       this.isScrolling = 'native'
       this.emit()
 
@@ -369,7 +383,7 @@ export default class Lenis {
       lock = false,
       duration = this.options.duration,
       easing = this.options.easing,
-      lerp = !duration && this.options.lerp,
+      lerp = this.options.lerp,
       onStart,
       onComplete,
       force = false, // scroll even if stopped
@@ -392,9 +406,15 @@ export default class Lenis {
     if ((this.isStopped || this.isLocked) && !force) return
 
     // keywords
-    if (['top', 'left', 'start'].includes(target)) {
+    if (
+      typeof target === 'string' &&
+      ['top', 'left', 'start'].includes(target)
+    ) {
       target = 0
-    } else if (['bottom', 'right', 'end'].includes(target)) {
+    } else if (
+      typeof target === 'string' &&
+      ['bottom', 'right', 'end'].includes(target)
+    ) {
       target = this.limit
     } else {
       let node
@@ -402,7 +422,7 @@ export default class Lenis {
       if (typeof target === 'string') {
         // CSS selector
         node = document.querySelector(target)
-      } else if (target?.nodeType) {
+      } else if (target instanceof HTMLElement && target?.nodeType) {
         // Node element
         node = target
       }
@@ -410,7 +430,7 @@ export default class Lenis {
       if (node) {
         if (this.options.wrapper !== window) {
           // nested scroll offset correction
-          const wrapperRect = this.options.wrapper.getBoundingClientRect()
+          const wrapperRect = this.rootElement.getBoundingClientRect()
           offset -= this.isHorizontal ? wrapperRect.left : wrapperRect.top
         }
 
@@ -434,15 +454,20 @@ export default class Lenis {
       target = clamp(0, target, this.limit)
     }
 
+    if (target === this.targetScroll) return
+
+    this.userData = userData
+
     if (immediate) {
       this.animatedScroll = this.targetScroll = target
       this.setScroll(this.scroll)
       this.reset()
+      this.preventNextNativeScrollEvent()
+      this.emit()
       onComplete?.(this)
+      this.userData = {}
       return
     }
-
-    if (target === this.targetScroll) return
 
     if (!programmatic) {
       this.targetScroll = target
@@ -464,7 +489,7 @@ export default class Lenis {
         // updated
         this.lastVelocity = this.velocity
         this.velocity = value - this.animatedScroll
-        this.direction = Math.sign(this.velocity)
+        this.direction = Math.sign(this.velocity) as Lenis['direction']
 
         this.animatedScroll = value
         this.setScroll(this.scroll)
@@ -474,27 +499,35 @@ export default class Lenis {
           this.targetScroll = value
         }
 
-        if (!completed) this.emit({ userData })
+        if (!completed) this.emit()
 
         if (completed) {
           this.reset()
-          this.emit({ userData })
+          this.emit()
           onComplete?.(this)
+          this.userData = {}
 
           // avoid emitting event twice
-          this.__preventNextNativeScrollEvent = true
-          // requestAnimationFrame(() => {
-          //   delete this.__preventNextNativeScrollEvent
-          // })
+          this.preventNextNativeScrollEvent()
         }
       },
     })
   }
 
+  private preventNextNativeScrollEvent() {
+    this.__preventNextNativeScrollEvent = true
+
+    requestAnimationFrame(() => {
+      delete this.__preventNextNativeScrollEvent
+    })
+  }
+
   get rootElement() {
-    return this.options.wrapper === window
-      ? document.documentElement
-      : this.options.wrapper
+    return (
+      this.options.wrapper === window
+        ? document.documentElement
+        : this.options.wrapper
+    ) as HTMLElement
   }
 
   get limit() {
@@ -546,7 +579,7 @@ export default class Lenis {
     return this.__isScrolling
   }
 
-  private set isScrolling(value: boolean) {
+  private set isScrolling(value: Scrolling) {
     if (this.__isScrolling !== value) {
       this.__isScrolling = value
       this.updateClassName()
@@ -595,7 +628,6 @@ export default class Lenis {
 
     this.rootElement.className =
       `${this.rootElement.className} ${this.className}`.trim()
-    // this.emitter.emit('className change', this)
   }
 
   private cleanUpClassName() {
@@ -603,10 +635,4 @@ export default class Lenis {
       .replace(/lenis(-\w+)?/g, '')
       .trim()
   }
-
-  // private toggleClassName(name: string, value: boolean) {
-  //   // this.rootElement.classList.toggle(name, value)
-  //   this.rootElement.className = this.className
-  //   this.emitter.emit('className change', this)
-  // }
 }

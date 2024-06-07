@@ -2,14 +2,14 @@ export class Dimensions {
     constructor({ wrapper, content, autoResize, debounce: debounceValue, }?: {
         wrapper: any;
         content: any;
-        autoResize?: boolean;
-        debounce?: number;
+        autoResize?: boolean | undefined;
+        debounce?: number | undefined;
     });
     wrapper: any;
     content: any;
-    debouncedResize: (...args: any[]) => void;
-    wrapperResizeObserver: ResizeObserver;
-    contentResizeObserver: ResizeObserver;
+    debouncedResize: ((...args: any[]) => void) | undefined;
+    wrapperResizeObserver: ResizeObserver | undefined;
+    contentResizeObserver: ResizeObserver | undefined;
     destroy(): void;
     resize: () => void;
     onWrapperResize: () => void;

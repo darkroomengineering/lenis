@@ -8,19 +8,23 @@ export class Animate {
 
     let completed = false
 
-    if (this.lerp) {
-      this.value = damp(this.value, this.to, this.lerp * 60, deltaTime)
-      if (Math.round(this.value) === this.to) {
-        this.value = this.to
-        completed = true
-      }
-    } else {
+    if (this.duration && this.easing) {
       this.currentTime += deltaTime
       const linearProgress = clamp(0, this.currentTime / this.duration, 1)
 
       completed = linearProgress >= 1
       const easedProgress = completed ? 1 : this.easing(linearProgress)
       this.value = this.from + (this.to - this.from) * easedProgress
+    } else if (this.lerp) {
+      this.value = damp(this.value, this.to, this.lerp * 60, deltaTime)
+      if (Math.round(this.value) === this.to) {
+        this.value = this.to
+        completed = true
+      }
+    } else {
+      // If no easing or lerp, just jump to the end value
+      this.value = this.to
+      completed = true
     }
 
     if (completed) {
@@ -38,11 +42,7 @@ export class Animate {
 
   // Set up the animation from a starting value to an ending value
   // with optional parameters for lerping, duration, easing, and onUpdate callback
-  fromTo(
-    from,
-    to,
-    { lerp = 0.1, duration = 1, easing = (t) => t, onStart, onUpdate }
-  ) {
+  fromTo(from, to, { lerp, duration, easing, onStart, onUpdate }) {
     this.from = this.value = from
     this.to = to
     this.lerp = lerp

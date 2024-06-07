@@ -35,19 +35,23 @@
 
       let completed = false;
 
-      if (this.lerp) {
-        this.value = damp(this.value, this.to, this.lerp * 60, deltaTime);
-        if (Math.round(this.value) === this.to) {
-          this.value = this.to;
-          completed = true;
-        }
-      } else {
+      if (this.duration && this.easing) {
         this.currentTime += deltaTime;
         const linearProgress = clamp(0, this.currentTime / this.duration, 1);
 
         completed = linearProgress >= 1;
         const easedProgress = completed ? 1 : this.easing(linearProgress);
         this.value = this.from + (this.to - this.from) * easedProgress;
+      } else if (this.lerp) {
+        this.value = damp(this.value, this.to, this.lerp * 60, deltaTime);
+        if (Math.round(this.value) === this.to) {
+          this.value = this.to;
+          completed = true;
+        }
+      } else {
+        // If no easing or lerp, just jump to the end value
+        this.value = this.to;
+        completed = true;
       }
 
       if (completed) {
@@ -65,11 +69,7 @@
 
     // Set up the animation from a starting value to an ending value
     // with optional parameters for lerping, duration, easing, and onUpdate callback
-    fromTo(
-      from,
-      to,
-      { lerp = 0.1, duration = 1, easing = (t) => t, onStart, onUpdate }
-    ) {
+    fromTo(from, to, { lerp, duration, easing, onStart, onUpdate }) {
       this.from = this.value = from;
       this.to = to;
       this.lerp = lerp;
@@ -324,35 +324,17 @@
   }
 
   class Lenis {
-      // animate: Animate
-      // emitter: Emitter
-      // dimensions: Dimensions
-      // virtualScroll: VirtualScroll
-      constructor({ wrapper = window, content = document.documentElement, wheelEventsTarget = wrapper, // deprecated
-      eventsTarget = wheelEventsTarget, smoothWheel = true, syncTouch = false, syncTouchLerp = 0.075, touchInertiaMultiplier = 35, duration, // in seconds
-      easing = (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)), lerp = !duration && 0.1, infinite = false, orientation = 'vertical', // vertical, horizontal
-      gestureOrientation = 'vertical', // vertical, horizontal, both
-      touchMultiplier = 1, wheelMultiplier = 1, autoResize = true, prevent = false, __experimental__naiveDimensions = false, } = {}) {
-          // __isSmooth: boolean = false // true if scroll should be animated
-          this.__isScrolling = false; // true when scroll is animating
-          this.__isStopped = false; // true if user should not be able to scroll - enable/disable programmatically
-          this.__isLocked = false; // same as isStopped but enabled/disabled when scroll reaches target
-          this.onVirtualScroll = ({ deltaX, deltaY, event }) => {
-              // keep zoom feature
+      constructor({ wrapper = window, content = document.documentElement, wheelEventsTarget = wrapper, eventsTarget = wheelEventsTarget, smoothWheel = true, syncTouch = false, syncTouchLerp = 0.075, touchInertiaMultiplier = 35, duration, easing = (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)), lerp = 0.1, infinite = false, orientation = 'vertical', gestureOrientation = 'vertical', touchMultiplier = 1, wheelMultiplier = 1, autoResize = true, prevent = false, __experimental__naiveDimensions = false, } = {}) {
+          this.__isScrolling = false;
+          this.__isStopped = false;
+          this.__isLocked = false;
+          this.direction = 0;
+          this.onVirtualScroll = ({ deltaX, deltaY, event, }) => {
               if (event.ctrlKey)
                   return;
               const isTouch = event.type.includes('touch');
               const isWheel = event.type.includes('wheel');
               this.isTouching = event.type === 'touchstart' || event.type === 'touchmove';
-              // if (event.type === 'touchend') {
-              //   console.log('touchend', this.scroll)
-              //   // this.lastVelocity = this.velocity
-              //   // this.velocity = 0
-              //   // this.isScrolling = false
-              //   this.emit({ type: 'touchend' })
-              //   // alert('touchend')
-              //   return
-              // }
               const isTapToStop = this.options.syncTouch &&
                   isTouch &&
                   event.type === 'touchstart' &&
@@ -362,35 +344,28 @@
                   this.reset();
                   return;
               }
-              const isClick = deltaX === 0 && deltaY === 0; // click event
-              // const isPullToRefresh =
-              //   this.options.gestureOrientation === 'vertical' &&
-              //   this.scroll === 0 &&
-              //   !this.options.infinite &&
-              //   deltaY <= 5 // touch pull to refresh, not reliable yet
+              const isClick = deltaX === 0 && deltaY === 0;
               const isUnknownGesture = (this.options.gestureOrientation === 'vertical' && deltaY === 0) ||
                   (this.options.gestureOrientation === 'horizontal' && deltaX === 0);
               if (isClick || isUnknownGesture) {
-                  // console.log('prevent')
                   return;
               }
-              // catch if scrolling on nested scroll elements
               let composedPath = event.composedPath();
-              composedPath = composedPath.slice(0, composedPath.indexOf(this.rootElement)); // remove parents elements
+              composedPath = composedPath.slice(0, composedPath.indexOf(this.rootElement));
               const prevent = this.options.prevent;
               if (!!composedPath.find((node) => {
                   var _a, _b, _c, _d, _e;
-                  return (typeof prevent === 'function' ? prevent === null || prevent === void 0 ? void 0 : prevent(node) : prevent) ||
-                      ((_a = node.hasAttribute) === null || _a === void 0 ? void 0 : _a.call(node, 'data-lenis-prevent')) ||
-                      (isTouch && ((_b = node.hasAttribute) === null || _b === void 0 ? void 0 : _b.call(node, 'data-lenis-prevent-touch'))) ||
-                      (isWheel && ((_c = node.hasAttribute) === null || _c === void 0 ? void 0 : _c.call(node, 'data-lenis-prevent-wheel'))) ||
-                      (((_d = node.classList) === null || _d === void 0 ? void 0 : _d.contains('lenis')) &&
-                          !((_e = node.classList) === null || _e === void 0 ? void 0 : _e.contains('lenis-stopped')));
-              } // nested lenis instance
-              ))
+                  return node instanceof Element &&
+                      ((typeof prevent === 'function' ? prevent === null || prevent === void 0 ? void 0 : prevent(node) : prevent) ||
+                          ((_a = node.hasAttribute) === null || _a === void 0 ? void 0 : _a.call(node, 'data-lenis-prevent')) ||
+                          (isTouch && ((_b = node.hasAttribute) === null || _b === void 0 ? void 0 : _b.call(node, 'data-lenis-prevent-touch'))) ||
+                          (isWheel && ((_c = node.hasAttribute) === null || _c === void 0 ? void 0 : _c.call(node, 'data-lenis-prevent-wheel'))) ||
+                          (((_d = node.classList) === null || _d === void 0 ? void 0 : _d.contains('lenis')) &&
+                              !((_e = node.classList) === null || _e === void 0 ? void 0 : _e.contains('lenis-stopped'))));
+              }))
                   return;
               if (this.isStopped || this.isLocked) {
-                  event.preventDefault(); // this will stop forwarding the event to the parent, this is problematic
+                  event.preventDefault();
                   return;
               }
               const isSmooth = (this.options.syncTouch && isTouch) ||
@@ -437,8 +412,6 @@
                   this.lastVelocity = this.velocity;
                   this.velocity = this.animatedScroll - lastScroll;
                   this.direction = Math.sign(this.animatedScroll - lastScroll);
-                  // this.isSmooth = false
-                  // this.isScrolling = this.hasScrolled ? 'native' : false
                   this.isScrolling = 'native';
                   this.emit();
                   if (this.velocity !== 0) {
@@ -449,13 +422,12 @@
                           this.emit();
                       }, 400);
                   }
-                  // this.hasScrolled = true
-                  // }, 50)
               }
           };
           window.lenisVersion = version;
-          // if wrapper is html or body, fallback to window
-          if (wrapper === document.documentElement || wrapper === document.body) {
+          if (!wrapper ||
+              wrapper === document.documentElement ||
+              wrapper === document.body) {
               wrapper = window;
           }
           this.options = {
@@ -482,16 +454,12 @@
           this.animate = new Animate();
           this.emitter = new Emitter();
           this.dimensions = new Dimensions({ wrapper, content, autoResize });
-          // this.toggleClassName('lenis', true)
           this.updateClassName();
           this.userData = {};
           this.time = 0;
           this.velocity = this.lastVelocity = 0;
           this.isLocked = false;
           this.isStopped = false;
-          // this.hasScrolled = false
-          // this.isSmooth = syncTouch || smoothWheel
-          // this.isSmooth = false
           this.isScrolling = false;
           this.targetScroll = this.animatedScroll = this.actualScroll;
           this.options.wrapper.addEventListener('scroll', this.onNativeScroll, false);
@@ -507,12 +475,6 @@
           this.virtualScroll.destroy();
           this.dimensions.destroy();
           this.cleanUpClassName();
-          // this.rootElement.className = ''
-          // this.toggleClassName('lenis', false)
-          // this.toggleClassName('lenis-smooth', false)
-          // this.toggleClassName('lenis-scrolling', false)
-          // this.toggleClassName('lenis-stopped', false)
-          // this.toggleClassName('lenis-locked', false)
       }
       on(event, callback) {
           return this.emitter.on(event, callback);
@@ -521,7 +483,6 @@
           return this.emitter.off(event, callback);
       }
       setScroll(scroll) {
-          // apply scroll value immediately
           if (this.isHorizontal) {
               this.rootElement.scrollLeft = scroll;
           }
@@ -532,10 +493,8 @@
       resize() {
           this.dimensions.resize();
       }
-      emit({ userData = {} } = {}) {
-          this.userData = userData;
+      emit() {
           this.emitter.emit('scroll', this);
-          this.userData = {};
       }
       reset() {
           this.isLocked = false;
@@ -562,32 +521,28 @@
           this.time = time;
           this.animate.advance(deltaTime * 0.001);
       }
-      scrollTo(target, { offset = 0, immediate = false, lock = false, duration = this.options.duration, easing = this.options.easing, lerp = !duration && this.options.lerp, onStart, onComplete, force = false, // scroll even if stopped
-      programmatic = true, // called from outside of the class
-      userData = {}, } = {}) {
+      scrollTo(target, { offset = 0, immediate = false, lock = false, duration = this.options.duration, easing = this.options.easing, lerp = this.options.lerp, onStart, onComplete, force = false, programmatic = true, userData = {}, } = {}) {
           if ((this.isStopped || this.isLocked) && !force)
               return;
-          // keywords
-          if (['top', 'left', 'start'].includes(target)) {
+          if (typeof target === 'string' &&
+              ['top', 'left', 'start'].includes(target)) {
               target = 0;
           }
-          else if (['bottom', 'right', 'end'].includes(target)) {
+          else if (typeof target === 'string' &&
+              ['bottom', 'right', 'end'].includes(target)) {
               target = this.limit;
           }
           else {
               let node;
               if (typeof target === 'string') {
-                  // CSS selector
                   node = document.querySelector(target);
               }
-              else if (target === null || target === void 0 ? void 0 : target.nodeType) {
-                  // Node element
+              else if (target instanceof HTMLElement && (target === null || target === void 0 ? void 0 : target.nodeType)) {
                   node = target;
               }
               if (node) {
                   if (this.options.wrapper !== window) {
-                      // nested scroll offset correction
-                      const wrapperRect = this.options.wrapper.getBoundingClientRect();
+                      const wrapperRect = this.rootElement.getBoundingClientRect();
                       offset -= this.isHorizontal ? wrapperRect.left : wrapperRect.top;
                   }
                   const rect = node.getBoundingClientRect();
@@ -607,15 +562,19 @@
           else {
               target = clamp(0, target, this.limit);
           }
+          if (target === this.targetScroll)
+              return;
+          this.userData = userData;
           if (immediate) {
               this.animatedScroll = this.targetScroll = target;
               this.setScroll(this.scroll);
               this.reset();
+              this.preventNextNativeScrollEvent();
+              this.emit();
               onComplete === null || onComplete === void 0 ? void 0 : onComplete(this);
+              this.userData = {};
               return;
           }
-          if (target === this.targetScroll)
-              return;
           if (!programmatic) {
               this.targetScroll = target;
           }
@@ -624,7 +583,6 @@
               easing,
               lerp,
               onStart: () => {
-                  // started
                   if (lock)
                       this.isLocked = true;
                   this.isScrolling = 'smooth';
@@ -632,35 +590,36 @@
               },
               onUpdate: (value, completed) => {
                   this.isScrolling = 'smooth';
-                  // updated
                   this.lastVelocity = this.velocity;
                   this.velocity = value - this.animatedScroll;
                   this.direction = Math.sign(this.velocity);
                   this.animatedScroll = value;
                   this.setScroll(this.scroll);
                   if (programmatic) {
-                      // wheel during programmatic should stop it
                       this.targetScroll = value;
                   }
                   if (!completed)
-                      this.emit({ userData });
+                      this.emit();
                   if (completed) {
                       this.reset();
-                      this.emit({ userData });
+                      this.emit();
                       onComplete === null || onComplete === void 0 ? void 0 : onComplete(this);
-                      // avoid emitting event twice
-                      this.__preventNextNativeScrollEvent = true;
-                      // requestAnimationFrame(() => {
-                      //   delete this.__preventNextNativeScrollEvent
-                      // })
+                      this.userData = {};
+                      this.preventNextNativeScrollEvent();
                   }
               },
           });
       }
+      preventNextNativeScrollEvent() {
+          this.__preventNextNativeScrollEvent = true;
+          requestAnimationFrame(() => {
+              delete this.__preventNextNativeScrollEvent;
+          });
+      }
       get rootElement() {
-          return this.options.wrapper === window
+          return (this.options.wrapper === window
               ? document.documentElement
-              : this.options.wrapper;
+              : this.options.wrapper);
       }
       get limit() {
           if (this.options.__experimental__naiveDimensions) {
@@ -679,7 +638,6 @@
           return this.options.orientation === 'horizontal';
       }
       get actualScroll() {
-          // value browser takes into account
           return this.isHorizontal
               ? this.rootElement.scrollLeft
               : this.rootElement.scrollTop;
@@ -690,18 +648,8 @@
               : this.animatedScroll;
       }
       get progress() {
-          // avoid progress to be NaN
           return this.limit === 0 ? 1 : this.scroll / this.limit;
       }
-      // get isSmooth() {
-      //   return this.__isSmooth
-      // }
-      // private set isSmooth(value: boolean) {
-      //   if (this.__isSmooth !== value) {
-      //     this.__isSmooth = value
-      //     this.updateClassName()
-      //   }
-      // }
       get isScrolling() {
           return this.__isScrolling;
       }
@@ -742,15 +690,12 @@
               className += ' lenis-scrolling';
           if (this.isScrolling === 'smooth')
               className += ' lenis-smooth';
-          // if (this.isScrolling === 'native') className += ' lenis-native'
-          // if (this.isSmooth) className += ' lenis-smooth'
           return className;
       }
       updateClassName() {
           this.cleanUpClassName();
           this.rootElement.className =
               `${this.rootElement.className} ${this.className}`.trim();
-          // this.emitter.emit('className change', this)
       }
       cleanUpClassName() {
           this.rootElement.className = this.rootElement.className

@@ -247,10 +247,7 @@ See documentation for [lenis/react](https://github.com/darkroomengineering/lenis
 
 ## Plugins
 
-- [Loconative-scroll](https://github.com/quentinhocde/loconative-scroll#how-to-switch-from-locomotive-scroll-to-loconative-scroll) by [Quentin Hocde](https://twitter.com/QuentinHocde)
-- [react-lenis](https://github.com/darkroomengineering/lenis/tree/main/packages/react-lenis) by [darkroom.engineering](https://darkroom.engineering/)
 - [r3f-scroll-rig](https://github.com/14islands/r3f-scroll-rig) by [14islands](https://14islands.com/)
-- [Lenis Scroll Snap Plugin](https://github.com/funkhaus/lenis-scroll-snap) by [Funkhaus](https://github.com/funkhaus)
 - [locomotive-scroll](https://github.com/locomotivemtl/locomotive-scroll) by [Locomotive](https://locomotive.ca/)
 - [vue-lenis](https://github.com/zeokku/vue-lenis) by [ZEOKKU](https://zeokku.com/)
 - [nuxt-lenis](https://www.npmjs.com/package/nuxt-lenis) by [Milkshake Studio](https://milkshake.studio/)

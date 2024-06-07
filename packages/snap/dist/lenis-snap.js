@@ -55,7 +55,6 @@
     }
     class SnapElement {
         constructor(element, { align = ['start'], ignoreSticky = true, ignoreTransform = false, } = {}) {
-            // @ts-ignore
             this.rect = {};
             this.onWrapperResize = () => {
                 let top, left;
@@ -81,10 +80,7 @@
             };
             this.element = element;
             this.options = { align, ignoreSticky, ignoreTransform };
-            // this.ignoreSticky = ignoreSticky
-            // this.ignoreTransform = ignoreTransform
             this.align = [align].flat();
-            // TODO: assing rect immediately
             this.wrapperResizeObserver = new ResizeObserver(this.onWrapperResize);
             this.wrapperResizeObserver.observe(document.body);
             this.onWrapperResize();
@@ -137,14 +133,9 @@
             this.onScroll = ({ scroll, limit, lastVelocity, velocity, isScrolling, userData, isHorizontal, }) => {
                 if (this.isStopped)
                     return;
-                // console.log(scroll, velocity, type)
-                // return
                 const isDecelerating = Math.abs(lastVelocity) > Math.abs(velocity);
                 const isTurningBack = Math.sign(lastVelocity) !== Math.sign(velocity) && velocity !== 0;
-                // console.log({ lastVelocity, velocity, isTurningBack, isDecelerating })
-                // console.log('onScroll')
                 if (Math.abs(velocity) < this.options.velocityThreshold &&
-                    // !isTouching &&
                     isDecelerating &&
                     !isTurningBack &&
                     (userData === null || userData === void 0 ? void 0 : userData.initiator) !== 'snap') {
@@ -184,9 +175,6 @@
                     const distance = Math.abs(scroll - snap);
                     if (this.options.type === 'mandatory' ||
                         (this.options.type === 'proximity' && distance <= this.viewport.height)) {
-                        // this.__isScrolling = true
-                        // this.onSnapStart?.(snap)
-                        // console.log('scroll to')
                         this.lenis.scrollTo(snap, {
                             lerp: this.options.lerp,
                             easing: this.options.easing,
@@ -202,7 +190,6 @@
                             },
                         });
                     }
-                    // console.timeEnd('scroll')
                 }
             };
             this.lenis = lenis;
@@ -225,19 +212,6 @@
             window.addEventListener('resize', this.onWindowResize);
             this.lenis.on('scroll', this.onScroll);
         }
-        // debug() {
-        //   const element = document.createElement('div')
-        //   element.style.cssText = `
-        //     position: fixed;
-        //     background: red;
-        //     border-bottom: 1px solid red;
-        //     left: 0;
-        //     right: 0;
-        //     top: 0;
-        //     z-index: 9999;
-        //   `
-        //   document.body.appendChild(element)
-        // }
         destroy() {
             this.lenis.off('scroll', this.onScroll);
             window.removeEventListener('resize', this.onWindowResize);
