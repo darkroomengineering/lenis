@@ -1,19 +1,26 @@
 import { debounce } from './debounce'
 
 export class Dimensions {
-  constructor({
-    wrapper,
-    content,
-    autoResize = true,
-    debounce: debounceValue = 250,
-  } = {}) {
+  width = 0
+  height = 0
+  scrollHeight = 0
+  scrollWidth = 0
+  debouncedResize?: (...args: unknown[]) => void
+  wrapperResizeObserver?: ResizeObserver
+  contentResizeObserver?: ResizeObserver
+
+  constructor(
+    private wrapper: Element | Window,
+    private content: Element,
+    { autoResize = true, debounce: debounceValue = 250 } = {}
+  ) {
     this.wrapper = wrapper
     this.content = content
 
     if (autoResize) {
       this.debouncedResize = debounce(this.resize, debounceValue)
 
-      if (this.wrapper === window) {
+      if (this.wrapper instanceof Window) {
         window.addEventListener('resize', this.debouncedResize, false)
       } else {
         this.wrapperResizeObserver = new ResizeObserver(this.debouncedResize)
@@ -30,7 +37,8 @@ export class Dimensions {
   destroy() {
     this.wrapperResizeObserver?.disconnect()
     this.contentResizeObserver?.disconnect()
-    window.removeEventListener('resize', this.debouncedResize, false)
+    this.debouncedResize &&
+      window.removeEventListener('resize', this.debouncedResize, false)
   }
 
   resize = () => {
@@ -39,7 +47,7 @@ export class Dimensions {
   }
 
   onWrapperResize = () => {
-    if (this.wrapper === window) {
+    if (this.wrapper instanceof Window) {
       this.width = window.innerWidth
       this.height = window.innerHeight
     } else {
@@ -49,7 +57,7 @@ export class Dimensions {
   }
 
   onContentResize = () => {
-    if (this.wrapper === window) {
+    if (this.wrapper instanceof Window) {
       this.scrollHeight = this.content.scrollHeight
       this.scrollWidth = this.content.scrollWidth
     } else {
