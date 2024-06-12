@@ -45,7 +45,7 @@ import Lenis from 'lenis'
 using scripts:
 
 ```html
-<script src="https://unpkg.com/lenis@1.1.2/dist/lenis.min.js"></script> 
+<script src="https://unpkg.com/lenis@1.1.3/dist/lenis.min.js"></script> 
 ```
 
 
