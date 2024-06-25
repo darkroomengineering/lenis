@@ -45,6 +45,8 @@ export default class Lenis {
   __isScrolling: Scrolling = false // true when scroll is animating
   __isStopped: boolean = false // true if user should not be able to scroll - enable/disable programmatically
   __isLocked: boolean = false // same as isStopped but enabled/disabled when scroll reaches target
+  __preventNextNativeScrollEvent?: boolean
+  __resetVelocityTimeout?: number
 
   time: number
   userData: object
@@ -133,6 +135,12 @@ export default class Lenis {
 
     this.options.wrapper.addEventListener('scroll', this.onNativeScroll, false)
 
+    this.options.wrapper.addEventListener(
+      'pointerdown',
+      this.onPointerDown,
+      false
+    )
+
     this.virtualScroll = new VirtualScroll(eventsTarget, {
       touchMultiplier,
       wheelMultiplier,
@@ -146,6 +154,11 @@ export default class Lenis {
     this.options.wrapper.removeEventListener(
       'scroll',
       this.onNativeScroll,
+      false
+    )
+    this.options.wrapper.removeEventListener(
+      'pointerdown',
+      this.onPointerDown,
       false
     )
 
@@ -177,6 +190,12 @@ export default class Lenis {
       this.rootElement.scrollLeft = scroll
     } else {
       this.rootElement.scrollTop = scroll
+    }
+  }
+
+  private onPointerDown = (event: PointerEvent) => {
+    if (event.button === 1) {
+      this.reset()
     }
   }
 

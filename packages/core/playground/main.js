@@ -14,7 +14,7 @@ const lenis = new Lenis({
   // },
 })
 lenis.on('scroll', (e) => {
-  console.log(e.scroll, e.velocity, e.isScrolling, e.userData)
+  // console.log(e.scroll, e.velocity, e.isScrolling, e.userData)
 })
 window.lenis = lenis
 
