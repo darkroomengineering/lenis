@@ -4,7 +4,7 @@
   (global = typeof globalThis !== 'undefined' ? globalThis : global || self, global.Lenis = factory());
 })(this, (function () { 'use strict';
 
-  var version = "1.1.3";
+  var version = "1.1.4";
 
   // Clamp a value between a minimum and maximum value
   function clamp(min, input, max) {
@@ -329,6 +329,11 @@
           this.__isStopped = false;
           this.__isLocked = false;
           this.direction = 0;
+          this.onPointerDown = (event) => {
+              if (event.button === 1) {
+                  this.reset();
+              }
+          };
           this.onVirtualScroll = ({ deltaX, deltaY, event, }) => {
               if (event.ctrlKey)
                   return;
@@ -463,6 +468,7 @@
           this.isScrolling = false;
           this.targetScroll = this.animatedScroll = this.actualScroll;
           this.options.wrapper.addEventListener('scroll', this.onNativeScroll, false);
+          this.options.wrapper.addEventListener('pointerdown', this.onPointerDown, false);
           this.virtualScroll = new VirtualScroll(eventsTarget, {
               touchMultiplier,
               wheelMultiplier,
@@ -472,6 +478,7 @@
       destroy() {
           this.emitter.destroy();
           this.options.wrapper.removeEventListener('scroll', this.onNativeScroll, false);
+          this.options.wrapper.removeEventListener('pointerdown', this.onPointerDown, false);
           this.virtualScroll.destroy();
           this.dimensions.destroy();
           this.cleanUpClassName();

@@ -27,6 +27,8 @@ declare class Lenis {
     __isScrolling: Scrolling;
     __isStopped: boolean;
     __isLocked: boolean;
+    __preventNextNativeScrollEvent?: boolean;
+    __resetVelocityTimeout?: number;
     time: number;
     userData: object;
     lastVelocity: number;
@@ -40,6 +42,7 @@ declare class Lenis {
     on(event: string, callback: Function): any;
     off(event: string, callback: Function): any;
     private setScroll;
+    private onPointerDown;
     private onVirtualScroll;
     resize(): void;
     private emit;
