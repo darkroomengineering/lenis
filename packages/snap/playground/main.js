@@ -30,17 +30,27 @@ if (true) {
   })
   window.snap = snap
 
+  const section1 = document.querySelector('.section-1')
   const section2 = document.querySelector('.section-2')
   const section3 = document.querySelector('.section-3')
+  const section4 = document.querySelector('.section-4')
 
   // snap.add(500)
 
-  snap.addElement(section2, {
+  snap.addElement(section1, {
     align: ['start', 'end'], // 'start', 'center', 'end'
+  })
+
+  snap.addElement(section2, {
+    align: 'center', // 'start', 'center', 'end'
   })
 
   snap.addElement(section3, {
     align: 'center', // 'start', 'center', 'end'
+  })
+
+  snap.addElement(section4, {
+    align: ['start', 'end'], // 'start', 'center', 'end'
   })
 
   function raf(time) {

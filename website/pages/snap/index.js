@@ -29,17 +29,27 @@ export default function Page() {
     })
     window.snap = snap
 
+    const section1 = sectionRefs.current[0]
     const section2 = sectionRefs.current[1]
     const section3 = sectionRefs.current[2]
+    const section4 = sectionRefs.current[3]
 
     // snap.add(500)
 
+    snap.addElement(section1, {
+      align: 'end', // 'start', 'center', 'end'
+    })
+
     snap.addElement(section2, {
-      align: ['start', 'end'], // 'start', 'center', 'end'
+      align: 'center', // 'start', 'center', 'end'
     })
 
     snap.addElement(section3, {
       align: 'center', // 'start', 'center', 'end'
+    })
+
+    snap.addElement(section4, {
+      align: 'start', // 'start', 'center', 'end'
     })
 
     function raf(time) {

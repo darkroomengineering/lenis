@@ -156,7 +156,7 @@ export default class Snap {
     ) {
       scroll = Math.ceil(scroll)
 
-      let snaps = [0, ...this.snaps.values(), limit] as number[]
+      let snaps = [...this.snaps.values()] as number[]
 
       this.elements.forEach(({ rect, align }) => {
         let snap: number | undefined
