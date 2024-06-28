@@ -140,7 +140,7 @@
                     !isTurningBack &&
                     (userData === null || userData === void 0 ? void 0 : userData.initiator) !== 'snap') {
                     scroll = Math.ceil(scroll);
-                    let snaps = [0, ...this.snaps.values(), limit];
+                    let snaps = [...this.snaps.values()];
                     this.elements.forEach(({ rect, align }) => {
                         let snap;
                         align.forEach((align) => {
