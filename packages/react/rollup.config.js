@@ -35,7 +35,7 @@ export default [
     ],
   },
   {
-    input: './dist/index.d.ts',
+    input: './dist/types/index.d.ts',
     output: [{ file: './dist/lenis-react.d.ts', format: 'esm' }],
     plugins: [dts()],
   },

@@ -1,7 +1,9 @@
 {
   "compilerOptions": {
-    "outDir": "./dist",
+    "outDir": "./dist/types",
     "declaration": true,
+    "allowJs": true,
+    "checkJs": true,
     "jsx": "react-jsx",
     "moduleResolution": "node",
     "module": "esnext",

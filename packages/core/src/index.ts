@@ -49,9 +49,9 @@ export default class Lenis {
   __resetVelocityTimeout?: number
 
   time: number
-  userData: object
-  lastVelocity: number
-  velocity: number
+  userData: object = {}
+  lastVelocity: number = 0
+  velocity: number = 0
   direction: 1 | -1 | 0 = 0
   options: LenisOptions
   targetScroll: number
@@ -114,7 +114,7 @@ export default class Lenis {
       autoResize,
       prevent,
       __experimental__naiveDimensions,
-    }
+    } as LenisOptions
 
     this.animate = new Animate()
     this.emitter = new Emitter()

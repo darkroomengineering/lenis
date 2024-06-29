@@ -42,40 +42,38 @@ type Viewport = {
     width: number;
     height: number;
 };
+type SnapItem = {
+    value: number;
+    userData: object;
+};
 type SnapOptions = {
     type?: 'mandatory' | 'proximity';
     lerp?: number;
     easing?: (t: number) => number;
     duration?: number;
     velocityThreshold?: number;
-    onSnapStart?: (t: number) => number;
-    onSnapComplete?: (t: number) => number;
+    debounce?: number;
+    onSnapStart?: (t: SnapItem) => void;
+    onSnapComplete?: (t: SnapItem) => void;
 };
 declare class Snap {
     lenis: Lenis;
     options: SnapOptions;
     elements: Map<UID, SnapElement>;
-    snaps: Map<UID, number>;
+    snaps: Map<UID, SnapItem>;
     viewport: Viewport;
     isStopped: Boolean;
-    constructor(lenis: Lenis, { type, lerp, easing, duration, velocityThreshold, onSnapStart, onSnapComplete, }?: SnapOptions);
+    constructor(lenis: Lenis, { type, lerp, easing, duration, velocityThreshold, debounce: debounceDelay, onSnapStart, onSnapComplete, }?: SnapOptions);
     destroy(): void;
     start(): void;
     stop(): void;
-    add(value: number): () => void;
+    add(value: number, userData?: object): () => void;
     remove(id: UID): void;
     addElement(element: HTMLElement, options?: SnapElementOptions): () => void;
     removeElement(id: UID): void;
-    onWindowResize: () => void;
-    onScroll: ({ scroll, limit, lastVelocity, velocity, isScrolling, userData, isHorizontal, }: {
-        scroll: any;
-        limit: any;
-        lastVelocity: any;
-        velocity: any;
-        isScrolling: any;
-        userData: any;
-        isHorizontal: any;
-    }) => void;
+    private onWindowResize;
+    private onScroll;
+    private onSnap;
 }
 
 export { type SnapOptions, Snap as default };

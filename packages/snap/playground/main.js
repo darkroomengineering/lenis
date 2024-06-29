@@ -19,6 +19,7 @@ if (true) {
   const snap = new Snap(lenis, {
     type: 'mandatory', // 'mandatory', 'proximity'
     velocityThreshold: 1,
+    debounce: 0,
     // duration: 2,
     // easing: (t) => t,
     onSnapStart: (snap) => {
@@ -35,10 +36,15 @@ if (true) {
   const section3 = document.querySelector('.section-3')
   const section4 = document.querySelector('.section-4')
 
-  // snap.add(500)
+  snap.add(0, {
+    index: 0,
+  })
 
   snap.addElement(section1, {
-    align: ['start', 'end'], // 'start', 'center', 'end'
+    align: [
+      // 'start',
+      'end',
+    ], // 'start', 'center', 'end'
   })
 
   snap.addElement(section2, {

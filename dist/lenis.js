@@ -328,6 +328,9 @@
           this.__isScrolling = false;
           this.__isStopped = false;
           this.__isLocked = false;
+          this.userData = {};
+          this.lastVelocity = 0;
+          this.velocity = 0;
           this.direction = 0;
           this.onPointerDown = (event) => {
               if (event.button === 1) {

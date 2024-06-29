@@ -1,9 +1,10 @@
 {
   "compilerOptions": {
-    "outDir": "./dist",
+    "outDir": "./dist/types/",
     "declaration": true,
     "target": "es2015",
     "allowJs": true,
+    "checkJs": true,
     "lib": ["esnext", "dom", "dom.iterable"],
     "moduleResolution": "node",
     "module": "esnext",

@@ -1,4 +1,5 @@
 import Lenis from 'lenis'
+import { debounce } from './debounce'
 import { SnapElement, SnapElementOptions } from './element'
 import { UID, uid } from './uid'
 
@@ -14,21 +15,27 @@ type Viewport = {
   height: number
 }
 
+type SnapItem = {
+  value: number
+  userData: object
+}
+
 export type SnapOptions = {
   type?: 'mandatory' | 'proximity'
   lerp?: number
   easing?: (t: number) => number
   duration?: number
   velocityThreshold?: number
-  onSnapStart?: (t: number) => number
-  onSnapComplete?: (t: number) => number
+  debounce?: number
+  onSnapStart?: (t: SnapItem) => void
+  onSnapComplete?: (t: SnapItem) => void
 }
 
 export default class Snap {
   lenis: Lenis
   options: SnapOptions
   elements: Map<UID, SnapElement>
-  snaps: Map<UID, number>
+  snaps: Map<UID, SnapItem>
   viewport: Viewport
   isStopped: Boolean = false
 
@@ -40,6 +47,7 @@ export default class Snap {
       easing,
       duration,
       velocityThreshold = 1,
+      debounce: debounceDelay = 0,
       onSnapStart,
       onSnapComplete,
     }: SnapOptions = {}
@@ -52,9 +60,10 @@ export default class Snap {
       easing,
       duration,
       velocityThreshold,
+      debounce: debounceDelay,
       onSnapStart,
       onSnapComplete,
-    }
+    } as SnapOptions
 
     this.elements = new Map()
     this.snaps = new Map()
@@ -64,7 +73,9 @@ export default class Snap {
       height: window.innerHeight,
     }
     this.onWindowResize()
-    window.addEventListener('resize', this.onWindowResize)
+    window.addEventListener('resize', this.onWindowResize, false)
+
+    this.debouncedOnSnap = debounce(this.onSnap, this.options.debounce)
 
     this.lenis.on('scroll', this.onScroll)
   }
@@ -85,7 +96,7 @@ export default class Snap {
 
   destroy() {
     this.lenis.off('scroll', this.onScroll)
-    window.removeEventListener('resize', this.onWindowResize)
+    window.removeEventListener('resize', this.onWindowResize, false)
     this.elements.forEach((element) => element.destroy())
   }
 
@@ -97,10 +108,10 @@ export default class Snap {
     this.isStopped = true
   }
 
-  add(value: number) {
+  add(value: number, userData: object = {}) {
     const id = uid()
 
-    this.snaps.set(id, value)
+    this.snaps.set(id, { value, userData })
 
     return () => this.remove(id)
   }
@@ -121,20 +132,20 @@ export default class Snap {
     this.elements.delete(id)
   }
 
-  onWindowResize = () => {
+  private onWindowResize = () => {
     this.viewport.width = window.innerWidth
     this.viewport.height = window.innerHeight
   }
 
-  onScroll = ({
-    scroll,
-    limit,
+  private onScroll = ({
+    // scroll,
+    // limit,
     lastVelocity,
     velocity,
-    isScrolling,
+    // isScrolling,
     userData,
-    isHorizontal,
-  }) => {
+  }: // isHorizontal,
+  Lenis) => {
     if (this.isStopped) return
     // console.log(scroll, velocity, type)
 
@@ -154,70 +165,75 @@ export default class Snap {
       !isTurningBack &&
       userData?.initiator !== 'snap'
     ) {
-      scroll = Math.ceil(scroll)
-
-      let snaps = [...this.snaps.values()] as number[]
-
-      this.elements.forEach(({ rect, align }) => {
-        let snap: number | undefined
-
-        align.forEach((align) => {
-          if (align === 'start') {
-            snap = rect.top
-          } else if (align === 'center') {
-            snap = isHorizontal
-              ? rect.left + rect.width / 2 - this.viewport.width / 2
-              : rect.top + rect.height / 2 - this.viewport.height / 2
-          } else if (align === 'end') {
-            snap = isHorizontal
-              ? rect.left + rect.width - this.viewport.width
-              : rect.top + rect.height - this.viewport.height
-          }
-
-          if (snap !== undefined) {
-            snaps.push(Math.ceil(snap))
-          }
-        })
-      })
-
-      snaps = snaps.sort((a, b) => Math.abs(a) - Math.abs(b))
-
-      let prevSnap = snaps.findLast((snap) => snap <= scroll)
-      if (prevSnap === undefined) prevSnap = snaps[0]
-      const distanceToPrevSnap = Math.abs(scroll - prevSnap)
-
-      let nextSnap = snaps.find((snap) => snap >= scroll)
-      if (nextSnap === undefined) nextSnap = snaps[snaps.length - 1]
-      const distanceToNextSnap = Math.abs(scroll - nextSnap)
-
-      const snap = distanceToPrevSnap < distanceToNextSnap ? prevSnap : nextSnap
-
-      const distance = Math.abs(scroll - snap)
-
-      if (
-        this.options.type === 'mandatory' ||
-        (this.options.type === 'proximity' && distance <= this.viewport.height)
-      ) {
-        // this.__isScrolling = true
-        // this.onSnapStart?.(snap)
-
-        // console.log('scroll to')
-
-        this.lenis.scrollTo(snap, {
-          lerp: this.options.lerp,
-          easing: this.options.easing,
-          duration: this.options.duration,
-          userData: { initiator: 'snap' },
-          onStart: () => {
-            this.options.onSnapStart?.(snap)
-          },
-          onComplete: () => {
-            this.options.onSnapComplete?.(snap)
-          },
-        })
-      }
-
-      // console.timeEnd('scroll')
+      this.debouncedOnSnap()
     }
+  }
+
+  private onSnap = () => {
+    let { scroll, isHorizontal } = this.lenis
+    scroll = Math.ceil(this.lenis.scroll)
+
+    let snaps = [...this.snaps.values()] as SnapItem[]
+
+    this.elements.forEach(({ rect, align }) => {
+      let value: number | undefined
+
+      align.forEach((align) => {
+        if (align === 'start') {
+          value = rect.top
+        } else if (align === 'center') {
+          value = isHorizontal
+            ? rect.left + rect.width / 2 - this.viewport.width / 2
+            : rect.top + rect.height / 2 - this.viewport.height / 2
+        } else if (align === 'end') {
+          value = isHorizontal
+            ? rect.left + rect.width - this.viewport.width
+            : rect.top + rect.height - this.viewport.height
+        }
+
+        if (typeof value === 'number') {
+          snaps.push({ value: Math.ceil(value), userData: {} })
+        }
+      })
+    })
+
+    snaps = snaps.sort((a, b) => Math.abs(a.value) - Math.abs(b.value))
+
+    let prevSnap = snaps.findLast(({ value }) => value <= scroll)
+    if (prevSnap === undefined) prevSnap = snaps[0]
+    const distanceToPrevSnap = Math.abs(scroll - prevSnap.value)
+
+    let nextSnap = snaps.find(({ value }) => value >= scroll)
+    if (nextSnap === undefined) nextSnap = snaps[snaps.length - 1]
+    const distanceToNextSnap = Math.abs(scroll - nextSnap.value)
+
+    const snap = distanceToPrevSnap < distanceToNextSnap ? prevSnap : nextSnap
+
+    const distance = Math.abs(scroll - snap.value)
+
+    if (
+      this.options.type === 'mandatory' ||
+      (this.options.type === 'proximity' && distance <= this.viewport.height)
+    ) {
+      // this.__isScrolling = true
+      // this.onSnapStart?.(snap)
+
+      // console.log('scroll to')
+
+      this.lenis.scrollTo(snap.value, {
+        lerp: this.options.lerp,
+        easing: this.options.easing,
+        duration: this.options.duration,
+        userData: { initiator: 'snap' },
+        onStart: () => {
+          this.options.onSnapStart?.(snap)
+        },
+        onComplete: () => {
+          this.options.onSnapComplete?.(snap)
+        },
+      })
+    }
+
+    // console.timeEnd('scroll')
   }
 }

@@ -2,7 +2,7 @@
   "name": "lenis",
   "scripts": {
     "build": "rollup --bundleConfigAsCjs -c",
-    "postbuild": "shx rm -rf ./dist/index.d.ts && shx cp -r ./dist/* ../../dist",
+    "postbuild": "shx rm -rf ./dist/types/ && shx cp -r ./dist/* ../../dist",
     "dev": "npm-run-all --parallel watch playground",
     "watch": "rollup --bundleConfigAsCjs -c -w",
     "playground": "npm run dev --prefix ./playground"
