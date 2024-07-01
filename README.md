@@ -295,6 +295,7 @@ prevent touch events only
 - [Edoardo Lunardi's portfolio](https://www.edoardolunardi.dev/) by [Edoardo Lunardi](https://www.edoardolunardi.dev/)
 - [DeSo](https://deso.com) by [Studio Freight](https://www.studiofreight.com/)
 - [Francesco Michelini's portfolio](https://www.francescomichelini.com/projects) by [Francesco Michelini](https://www.francescomichelini.com/)
+- [Stefano Bartoletti's portfolio](https://www.stefanobartoletti.it/) by [Stefano Bartoletti](https://twitter.com/ste_bartoletti)
 
 <br/>
 
