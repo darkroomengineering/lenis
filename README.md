@@ -122,25 +122,26 @@ See documentation for [lenis/react](https://github.com/darkroomengineering/lenis
 
 ## Instance settings
 
-| Option                   | Type                  | Default                                            | Description                                                                                                                                                         |
-|--------------------------|-----------------------|----------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `wrapper`                | `HTMLElement, Window` | `window`                                           | The element that will be used as the scroll container                                                                                                               |
-| `content`                | `HTMLElement`         | `document.documentElement`                         | The element that contains the content that will be scrolled, usually `wrapper`'s direct child                                                                       |
-| `eventsTarget`           | `HTMLElement, Window` | `wrapper`                                          | The element that will listen to `wheel` and `touch` events                                                                                                          |
-| `smoothWheel`            | `boolean`             | `true`                                             | Smooth the scroll initiated by `wheel` events                                                                                                                       |
-| `lerp`                   | `number`              | `0.1`                                              | Linear interpolation (lerp) intensity (between 0 and 1)                                                                                                             |
-| `duration`               | `number`              | `1.2`                                              | The duration of scroll animation (in seconds). Useless if lerp defined                                                                                              |
-| `easing`                 | `function`            | `(t) => Math.min(1, 1.001 - Math.pow(2, -10 * t))` | The easing function to use for the scroll animation, our default is custom but you can pick one from [Easings.net](https://easings.net/en). Useless if lerp defined |
-| `orientation`            | `string`              | `vertical`                                         | The orientation of the scrolling. Can be `vertical` or `horizontal`                                                                                                 |
-| `gestureOrientation`     | `string`              | `vertical`                                         | The orientation of the gestures. Can be `vertical`, `horizontal` or `both`                                                                                          |
-| `syncTouch`              | `boolean`             | `false`                                            | Mimic touch device scroll while allowing scroll sync (can be unstable on iOS<16)                                                                                    |
-| `syncTouchLerp`          | `number`              | `0.075`                                            | Lerp applied during `syncTouch` inertia                                                                                                                             |
-| `touchInertiaMultiplier` | `number`              | `35`                                               | Manage the the strength of `syncTouch` inertia                                                                                                                      |
-| `wheelMultiplier`        | `number`              | `1`                                                | The multiplier to use for mouse wheel events                                                                                                                        |
-| `touchMultiplier`        | `number`              | `1`                                                | The multiplier to use for touch events                                                                                                                              |
-| `infinite`               | `boolean`             | `false`                                            | Enable infinite scrolling! `syncTouch: true` is required on touch devices. ([See example](https://codepen.io/ClementRoche/pen/OJqBLod))                             |
-| `autoResize`             | `boolean`             | `true`                                             | Resize instance automatically       based on `ResizeObserver`. If `false` you must resize manually using `.resize()`                                                |
-| `prevent`                | `boolean, function`   | `false`                                            | Manually prevent scroll to be smoothed based on elements traversed by events. Example: `(node) =>  node.classList.contains('cookie-modal')`                         |
+| Option                   | Type                  | Default                                            | Description                                                                                                                                                                                                                                                                      |
+|--------------------------|-----------------------|----------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `wrapper`                | `HTMLElement, Window` | `window`                                           | The element that will be used as the scroll container                                                                                                                                                                                                                            |
+| `content`                | `HTMLElement`         | `document.documentElement`                         | The element that contains the content that will be scrolled, usually `wrapper`'s direct child                                                                                                                                                                                    |
+| `eventsTarget`           | `HTMLElement, Window` | `wrapper`                                          | The element that will listen to `wheel` and `touch` events                                                                                                                                                                                                                       |
+| `smoothWheel`            | `boolean`             | `true`                                             | Smooth the scroll initiated by `wheel` events                                                                                                                                                                                                                                    |
+| `lerp`                   | `number`              | `0.1`                                              | Linear interpolation (lerp) intensity (between 0 and 1)                                                                                                                                                                                                                          |
+| `duration`               | `number`              | `1.2`                                              | The duration of scroll animation (in seconds). Useless if lerp defined                                                                                                                                                                                                           |
+| `easing`                 | `function`            | `(t) => Math.min(1, 1.001 - Math.pow(2, -10 * t))` | The easing function to use for the scroll animation, our default is custom but you can pick one from [Easings.net](https://easings.net/en). Useless if lerp defined                                                                                                              |
+| `orientation`            | `string`              | `vertical`                                         | The orientation of the scrolling. Can be `vertical` or `horizontal`                                                                                                                                                                                                              |
+| `gestureOrientation`     | `string`              | `vertical`                                         | The orientation of the gestures. Can be `vertical`, `horizontal` or `both`                                                                                                                                                                                                       |
+| `syncTouch`              | `boolean`             | `false`                                            | Mimic touch device scroll while allowing scroll sync (can be unstable on iOS<16)                                                                                                                                                                                                 |
+| `syncTouchLerp`          | `number`              | `0.075`                                            | Lerp applied during `syncTouch` inertia                                                                                                                                                                                                                                          |
+| `touchInertiaMultiplier` | `number`              | `35`                                               | Manage the the strength of `syncTouch` inertia                                                                                                                                                                                                                                   |
+| `wheelMultiplier`        | `number`              | `1`                                                | The multiplier to use for mouse wheel events                                                                                                                                                                                                                                     |
+| `touchMultiplier`        | `number`              | `1`                                                | The multiplier to use for touch events                                                                                                                                                                                                                                           |
+| `infinite`               | `boolean`             | `false`                                            | Enable infinite scrolling! `syncTouch: true` is required on touch devices. ([See example](https://codepen.io/ClementRoche/pen/OJqBLod))                                                                                                                                          |
+| `autoResize`             | `boolean`             | `true`                                             | Resize instance automatically       based on `ResizeObserver`. If `false` you must resize manually using `.resize()`                                                                                                                                                             |
+| `prevent`                | `function`            | `undefined`                                        | Manually prevent scroll to be smoothed based on elements traversed by events. If `true` is returned, it will prevent the scroll to be smoothed. Example: `(node) =>  node.classList.contains('cookie-modal')`                                                                    |
+| `virtualScroll`          | `function`            | `undefined`                                        | Manually modify the events before they get consumed. If `false` is returned, the given event will be ignored. Examples: `(e) => { e.deltaY /= 2 }` (to slow down vertical scroll) or `({ event }) => !event.shiftKey` (to prevent scroll to be smoothed if shift key is pressed) |
 
 <br/>
 
@@ -201,9 +202,10 @@ See documentation for [lenis/react](https://github.com/darkroomengineering/lenis
 
 ## Instance Events
 
-| Event    | Callback Arguments |
-|----------|--------------------|
-| `scroll` | Lenis instance     |
+| Event            | Callback Arguments        |
+|------------------|---------------------------|
+| `scroll`         | Lenis instance            |
+| `virtual-scroll` | `{deltaX, deltaY, event}` |
 
 
 <br/>
@@ -211,12 +213,34 @@ See documentation for [lenis/react](https://github.com/darkroomengineering/lenis
 ## Considerations
 
 ### Nested scroll
+
+#### Using Javascript
+
 ```html
-<div data-lenis-prevent>scroll content</div>
+<div id="modal">scrollable content</div>
+```
 
-<div data-lenis-prevent-wheel>scroll content</div>
+```js
+const lenis = new Lenis({
+  prevent: (node) => node.id === 'modal',
+})
+```
 
-<div data-lenis-prevent-touch>scroll content</div>
+#### Using HTML
+
+```html
+<div data-lenis-prevent>scrollable content</div>
+```
+
+prevent wheel events only
+
+```html
+<div data-lenis-prevent-wheel>scrollable content</div>
+```
+
+prevent touch events only
+```html
+<div data-lenis-prevent-touch>scrollable content</div>
 ```
 
 [See modal example](https://codepen.io/ClementRoche/pen/PoLdjpw)

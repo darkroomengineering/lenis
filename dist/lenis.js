@@ -27,60 +27,57 @@
     return ((n % d) + d) % d
   }
 
-  // Animate class to handle value animations with lerping or easing
   class Animate {
-    // Advance the animation by the given delta time
-    advance(deltaTime) {
-      if (!this.isRunning) return
-
-      let completed = false;
-
-      if (this.duration && this.easing) {
-        this.currentTime += deltaTime;
-        const linearProgress = clamp(0, this.currentTime / this.duration, 1);
-
-        completed = linearProgress >= 1;
-        const easedProgress = completed ? 1 : this.easing(linearProgress);
-        this.value = this.from + (this.to - this.from) * easedProgress;
-      } else if (this.lerp) {
-        this.value = damp(this.value, this.to, this.lerp * 60, deltaTime);
-        if (Math.round(this.value) === this.to) {
-          this.value = this.to;
-          completed = true;
-        }
-      } else {
-        // If no easing or lerp, just jump to the end value
-        this.value = this.to;
-        completed = true;
+      constructor() {
+          this.isRunning = false;
+          this.value = 0;
+          this.from = 0;
+          this.to = 0;
+          this.duration = 0;
+          this.currentTime = 0;
       }
-
-      if (completed) {
-        this.stop();
+      advance(deltaTime) {
+          var _a;
+          if (!this.isRunning)
+              return;
+          let completed = false;
+          if (this.duration && this.easing) {
+              this.currentTime += deltaTime;
+              const linearProgress = clamp(0, this.currentTime / this.duration, 1);
+              completed = linearProgress >= 1;
+              const easedProgress = completed ? 1 : this.easing(linearProgress);
+              this.value = this.from + (this.to - this.from) * easedProgress;
+          }
+          else if (this.lerp) {
+              this.value = damp(this.value, this.to, this.lerp * 60, deltaTime);
+              if (Math.round(this.value) === this.to) {
+                  this.value = this.to;
+                  completed = true;
+              }
+          }
+          else {
+              this.value = this.to;
+              completed = true;
+          }
+          if (completed) {
+              this.stop();
+          }
+          (_a = this.onUpdate) === null || _a === void 0 ? void 0 : _a.call(this, this.value, completed);
       }
-
-      // Call the onUpdate callback with the current value and completed status
-      this.onUpdate?.(this.value, completed);
-    }
-
-    // Stop the animation
-    stop() {
-      this.isRunning = false;
-    }
-
-    // Set up the animation from a starting value to an ending value
-    // with optional parameters for lerping, duration, easing, and onUpdate callback
-    fromTo(from, to, { lerp, duration, easing, onStart, onUpdate }) {
-      this.from = this.value = from;
-      this.to = to;
-      this.lerp = lerp;
-      this.duration = duration;
-      this.easing = easing;
-      this.currentTime = 0;
-      this.isRunning = true;
-
-      onStart?.();
-      this.onUpdate = onUpdate;
-    }
+      stop() {
+          this.isRunning = false;
+      }
+      fromTo(from, to, { lerp, duration, easing, onStart, onUpdate, }) {
+          this.from = this.value = from;
+          this.to = to;
+          this.lerp = lerp;
+          this.duration = duration;
+          this.easing = easing;
+          this.currentTime = 0;
+          this.isRunning = true;
+          onStart === null || onStart === void 0 ? void 0 : onStart();
+          this.onUpdate = onUpdate;
+      }
   }
 
   function debounce(callback, delay) {
@@ -96,235 +93,195 @@
   }
 
   class Dimensions {
-    constructor({
-      wrapper,
-      content,
-      autoResize = true,
-      debounce: debounceValue = 250,
-    } = {}) {
-      this.wrapper = wrapper;
-      this.content = content;
-
-      if (autoResize) {
-        this.debouncedResize = debounce(this.resize, debounceValue);
-
-        if (this.wrapper === window) {
-          window.addEventListener('resize', this.debouncedResize, false);
-        } else {
-          this.wrapperResizeObserver = new ResizeObserver(this.debouncedResize);
-          this.wrapperResizeObserver.observe(this.wrapper);
-        }
-
-        this.contentResizeObserver = new ResizeObserver(this.debouncedResize);
-        this.contentResizeObserver.observe(this.content);
+      constructor({ wrapper, content, autoResize = true, debounce: debounceValue = 250, } = {}) {
+          this.width = 0;
+          this.height = 0;
+          this.scrollWidth = 0;
+          this.scrollHeight = 0;
+          this.resize = () => {
+              this.onWrapperResize();
+              this.onContentResize();
+          };
+          this.onWrapperResize = () => {
+              if (this.wrapper === window) {
+                  this.width = window.innerWidth;
+                  this.height = window.innerHeight;
+              }
+              else if (this.wrapper instanceof HTMLElement) {
+                  this.width = this.wrapper.clientWidth;
+                  this.height = this.wrapper.clientHeight;
+              }
+          };
+          this.onContentResize = () => {
+              if (this.wrapper === window) {
+                  this.scrollHeight = this.content.scrollHeight;
+                  this.scrollWidth = this.content.scrollWidth;
+              }
+              else if (this.wrapper instanceof HTMLElement) {
+                  this.scrollHeight = this.wrapper.scrollHeight;
+                  this.scrollWidth = this.wrapper.scrollWidth;
+              }
+          };
+          this.wrapper = wrapper;
+          this.content = content;
+          if (autoResize) {
+              this.debouncedResize = debounce(this.resize, debounceValue);
+              if (this.wrapper === window) {
+                  window.addEventListener('resize', this.debouncedResize, false);
+              }
+              else {
+                  this.wrapperResizeObserver = new ResizeObserver(this.debouncedResize);
+                  this.wrapperResizeObserver.observe(this.wrapper);
+              }
+              this.contentResizeObserver = new ResizeObserver(this.debouncedResize);
+              this.contentResizeObserver.observe(this.content);
+          }
+          this.resize();
       }
-
-      this.resize();
-    }
-
-    destroy() {
-      this.wrapperResizeObserver?.disconnect();
-      this.contentResizeObserver?.disconnect();
-      window.removeEventListener('resize', this.debouncedResize, false);
-    }
-
-    resize = () => {
-      this.onWrapperResize();
-      this.onContentResize();
-    }
-
-    onWrapperResize = () => {
-      if (this.wrapper === window) {
-        this.width = window.innerWidth;
-        this.height = window.innerHeight;
-      } else {
-        this.width = this.wrapper.clientWidth;
-        this.height = this.wrapper.clientHeight;
+      destroy() {
+          var _a, _b;
+          (_a = this.wrapperResizeObserver) === null || _a === void 0 ? void 0 : _a.disconnect();
+          (_b = this.contentResizeObserver) === null || _b === void 0 ? void 0 : _b.disconnect();
+          window.removeEventListener('resize', this.debouncedResize, false);
       }
-    }
-
-    onContentResize = () => {
-      if (this.wrapper === window) {
-        this.scrollHeight = this.content.scrollHeight;
-        this.scrollWidth = this.content.scrollWidth;
-      } else {
-        this.scrollHeight = this.wrapper.scrollHeight;
-        this.scrollWidth = this.wrapper.scrollWidth;
+      get limit() {
+          return {
+              x: this.scrollWidth - this.width,
+              y: this.scrollHeight - this.height,
+          };
       }
-    }
-
-    get limit() {
-      return {
-        x: this.scrollWidth - this.width,
-        y: this.scrollHeight - this.height,
-      }
-    }
   }
 
   class Emitter {
-    constructor() {
-      this.events = {};
-    }
-
-    emit(event, ...args) {
-      let callbacks = this.events[event] || [];
-      for (let i = 0, length = callbacks.length; i < length; i++) {
-        callbacks[i](...args);
+      constructor() {
+          this.events = {};
       }
-    }
-
-    on(event, cb) {
-      // Add the callback to the event's callback list, or create a new list with the callback
-      this.events[event]?.push(cb) || (this.events[event] = [cb]);
-
-      // Return an unsubscribe function
-      return () => {
-        this.events[event] = this.events[event]?.filter((i) => cb !== i);
+      emit(event, ...args) {
+          let callbacks = this.events[event] || [];
+          for (let i = 0, length = callbacks.length; i < length; i++) {
+              callbacks[i](...args);
+          }
       }
-    }
-
-    off(event, callback) {
-      this.events[event] = this.events[event]?.filter((i) => callback !== i);
-    }
-
-    destroy() {
-      this.events = {};
-    }
+      on(event, callback) {
+          var _a;
+          ((_a = this.events[event]) === null || _a === void 0 ? void 0 : _a.push(callback)) || (this.events[event] = [callback]);
+          return () => {
+              var _a;
+              this.events[event] = (_a = this.events[event]) === null || _a === void 0 ? void 0 : _a.filter((i) => callback !== i);
+          };
+      }
+      off(event, callback) {
+          var _a;
+          this.events[event] = (_a = this.events[event]) === null || _a === void 0 ? void 0 : _a.filter((i) => callback !== i);
+      }
+      destroy() {
+          this.events = {};
+      }
   }
 
   const LINE_HEIGHT = 100 / 6;
-
   class VirtualScroll {
-    constructor(element, { wheelMultiplier = 1, touchMultiplier = 1 }) {
-      this.element = element;
-      this.wheelMultiplier = wheelMultiplier;
-      this.touchMultiplier = touchMultiplier;
-
-      this.touchStart = {
-        x: null,
-        y: null,
-      };
-
-      this.emitter = new Emitter();
-      window.addEventListener('resize', this.onWindowResize, false);
-      this.onWindowResize();
-
-      this.element.addEventListener('wheel', this.onWheel, { passive: false });
-      this.element.addEventListener('touchstart', this.onTouchStart, {
-        passive: false,
-      });
-      this.element.addEventListener('touchmove', this.onTouchMove, {
-        passive: false,
-      });
-      this.element.addEventListener('touchend', this.onTouchEnd, {
-        passive: false,
-      });
-    }
-
-    // Add an event listener for the given event and callback
-    on(event, callback) {
-      return this.emitter.on(event, callback)
-    }
-
-    // Remove all event listeners and clean up
-    destroy() {
-      this.emitter.destroy();
-
-      window.removeEventListener('resize', this.onWindowResize, false);
-
-      this.element.removeEventListener('wheel', this.onWheel, {
-        passive: false,
-      });
-      this.element.removeEventListener('touchstart', this.onTouchStart, {
-        passive: false,
-      });
-      this.element.removeEventListener('touchmove', this.onTouchMove, {
-        passive: false,
-      });
-      this.element.removeEventListener('touchend', this.onTouchEnd, {
-        passive: false,
-      });
-    }
-
-    // Event handler for 'touchstart' event
-    onTouchStart = (event) => {
-      const { clientX, clientY } = event.targetTouches
-        ? event.targetTouches[0]
-        : event;
-
-      this.touchStart.x = clientX;
-      this.touchStart.y = clientY;
-
-      this.lastDelta = {
-        x: 0,
-        y: 0,
-      };
-
-      this.emitter.emit('scroll', {
-        deltaX: 0,
-        deltaY: 0,
-        event,
-      });
-    }
-
-    // Event handler for 'touchmove' event
-    onTouchMove = (event) => {
-      const { clientX, clientY } = event.targetTouches
-        ? event.targetTouches[0]
-        : event;
-
-      const deltaX = -(clientX - this.touchStart.x) * this.touchMultiplier;
-      const deltaY = -(clientY - this.touchStart.y) * this.touchMultiplier;
-
-      this.touchStart.x = clientX;
-      this.touchStart.y = clientY;
-
-      this.lastDelta = {
-        x: deltaX,
-        y: deltaY,
-      };
-
-      this.emitter.emit('scroll', {
-        deltaX,
-        deltaY,
-        event,
-      });
-    }
-
-    onTouchEnd = (event) => {
-      this.emitter.emit('scroll', {
-        deltaX: this.lastDelta.x,
-        deltaY: this.lastDelta.y,
-        event,
-      });
-    }
-
-    // Event handler for 'wheel' event
-    onWheel = (event) => {
-      let { deltaX, deltaY, deltaMode } = event;
-
-      const multiplierX =
-        deltaMode === 1 ? LINE_HEIGHT : deltaMode === 2 ? this.windowWidth : 1;
-      const multiplierY =
-        deltaMode === 1 ? LINE_HEIGHT : deltaMode === 2 ? this.windowHeight : 1;
-
-      deltaX *= multiplierX;
-      deltaY *= multiplierY;
-
-      deltaX *= this.wheelMultiplier;
-      deltaY *= this.wheelMultiplier;
-
-      this.emitter.emit('scroll', { deltaX, deltaY, event });
-    }
-
-    onWindowResize = () => {
-      this.windowWidth = window.innerWidth;
-      this.windowHeight = window.innerHeight;
-    }
+      constructor(element, { wheelMultiplier = 1, touchMultiplier = 1 }) {
+          this.lastDelta = {
+              x: 0,
+              y: 0,
+          };
+          this.windowWidth = 0;
+          this.windowHeight = 0;
+          this.onTouchStart = (event) => {
+              const { clientX, clientY } = event.targetTouches
+                  ? event.targetTouches[0]
+                  : event;
+              this.touchStart.x = clientX;
+              this.touchStart.y = clientY;
+              this.lastDelta = {
+                  x: 0,
+                  y: 0,
+              };
+              this.emitter.emit('scroll', {
+                  deltaX: 0,
+                  deltaY: 0,
+                  event,
+              });
+          };
+          this.onTouchMove = (event) => {
+              var _a, _b, _c, _d;
+              const { clientX, clientY } = event.targetTouches
+                  ? event.targetTouches[0]
+                  : event;
+              const deltaX = -(clientX - ((_b = (_a = this.touchStart) === null || _a === void 0 ? void 0 : _a.x) !== null && _b !== void 0 ? _b : 0)) * this.touchMultiplier;
+              const deltaY = -(clientY - ((_d = (_c = this.touchStart) === null || _c === void 0 ? void 0 : _c.y) !== null && _d !== void 0 ? _d : 0)) * this.touchMultiplier;
+              this.touchStart.x = clientX;
+              this.touchStart.y = clientY;
+              this.lastDelta = {
+                  x: deltaX,
+                  y: deltaY,
+              };
+              this.emitter.emit('scroll', {
+                  deltaX,
+                  deltaY,
+                  event,
+              });
+          };
+          this.onTouchEnd = (event) => {
+              this.emitter.emit('scroll', {
+                  deltaX: this.lastDelta.x,
+                  deltaY: this.lastDelta.y,
+                  event,
+              });
+          };
+          this.onWheel = (event) => {
+              let { deltaX, deltaY, deltaMode } = event;
+              const multiplierX = deltaMode === 1 ? LINE_HEIGHT : deltaMode === 2 ? this.windowWidth : 1;
+              const multiplierY = deltaMode === 1 ? LINE_HEIGHT : deltaMode === 2 ? this.windowHeight : 1;
+              deltaX *= multiplierX;
+              deltaY *= multiplierY;
+              deltaX *= this.wheelMultiplier;
+              deltaY *= this.wheelMultiplier;
+              this.emitter.emit('scroll', { deltaX, deltaY, event });
+          };
+          this.onWindowResize = () => {
+              this.windowWidth = window.innerWidth;
+              this.windowHeight = window.innerHeight;
+          };
+          this.element = element;
+          this.wheelMultiplier = wheelMultiplier;
+          this.touchMultiplier = touchMultiplier;
+          this.touchStart = {
+              x: null,
+              y: null,
+          };
+          this.emitter = new Emitter();
+          window.addEventListener('resize', this.onWindowResize, false);
+          this.onWindowResize();
+          this.element.addEventListener('wheel', this.onWheel, {
+              passive: false,
+          });
+          this.element.addEventListener('touchstart', this.onTouchStart, {
+              passive: false,
+          });
+          this.element.addEventListener('touchmove', this.onTouchMove, {
+              passive: false,
+          });
+          this.element.addEventListener('touchend', this.onTouchEnd, {
+              passive: false,
+          });
+      }
+      on(event, callback) {
+          return this.emitter.on(event, callback);
+      }
+      destroy() {
+          this.emitter.destroy();
+          window.removeEventListener('resize', this.onWindowResize, false);
+          this.element.removeEventListener('wheel', this.onWheel);
+          this.element.removeEventListener('touchstart', this.onTouchStart);
+          this.element.removeEventListener('touchmove', this.onTouchMove);
+          this.element.removeEventListener('touchend', this.onTouchEnd);
+      }
   }
 
   class Lenis {
-      constructor({ wrapper = window, content = document.documentElement, wheelEventsTarget = wrapper, eventsTarget = wheelEventsTarget, smoothWheel = true, syncTouch = false, syncTouchLerp = 0.075, touchInertiaMultiplier = 35, duration, easing = (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)), lerp = 0.1, infinite = false, orientation = 'vertical', gestureOrientation = 'vertical', touchMultiplier = 1, wheelMultiplier = 1, autoResize = true, prevent = false, __experimental__naiveDimensions = false, } = {}) {
+      constructor({ wrapper = window, content = document.documentElement, wheelEventsTarget = wrapper, eventsTarget = wheelEventsTarget, smoothWheel = true, syncTouch = false, syncTouchLerp = 0.075, touchInertiaMultiplier = 35, duration, easing = (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)), lerp = 0.1, infinite = false, orientation = 'vertical', gestureOrientation = 'vertical', touchMultiplier = 1, wheelMultiplier = 1, autoResize = true, prevent = false, virtualScroll = false, __experimental__naiveDimensions = false, } = {}) {
           this.__isScrolling = false;
           this.__isStopped = false;
           this.__isLocked = false;
@@ -337,7 +294,12 @@
                   this.reset();
               }
           };
-          this.onVirtualScroll = ({ deltaX, deltaY, event, }) => {
+          this.onVirtualScroll = (e) => {
+              if (typeof this.options.virtualScroll === 'function'
+                  ? this.options.virtualScroll(e, this) === false
+                  : this.options.virtualScroll === false)
+                  return;
+              const { deltaX, deltaY, event } = e;
               if (event.ctrlKey)
                   return;
               const isTouch = event.type.includes('touch');
@@ -364,7 +326,9 @@
               if (!!composedPath.find((node) => {
                   var _a, _b, _c, _d, _e;
                   return node instanceof Element &&
-                      ((typeof prevent === 'function' ? prevent === null || prevent === void 0 ? void 0 : prevent(node) : prevent) ||
+                      ((typeof prevent === 'function'
+                          ? prevent === null || prevent === void 0 ? void 0 : prevent(node)
+                          : prevent === true) ||
                           ((_a = node.hasAttribute) === null || _a === void 0 ? void 0 : _a.call(node, 'data-lenis-prevent')) ||
                           (isTouch && ((_b = node.hasAttribute) === null || _b === void 0 ? void 0 : _b.call(node, 'data-lenis-prevent-touch'))) ||
                           (isWheel && ((_c = node.hasAttribute) === null || _c === void 0 ? void 0 : _c.call(node, 'data-lenis-prevent-wheel'))) ||
@@ -457,6 +421,7 @@
               wheelMultiplier,
               autoResize,
               prevent,
+              virtualScroll,
               __experimental__naiveDimensions,
           };
           this.animate = new Animate();

@@ -38,6 +38,7 @@ export default class Snap {
   snaps: Map<UID, SnapItem>
   viewport: Viewport
   isStopped: Boolean = false
+  onSnapDebounced: Function
 
   constructor(
     lenis: Lenis,
@@ -75,7 +76,7 @@ export default class Snap {
     this.onWindowResize()
     window.addEventListener('resize', this.onWindowResize, false)
 
-    this.debouncedOnSnap = debounce(this.onSnap, this.options.debounce)
+    this.onSnapDebounced = debounce(this.onSnap, this.options.debounce)
 
     this.lenis.on('scroll', this.onScroll)
   }
@@ -165,7 +166,7 @@ export default class Snap {
       !isTurningBack &&
       userData?.initiator !== 'snap'
     ) {
-      this.debouncedOnSnap()
+      this.onSnapDebounced()
     }
   }
 
@@ -213,7 +214,8 @@ export default class Snap {
 
     if (
       this.options.type === 'mandatory' ||
-      (this.options.type === 'proximity' && distance <= this.viewport.height)
+      (this.options.type === 'proximity' &&
+        distance <= this.lenis.dimensions.height)
     ) {
       // this.__isScrolling = true
       // this.onSnapStart?.(snap)

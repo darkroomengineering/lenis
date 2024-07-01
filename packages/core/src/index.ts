@@ -13,10 +13,18 @@ import { VirtualScroll } from './virtual-scroll'
 // - animate scroll to targetScroll (smooth context)
 // - if animation is not running, listen to 'scroll' events (native context)
 
+type Overwrite<T, R> = Omit<T, keyof R> & R
+
 type EasingFunction = (t: number) => number
 type Orientation = 'vertical' | 'horizontal'
 type GestureOrientation = 'vertical' | 'horizontal' | 'both'
 type Scrolling = boolean | 'native' | 'smooth'
+
+type onVirtualScrollOptions = {
+  deltaX: number
+  deltaY: number
+  event: WheelEvent | TouchEvent
+}
 
 export type LenisOptions = Partial<{
   wrapper: Window | HTMLElement
@@ -36,7 +44,8 @@ export type LenisOptions = Partial<{
   touchMultiplier: number
   wheelMultiplier: number
   autoResize: boolean
-  prevent: boolean | ((node: Element) => boolean)
+  prevent: (node: Element) => boolean
+  virtualScroll: (data: onVirtualScrollOptions) => boolean
   __experimental__naiveDimensions: boolean
 }>
 
@@ -48,18 +57,24 @@ export default class Lenis {
   __preventNextNativeScrollEvent?: boolean
   __resetVelocityTimeout?: number
 
+  isTouching?: boolean
   time: number
-  userData: object = {}
+  userData: Object = {}
   lastVelocity: number = 0
   velocity: number = 0
   direction: 1 | -1 | 0 = 0
-  options: LenisOptions
+  options: Overwrite<
+    LenisOptions,
+    {
+      wrapper: NonNullable<LenisOptions['wrapper']>
+    }
+  >
   targetScroll: number
   animatedScroll: number
-  // animate: Animate
-  // emitter: Emitter
-  // dimensions: Dimensions
-  // virtualScroll: VirtualScroll
+  animate: Animate
+  emitter: Emitter
+  dimensions: Dimensions
+  virtualScroll: VirtualScroll
 
   constructor({
     wrapper = window,
@@ -79,7 +94,8 @@ export default class Lenis {
     touchMultiplier = 1,
     wheelMultiplier = 1,
     autoResize = true,
-    prevent = false,
+    prevent,
+    virtualScroll,
     __experimental__naiveDimensions = false,
   }: LenisOptions = {}) {
     // @ts-expect-error
@@ -113,6 +129,7 @@ export default class Lenis {
       wheelMultiplier,
       autoResize,
       prevent,
+      virtualScroll,
       __experimental__naiveDimensions,
     } as LenisOptions
 
@@ -137,7 +154,7 @@ export default class Lenis {
 
     this.options.wrapper.addEventListener(
       'pointerdown',
-      this.onPointerDown,
+      this.onPointerDown as EventListener,
       false
     )
 
@@ -158,7 +175,7 @@ export default class Lenis {
     )
     this.options.wrapper.removeEventListener(
       'pointerdown',
-      this.onPointerDown,
+      this.onPointerDown as EventListener,
       false
     )
 
@@ -193,21 +210,23 @@ export default class Lenis {
     }
   }
 
-  private onPointerDown = (event: PointerEvent) => {
+  private onPointerDown = (event: PointerEvent | MouseEvent) => {
     if (event.button === 1) {
       this.reset()
     }
   }
 
-  private onVirtualScroll = ({
-    deltaX,
-    deltaY,
-    event,
-  }: {
-    deltaX: number
-    deltaY: number
-    event: WheelEvent | TouchEvent
-  }) => {
+  private onVirtualScroll = (data: onVirtualScrollOptions) => {
+    if (
+      typeof this.options.virtualScroll === 'function' &&
+      this.options.virtualScroll(data) === false
+    )
+      return
+
+    const { deltaX, deltaY, event } = data
+
+    this.emitter.emit('virtual-scroll', data)
+
     // keep zoom feature
     if (event.ctrlKey) return
 
@@ -264,7 +283,7 @@ export default class Lenis {
       !!composedPath.find(
         (node) =>
           node instanceof Element &&
-          ((typeof prevent === 'function' ? prevent?.(node) : prevent) ||
+          ((typeof prevent === 'function' && prevent?.(node)) ||
             node.hasAttribute?.('data-lenis-prevent') ||
             (isTouch && node.hasAttribute?.('data-lenis-prevent-touch')) ||
             (isWheel && node.hasAttribute?.('data-lenis-prevent-wheel')) ||

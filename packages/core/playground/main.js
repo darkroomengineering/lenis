@@ -7,14 +7,26 @@ document.querySelector('#app').innerHTML = new LoremIpsum().generateParagraphs(
 )
 
 const lenis = new Lenis({
+  virtualScroll: (e, lenis) => {
+    // args.deltaY *= 10
+
+    return !e.event.shiftKey
+    // return false
+  },
   // duration: 2,
   // easing: (t) => t,
   // prevent: () => {
   //   return true
   // },
 })
+// console.log(lenis.dimensions.height)
 lenis.on('scroll', (e) => {
   // console.log(e.scroll, e.velocity, e.isScrolling, e.userData)
+})
+lenis.on('virtual-scroll', (e) => {
+  // console.log(e)
+  // e.deltaY *= 10
+  // e.cancel = true
 })
 window.lenis = lenis
 

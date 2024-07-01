@@ -12,6 +12,8 @@
     "noUnusedParameters": true,
     "strict": true,
     "removeComments": true
+    // "skipLibCheck": true,
+    // "resolveJsonModule": true
   },
   "include": ["src"]
 }

@@ -10,6 +10,8 @@ import './style.css'
 
 if (true) {
   const lenis = new Lenis({
+    // wrapper: document.querySelector('#wrapper'),
+    // content: document.querySelector('#content'),
     lerp: 0.1,
   })
   window.lenis = lenis
@@ -39,6 +41,10 @@ if (true) {
   snap.add(0, {
     index: 0,
   })
+
+  // snap.add(643, {
+  //   index: 1,
+  // })
 
   snap.addElement(section1, {
     align: [
