@@ -4,7 +4,7 @@
   (global = typeof globalThis !== 'undefined' ? globalThis : global || self, global.Lenis = factory());
 })(this, (function () { 'use strict';
 
-  var version = "1.1.5";
+  var version = "1.1.6-dev.0";
 
   // Clamp a value between a minimum and maximum value
   function clamp(min, input, max) {
@@ -281,7 +281,7 @@
   }
 
   class Lenis {
-      constructor({ wrapper = window, content = document.documentElement, wheelEventsTarget = wrapper, eventsTarget = wheelEventsTarget, smoothWheel = true, syncTouch = false, syncTouchLerp = 0.075, touchInertiaMultiplier = 35, duration, easing = (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)), lerp = 0.1, infinite = false, orientation = 'vertical', gestureOrientation = 'vertical', touchMultiplier = 1, wheelMultiplier = 1, autoResize = true, prevent = false, virtualScroll = false, __experimental__naiveDimensions = false, } = {}) {
+      constructor({ wrapper = window, content = document.documentElement, wheelEventsTarget = wrapper, eventsTarget = wheelEventsTarget, smoothWheel = true, syncTouch = false, syncTouchLerp = 0.075, touchInertiaMultiplier = 35, duration, easing = (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)), lerp = 0.1, infinite = false, orientation = 'vertical', gestureOrientation = 'vertical', touchMultiplier = 1, wheelMultiplier = 1, autoResize = true, prevent, virtualScroll, __experimental__naiveDimensions = false, } = {}) {
           this.__isScrolling = false;
           this.__isStopped = false;
           this.__isLocked = false;
@@ -294,12 +294,12 @@
                   this.reset();
               }
           };
-          this.onVirtualScroll = (e) => {
-              if (typeof this.options.virtualScroll === 'function'
-                  ? this.options.virtualScroll(e, this) === false
-                  : this.options.virtualScroll === false)
+          this.onVirtualScroll = (data) => {
+              if (typeof this.options.virtualScroll === 'function' &&
+                  this.options.virtualScroll(data) === false)
                   return;
-              const { deltaX, deltaY, event } = e;
+              const { deltaX, deltaY, event } = data;
+              this.emitter.emit('virtual-scroll', { deltaX, deltaY, event });
               if (event.ctrlKey)
                   return;
               const isTouch = event.type.includes('touch');
@@ -326,9 +326,7 @@
               if (!!composedPath.find((node) => {
                   var _a, _b, _c, _d, _e;
                   return node instanceof Element &&
-                      ((typeof prevent === 'function'
-                          ? prevent === null || prevent === void 0 ? void 0 : prevent(node)
-                          : prevent === true) ||
+                      ((typeof prevent === 'function' && (prevent === null || prevent === void 0 ? void 0 : prevent(node))) ||
                           ((_a = node.hasAttribute) === null || _a === void 0 ? void 0 : _a.call(node, 'data-lenis-prevent')) ||
                           (isTouch && ((_b = node.hasAttribute) === null || _b === void 0 ? void 0 : _b.call(node, 'data-lenis-prevent-touch'))) ||
                           (isWheel && ((_c = node.hasAttribute) === null || _c === void 0 ? void 0 : _c.call(node, 'data-lenis-prevent-wheel'))) ||

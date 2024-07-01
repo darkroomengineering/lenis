@@ -111,8 +111,8 @@ type LenisOptions = Partial<{
     touchMultiplier: number;
     wheelMultiplier: number;
     autoResize: boolean;
-    prevent: boolean | ((node: Element) => boolean);
-    virtualScroll: boolean | ((e: onVirtualScrollOptions, lenis: Lenis) => boolean);
+    prevent: (node: Element) => boolean;
+    virtualScroll: (data: onVirtualScrollOptions) => boolean;
     __experimental__naiveDimensions: boolean;
 }>;
 declare class Lenis {
@@ -121,6 +121,7 @@ declare class Lenis {
     __isLocked: boolean;
     __preventNextNativeScrollEvent?: boolean;
     __resetVelocityTimeout?: number;
+    isTouching?: boolean;
     time: number;
     userData: Object;
     lastVelocity: number;

@@ -151,7 +151,7 @@
                   isDecelerating &&
                   !isTurningBack &&
                   (userData === null || userData === void 0 ? void 0 : userData.initiator) !== 'snap') {
-                  this.debouncedOnSnap();
+                  this.onSnapDebounced();
               }
           };
           this.onSnap = () => {
@@ -191,7 +191,8 @@
               const snap = distanceToPrevSnap < distanceToNextSnap ? prevSnap : nextSnap;
               const distance = Math.abs(scroll - snap.value);
               if (this.options.type === 'mandatory' ||
-                  (this.options.type === 'proximity' && distance <= this.viewport.height)) {
+                  (this.options.type === 'proximity' &&
+                      distance <= this.lenis.dimensions.height)) {
                   this.lenis.scrollTo(snap.value, {
                       lerp: this.options.lerp,
                       easing: this.options.easing,
@@ -227,7 +228,7 @@
           };
           this.onWindowResize();
           window.addEventListener('resize', this.onWindowResize, false);
-          this.debouncedOnSnap = debounce(this.onSnap, this.options.debounce);
+          this.onSnapDebounced = debounce(this.onSnap, this.options.debounce);
           this.lenis.on('scroll', this.onScroll);
       }
       destroy() {

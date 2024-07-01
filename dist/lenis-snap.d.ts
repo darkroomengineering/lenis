@@ -63,6 +63,7 @@ declare class Snap {
     snaps: Map<UID, SnapItem>;
     viewport: Viewport;
     isStopped: Boolean;
+    onSnapDebounced: Function;
     constructor(lenis: Lenis, { type, lerp, easing, duration, velocityThreshold, debounce: debounceDelay, onSnapStart, onSnapComplete, }?: SnapOptions);
     destroy(): void;
     start(): void;

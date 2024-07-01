@@ -151,7 +151,7 @@
                   isDecelerating &&
                   !isTurningBack &&
                   (userData === null || userData === void 0 ? void 0 : userData.initiator) !== 'snap') {
-                  this.debouncedOnSnap();
+                  this.onSnapDebounced();
               }
           };
           this.onSnap = () => {
@@ -228,7 +228,7 @@
           };
           this.onWindowResize();
           window.addEventListener('resize', this.onWindowResize, false);
-          this.debouncedOnSnap = debounce(this.onSnap, this.options.debounce);
+          this.onSnapDebounced = debounce(this.onSnap, this.options.debounce);
           this.lenis.on('scroll', this.onScroll);
       }
       destroy() {
