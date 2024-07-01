@@ -7,11 +7,10 @@ document.querySelector('#app').innerHTML = new LoremIpsum().generateParagraphs(
 )
 
 const lenis = new Lenis({
-  virtualScroll: (e, lenis) => {
-    // args.deltaY *= 10
-
+  virtualScroll: (e) => {
+    // e.deltaY *= 10
     return !e.event.shiftKey
-    // return false
+    // return true
   },
   // duration: 2,
   // easing: (t) => t,

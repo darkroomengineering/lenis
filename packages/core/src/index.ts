@@ -225,7 +225,7 @@ export default class Lenis {
 
     const { deltaX, deltaY, event } = data
 
-    this.emitter.emit('virtual-scroll', data)
+    this.emitter.emit('virtual-scroll', { deltaX, deltaY, event })
 
     // keep zoom feature
     if (event.ctrlKey) return
