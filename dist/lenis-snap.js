@@ -192,7 +192,10 @@
               const distance = Math.abs(scroll - snap.value);
               if (this.options.type === 'mandatory' ||
                   (this.options.type === 'proximity' &&
-                      distance <= this.lenis.dimensions.height)) {
+                      distance <=
+                          (isHorizontal
+                              ? this.lenis.dimensions.width
+                              : this.lenis.dimensions.height))) {
                   this.lenis.scrollTo(snap.value, {
                       lerp: this.options.lerp,
                       easing: this.options.easing,
