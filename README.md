@@ -1,8 +1,8 @@
 [![LENIS](https://assets.darkroom.engineering/lenis/header.png)](https://github.com/darkroomengineering/lenis)
 
-[![npm](https://img.shields.io/npm/v/%40studio-freight%2Flenis?colorA=000000&colorB=ff98a2
+[![npm](https://img.shields.io/npm/v/lenis?colorA=000000&colorB=ff98a2
 )](https://www.npmjs.com/package/lenis)
-[![downloads](https://img.shields.io/npm/dm/%40studio-freight%2Flenis?colorA=000000&colorB=ff98a2
+[![downloads](https://img.shields.io/npm/dm/lenis?colorA=000000&colorB=ff98a2
 )](https://www.npmjs.com/package/lenis)
 [![size](https://img.shields.io/bundlephobia/minzip/lenis?label=size&colorA=000000&colorB=ff98a2)](https://bundlephobia.com/package/lenis)
 
