@@ -20,6 +20,7 @@ const lenis = new Lenis({
 })
 // console.log(lenis.dimensions.height)
 lenis.on('scroll', (e) => {
+  console.log(e.scroll, e.velocity)
   // console.log(e.scroll, e.velocity, e.isScrolling, e.userData)
 })
 lenis.on('virtual-scroll', (e) => {

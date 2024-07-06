@@ -215,7 +215,10 @@ export default class Snap {
     if (
       this.options.type === 'mandatory' ||
       (this.options.type === 'proximity' &&
-        distance <= this.lenis.dimensions.height)
+        distance <=
+          (isHorizontal
+            ? this.lenis.dimensions.width
+            : this.lenis.dimensions.height))
     ) {
       // this.__isScrolling = true
       // this.onSnapStart?.(snap)
