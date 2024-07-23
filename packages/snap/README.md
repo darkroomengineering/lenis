@@ -1,7 +1,7 @@
 # lenis/snap
 
 ## Introduction
-lenis/snap provides a partial support for CSS scroll snap with [Lenis](https://github.com/darkroomengineering/lenis)
+lenis/snap provides a partial support for CSS scroll snap with [Lenis](https://github.com/darkroomengineering/lenis), see [Demo](https://lenis.darkroom.engineering/snap)
 
 ## Installation
 

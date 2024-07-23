@@ -1,23 +1,57 @@
-import Slide from './slide'
+import Lenis from 'lenis'
+import { debounce } from './debounce'
+import { SnapElement, SnapElementOptions } from './element'
+import { UID, uid } from './uid'
 
 // TODO:
 // - horizontal
 // - fix trackpad snapping too soon due to velocity (fuck Apple)
 // - fix wheel scrolling after limits (see console scroll to)
 // - fix touch scroll, do not snap when not released
+// - arrow, spacebar
+
+type Viewport = {
+  width: number
+  height: number
+}
+
+type SnapItem = {
+  value: number
+  userData: object
+}
+
+export type SnapOptions = {
+  type?: 'mandatory' | 'proximity'
+  lerp?: number
+  easing?: (t: number) => number
+  duration?: number
+  velocityThreshold?: number
+  debounce?: number
+  onSnapStart?: (t: SnapItem) => void
+  onSnapComplete?: (t: SnapItem) => void
+}
 
 export default class Snap {
+  lenis: Lenis
+  options: SnapOptions
+  elements: Map<UID, SnapElement>
+  snaps: Map<UID, SnapItem>
+  viewport: Viewport
+  isStopped: Boolean = false
+  onSnapDebounced: Function
+
   constructor(
-    lenis,
+    lenis: Lenis,
     {
       type = 'mandatory',
       lerp,
       easing,
       duration,
       velocityThreshold = 1,
+      debounce: debounceDelay = 0,
       onSnapStart,
       onSnapComplete,
-    } = {}
+    }: SnapOptions = {}
   ) {
     this.lenis = lenis
 
@@ -27,22 +61,22 @@ export default class Snap {
       easing,
       duration,
       velocityThreshold,
-    }
+      debounce: debounceDelay,
+      onSnapStart,
+      onSnapComplete,
+    } as SnapOptions
 
-    this.type = type
     this.elements = new Map()
     this.snaps = new Map()
-
-    this.velocityThreshold = velocityThreshold
-    this.onSnapStart = onSnapStart
-    this.onSnapComplete = onSnapComplete
 
     this.viewport = {
       width: window.innerWidth,
       height: window.innerHeight,
     }
     this.onWindowResize()
-    window.addEventListener('resize', this.onWindowResize)
+    window.addEventListener('resize', this.onWindowResize, false)
+
+    this.onSnapDebounced = debounce(this.onSnap, this.options.debounce)
 
     this.lenis.on('scroll', this.onScroll)
   }
@@ -63,8 +97,8 @@ export default class Snap {
 
   destroy() {
     this.lenis.off('scroll', this.onScroll)
-    window.removeEventListener('resize', this.onWindowResize)
-    this.elements.forEach((slide) => slide.destroy())
+    window.removeEventListener('resize', this.onWindowResize, false)
+    this.elements.forEach((element) => element.destroy())
   }
 
   start() {
@@ -75,44 +109,44 @@ export default class Snap {
     this.isStopped = true
   }
 
-  add(value) {
-    const id = crypto.randomUUID()
+  add(value: number, userData: object = {}) {
+    const id = uid()
 
-    this.snaps.set(id, value)
+    this.snaps.set(id, { value, userData })
 
     return () => this.remove(id)
   }
 
-  remove(id) {
+  remove(id: UID) {
     this.snaps.delete(id)
   }
 
-  addElement(element, options = {}) {
-    const id = crypto.randomUUID()
+  addElement(element: HTMLElement, options = {} as SnapElementOptions) {
+    const id = uid()
 
-    this.elements.set(id, new Slide(element, options))
+    this.elements.set(id, new SnapElement(element, options))
 
     return () => this.removeElement(id)
   }
 
-  removeElement(id) {
+  removeElement(id: UID) {
     this.elements.delete(id)
   }
 
-  onWindowResize = () => {
+  private onWindowResize = () => {
     this.viewport.width = window.innerWidth
     this.viewport.height = window.innerHeight
   }
 
-  onScroll = ({
-    scroll,
-    limit,
+  private onScroll = ({
+    // scroll,
+    // limit,
     lastVelocity,
     velocity,
-    isScrolling,
-    isTouching,
+    // isScrolling,
     userData,
-  }) => {
+  }: // isHorizontal,
+  Lenis) => {
     if (this.isStopped) return
     // console.log(scroll, velocity, type)
 
@@ -126,72 +160,85 @@ export default class Snap {
     // console.log('onScroll')
 
     if (
-      Math.abs(velocity) < this.velocityThreshold &&
+      Math.abs(velocity) < this.options.velocityThreshold &&
       // !isTouching &&
       isDecelerating &&
       !isTurningBack &&
       userData?.initiator !== 'snap'
     ) {
-      scroll = Math.ceil(scroll)
-
-      let snaps = [0, ...this.snaps.values(), limit]
-
-      this.elements.forEach(({ rect, align }) => {
-        let snap
-
-        align.forEach((align) => {
-          if (align === 'start') {
-            snap = rect.top
-          } else if (align === 'center') {
-            snap = rect.top + rect.height / 2 - this.viewport.height / 2
-          } else if (align === 'end') {
-            snap = rect.top + rect.height - this.viewport.height
-          }
-
-          if (snap !== undefined) {
-            snaps.push(Math.ceil(snap))
-          }
-        })
-      })
-
-      snaps = snaps.sort((a, b) => Math.abs(a) - Math.abs(b))
-
-      let prevSnap = snaps.findLast((snap) => snap <= scroll)
-      if (prevSnap === undefined) prevSnap = snaps[0]
-      const distanceToPrevSnap = Math.abs(scroll - prevSnap)
-
-      let nextSnap = snaps.find((snap) => snap >= scroll)
-      if (nextSnap === undefined) nextSnap = snaps[snaps.length - 1]
-      const distanceToNextSnap = Math.abs(scroll - nextSnap)
-
-      const snap = distanceToPrevSnap < distanceToNextSnap ? prevSnap : nextSnap
-
-      const distance = Math.abs(scroll - snap)
-
-      if (
-        this.type === 'mandatory' ||
-        (this.type === 'proximity' && distance <= this.viewport.height)
-      ) {
-        // this.__isScrolling = true
-        // this.onSnapStart?.(snap)
-
-        // console.log('scroll to')
-
-        this.lenis.scrollTo(snap, {
-          lerp: this.options.lerp,
-          easing: this.options.easing,
-          duration: this.options.duration,
-          userData: { initiator: 'snap' },
-          onStart: () => {
-            this.onSnapStart?.(snap)
-          },
-          onComplete: () => {
-            this.onSnapComplete?.(snap)
-          },
-        })
-      }
-
-      // console.timeEnd('scroll')
+      this.onSnapDebounced()
     }
+  }
+
+  private onSnap = () => {
+    let { scroll, isHorizontal } = this.lenis
+    scroll = Math.ceil(this.lenis.scroll)
+
+    let snaps = [...this.snaps.values()] as SnapItem[]
+
+    this.elements.forEach(({ rect, align }) => {
+      let value: number | undefined
+
+      align.forEach((align) => {
+        if (align === 'start') {
+          value = rect.top
+        } else if (align === 'center') {
+          value = isHorizontal
+            ? rect.left + rect.width / 2 - this.viewport.width / 2
+            : rect.top + rect.height / 2 - this.viewport.height / 2
+        } else if (align === 'end') {
+          value = isHorizontal
+            ? rect.left + rect.width - this.viewport.width
+            : rect.top + rect.height - this.viewport.height
+        }
+
+        if (typeof value === 'number') {
+          snaps.push({ value: Math.ceil(value), userData: {} })
+        }
+      })
+    })
+
+    snaps = snaps.sort((a, b) => Math.abs(a.value) - Math.abs(b.value))
+
+    let prevSnap = snaps.findLast(({ value }) => value <= scroll)
+    if (prevSnap === undefined) prevSnap = snaps[0]
+    const distanceToPrevSnap = Math.abs(scroll - prevSnap.value)
+
+    let nextSnap = snaps.find(({ value }) => value >= scroll)
+    if (nextSnap === undefined) nextSnap = snaps[snaps.length - 1]
+    const distanceToNextSnap = Math.abs(scroll - nextSnap.value)
+
+    const snap = distanceToPrevSnap < distanceToNextSnap ? prevSnap : nextSnap
+
+    const distance = Math.abs(scroll - snap.value)
+
+    if (
+      this.options.type === 'mandatory' ||
+      (this.options.type === 'proximity' &&
+        distance <=
+          (isHorizontal
+            ? this.lenis.dimensions.width
+            : this.lenis.dimensions.height))
+    ) {
+      // this.__isScrolling = true
+      // this.onSnapStart?.(snap)
+
+      // console.log('scroll to')
+
+      this.lenis.scrollTo(snap.value, {
+        lerp: this.options.lerp,
+        easing: this.options.easing,
+        duration: this.options.duration,
+        userData: { initiator: 'snap' },
+        onStart: () => {
+          this.options.onSnapStart?.(snap)
+        },
+        onComplete: () => {
+          this.options.onSnapComplete?.(snap)
+        },
+      })
+    }
+
+    // console.timeEnd('scroll')
   }
 }

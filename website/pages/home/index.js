@@ -210,7 +210,7 @@ export default function Home() {
       seo={{
         title: 'Lenis – Get smooth or die trying',
         description:
-          'A smooth scroll library fresh out of the Studio Freight Darkroom',
+          'A smooth scroll library fresh out of the darkroom.engineering.',
       }}
       className={s.home}
     >
@@ -257,10 +257,10 @@ export default function Home() {
               <p className="p-s">A smooth scroll library</p>
             </HeroTextIn>
             <HeroTextIn introOut={introOut}>
-              <p className="p-s">fresh out of the darkroom</p>
+              <p className="p-s">fresh out of darkroom.engineering</p>
             </HeroTextIn>
             <HeroTextIn introOut={introOut}>
-              <p className="p-s">designed by Studio Freight</p>
+              <p className="p-s">website designed by Studio Freight</p>
             </HeroTextIn>
           </h1>
           <Button

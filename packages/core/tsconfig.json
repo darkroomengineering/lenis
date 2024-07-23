@@ -1,23 +1,19 @@
 {
   "compilerOptions": {
-    "esModuleInterop": true,
-    "skipLibCheck": true,
-    "target": "es2022",
-    "allowJs": true,
-    "resolveJsonModule": true,
-    "moduleDetection": "force",
-    "isolatedModules": true,
-    "strict": true,
-    "noUncheckedIndexedAccess": true,
-    "noImplicitOverride": true,
-    "module": "NodeNext",
-    "outDir": "dist",
-    "removeComments": true,
-    "preserveConstEnums": true,
-    "sourceMap": true,
+    "outDir": "./dist/types/",
     "declaration": true,
-    "composite": true,
-    "declarationMap": true,
-    "lib": ["es2022", "dom", "dom.iterable"]
-  }
+    "target": "es2015",
+    "allowJs": true,
+    "checkJs": true,
+    "lib": ["esnext", "dom", "dom.iterable"],
+    "moduleResolution": "node",
+    "module": "esnext",
+    "esModuleInterop": true,
+    "noUnusedParameters": true,
+    "strict": true,
+    "removeComments": true
+    // "skipLibCheck": true,
+    // "resolveJsonModule": true
+  },
+  "include": ["src"]
 }

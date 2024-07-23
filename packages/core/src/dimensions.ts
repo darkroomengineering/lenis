@@ -10,13 +10,10 @@ export class Dimensions {
   contentResizeObserver?: ResizeObserver
 
   constructor(
-    private wrapper: Element | Window,
-    private content: Element,
+    private wrapper: HTMLElement | Window,
+    private content: HTMLElement,
     { autoResize = true, debounce: debounceValue = 250 } = {}
   ) {
-    this.wrapper = wrapper
-    this.content = content
-
     if (autoResize) {
       this.debouncedResize = debounce(this.resize, debounceValue)
 
@@ -37,8 +34,10 @@ export class Dimensions {
   destroy() {
     this.wrapperResizeObserver?.disconnect()
     this.contentResizeObserver?.disconnect()
-    this.debouncedResize &&
+
+    if (this.wrapper === window && this.debouncedResize) {
       window.removeEventListener('resize', this.debouncedResize, false)
+    }
   }
 
   resize = () => {

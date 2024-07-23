@@ -49,7 +49,7 @@ export default [
     ],
   },
   {
-    input: './dist/src/index.d.ts',
+    input: './dist/types/index.d.ts',
     output: [{ file: './dist/lenis.d.ts', format: 'esm' }],
     plugins: [dts()],
   },

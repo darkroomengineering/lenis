@@ -13,35 +13,39 @@ export class Animate {
   value = 0
   from = 0
   to = 0
-  lerp = 0
-  duration = 0
   currentTime = 0
-  easing: EasingFunction = (t) => t
+  lerp?: number
+  duration?: number
+  easing?: EasingFunction
   onUpdate?: OnUpdateCallback
 
   /**
    * Advance the animation by the given delta time
    *
-   * @param deltaTime - The time in milliseconds to advance the animation
+   * @param deltaTime - The time in seconds to advance the animation
    */
   advance(deltaTime: number) {
     if (!this.isRunning) return
 
     let completed = false
 
-    if (this.lerp) {
-      this.value = damp(this.value, this.to, this.lerp * 60, deltaTime)
-      if (Math.round(this.value) === this.to) {
-        this.value = this.to
-        completed = true
-      }
-    } else {
+    if (this.duration && this.easing) {
       this.currentTime += deltaTime
       const linearProgress = clamp(0, this.currentTime / this.duration, 1)
 
       completed = linearProgress >= 1
       const easedProgress = completed ? 1 : this.easing(linearProgress)
       this.value = this.from + (this.to - this.from) * easedProgress
+    } else if (this.lerp) {
+      this.value = damp(this.value, this.to, this.lerp * 60, deltaTime)
+      if (Math.round(this.value) === this.to) {
+        this.value = this.to
+        completed = true
+      }
+    } else {
+      // If no easing or lerp, just jump to the end value
+      this.value = this.to
+      completed = true
     }
 
     if (completed) {

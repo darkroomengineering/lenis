@@ -1,7 +1,17 @@
 {
   "compilerOptions": {
-    "outDir": "./dist",
+    "outDir": "./dist/types",
     "declaration": true,
-    "target": "es2015"
-  }
+    "target": "es2015",
+    "allowJs": true,
+    "checkJs": true,
+    "lib": ["esnext", "dom"],
+    "moduleResolution": "node",
+    "module": "esnext",
+    "esModuleInterop": true,
+    "noUnusedParameters": true,
+    "strict": true,
+    "removeComments": true
+  },
+  "include": ["src"]
 }

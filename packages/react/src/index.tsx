@@ -39,7 +39,7 @@ function useCurrentLenis() {
 export function useLenis(
   callback?: (lenis: Lenis) => void,
   deps: Array<any> = [],
-  priority = 0
+  priority = 0,
 ): Lenis | undefined {
   const { lenis, addCallback, removeCallback } = useCurrentLenis()
 
@@ -91,7 +91,7 @@ const ReactLenis: ForwardRefComponent<Props, LenisRef> = forwardRef<
       className,
       ...props
     }: Props,
-    ref
+    ref,
   ) => {
     const wrapperRef = useRef<HTMLDivElement | null>(null)
     const contentRef = useRef<HTMLDivElement | null>(null)
@@ -110,16 +110,16 @@ const ReactLenis: ForwardRefComponent<Props, LenisRef> = forwardRef<
         callbacksRefs.current.push({ callback, priority })
         callbacksRefs.current.sort((a, b) => a.priority - b.priority)
       },
-      []
+      [],
     )
 
     const removeCallback: LenisContextValue['removeCallback'] = useCallback(
       (callback) => {
         callbacksRefs.current = callbacksRefs.current.filter(
-          (cb) => cb.callback !== callback
+          (cb) => cb.callback !== callback,
         )
       },
-      []
+      [],
     )
 
     useImperativeHandle(
@@ -129,7 +129,7 @@ const ReactLenis: ForwardRefComponent<Props, LenisRef> = forwardRef<
         content: contentRef.current!,
         lenis,
       }),
-      [lenis]
+      [lenis],
     )
 
     useEffect(() => {
@@ -208,7 +208,7 @@ const ReactLenis: ForwardRefComponent<Props, LenisRef> = forwardRef<
         )}
       </LenisContext.Provider>
     )
-  }
+  },
 )
 
 export { ReactLenis as Lenis, ReactLenis }

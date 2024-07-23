@@ -14,17 +14,17 @@ jobs:
       - run: sleep 120
       - name: Capture Vercel preview URL
         id: vercel_preview_url
-        uses: zentered/vercel-preview-url@v1.1.9
+        uses: zentered/vercel-preview-url@v1.3.0
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
         with:
           # find project id here: https://vercel.com/studio-freight/satus/settings
           vercel_team_id: 'studio-freight'
           vercel_project_id: prj_GNzV5Jq8gnOAr2BF2xcDbiL22oWb
-      - uses: actions/checkout@v4.1.0
+      - uses: actions/checkout@v4.1.7
       - name: Audit preview URL with Lighthouse
         id: lighthouse_audit
-        uses: treosh/lighthouse-ci-action@v10
+        uses: treosh/lighthouse-ci-action@v12
         with:
           urls: |
             "https://${{ steps.vercel_preview_url.outputs.preview_url }}"
@@ -32,7 +32,7 @@ jobs:
           temporaryPublicStorage: true
       - name: Format lighthouse score
         id: format_lighthouse_score
-        uses: actions/github-script@v6
+        uses: actions/github-script@v7
         with:
           github-token: ${{secrets.GITHUB_TOKEN}}
           script: |
