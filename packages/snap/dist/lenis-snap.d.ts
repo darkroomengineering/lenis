@@ -38,13 +38,9 @@ declare class SnapElement {
 
 type UID = number;
 
-type Viewport = {
-    width: number;
-    height: number;
-};
 type SnapItem = {
     value: number;
-    userData: object;
+    userData: Record<string, any>;
 };
 type SnapOptions = {
     type?: 'mandatory' | 'proximity';
@@ -56,19 +52,23 @@ type SnapOptions = {
     onSnapStart?: (t: SnapItem) => void;
     onSnapComplete?: (t: SnapItem) => void;
 };
+type RequiredPick<T, F extends keyof T> = Omit<T, F> & Required<Pick<T, F>>;
 declare class Snap {
-    lenis: Lenis;
-    options: SnapOptions;
-    elements: Map<UID, SnapElement>;
-    snaps: Map<UID, SnapItem>;
-    viewport: Viewport;
+    private lenis;
+    options: RequiredPick<SnapOptions, 'type' | 'velocityThreshold' | 'debounce'>;
+    elements: Map<number, SnapElement>;
+    snaps: Map<number, SnapItem>;
+    viewport: {
+        width: number;
+        height: number;
+    };
     isStopped: Boolean;
     onSnapDebounced: Function;
     constructor(lenis: Lenis, { type, lerp, easing, duration, velocityThreshold, debounce: debounceDelay, onSnapStart, onSnapComplete, }?: SnapOptions);
     destroy(): void;
     start(): void;
     stop(): void;
-    add(value: number, userData?: object): () => void;
+    add(value: number, userData?: Record<string, any>): () => void;
     remove(id: UID): void;
     addElement(element: HTMLElement, options?: SnapElementOptions): () => void;
     removeElement(id: UID): void;
