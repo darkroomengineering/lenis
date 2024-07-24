@@ -14,9 +14,9 @@ export type FromToOptions = {
 export type Scrolling = boolean | 'native' | 'smooth'
 
 export type LenisEvent = 'scroll' | 'virtual-scroll'
-export type ScrollCallback<UD extends Record<string, any>> = (
-  lenis: Lenis<UD>
-) => void
+export type ScrollCallback<
+  UD extends Record<string, any> = Record<string, any>
+> = (lenis: Lenis<UD>) => void
 export type VirtualScrollCallback = (data: VirtualScrollData) => void
 
 export type VirtualScrollData = {

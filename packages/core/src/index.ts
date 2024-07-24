@@ -16,6 +16,9 @@ import {
 } from './types'
 import { VirtualScroll } from './virtual-scroll'
 
+// Types
+export * from './types'
+
 // Technical explanation
 // - listen to 'wheel' events
 // - prevent 'wheel' event to prevent scroll
