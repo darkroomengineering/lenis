@@ -10,14 +10,9 @@ import { UID, uid } from './uid'
 // - fix touch scroll, do not snap when not released
 // - arrow, spacebar
 
-type Viewport = {
-  width: number
-  height: number
-}
-
 type SnapItem = {
   value: number
-  userData: object
+  userData: Record<string, any>
 }
 
 export type SnapOptions = {
@@ -31,17 +26,21 @@ export type SnapOptions = {
   onSnapComplete?: (t: SnapItem) => void
 }
 
+type RequiredPick<T, F extends keyof T> = Omit<T, F> & Required<Pick<T, F>>
+
 export default class Snap {
-  lenis: Lenis
-  options: SnapOptions
-  elements: Map<UID, SnapElement>
-  snaps: Map<UID, SnapItem>
-  viewport: Viewport
+  options: RequiredPick<SnapOptions, 'type' | 'velocityThreshold' | 'debounce'>
+  elements = new Map<UID, SnapElement>()
+  snaps = new Map<UID, SnapItem>()
+  viewport = {
+    width: window.innerWidth,
+    height: window.innerHeight,
+  }
   isStopped: Boolean = false
   onSnapDebounced: Function
 
   constructor(
-    lenis: Lenis,
+    private lenis: Lenis,
     {
       type = 'mandatory',
       lerp,
@@ -53,8 +52,6 @@ export default class Snap {
       onSnapComplete,
     }: SnapOptions = {}
   ) {
-    this.lenis = lenis
-
     this.options = {
       type,
       lerp,
@@ -64,15 +61,8 @@ export default class Snap {
       debounce: debounceDelay,
       onSnapStart,
       onSnapComplete,
-    } as SnapOptions
-
-    this.elements = new Map()
-    this.snaps = new Map()
-
-    this.viewport = {
-      width: window.innerWidth,
-      height: window.innerHeight,
     }
+
     this.onWindowResize()
     window.addEventListener('resize', this.onWindowResize, false)
 
@@ -109,7 +99,7 @@ export default class Snap {
     this.isStopped = true
   }
 
-  add(value: number, userData: object = {}) {
+  add(value: number, userData: Record<string, any> = {}) {
     const id = uid()
 
     this.snaps.set(id, { value, userData })
