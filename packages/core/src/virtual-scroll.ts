@@ -1,4 +1,5 @@
 import { Emitter } from './emitter'
+import { VirtualScrollCallback } from './types'
 
 const LINE_HEIGHT = 100 / 6
 const listenerOptions: AddEventListenerOptions = { passive: false }
@@ -45,7 +46,7 @@ export class VirtualScroll {
    * @param event Event name
    * @param callback Callback function
    */
-  on(event: string, callback: (...args: unknown[]) => void) {
+  on(event: string, callback: VirtualScrollCallback) {
     return this.emitter.on(event, callback)
   }
 

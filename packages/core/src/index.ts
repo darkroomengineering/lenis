@@ -1,8 +1,19 @@
+// TODO: Fix json import
+// @ts-ignore
 import { version } from '../../../package.json'
 import { Animate } from './animate'
 import { Dimensions } from './dimensions'
 import { Emitter } from './emitter'
 import { clamp, modulo } from './maths'
+import {
+  LenisEvent,
+  LenisOptions,
+  ScrollCallback,
+  Scrolling,
+  ScrollToOptions,
+  VirtualScrollCallback,
+  VirtualScrollData,
+} from './types'
 import { VirtualScroll } from './virtual-scroll'
 
 // Technical explanation
@@ -13,73 +24,36 @@ import { VirtualScroll } from './virtual-scroll'
 // - animate scroll to targetScroll (smooth context)
 // - if animation is not running, listen to 'scroll' events (native context)
 
-type Overwrite<T, R> = Omit<T, keyof R> & R
+type RequiredPick<T, F extends keyof T> = Omit<T, F> & Required<Pick<T, F>>
 
-type EasingFunction = (t: number) => number
-type Orientation = 'vertical' | 'horizontal'
-type GestureOrientation = 'vertical' | 'horizontal' | 'both'
-type Scrolling = boolean | 'native' | 'smooth'
-
-type onVirtualScrollOptions = {
-  deltaX: number
-  deltaY: number
-  event: WheelEvent | TouchEvent
-}
-
-export type LenisOptions = Partial<{
-  wrapper: Window | HTMLElement
-  content: HTMLElement
-  wheelEventsTarget: Window | HTMLElement
-  eventsTarget: Window | HTMLElement
-  smoothWheel: boolean
-  syncTouch: boolean
-  syncTouchLerp: number
-  touchInertiaMultiplier: number
-  duration: number
-  easing: EasingFunction
-  lerp: number
-  infinite: boolean
-  orientation: Orientation
-  gestureOrientation: GestureOrientation
-  touchMultiplier: number
-  wheelMultiplier: number
-  autoResize: boolean
-  prevent: (node: Element) => boolean
-  virtualScroll: (data: onVirtualScrollOptions) => boolean
-  __experimental__naiveDimensions: boolean
-}>
-
-export default class Lenis {
+export default class Lenis<
+  UD extends Record<string, any> = Record<string, any>
+> {
   // __isSmooth: boolean = false // true if scroll should be animated
   __isScrolling: Scrolling = false // true when scroll is animating
-  __isStopped: boolean = false // true if user should not be able to scroll - enable/disable programmatically
-  __isLocked: boolean = false // same as isStopped but enabled/disabled when scroll reaches target
+  __isStopped = false // true if user should not be able to scroll - enable/disable programmatically
+  __isLocked = false // same as isStopped but enabled/disabled when scroll reaches target
   __preventNextNativeScrollEvent?: boolean
   __resetVelocityTimeout?: number
 
   isTouching?: boolean
-  time: number
-  userData: Object = {}
-  lastVelocity: number = 0
-  velocity: number = 0
+  time = 0
+  userData = {} as UD
+  lastVelocity = 0
+  velocity = 0
   direction: 1 | -1 | 0 = 0
-  options: Overwrite<
-    LenisOptions,
-    {
-      wrapper: NonNullable<LenisOptions['wrapper']>
-    }
-  >
+  options: RequiredPick<LenisOptions, 'wrapper'>
   targetScroll: number
   animatedScroll: number
-  animate: Animate
-  emitter: Emitter
+  animate = new Animate()
+  emitter = new Emitter()
   dimensions: Dimensions
   virtualScroll: VirtualScroll
 
   constructor({
     wrapper = window,
     content = document.documentElement,
-    wheelEventsTarget = wrapper, // deprecated
+    wheelEventsTarget = wrapper,
     eventsTarget = wheelEventsTarget,
     smoothWheel = true,
     syncTouch = false,
@@ -98,7 +72,6 @@ export default class Lenis {
     virtualScroll,
     __experimental__naiveDimensions = false,
   }: LenisOptions = {}) {
-    // @ts-expect-error
     window.lenisVersion = version
 
     // if wrapper is html or body, fallback to window
@@ -131,27 +104,19 @@ export default class Lenis {
       prevent,
       virtualScroll,
       __experimental__naiveDimensions,
-    } as LenisOptions
+    }
 
-    this.animate = new Animate()
-    this.emitter = new Emitter()
-    this.dimensions = new Dimensions({ wrapper, content, autoResize })
+    this.dimensions = new Dimensions(wrapper, content, { autoResize })
     // this.toggleClassName('lenis', true)
     this.updateClassName()
 
-    this.userData = {}
-
-    this.time = 0
-    this.velocity = this.lastVelocity = 0
+    // TODO: Why is this set here and there are getters defined?
     this.isLocked = false
     this.isStopped = false
     // this.hasScrolled = false
     // this.isSmooth = syncTouch || smoothWheel
     // this.isSmooth = false
     this.targetScroll = this.animatedScroll = this.actualScroll
-
-    this.direction = 0
-    this.time = 0
 
     this.options.wrapper.addEventListener('scroll', this.onNativeScroll, false)
 
@@ -161,7 +126,7 @@ export default class Lenis {
       false
     )
 
-    this.virtualScroll = new VirtualScroll(eventsTarget, {
+    this.virtualScroll = new VirtualScroll(eventsTarget as HTMLElement, {
       touchMultiplier,
       wheelMultiplier,
     })
@@ -196,11 +161,21 @@ export default class Lenis {
     // this.toggleClassName('lenis-locked', false)
   }
 
-  on(event: LenisEvents, callback: (lenis: Lenis) => unknown) {
+  on<UD extends Record<string, any> = Record<string, any>>(
+    event: 'scroll',
+    callback: ScrollCallback<UD>
+  ): () => void
+  on(event: 'virtual-scroll', callback: VirtualScrollCallback): () => void
+  on(event: LenisEvent, callback: any) {
     return this.emitter.on(event, callback)
   }
 
-  off(event: LenisEvents, callback: (lenis: Lenis) => unknown) {
+  off<UD extends Record<string, any> = Record<string, any>>(
+    event: 'scroll',
+    callback: ScrollCallback<UD>
+  ): void
+  off(event: 'virtual-scroll', callback: VirtualScrollCallback): void
+  off(event: LenisEvent, callback: any) {
     return this.emitter.off(event, callback)
   }
 
@@ -219,7 +194,7 @@ export default class Lenis {
     }
   }
 
-  private onVirtualScroll = (data: onVirtualScrollOptions) => {
+  private onVirtualScroll = (data: VirtualScrollData) => {
     if (
       typeof this.options.virtualScroll === 'function' &&
       this.options.virtualScroll(data) === false
@@ -284,7 +259,7 @@ export default class Lenis {
     if (
       !!composedPath.find(
         (node) =>
-          node instanceof Element &&
+          node instanceof HTMLElement &&
           ((typeof prevent === 'function' && prevent?.(node)) ||
             node.hasAttribute?.('data-lenis-prevent') ||
             (isTouch && node.hasAttribute?.('data-lenis-prevent-touch')) ||
@@ -417,7 +392,7 @@ export default class Lenis {
     this.animate.advance(deltaTime * 0.001)
   }
 
-  scrollTo(
+  scrollTo<UD extends Record<string, any> = Record<string, any>>(
     target: number | string | HTMLElement,
     {
       offset = 0,
@@ -431,7 +406,7 @@ export default class Lenis {
       force = false, // scroll even if stopped
       programmatic = true, // called from outside of the class
       userData,
-    }: ScrollToParams = {}
+    }: ScrollToOptions<UD> = {}
   ) {
     if ((this.isStopped || this.isLocked) && !force) return
 
@@ -489,7 +464,7 @@ export default class Lenis {
 
     if (target === this.targetScroll) return
 
-    this.userData = userData
+    this.userData = userData as any
 
     if (immediate) {
       this.animatedScroll = this.targetScroll = target
@@ -498,7 +473,7 @@ export default class Lenis {
       this.preventNextNativeScrollEvent()
       this.emit()
       onComplete?.(this)
-      this.userData = {}
+      this.userData = {} as any
       return
     }
 
@@ -538,7 +513,7 @@ export default class Lenis {
           this.reset()
           this.emit()
           onComplete?.(this)
-          this.userData = {}
+          this.userData = {} as any
 
           // avoid emitting event twice
           this.preventNextNativeScrollEvent()

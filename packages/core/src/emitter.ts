@@ -28,7 +28,7 @@ export class Emitter {
    * @param cb Callback function
    * @returns Unsubscribe function
    */
-  on(event: string, cb: (...args: unknown[]) => void) {
+  on<CB extends (...args: any[]) => void>(event: string, cb: CB) {
     // Add the callback to the event's callback list, or create a new list with the callback
     this.events[event]?.push(cb) || (this.events[event] = [cb])
 
@@ -43,7 +43,7 @@ export class Emitter {
    * @param event Event name
    * @param callback Callback function
    */
-  off(event: string, callback: (...args: unknown[]) => void) {
+  off<CB extends (...args: any[]) => void>(event: string, callback: CB) {
     this.events[event] = this.events[event]?.filter((i) => callback !== i)
   }
 

@@ -1,5 +1,14 @@
 import { debounce } from './debounce'
 
+/**
+ * Dimensions class to handle the size of the content and wrapper
+ *
+ * @example
+ * const dimensions = new Dimensions(wrapper, content)
+ * dimensions.on('resize', (e) => {
+ *   console.log(e.width, e.height)
+ * })
+ */
 export class Dimensions {
   width = 0
   height = 0

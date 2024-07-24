@@ -1,5 +1,5 @@
 import { clamp, damp } from './maths'
-import { EasingFunction, FromToOptions, OnUpdateCallback } from './types'
+import type { EasingFunction, FromToOptions, OnUpdateCallback } from './types'
 
 /**
  * Animate class to handle value animations with lerping or easing

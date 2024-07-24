@@ -1,15 +1,13 @@
-export function debounce(
-  callback: (...args: unknown[]) => void,
+export function debounce<CB extends (...args: any[]) => void>(
+  callback: CB,
   delay: number
 ) {
   let timer: number | undefined
-  return function () {
-    let args = arguments
-    // @ts-expect-error - TS doesn't know about the context
+  return function <T>(this: T, ...args: Parameters<typeof callback>) {
     let context = this
     clearTimeout(timer)
-    timer = setTimeout(function () {
-      // @ts-expect-error - TS doesn't know about the context
+    timer = setTimeout(() => {
+      timer = undefined
       callback.apply(context, args)
     }, delay)
   }
