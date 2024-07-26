@@ -1,8 +1,9 @@
 {
   "name": "lenis",
   "scripts": {
+    "prebuild": "shx rm -rf ./dist/*",
     "build": "rollup --bundleConfigAsCjs -c",
-    "postbuild": "shx rm -rf ./dist/* && shx cp -r ./src/lenis.css ./dist && shx cp -r ./dist/* ../../dist",
+    "postbuild": "shx rm -rf ./dist/types/ && shx cp -r ./src/lenis.css ./dist && shx cp -r ./dist/* ../../dist",
     "dev": "npm-run-all --parallel watch playground",
     "watch": "rollup --bundleConfigAsCjs -c -w",
     "playground": "npm run dev --prefix ./playground"
