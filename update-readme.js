@@ -12,10 +12,12 @@ function updateVersion() {
         return reject(err)
       }
 
-      const updatedReadme = data.replaceAll(
-        /\/lenis@([^\/]+)\//,
+      const updatedReadme = data.replace(
+        /\/lenis@([^\/]+)\//g,
         `/lenis@${packageJson.version}/`
       )
+
+      console.log(/\/lenis@([^\/]+)\//.test(updatedReadme))
 
       fs.writeFile(readmePath, updatedReadme, 'utf8', (err) => {
         resolve()
