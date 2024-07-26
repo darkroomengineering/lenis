@@ -12,7 +12,7 @@ function updateVersion() {
         return reject(err)
       }
 
-      const updatedReadme = data.replace(
+      const updatedReadme = data.replaceAll(
         /\/lenis@([^\/]+)\//,
         `/lenis@${packageJson.version}/`
       )
