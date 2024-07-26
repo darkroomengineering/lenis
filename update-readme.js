@@ -17,8 +17,6 @@ function updateVersion() {
         `/lenis@${packageJson.version}/`
       )
 
-      console.log(/\/lenis@([^\/]+)\//.test(updatedReadme))
-
       fs.writeFile(readmePath, updatedReadme, 'utf8', (err) => {
         resolve()
 
