@@ -1,4 +1,4 @@
-import Lenis, { type EasingFunction } from 'lenis'
+import Lenis, { type EasingFunction, type UserData } from 'lenis'
 import { debounce } from './debounce'
 import { SnapElement, SnapElementOptions } from './element'
 import { UID, uid } from './uid'
@@ -12,7 +12,7 @@ import { UID, uid } from './uid'
 
 type SnapItem = {
   value: number
-  userData: Record<string, any>
+  userData: UserData
 }
 
 export type SnapOptions = {
@@ -99,7 +99,7 @@ export default class Snap {
     this.isStopped = true
   }
 
-  add(value: number, userData: Record<string, any> = {}) {
+  add(value: number, userData: UserData = {}) {
     const id = uid()
 
     this.snaps.set(id, { value, userData })
