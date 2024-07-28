@@ -38,6 +38,7 @@ export default class Lenis {
   __preventNextNativeScrollEvent?: boolean
   __resetVelocityTimeout?: number
 
+  // TODO: Clarify with Clement whats private/internal and whats public
   isTouching?: boolean
   time = 0
   userData: UserData = {}
