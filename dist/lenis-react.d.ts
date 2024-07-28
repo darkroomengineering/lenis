@@ -1,16 +1,14 @@
 /// <reference types="react" />
-import * as lenis from 'lenis';
-import lenis__default, { ScrollCallback, LenisOptions } from 'lenis';
-export { default } from 'lenis';
 import * as react from 'react';
-import { PropsWithChildren, ComponentPropsWithoutRef } from 'react';
+import { ReactNode, ComponentPropsWithoutRef } from 'react';
+import Lenis, { ScrollCallback, LenisOptions } from 'lenis';
 
 type LenisContextValue = {
-    lenis: lenis__default;
+    lenis: Lenis;
     addCallback: (callback: ScrollCallback, priority: number) => void;
     removeCallback: (callback: ScrollCallback) => void;
 };
-type LenisProps = PropsWithChildren<{
+type LenisProps = {
     /**
      * Setup a global instance of Lenis
      * @default false
@@ -31,52 +29,43 @@ type LenisProps = PropsWithChildren<{
      */
     rafPriority?: number;
     /**
+     * Children
+     */
+    children?: ReactNode;
+    /**
      * Class name for the wrapper div
+     *
+     * When `root` is `false`, this will be applied to the wrapper div
      */
     className?: string;
     /**
      * Additional props for the wrapper div
+     *
+     * When `root` is `false`, this will be applied to the wrapper div
      */
     props?: Omit<ComponentPropsWithoutRef<'div'>, 'children' | 'className'>;
-}>;
+};
 type LenisRef = {
+    /**
+     * The wrapper div element
+     *
+     * Will only be defined if `root` is `false`
+     */
     wrapper: HTMLDivElement | null;
+    /**
+     * The content div element
+     *
+     * Will only be defined if `root` is `false`
+     */
     content: HTMLDivElement | null;
-    lenis?: lenis__default;
+    /**
+     * The lenis instance
+     */
+    lenis?: Lenis;
 };
 
 declare const LenisContext: react.Context<LenisContextValue | null>;
-declare function useLenis(callback?: ScrollCallback, deps?: any[], priority?: number): lenis__default | undefined;
-declare const ReactLenis: react.ForwardRefExoticComponent<{
-    root?: boolean | undefined;
-    options?: Partial<{
-        wrapper: HTMLElement | Window;
-        content: HTMLElement;
-        wheelEventsTarget: HTMLElement | Window;
-        eventsTarget: HTMLElement | Window;
-        smoothWheel: boolean;
-        syncTouch: boolean;
-        syncTouchLerp: number;
-        touchInertiaMultiplier: number;
-        duration: number;
-        easing: lenis.EasingFunction;
-        lerp: number;
-        infinite: boolean;
-        orientation: lenis.Orientation;
-        gestureOrientation: lenis.GestureOrientation;
-        touchMultiplier: number;
-        wheelMultiplier: number;
-        autoResize: boolean;
-        prevent: (node: HTMLElement) => boolean;
-        virtualScroll: (data: lenis.VirtualScrollData) => boolean;
-        __experimental__naiveDimensions: boolean;
-    }> | undefined;
-    autoRaf?: boolean | undefined;
-    rafPriority?: number | undefined;
-    className?: string | undefined;
-    props?: Omit<Omit<react.DetailedHTMLProps<react.HTMLAttributes<HTMLDivElement>, HTMLDivElement>, "ref">, "className" | "children"> | undefined;
-} & {
-    children?: react.ReactNode;
-} & react.RefAttributes<LenisRef>>;
+declare function useLenis(callback?: ScrollCallback, deps?: any[], priority?: number): Lenis | undefined;
+declare const ReactLenis: react.ForwardRefExoticComponent<LenisProps & react.RefAttributes<LenisRef>>;
 
-export { ReactLenis as Lenis, LenisContext, type LenisContextValue, type LenisProps, type LenisRef, ReactLenis, useLenis };
+export { ReactLenis as Lenis, LenisContext, type LenisContextValue, type LenisProps, type LenisRef, ReactLenis, ReactLenis as default, useLenis };

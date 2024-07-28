@@ -1,4 +1,4 @@
-import Lenis from 'lenis';
+import Lenis, { EasingFunction } from 'lenis';
 
 type SnapElementOptions = {
     align?: string[];
@@ -45,12 +45,12 @@ type SnapItem = {
 type SnapOptions = {
     type?: 'mandatory' | 'proximity';
     lerp?: number;
-    easing?: (t: number) => number;
+    easing?: EasingFunction;
     duration?: number;
     velocityThreshold?: number;
     debounce?: number;
-    onSnapStart?: (t: SnapItem) => void;
-    onSnapComplete?: (t: SnapItem) => void;
+    onSnapStart?: (item: SnapItem) => void;
+    onSnapComplete?: (item: SnapItem) => void;
 };
 type RequiredPick<T, F extends keyof T> = Omit<T, F> & Required<Pick<T, F>>;
 declare class Snap {

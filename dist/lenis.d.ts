@@ -7,9 +7,10 @@ type FromToOptions = {
     onStart?: OnStartCallback;
     onUpdate?: OnUpdateCallback;
 };
+type UserData = Record<string, any>;
 type Scrolling = boolean | 'native' | 'smooth';
 type LenisEvent = 'scroll' | 'virtual-scroll';
-type ScrollCallback<UD extends Record<string, any> = Record<string, any>> = (lenis: Lenis<UD>) => void;
+type ScrollCallback = (lenis: Lenis) => void;
 type VirtualScrollCallback = (data: VirtualScrollData) => void;
 type VirtualScrollData = {
     deltaX: number;
@@ -19,7 +20,7 @@ type VirtualScrollData = {
 type Orientation = 'vertical' | 'horizontal';
 type GestureOrientation = 'vertical' | 'horizontal' | 'both';
 type EasingFunction = (time: number) => number;
-type ScrollToOptions<UD> = {
+type ScrollToOptions = {
     offset?: number;
     immediate?: boolean;
     lock?: boolean;
@@ -30,30 +31,30 @@ type ScrollToOptions<UD> = {
     onComplete?: (lenis: Lenis) => void;
     force?: boolean;
     programmatic?: boolean;
-    userData?: UD;
+    userData?: UserData;
 };
-type LenisOptions = Partial<{
-    wrapper: Window | HTMLElement;
-    content: HTMLElement;
-    wheelEventsTarget: Window | HTMLElement;
-    eventsTarget: Window | HTMLElement;
-    smoothWheel: boolean;
-    syncTouch: boolean;
-    syncTouchLerp: number;
-    touchInertiaMultiplier: number;
-    duration: number;
-    easing: EasingFunction;
-    lerp: number;
-    infinite: boolean;
-    orientation: Orientation;
-    gestureOrientation: GestureOrientation;
-    touchMultiplier: number;
-    wheelMultiplier: number;
-    autoResize: boolean;
-    prevent: (node: HTMLElement) => boolean;
-    virtualScroll: (data: VirtualScrollData) => boolean;
-    __experimental__naiveDimensions: boolean;
-}>;
+type LenisOptions = {
+    wrapper?: Window | HTMLElement;
+    content?: HTMLElement;
+    wheelEventsTarget?: Window | HTMLElement;
+    eventsTarget?: Window | HTMLElement;
+    smoothWheel?: boolean;
+    syncTouch?: boolean;
+    syncTouchLerp?: number;
+    touchInertiaMultiplier?: number;
+    duration?: number;
+    easing?: EasingFunction;
+    lerp?: number;
+    infinite?: boolean;
+    orientation?: Orientation;
+    gestureOrientation?: GestureOrientation;
+    touchMultiplier?: number;
+    wheelMultiplier?: number;
+    autoResize?: boolean;
+    prevent?: (node: HTMLElement) => boolean;
+    virtualScroll?: (data: VirtualScrollData) => boolean;
+    __experimental__naiveDimensions?: boolean;
+};
 declare global {
     interface Window {
         lenisVersion: string;
@@ -137,7 +138,7 @@ declare class VirtualScroll {
 }
 
 type RequiredPick<T, F extends keyof T> = Omit<T, F> & Required<Pick<T, F>>;
-declare class Lenis<UD extends Record<string, any> = Record<string, any>> {
+declare class Lenis {
     __isScrolling: Scrolling;
     __isStopped: boolean;
     __isLocked: boolean;
@@ -145,7 +146,7 @@ declare class Lenis<UD extends Record<string, any> = Record<string, any>> {
     __resetVelocityTimeout?: number;
     isTouching?: boolean;
     time: number;
-    userData: UD;
+    userData: UserData;
     lastVelocity: number;
     velocity: number;
     direction: 1 | -1 | 0;
@@ -158,9 +159,9 @@ declare class Lenis<UD extends Record<string, any> = Record<string, any>> {
     virtualScroll: VirtualScroll;
     constructor({ wrapper, content, wheelEventsTarget, eventsTarget, smoothWheel, syncTouch, syncTouchLerp, touchInertiaMultiplier, duration, easing, lerp, infinite, orientation, gestureOrientation, touchMultiplier, wheelMultiplier, autoResize, prevent, virtualScroll, __experimental__naiveDimensions, }?: LenisOptions);
     destroy(): void;
-    on<UD extends Record<string, any> = Record<string, any>>(event: 'scroll', callback: ScrollCallback<UD>): () => void;
+    on(event: 'scroll', callback: ScrollCallback): () => void;
     on(event: 'virtual-scroll', callback: VirtualScrollCallback): () => void;
-    off<UD extends Record<string, any> = Record<string, any>>(event: 'scroll', callback: ScrollCallback<UD>): void;
+    off(event: 'scroll', callback: ScrollCallback): void;
     off(event: 'virtual-scroll', callback: VirtualScrollCallback): void;
     private setScroll;
     private onPointerDown;
@@ -172,7 +173,7 @@ declare class Lenis<UD extends Record<string, any> = Record<string, any>> {
     start(): void;
     stop(): void;
     raf(time: number): void;
-    scrollTo<UD extends Record<string, any> = Record<string, any>>(target: number | string | HTMLElement, { offset, immediate, lock, duration, easing, lerp, onStart, onComplete, force, programmatic, userData, }?: ScrollToOptions<UD>): void;
+    scrollTo(target: number | string | HTMLElement, { offset, immediate, lock, duration, easing, lerp, onStart, onComplete, force, programmatic, userData, }?: ScrollToOptions): void;
     private preventNextNativeScrollEvent;
     get rootElement(): HTMLElement;
     get limit(): number;
@@ -192,4 +193,4 @@ declare class Lenis<UD extends Record<string, any> = Record<string, any>> {
     private cleanUpClassName;
 }
 
-export { type EasingFunction, type FromToOptions, type GestureOrientation, type LenisEvent, type LenisOptions, type OnStartCallback, type OnUpdateCallback, type Orientation, type ScrollCallback, type ScrollToOptions, type Scrolling, type VirtualScrollCallback, type VirtualScrollData, Lenis as default };
+export { type EasingFunction, type FromToOptions, type GestureOrientation, type LenisEvent, type LenisOptions, type OnStartCallback, type OnUpdateCallback, type Orientation, type ScrollCallback, type ScrollToOptions, type Scrolling, type UserData, type VirtualScrollCallback, type VirtualScrollData, Lenis as default };
