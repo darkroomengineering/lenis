@@ -1,6 +1,7 @@
-import Lenis, { type EasingFunction, type UserData } from 'lenis'
+import Lenis, { type UserData } from 'lenis'
 import { debounce } from './debounce'
 import { SnapElement, SnapElementOptions } from './element'
+import type { SnapItem, SnapOptions } from './types'
 import { UID, uid } from './uid'
 
 // TODO:
@@ -10,21 +11,8 @@ import { UID, uid } from './uid'
 // - fix touch scroll, do not snap when not released
 // - arrow, spacebar
 
-type SnapItem = {
-  value: number
-  userData: UserData
-}
-
-export type SnapOptions = {
-  type?: 'mandatory' | 'proximity'
-  lerp?: number
-  easing?: EasingFunction
-  duration?: number
-  velocityThreshold?: number
-  debounce?: number
-  onSnapStart?: (item: SnapItem) => void
-  onSnapComplete?: (item: SnapItem) => void
-}
+// Types
+export * from './types'
 
 type RequiredPick<T, F extends keyof T> = Omit<T, F> & Required<Pick<T, F>>
 
