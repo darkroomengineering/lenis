@@ -39,9 +39,6 @@ yarn-error.log*
 .npmrc
 
 
-/packages/core/dist
-/packages/react/dist
-
-.rollup.cache
-dist/src
-/packages/snap/dist
+packages/core/dist/
+packages/react/dist/
+packages/snap/dist/

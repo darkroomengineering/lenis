@@ -45,7 +45,7 @@ import Lenis from 'lenis'
 using scripts:
 
 ```html
-<script src="https://unpkg.com/lenis@1.1.5/dist/lenis.min.js"></script> 
+<script src="https://unpkg.com/lenis@1.1.8/dist/lenis.min.js"></script> 
 ```
 
 
@@ -70,7 +70,7 @@ function raf(time) {
 requestAnimationFrame(raf)
 ```
 
-Add the following CSS to your project:
+#### Recommended CSS:
 
 ```css
 html.lenis, html.lenis body {
@@ -92,6 +92,18 @@ html.lenis, html.lenis body {
 .lenis.lenis-smooth iframe {
   pointer-events: none;
 }
+```
+
+or link the CSS file:
+
+```html
+<link rel="stylesheet" href="https://unpkg.com/lenis@1.1.8/dist/lenis.css">
+```
+
+or import it:
+
+```js
+import 'lenis/dist/lenis.css'
 ```
 
 ### GSAP ScrollTrigger:

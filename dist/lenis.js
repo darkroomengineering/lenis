@@ -4,7 +4,7 @@
   (global = typeof globalThis !== 'undefined' ? globalThis : global || self, global.Lenis = factory());
 })(this, (function () { 'use strict';
 
-  var version = "1.1.6";
+  var version = "1.1.8";
 
   function clamp(min, input, max) {
       return Math.max(min, Math.min(input, max));

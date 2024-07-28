@@ -1,6 +1,7 @@
 {
   "name": "snap",
   "scripts": {
+    "prebuild": "shx rm -rf ./dist/*",
     "build": "rollup --bundleConfigAsCjs -c",
     "postbuild": "shx rm -rf ./dist/types/ && shx cp -r ./dist/* ../../dist",
     "dev": "npm-run-all --parallel watch playground",
