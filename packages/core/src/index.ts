@@ -28,7 +28,7 @@ export * from './types'
 // - animate scroll to targetScroll (smooth context)
 // - if animation is not running, listen to 'scroll' events (native context)
 
-type RequiredPick<T, F extends keyof T> = Omit<T, F> & Required<Pick<T, F>>
+type OptionalPick<T, F extends keyof T> = Omit<T, F> & Partial<Pick<T, F>>
 
 export default class Lenis {
   // __isSmooth: boolean = false // true if scroll should be animated
@@ -45,7 +45,10 @@ export default class Lenis {
   lastVelocity = 0
   velocity = 0
   direction: 1 | -1 | 0 = 0
-  options: RequiredPick<LenisOptions, 'wrapper'>
+  options: OptionalPick<
+    Required<LenisOptions>,
+    'duration' | 'prevent' | 'virtualScroll'
+  >
   targetScroll: number
   animatedScroll: number
   animate = new Animate()
@@ -208,6 +211,7 @@ export default class Lenis {
     const isTouch = event.type.includes('touch')
     const isWheel = event.type.includes('wheel')
 
+    this.isTouching = event.type === 'touchstart' || event.type === 'touchmove'
     // if (event.type === 'touchend') {
     //   console.log('touchend', this.scroll)
     //   // this.lastVelocity = this.velocity
@@ -297,7 +301,7 @@ export default class Lenis {
     const hasTouchInertia = isTouchEnd && Math.abs(delta) > 5
 
     if (hasTouchInertia) {
-      delta = this.velocity * (this.options.touchInertiaMultiplier ?? 1)
+      delta = this.velocity * this.options.touchInertiaMultiplier
     }
 
     this.scrollTo(this.targetScroll + delta, {
@@ -323,13 +327,11 @@ export default class Lenis {
   }
 
   private onNativeScroll = () => {
-    if (this.__resetVelocityTimeout) {
-      clearTimeout(this.__resetVelocityTimeout)
-      this.__resetVelocityTimeout = 0
-    }
+    clearTimeout(this.__resetVelocityTimeout)
+    delete this.__resetVelocityTimeout
 
     if (this.__preventNextNativeScrollEvent) {
-      this.__preventNextNativeScrollEvent = false
+      delete this.__preventNextNativeScrollEvent
       return
     }
 
@@ -430,10 +432,7 @@ export default class Lenis {
       }
 
       if (node) {
-        if (
-          this.options.wrapper !== window &&
-          !(this.options.wrapper instanceof Window)
-        ) {
+        if (this.options.wrapper !== window) {
           // nested scroll offset correction
           const wrapperRect = this.rootElement.getBoundingClientRect()
           offset -= this.isHorizontal ? wrapperRect.left : wrapperRect.top
@@ -461,7 +460,7 @@ export default class Lenis {
 
     if (target === this.targetScroll) return
 
-    this.userData = userData as any
+    this.userData = userData ?? {}
 
     if (immediate) {
       this.animatedScroll = this.targetScroll = target
@@ -470,7 +469,7 @@ export default class Lenis {
       this.preventNextNativeScrollEvent()
       this.emit()
       onComplete?.(this)
-      this.userData = {} as any
+      this.userData = {}
       return
     }
 
@@ -510,8 +509,7 @@ export default class Lenis {
           this.reset()
           this.emit()
           onComplete?.(this)
-          this.userData = {} as any
-
+          this.userData = {}
           // avoid emitting event twice
           this.preventNextNativeScrollEvent()
         }
