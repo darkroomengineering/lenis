@@ -24,8 +24,8 @@ export default class Snap {
     width: window.innerWidth,
     height: window.innerHeight,
   }
-  isStopped: Boolean = false
-  onSnapDebounced: Function
+  isStopped = false
+  onSnapDebounced: () => void
 
   constructor(
     private lenis: Lenis,
