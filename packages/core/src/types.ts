@@ -11,12 +11,14 @@ export type FromToOptions = {
   onUpdate?: OnUpdateCallback
 }
 
+export type UserData = Record<string, any>
+
 export type Scrolling = boolean | 'native' | 'smooth'
 
 export type LenisEvent = 'scroll' | 'virtual-scroll'
-export type ScrollCallback<
-  UD extends Record<string, any> = Record<string, any>
-> = (lenis: Lenis<UD>) => void
+export type ScrollCallback<UD extends UserData = UserData> = (
+  lenis: Lenis<UD>
+) => void
 export type VirtualScrollCallback = (data: VirtualScrollData) => void
 
 export type VirtualScrollData = {
@@ -29,7 +31,7 @@ export type Orientation = 'vertical' | 'horizontal'
 export type GestureOrientation = 'vertical' | 'horizontal' | 'both'
 export type EasingFunction = (time: number) => number
 
-export type ScrollToOptions<UD> = {
+export type ScrollToOptions<UD extends UserData = UserData> = {
   offset?: number
   immediate?: boolean
   lock?: boolean
@@ -43,105 +45,105 @@ export type ScrollToOptions<UD> = {
   userData?: UD
 }
 
-export type LenisOptions = Partial<{
+export type LenisOptions = {
   /**
    * The element that will be used as the scroll container
    * @default window
    */
-  wrapper: Window | HTMLElement
+  wrapper?: Window | HTMLElement
   /**
    * The element that contains the content that will be scrolled, usually `wrapper`'s direct child
    * @default document.documentElement
    */
-  content: HTMLElement
+  content?: HTMLElement
   /**
    * The element that will listen to `wheel` and `touch` events
    * @deprecated Use `eventsTarget` instead
    */
-  wheelEventsTarget: Window | HTMLElement
+  wheelEventsTarget?: Window | HTMLElement
   /**
    * The element that will listen to `wheel` and `touch` events
    * @default window
    */
-  eventsTarget: Window | HTMLElement
+  eventsTarget?: Window | HTMLElement
   /**
    * Smooth the scroll initiated by `wheel` events
    * @default true
    */
-  smoothWheel: boolean
+  smoothWheel?: boolean
   /**
    * Mimic touch device scroll while allowing scroll sync
    * @default false
    */
-  syncTouch: boolean
+  syncTouch?: boolean
   /**
    * Linear interpolation (lerp) intensity (between 0 and 1)
    * @default 0.075
    */
-  syncTouchLerp: number
+  syncTouchLerp?: number
   /**
    * Manage the the strength of `syncTouch` inertia
    * @default 35
    */
-  touchInertiaMultiplier: number
+  touchInertiaMultiplier?: number
   /**
    * Scroll duration in seconds
    */
-  duration: number
+  duration?: number
   /**
    * Scroll easing function
    * @default (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t))
    */
-  easing: EasingFunction
+  easing?: EasingFunction
   /**
    * Linear interpolation (lerp) intensity (between 0 and 1)
    * @default 0.1
    */
-  lerp: number
+  lerp?: number
   /**
    * Enable infinite scrolling
    * @default false
    */
-  infinite: boolean
+  infinite?: boolean
   /**
    * The orientation of the scrolling. Can be `vertical` or `horizontal`
    * @default vertical
    */
-  orientation: Orientation
+  orientation?: Orientation
   /**
    * The orientation of the gestures. Can be `vertical`, `horizontal` or `both`
    * @default vertical
    */
-  gestureOrientation: GestureOrientation
+  gestureOrientation?: GestureOrientation
   /**
    * The multiplier to use for mouse wheel events
    * @default 1
    */
-  touchMultiplier: number
+  touchMultiplier?: number
   /**
    * The multiplier to use for touch events
    * @default 1
    */
-  wheelMultiplier: number
+  wheelMultiplier?: number
   /**
    * Resize instance automatically
    * @default true
    */
-  autoResize: boolean
+  autoResize?: boolean
   /**
    * Manually prevent scroll to be smoothed based on elements traversed by events
    */
-  prevent: (node: HTMLElement) => boolean
+  prevent?: (node: HTMLElement) => boolean
   /**
    * Manually modify the events before they get consumed
    */
-  virtualScroll: (data: VirtualScrollData) => boolean
+  virtualScroll?: (data: VirtualScrollData) => boolean
   /**
    * If `true`, Lenis will not try to detect the size of the content and wrapper
    * @default false
    */
-  __experimental__naiveDimensions: boolean
-}>
+  __experimental__naiveDimensions?: boolean
+}
 
 declare global {
   interface Window {

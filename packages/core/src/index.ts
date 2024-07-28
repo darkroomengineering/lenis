@@ -5,7 +5,7 @@ import { Animate } from './animate'
 import { Dimensions } from './dimensions'
 import { Emitter } from './emitter'
 import { clamp, modulo } from './maths'
-import {
+import type {
   LenisEvent,
   LenisOptions,
   ScrollCallback,

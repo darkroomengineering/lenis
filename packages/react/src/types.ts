@@ -1,14 +1,14 @@
 import type Lenis from 'lenis'
-import type { LenisOptions, ScrollCallback } from 'lenis'
-import type { ComponentPropsWithoutRef, PropsWithChildren } from 'react'
+import type { LenisOptions, ScrollCallback, UserData } from 'lenis'
+import type { ComponentPropsWithoutRef, ReactNode } from 'react'
 
-export type LenisContextValue = {
-  lenis: Lenis
+export type LenisContextValue<UD extends UserData = UserData> = {
+  lenis: Lenis<UD>
   addCallback: (callback: ScrollCallback, priority: number) => void
   removeCallback: (callback: ScrollCallback) => void
 }
 
-export type LenisProps = PropsWithChildren<{
+export type LenisProps = {
   /**
    * Setup a global instance of Lenis
    * @default false
@@ -29,6 +29,10 @@ export type LenisProps = PropsWithChildren<{
    */
   rafPriority?: number
   /**
+   * Children
+   */
+  children?: ReactNode
+  /**
    * Class name for the wrapper div
    */
   className?: string
@@ -36,10 +40,10 @@ export type LenisProps = PropsWithChildren<{
    * Additional props for the wrapper div
    */
   props?: Omit<ComponentPropsWithoutRef<'div'>, 'children' | 'className'>
-}>
+}
 
-export type LenisRef = {
+export type LenisRef<UD extends UserData = UserData> = {
   wrapper: HTMLDivElement | null
   content: HTMLDivElement | null
-  lenis?: Lenis
+  lenis?: Lenis<UD>
 }
