@@ -11,6 +11,7 @@ import type {
   ScrollCallback,
   Scrolling,
   ScrollToOptions,
+  UserData,
   VirtualScrollCallback,
   VirtualScrollData,
 } from './types'
@@ -29,9 +30,7 @@ export * from './types'
 
 type RequiredPick<T, F extends keyof T> = Omit<T, F> & Required<Pick<T, F>>
 
-export default class Lenis<
-  UD extends Record<string, any> = Record<string, any>
-> {
+export default class Lenis {
   // __isSmooth: boolean = false // true if scroll should be animated
   __isScrolling: Scrolling = false // true when scroll is animating
   __isStopped = false // true if user should not be able to scroll - enable/disable programmatically
@@ -41,7 +40,7 @@ export default class Lenis<
 
   isTouching?: boolean
   time = 0
-  userData = {} as UD
+  userData: UserData = {}
   lastVelocity = 0
   velocity = 0
   direction: 1 | -1 | 0 = 0
@@ -164,19 +163,13 @@ export default class Lenis<
     // this.toggleClassName('lenis-locked', false)
   }
 
-  on<UD extends Record<string, any> = Record<string, any>>(
-    event: 'scroll',
-    callback: ScrollCallback<UD>
-  ): () => void
+  on(event: 'scroll', callback: ScrollCallback): () => void
   on(event: 'virtual-scroll', callback: VirtualScrollCallback): () => void
   on(event: LenisEvent, callback: any) {
     return this.emitter.on(event, callback)
   }
 
-  off<UD extends Record<string, any> = Record<string, any>>(
-    event: 'scroll',
-    callback: ScrollCallback<UD>
-  ): void
+  off(event: 'scroll', callback: ScrollCallback): void
   off(event: 'virtual-scroll', callback: VirtualScrollCallback): void
   off(event: LenisEvent, callback: any) {
     return this.emitter.off(event, callback)
@@ -395,7 +388,7 @@ export default class Lenis<
     this.animate.advance(deltaTime * 0.001)
   }
 
-  scrollTo<UD extends Record<string, any> = Record<string, any>>(
+  scrollTo(
     target: number | string | HTMLElement,
     {
       offset = 0,
@@ -409,7 +402,7 @@ export default class Lenis<
       force = false, // scroll even if stopped
       programmatic = true, // called from outside of the class
       userData,
-    }: ScrollToOptions<UD> = {}
+    }: ScrollToOptions = {}
   ) {
     if ((this.isStopped || this.isLocked) && !force) return
 

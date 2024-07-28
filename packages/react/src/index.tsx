@@ -1,7 +1,7 @@
 'use client'
 
 import Tempus from '@darkroom.engineering/tempus'
-import Lenis, { UserData, type ScrollCallback } from 'lenis'
+import Lenis, { type ScrollCallback } from 'lenis'
 import {
   createContext,
   forwardRef,
@@ -22,7 +22,7 @@ const rootLenisContextStore = new Store<LenisContextValue | null>(null)
 // Fall back to an empty object if both context and store are not available
 const fallbackContext: Partial<LenisContextValue> = {}
 
-export function useLenis<UD extends UserData = UserData>(
+export function useLenis(
   callback?: ScrollCallback,
   deps: any[] = [],
   priority = 0
@@ -46,7 +46,7 @@ export function useLenis<UD extends UserData = UserData>(
     }
   }, [lenis, addCallback, removeCallback, priority, ...deps])
 
-  return lenis as Lenis<UD> | undefined
+  return lenis
 }
 
 const ReactLenis = forwardRef<LenisRef, LenisProps>(

@@ -16,9 +16,7 @@ export type UserData = Record<string, any>
 export type Scrolling = boolean | 'native' | 'smooth'
 
 export type LenisEvent = 'scroll' | 'virtual-scroll'
-export type ScrollCallback<UD extends UserData = UserData> = (
-  lenis: Lenis<UD>
-) => void
+export type ScrollCallback = (lenis: Lenis) => void
 export type VirtualScrollCallback = (data: VirtualScrollData) => void
 
 export type VirtualScrollData = {
@@ -31,7 +29,7 @@ export type Orientation = 'vertical' | 'horizontal'
 export type GestureOrientation = 'vertical' | 'horizontal' | 'both'
 export type EasingFunction = (time: number) => number
 
-export type ScrollToOptions<UD extends UserData = UserData> = {
+export type ScrollToOptions = {
   offset?: number
   immediate?: boolean
   lock?: boolean
@@ -42,7 +40,7 @@ export type ScrollToOptions<UD extends UserData = UserData> = {
   onComplete?: (lenis: Lenis) => void
   force?: boolean
   programmatic?: boolean
-  userData?: UD
+  userData?: UserData
 }
 
 export type LenisOptions = {
