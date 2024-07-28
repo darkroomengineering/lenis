@@ -34,16 +34,33 @@ export type LenisProps = {
   children?: ReactNode
   /**
    * Class name for the wrapper div
+   *
+   * When `root` is `false`, this will be applied to the wrapper div
    */
   className?: string
   /**
    * Additional props for the wrapper div
+   *
+   * When `root` is `false`, this will be applied to the wrapper div
    */
   props?: Omit<ComponentPropsWithoutRef<'div'>, 'children' | 'className'>
 }
 
 export type LenisRef = {
+  /**
+   * The wrapper div element
+   *
+   * Will only be defined if `root` is `false`
+   */
   wrapper: HTMLDivElement | null
+  /**
+   * The content div element
+   *
+   * Will only be defined if `root` is `false`
+   */
   content: HTMLDivElement | null
+  /**
+   * The lenis instance
+   */
   lenis?: Lenis
 }
