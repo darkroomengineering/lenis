@@ -14,9 +14,11 @@ export class Dimensions {
   height = 0
   scrollHeight = 0
   scrollWidth = 0
-  debouncedResize?: (...args: unknown[]) => void
-  wrapperResizeObserver?: ResizeObserver
-  contentResizeObserver?: ResizeObserver
+
+  // These are instanciated in the constructor as they need information from the options
+  private debouncedResize?: (...args: unknown[]) => void
+  private wrapperResizeObserver?: ResizeObserver
+  private contentResizeObserver?: ResizeObserver
 
   constructor(
     private wrapper: HTMLElement | Window,

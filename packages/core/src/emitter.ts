@@ -8,7 +8,10 @@
  * emitter.emit('event', 'data')
  */
 export class Emitter {
-  events: Record<string, Array<(...args: unknown[]) => void> | undefined> = {}
+  private events: Record<
+    string,
+    Array<(...args: unknown[]) => void> | undefined
+  > = {}
 
   /**
    * Emit an event with the given data

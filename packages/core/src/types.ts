@@ -4,10 +4,28 @@ export type OnUpdateCallback = (value: number, completed: boolean) => void
 export type OnStartCallback = () => void
 
 export type FromToOptions = {
+  /**
+   * Linear interpolation (lerp) intensity (between 0 and 1)
+   * @default 0.1
+   */
   lerp?: number
+  /**
+   * The duration of the scroll animation (in s)
+   * @default 1
+   */
   duration?: number
+  /**
+   * The easing function to use for the scroll animation
+   * @default (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t))
+   */
   easing?: EasingFunction
+  /**
+   * Called when the scroll starts
+   */
   onStart?: OnStartCallback
+  /**
+   * Called when the scroll progress changes
+   */
   onUpdate?: OnUpdateCallback
 }
 
@@ -30,16 +48,56 @@ export type GestureOrientation = 'vertical' | 'horizontal' | 'both'
 export type EasingFunction = (time: number) => number
 
 export type ScrollToOptions = {
+  /**
+   * The offset to apply to the target value
+   * @default 0
+   */
   offset?: number
+  /**
+   * Skip the animation and jump to the target value immediately
+   * @default false
+   */
   immediate?: boolean
+  /**
+   * Lock the scroll to the target value
+   * @default false
+   */
   lock?: boolean
+  /**
+   * The duration of the scroll animation (in s)
+   */
   duration?: number
+  /**
+   * The easing function to use for the scroll animation
+   * @default (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t))
+   */
   easing?: EasingFunction
+  /**
+   * Linear interpolation (lerp) intensity (between 0 and 1)
+   * @default 0.1
+   */
   lerp?: number
+  /**
+   * Called when the scroll starts
+   */
   onStart?: (lenis: Lenis) => void
+  /**
+   * Called when the scroll completes
+   */
   onComplete?: (lenis: Lenis) => void
+  /**
+   * Scroll even if stopped
+   * @default false
+   */
   force?: boolean
+  /**
+   * Scroll initiated from outside of the lenis instance
+   * @default false
+   */
   programmatic?: boolean
+  /**
+   * User data that will be forwarded through the scroll event
+   */
   userData?: UserData
 }
 
@@ -54,11 +112,6 @@ export type LenisOptions = {
    * @default document.documentElement
    */
   content?: HTMLElement
-  /**
-   * The element that will listen to `wheel` and `touch` events
-   * @deprecated Use `eventsTarget` instead
-   */
-  wheelEventsTarget?: Window | HTMLElement
   /**
    * The element that will listen to `wheel` and `touch` events
    * @default window

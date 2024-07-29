@@ -17,7 +17,7 @@ export class VirtualScroll {
     width: 0,
     height: 0,
   }
-  emitter = new Emitter()
+  private emitter = new Emitter()
 
   constructor(
     private element: HTMLElement,
@@ -80,7 +80,6 @@ export class VirtualScroll {
    * @param event Touch event
    */
   onTouchStart = (event: TouchEvent) => {
-    // TODO: Talk to clement about this
     // @ts-expect-error - event.targetTouches is not defined
     const { clientX, clientY } = event.targetTouches
       ? event.targetTouches[0]
@@ -103,7 +102,6 @@ export class VirtualScroll {
 
   /** Event handler for 'touchmove' event */
   onTouchMove = (event: TouchEvent) => {
-    // TODO: Talk to clement about this
     // @ts-expect-error - event.targetTouches is not defined
     const { clientX, clientY } = event.targetTouches
       ? event.targetTouches[0]

@@ -3,6 +3,7 @@ import type { EasingFunction, FromToOptions, OnUpdateCallback } from './types'
 
 /**
  * Animate class to handle value animations with lerping or easing
+ *
  * @example
  * const animate = new Animate()
  * animate.fromTo(0, 100, { duration: 1, easing: (t) => t })
@@ -14,6 +15,8 @@ export class Animate {
   from = 0
   to = 0
   currentTime = 0
+
+  // These are instanciated in the fromTo method
   lerp?: number
   duration?: number
   easing?: EasingFunction
