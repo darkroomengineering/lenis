@@ -67,6 +67,7 @@
     }
     class SnapElement {
         constructor(element, { align = ['start'], ignoreSticky = true, ignoreTransform = false, } = {}) {
+            // @ts-ignore
             this.rect = {};
             this.onWrapperResize = () => {
                 let top, left;
@@ -92,7 +93,10 @@
             };
             this.element = element;
             this.options = { align, ignoreSticky, ignoreTransform };
+            // this.ignoreSticky = ignoreSticky
+            // this.ignoreTransform = ignoreTransform
             this.align = [align].flat();
+            // TODO: assing rect immediately
             this.wrapperResizeObserver = new ResizeObserver(this.onWrapperResize);
             this.wrapperResizeObserver.observe(document.body);
             this.onWrapperResize();
@@ -135,6 +139,35 @@
         return index++;
     }
 
+    /**
+     * Snap class to handle the snap functionality
+     *
+     * @example
+     * const snap = new Snap(lenis, {
+     *   type: 'mandatory', // 'mandatory', 'proximity'
+     *   lerp: 0.1,
+     *   duration: 1,
+     *   easing: (t) => t,
+     *   onSnapStart: (snap) => {
+     *     console.log('onSnapStart', snap)
+     *   },
+     *   onSnapComplete: (snap) => {
+     *     console.log('onSnapComplete', snap)
+     *   },
+     * })
+     *
+     * snap.add(500) // snap at 500px
+     *
+     * const someElement = document.querySelector('#some-element')
+     *
+     * snap.addElement(someElement) // snap to the element
+     *
+     * const removeSnap = snap.add(500)
+     *
+     * if (someCondition) {
+     *   removeSnap()
+     * }
+     */
     class Snap {
         constructor(lenis, { type = 'mandatory', lerp, easing, duration, velocityThreshold = 1, debounce: debounceDelay = 0, onSnapStart, onSnapComplete, } = {}) {
             this.lenis = lenis;
@@ -149,12 +182,22 @@
                 this.viewport.width = window.innerWidth;
                 this.viewport.height = window.innerHeight;
             };
-            this.onScroll = ({ lastVelocity, velocity, userData, }) => {
+            this.onScroll = ({ 
+            // scroll,
+            // limit,
+            lastVelocity, velocity, 
+            // isScrolling,
+            userData, }) => {
                 if (this.isStopped)
                     return;
+                // console.log(scroll, velocity, type)
+                // return
                 const isDecelerating = Math.abs(lastVelocity) > Math.abs(velocity);
                 const isTurningBack = Math.sign(lastVelocity) !== Math.sign(velocity) && velocity !== 0;
+                // console.log({ lastVelocity, velocity, isTurningBack, isDecelerating })
+                // console.log('onScroll')
                 if (Math.abs(velocity) < this.options.velocityThreshold &&
+                    // !isTouching &&
                     isDecelerating &&
                     !isTurningBack &&
                     (userData === null || userData === void 0 ? void 0 : userData.initiator) !== 'snap') {
@@ -203,6 +246,9 @@
                             (isHorizontal
                                 ? this.lenis.dimensions.width
                                 : this.lenis.dimensions.height))) {
+                    // this.__isScrolling = true
+                    // this.onSnapStart?.(snap)
+                    // console.log('scroll to')
                     this.lenis.scrollTo(snap.value, {
                         lerp: this.options.lerp,
                         easing: this.options.easing,
@@ -218,6 +264,7 @@
                         },
                     });
                 }
+                // console.timeEnd('scroll')
             };
             this.options = {
                 type,
@@ -234,30 +281,76 @@
             this.onSnapDebounced = debounce(this.onSnap, this.options.debounce);
             this.lenis.on('scroll', this.onScroll);
         }
+        // debug() {
+        //   const element = document.createElement('div')
+        //   element.style.cssText = `
+        //     position: fixed;
+        //     background: red;
+        //     border-bottom: 1px solid red;
+        //     left: 0;
+        //     right: 0;
+        //     top: 0;
+        //     z-index: 9999;
+        //   `
+        //   document.body.appendChild(element)
+        // }
+        /**
+         * Destroy the snap instance
+         */
         destroy() {
             this.lenis.off('scroll', this.onScroll);
             window.removeEventListener('resize', this.onWindowResize, false);
             this.elements.forEach((element) => element.destroy());
         }
+        /**
+         * Start the snap after it has been stopped
+         */
         start() {
             this.isStopped = false;
         }
+        /**
+         * Stop the snap
+         */
         stop() {
             this.isStopped = true;
         }
+        /**
+         * Add a snap to the snap instance
+         *
+         * @param value The value to snap to
+         * @param userData User data that will be forwarded through the snap event
+         * @returns Unsubscribe function
+         */
         add(value, userData = {}) {
             const id = uid();
             this.snaps.set(id, { value, userData });
             return () => this.remove(id);
         }
+        /**
+         * Remove a snap from the snap instance
+         *
+         * @param id The snap id of the snap to remove
+         */
         remove(id) {
             this.snaps.delete(id);
         }
+        /**
+         * Add an element to the snap instance
+         *
+         * @param element The element to add
+         * @param options The options for the element
+         * @returns Unsubscribe function
+         */
         addElement(element, options = {}) {
             const id = uid();
             this.elements.set(id, new SnapElement(element, options));
             return () => this.removeElement(id);
         }
+        /**
+         * Remove an element from the snap instance
+         *
+         * @param id The snap id of the snap element to remove
+         */
         removeElement(id) {
             this.elements.delete(id);
         }

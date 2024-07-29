@@ -1,5 +1,3 @@
-// TODO: Fix json import
-// @ts-ignore
 import { version } from '../../../package.json'
 import { Animate } from './animate'
 import { Dimensions } from './dimensions'
