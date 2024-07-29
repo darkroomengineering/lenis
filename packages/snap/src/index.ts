@@ -16,6 +16,35 @@ export * from './types'
 
 type RequiredPick<T, F extends keyof T> = Omit<T, F> & Required<Pick<T, F>>
 
+/**
+ * Snap class to handle the snap functionality
+ *
+ * @example
+ * const snap = new Snap(lenis, {
+ *   type: 'mandatory', // 'mandatory', 'proximity'
+ *   lerp: 0.1,
+ *   duration: 1,
+ *   easing: (t) => t,
+ *   onSnapStart: (snap) => {
+ *     console.log('onSnapStart', snap)
+ *   },
+ *   onSnapComplete: (snap) => {
+ *     console.log('onSnapComplete', snap)
+ *   },
+ * })
+ *
+ * snap.add(500) // snap at 500px
+ *
+ * const someElement = document.querySelector('#some-element')
+ *
+ * snap.addElement(someElement) // snap to the element
+ *
+ * const removeSnap = snap.add(500)
+ *
+ * if (someCondition) {
+ *   removeSnap()
+ * }
+ */
 export default class Snap {
   options: RequiredPick<SnapOptions, 'type' | 'velocityThreshold' | 'debounce'>
   elements = new Map<UID, SnapElement>()
@@ -73,20 +102,36 @@ export default class Snap {
   //   document.body.appendChild(element)
   // }
 
+  /**
+   * Destroy the snap instance
+   */
   destroy() {
     this.lenis.off('scroll', this.onScroll)
     window.removeEventListener('resize', this.onWindowResize, false)
     this.elements.forEach((element) => element.destroy())
   }
 
+  /**
+   * Start the snap after it has been stopped
+   */
   start() {
     this.isStopped = false
   }
 
+  /**
+   * Stop the snap
+   */
   stop() {
     this.isStopped = true
   }
 
+  /**
+   * Add a snap to the snap instance
+   *
+   * @param value The value to snap to
+   * @param userData User data that will be forwarded through the snap event
+   * @returns Unsubscribe function
+   */
   add(value: number, userData: UserData = {}) {
     const id = uid()
 
@@ -95,10 +140,22 @@ export default class Snap {
     return () => this.remove(id)
   }
 
+  /**
+   * Remove a snap from the snap instance
+   *
+   * @param id The snap id of the snap to remove
+   */
   remove(id: UID) {
     this.snaps.delete(id)
   }
 
+  /**
+   * Add an element to the snap instance
+   *
+   * @param element The element to add
+   * @param options The options for the element
+   * @returns Unsubscribe function
+   */
   addElement(element: HTMLElement, options = {} as SnapElementOptions) {
     const id = uid()
 
@@ -107,6 +164,11 @@ export default class Snap {
     return () => this.removeElement(id)
   }
 
+  /**
+   * Remove an element from the snap instance
+   *
+   * @param id The snap id of the snap element to remove
+   */
   removeElement(id: UID) {
     this.elements.delete(id)
   }
