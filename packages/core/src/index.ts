@@ -667,8 +667,8 @@ export default class Lenis {
   }
 
   private set isScrolling(value: Scrolling) {
-    if (this.isScrolling !== value) {
-      this.isScrolling = value
+    if (this.__isScrolling !== value) {
+      this.__isScrolling = value
       this.updateClassName()
     }
   }
