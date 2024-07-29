@@ -1,4 +1,4 @@
-import Lenis, { EasingFunction } from 'lenis';
+import Lenis, { UserData, EasingFunction } from 'lenis';
 
 type SnapElementOptions = {
     align?: string[];
@@ -36,12 +36,11 @@ declare class SnapElement {
     onResize: ([entry]: ResizeObserverEntry[]) => void;
 }
 
-type UID = number;
-
 type SnapItem = {
     value: number;
-    userData: Record<string, any>;
+    userData: UserData;
 };
+type OnSnapCallback = (item: SnapItem) => void;
 type SnapOptions = {
     type?: 'mandatory' | 'proximity';
     lerp?: number;
@@ -49,9 +48,12 @@ type SnapOptions = {
     duration?: number;
     velocityThreshold?: number;
     debounce?: number;
-    onSnapStart?: (item: SnapItem) => void;
-    onSnapComplete?: (item: SnapItem) => void;
+    onSnapStart?: OnSnapCallback;
+    onSnapComplete?: OnSnapCallback;
 };
+
+type UID = number;
+
 type RequiredPick<T, F extends keyof T> = Omit<T, F> & Required<Pick<T, F>>;
 declare class Snap {
     private lenis;
@@ -62,13 +64,13 @@ declare class Snap {
         width: number;
         height: number;
     };
-    isStopped: Boolean;
-    onSnapDebounced: Function;
+    isStopped: boolean;
+    onSnapDebounced: () => void;
     constructor(lenis: Lenis, { type, lerp, easing, duration, velocityThreshold, debounce: debounceDelay, onSnapStart, onSnapComplete, }?: SnapOptions);
     destroy(): void;
     start(): void;
     stop(): void;
-    add(value: number, userData?: Record<string, any>): () => void;
+    add(value: number, userData?: UserData): () => void;
     remove(id: UID): void;
     addElement(element: HTMLElement, options?: SnapElementOptions): () => void;
     removeElement(id: UID): void;
@@ -77,4 +79,4 @@ declare class Snap {
     private onSnap;
 }
 
-export { type SnapOptions, Snap as default };
+export { type OnSnapCallback, type SnapItem, type SnapOptions, Snap as default };

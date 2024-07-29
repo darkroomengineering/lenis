@@ -65,7 +65,50 @@ type LenisRef = {
 };
 
 declare const LenisContext: react.Context<LenisContextValue | null>;
+/**
+ * Hook to access the Lenis instance and its methods
+ *
+ * @example <caption>Scroll callback</caption>
+ *          useLenis((lenis) => {
+ *            if (lenis.isScrolling) {
+ *              console.log('Scrolling...')
+ *            }
+ *
+ *            if (lenis.progress === 1) {
+ *              console.log('At the end!')
+ *            }
+ *          })
+ *
+ * @example <caption>Scroll callback with dependencies</caption>
+ *          useLenis((lenis) => {
+ *            if (lenis.isScrolling) {
+ *              console.log('Scrolling...', someDependency)
+ *            }
+ *          }, [someDependency])
+ * @example <caption>Scroll callback with priority</caption>
+ *          useLenis((lenis) => {
+ *            if (lenis.isScrolling) {
+ *              console.log('Scrolling...')
+ *            }
+ *          }, [], 1)
+ * @example <caption>Instance access</caption>
+ *          const lenis = useLenis()
+ *
+ *          handleClick() {
+ *            lenis.scrollTo(100, {
+ *              lerp: 0.1,
+ *              duration: 1,
+ *              easing: (t) => t,
+ *              onComplete: () => {
+ *                console.log('Complete!')
+ *              }
+ *            })
+ *          }
+ */
 declare function useLenis(callback?: ScrollCallback, deps?: any[], priority?: number): Lenis | undefined;
+/**
+ * React component to setup a Lenis instance
+ */
 declare const ReactLenis: react.ForwardRefExoticComponent<LenisProps & react.RefAttributes<LenisRef>>;
 
 export { ReactLenis as Lenis, LenisContext, type LenisContextValue, type LenisProps, type LenisRef, ReactLenis, ReactLenis as default, useLenis };

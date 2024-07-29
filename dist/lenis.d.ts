@@ -1,3 +1,27 @@
+declare class Dimensions {
+    private wrapper;
+    private content;
+    width: number;
+    height: number;
+    scrollHeight: number;
+    scrollWidth: number;
+    private debouncedResize?;
+    private wrapperResizeObserver?;
+    private contentResizeObserver?;
+    constructor(wrapper: HTMLElement | Window, content: HTMLElement, { autoResize, debounce: debounceValue }?: {
+        autoResize?: boolean | undefined;
+        debounce?: number | undefined;
+    });
+    destroy(): void;
+    resize: () => void;
+    onWrapperResize: () => void;
+    onContentResize: () => void;
+    get limit(): {
+        x: number;
+        y: number;
+    };
+}
+
 type OnUpdateCallback = (value: number, completed: boolean) => void;
 type OnStartCallback = () => void;
 type FromToOptions = {
@@ -36,7 +60,6 @@ type ScrollToOptions = {
 type LenisOptions = {
     wrapper?: Window | HTMLElement;
     content?: HTMLElement;
-    wheelEventsTarget?: Window | HTMLElement;
     eventsTarget?: Window | HTMLElement;
     smoothWheel?: boolean;
     syncTouch?: boolean;
@@ -61,103 +84,23 @@ declare global {
     }
 }
 
-declare class Animate {
-    isRunning: boolean;
-    value: number;
-    from: number;
-    to: number;
-    currentTime: number;
-    lerp?: number;
-    duration?: number;
-    easing?: EasingFunction;
-    onUpdate?: OnUpdateCallback;
-    advance(deltaTime: number): void;
-    stop(): void;
-    fromTo(from: number, to: number, { lerp, duration, easing, onStart, onUpdate, }: FromToOptions): void;
-}
-
-declare class Dimensions {
-    private wrapper;
-    private content;
-    width: number;
-    height: number;
-    scrollHeight: number;
-    scrollWidth: number;
-    debouncedResize?: (...args: unknown[]) => void;
-    wrapperResizeObserver?: ResizeObserver;
-    contentResizeObserver?: ResizeObserver;
-    constructor(wrapper: HTMLElement | Window, content: HTMLElement, { autoResize, debounce: debounceValue }?: {
-        autoResize?: boolean | undefined;
-        debounce?: number | undefined;
-    });
-    destroy(): void;
-    resize: () => void;
-    onWrapperResize: () => void;
-    onContentResize: () => void;
-    get limit(): {
-        x: number;
-        y: number;
-    };
-}
-
-declare class Emitter {
-    events: Record<string, Array<(...args: unknown[]) => void> | undefined>;
-    emit(event: string, ...args: unknown[]): void;
-    on<CB extends (...args: any[]) => void>(event: string, cb: CB): () => void;
-    off<CB extends (...args: any[]) => void>(event: string, callback: CB): void;
-    destroy(): void;
-}
-
-declare class VirtualScroll {
-    private element;
-    private options;
-    touchStart: {
-        x: number;
-        y: number;
-    };
-    lastDelta: {
-        x: number;
-        y: number;
-    };
-    window: {
-        width: number;
-        height: number;
-    };
-    emitter: Emitter;
-    constructor(element: HTMLElement, options?: {
-        wheelMultiplier: number;
-        touchMultiplier: number;
-    });
-    on(event: string, callback: VirtualScrollCallback): () => void;
-    destroy(): void;
-    onTouchStart: (event: TouchEvent) => void;
-    onTouchMove: (event: TouchEvent) => void;
-    onTouchEnd: (event: TouchEvent) => void;
-    onWheel: (event: WheelEvent) => void;
-    onWindowResize: () => void;
-}
-
-type RequiredPick<T, F extends keyof T> = Omit<T, F> & Required<Pick<T, F>>;
+type OptionalPick<T, F extends keyof T> = Omit<T, F> & Partial<Pick<T, F>>;
 declare class Lenis {
-    __isScrolling: Scrolling;
-    __isStopped: boolean;
-    __isLocked: boolean;
-    __preventNextNativeScrollEvent?: boolean;
-    __resetVelocityTimeout?: number;
+    #private;
     isTouching?: boolean;
     time: number;
     userData: UserData;
     lastVelocity: number;
     velocity: number;
     direction: 1 | -1 | 0;
-    options: RequiredPick<LenisOptions, 'wrapper'>;
+    options: OptionalPick<Required<LenisOptions>, 'duration' | 'prevent' | 'virtualScroll'>;
     targetScroll: number;
     animatedScroll: number;
-    animate: Animate;
-    emitter: Emitter;
-    dimensions: Dimensions;
-    virtualScroll: VirtualScroll;
-    constructor({ wrapper, content, wheelEventsTarget, eventsTarget, smoothWheel, syncTouch, syncTouchLerp, touchInertiaMultiplier, duration, easing, lerp, infinite, orientation, gestureOrientation, touchMultiplier, wheelMultiplier, autoResize, prevent, virtualScroll, __experimental__naiveDimensions, }?: LenisOptions);
+    private readonly animate;
+    private readonly emitter;
+    readonly dimensions: Dimensions;
+    private readonly virtualScroll;
+    constructor({ wrapper, content, eventsTarget, smoothWheel, syncTouch, syncTouchLerp, touchInertiaMultiplier, duration, easing, lerp, infinite, orientation, gestureOrientation, touchMultiplier, wheelMultiplier, autoResize, prevent, virtualScroll, __experimental__naiveDimensions, }?: LenisOptions);
     destroy(): void;
     on(event: 'scroll', callback: ScrollCallback): () => void;
     on(event: 'virtual-scroll', callback: VirtualScrollCallback): () => void;

@@ -88,7 +88,7 @@ export default class Lenis {
   private readonly animate = new Animate()
   private readonly emitter = new Emitter()
   // These are instanciated in the constructor as they need information from the options
-  private readonly dimensions: Dimensions
+  readonly dimensions: Dimensions // This is not private because it's used in the Snap class
   private readonly virtualScroll: VirtualScroll
 
   constructor({
