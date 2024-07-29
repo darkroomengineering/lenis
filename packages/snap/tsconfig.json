@@ -10,8 +10,7 @@
     "module": "esnext",
     "esModuleInterop": true,
     "noUnusedParameters": true,
-    "strict": true,
-    "removeComments": true
+    "strict": true
   },
   "include": ["src"]
 }

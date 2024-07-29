@@ -11,9 +11,8 @@
     "esModuleInterop": true,
     "noUnusedParameters": true,
     "strict": true,
-    "removeComments": true
+    "resolveJsonModule": true
     // "skipLibCheck": true,
-    // "resolveJsonModule": true
   },
   "include": ["src"]
 }

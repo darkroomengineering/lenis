@@ -1,98 +1,86 @@
 import { Emitter } from './emitter'
+import { VirtualScrollCallback } from './types'
 
 const LINE_HEIGHT = 100 / 6
+const listenerOptions: AddEventListenerOptions = { passive: false }
 
 export class VirtualScroll {
-  element: HTMLElement | Window
-  wheelMultiplier: number
-  touchMultiplier: number
-  touchStart: {
-    x: number | null
-    y: number | null
-  }
-  emitter: Emitter
-  lastDelta: {
-    x: number
-    y: number
-  } = {
+  touchStart = {
     x: 0,
     y: 0,
   }
-  windowWidth: number = 0
-  windowHeight: number = 0
+  lastDelta = {
+    x: 0,
+    y: 0,
+  }
+  window = {
+    width: 0,
+    height: 0,
+  }
+  private emitter = new Emitter()
 
   constructor(
-    element: HTMLElement | Window,
-    { wheelMultiplier = 1, touchMultiplier = 1 }
+    private element: HTMLElement,
+    private options = { wheelMultiplier: 1, touchMultiplier: 1 }
   ) {
-    this.element = element
-    this.wheelMultiplier = wheelMultiplier
-    this.touchMultiplier = touchMultiplier
-
-    this.touchStart = {
-      x: null,
-      y: null,
-    }
-
-    this.emitter = new Emitter()
     window.addEventListener('resize', this.onWindowResize, false)
     this.onWindowResize()
 
-    this.element.addEventListener('wheel', this.onWheel as EventListener, {
-      passive: false,
-    })
+    this.element.addEventListener('wheel', this.onWheel, listenerOptions)
     this.element.addEventListener(
       'touchstart',
-      this.onTouchStart as EventListener,
-      {
-        passive: false,
-      }
+      this.onTouchStart,
+      listenerOptions
     )
     this.element.addEventListener(
       'touchmove',
-      this.onTouchMove as EventListener,
-      {
-        passive: false,
-      }
+      this.onTouchMove,
+      listenerOptions
     )
-    this.element.addEventListener(
-      'touchend',
-      this.onTouchEnd as EventListener,
-      {
-        passive: false,
-      }
-    )
+    this.element.addEventListener('touchend', this.onTouchEnd, listenerOptions)
   }
 
-  // Add an event listener for the given event and callback
-  on(event: string, callback: Function) {
+  /**
+   * Add an event listener for the given event and callback
+   *
+   * @param event Event name
+   * @param callback Callback function
+   */
+  on(event: string, callback: VirtualScrollCallback) {
     return this.emitter.on(event, callback)
   }
 
-  // Remove all event listeners and clean up
+  /** Remove all event listeners and clean up */
   destroy() {
     this.emitter.destroy()
 
     window.removeEventListener('resize', this.onWindowResize, false)
 
-    this.element.removeEventListener('wheel', this.onWheel as EventListener)
+    this.element.removeEventListener('wheel', this.onWheel, listenerOptions)
     this.element.removeEventListener(
       'touchstart',
-      this.onTouchStart as EventListener
+      this.onTouchStart,
+      listenerOptions
     )
     this.element.removeEventListener(
       'touchmove',
-      this.onTouchMove as EventListener
+      this.onTouchMove,
+      listenerOptions
     )
     this.element.removeEventListener(
       'touchend',
-      this.onTouchEnd as EventListener
+      this.onTouchEnd,
+      listenerOptions
     )
   }
 
-  // Event handler for 'touchstart' event
+  /**
+   * Event handler for 'touchstart' event
+   *
+   * @param event Touch event
+   */
   onTouchStart = (event: TouchEvent) => {
-    // @ts-expect-error
+    // @ts-expect-error - event.targetTouches is not defined
     const { clientX, clientY } = event.targetTouches
       ? event.targetTouches[0]
       : event
@@ -112,15 +100,15 @@ export class VirtualScroll {
     })
   }
 
-  // Event handler for 'touchmove' event
+  /** Event handler for 'touchmove' event */
   onTouchMove = (event: TouchEvent) => {
-    // @ts-expect-error
+    // @ts-expect-error - event.targetTouches is not defined
     const { clientX, clientY } = event.targetTouches
       ? event.targetTouches[0]
       : event
 
-    const deltaX = -(clientX - (this.touchStart?.x ?? 0)) * this.touchMultiplier
-    const deltaY = -(clientY - (this.touchStart?.y ?? 0)) * this.touchMultiplier
+    const deltaX = -(clientX - this.touchStart.x) * this.options.touchMultiplier
+    const deltaY = -(clientY - this.touchStart.y) * this.options.touchMultiplier
 
     this.touchStart.x = clientX
     this.touchStart.y = clientY
@@ -145,26 +133,28 @@ export class VirtualScroll {
     })
   }
 
-  // Event handler for 'wheel' event
+  /** Event handler for 'wheel' event */
   onWheel = (event: WheelEvent) => {
     let { deltaX, deltaY, deltaMode } = event
 
     const multiplierX =
-      deltaMode === 1 ? LINE_HEIGHT : deltaMode === 2 ? this.windowWidth : 1
+      deltaMode === 1 ? LINE_HEIGHT : deltaMode === 2 ? this.window.width : 1
     const multiplierY =
-      deltaMode === 1 ? LINE_HEIGHT : deltaMode === 2 ? this.windowHeight : 1
+      deltaMode === 1 ? LINE_HEIGHT : deltaMode === 2 ? this.window.height : 1
 
     deltaX *= multiplierX
     deltaY *= multiplierY
 
-    deltaX *= this.wheelMultiplier
-    deltaY *= this.wheelMultiplier
+    deltaX *= this.options.wheelMultiplier
+    deltaY *= this.options.wheelMultiplier
 
     this.emitter.emit('scroll', { deltaX, deltaY, event })
   }
 
   onWindowResize = () => {
-    this.windowWidth = window.innerWidth
-    this.windowHeight = window.innerHeight
+    this.window = {
+      width: window.innerWidth,
+      height: window.innerHeight,
+    }
   }
 }

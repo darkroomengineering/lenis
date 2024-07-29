@@ -1,14 +1,13 @@
 import { useEffect, useState } from 'react'
 
-export class Store {
-  private state: any
-  private listeners: Array<(state: any) => any> = []
+type Listener<S> = (state: S) => void
 
-  constructor(state: any) {
-    this.state = state
-  }
+export class Store<S> {
+  private listeners: Listener<S>[] = []
 
-  set(state: any) {
+  constructor(private state: S) {}
+
+  set(state: S) {
     this.state = state
 
     for (let listener of this.listeners) {
@@ -16,7 +15,7 @@ export class Store {
     }
   }
 
-  subscribe(listener: (state: any) => any) {
+  subscribe(listener: Listener<S>) {
     this.listeners = [...this.listeners, listener]
     return () => {
       this.listeners = this.listeners.filter((l) => l !== listener)
@@ -28,11 +27,11 @@ export class Store {
   }
 }
 
-export function useStore(store: Store) {
+export function useStore<S>(store: Store<S>) {
   const [state, setState] = useState(store.get())
 
   useEffect(() => {
-    return store.subscribe((state: any) => setState(state))
+    return store.subscribe((state) => setState(state))
   }, [store])
 
   return state

@@ -45,6 +45,7 @@ export default [
       json(),
       typescript({
         tsconfig: './tsconfig.json',
+        resolveJsonModule: false,
       }),
     ],
   },

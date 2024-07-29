@@ -1,15 +1,17 @@
 import { LoremIpsum } from 'lorem-ipsum'
 import { useState } from 'react'
-import ReactLenis, { useLenis } from '../../dist/lenis-react.mjs'
+import ReactLenis, { useLenis } from '../../dist/lenis-react'
 import './App.css'
 
 function App() {
   const [lorem] = useState(() => new LoremIpsum().generateParagraphs(200))
 
-  const lenis = useLenis((e) => {
-    console.log(e)
+  const lenis = useLenis((lenis) => {
+    console.log('lenis in callback', lenis)
   })
-  console.log(lenis)
+
+  console.log('lenis in render', lenis)
+
   return (
     <>
       {/* <ReactLenis root /> */}
