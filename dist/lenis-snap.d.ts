@@ -99,10 +99,6 @@ type RequiredPick<T, F extends keyof T> = Omit<T, F> & Required<Pick<T, F>>;
  *
  * snap.add(500) // snap at 500px
  *
- * const someElement = document.querySelector('#some-element')
- *
- * snap.addElement(someElement) // snap to the element
- *
  * const removeSnap = snap.add(500)
  *
  * if (someCondition) {

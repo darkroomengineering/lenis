@@ -39,7 +39,7 @@
         return e.name = "SuppressedError", e.error = error, e.suppressed = suppressed, e;
     };
 
-    var version = "1.1.8";
+    var version = "1.1.10-dev.0";
 
     /**
      * Clamp a value between a minimum and maximum value
@@ -938,8 +938,6 @@
                 className += ' lenis-scrolling';
             if (this.isScrolling === 'smooth')
                 className += ' lenis-smooth';
-            // if (this.isScrolling === 'native') className += ' lenis-native'
-            // if (this.isSmooth) className += ' lenis-smooth'
             return className;
         }
         updateClassName() {
