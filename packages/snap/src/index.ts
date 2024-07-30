@@ -35,10 +35,6 @@ type RequiredPick<T, F extends keyof T> = Omit<T, F> & Required<Pick<T, F>>
  *
  * snap.add(500) // snap at 500px
  *
- * const someElement = document.querySelector('#some-element')
- *
- * snap.addElement(someElement) // snap to the element
- *
  * const removeSnap = snap.add(500)
  *
  * if (someCondition) {
@@ -87,20 +83,6 @@ export default class Snap {
 
     this.lenis.on('scroll', this.onScroll)
   }
-
-  // debug() {
-  //   const element = document.createElement('div')
-  //   element.style.cssText = `
-  //     position: fixed;
-  //     background: red;
-  //     border-bottom: 1px solid red;
-  //     left: 0;
-  //     right: 0;
-  //     top: 0;
-  //     z-index: 9999;
-  //   `
-  //   document.body.appendChild(element)
-  // }
 
   /**
    * Destroy the snap instance
@@ -188,16 +170,11 @@ export default class Snap {
   }: // isHorizontal,
   Lenis) => {
     if (this.isStopped) return
-    // console.log(scroll, velocity, type)
 
     // return
     const isDecelerating = Math.abs(lastVelocity) > Math.abs(velocity)
     const isTurningBack =
       Math.sign(lastVelocity) !== Math.sign(velocity) && velocity !== 0
-
-    // console.log({ lastVelocity, velocity, isTurningBack, isDecelerating })
-
-    // console.log('onScroll')
 
     if (
       Math.abs(velocity) < this.options.velocityThreshold &&

@@ -715,8 +715,6 @@ export default class Lenis {
     if (this.isLocked) className += ' lenis-locked'
     if (this.isScrolling) className += ' lenis-scrolling'
     if (this.isScrolling === 'smooth') className += ' lenis-smooth'
-    // if (this.isScrolling === 'native') className += ' lenis-native'
-    // if (this.isSmooth) className += ' lenis-smooth'
     return className
   }
 
