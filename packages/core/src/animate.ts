@@ -1,18 +1,32 @@
 import { clamp, damp } from './maths'
+import type { EasingFunction, FromToOptions, OnUpdateCallback } from './types'
 
-// Animate class to handle value animations with lerping or easing
+/**
+ * Animate class to handle value animations with lerping or easing
+ *
+ * @example
+ * const animate = new Animate()
+ * animate.fromTo(0, 100, { duration: 1, easing: (t) => t })
+ * animate.advance(0.5) // 50
+ */
 export class Animate {
-  isRunning: boolean = false
-  value: number = 0
-  from: number = 0
-  to: number = 0
-  lerp?: number
-  duration?: number = 0
-  easing?: Function
-  currentTime: number = 0
-  onUpdate?: Function
+  isRunning = false
+  value = 0
+  from = 0
+  to = 0
+  currentTime = 0
 
-  // Advance the animation by the given delta time
+  // These are instanciated in the fromTo method
+  lerp?: number
+  duration?: number
+  easing?: EasingFunction
+  onUpdate?: OnUpdateCallback
+
+  /**
+   * Advance the animation by the given delta time
+   *
+   * @param deltaTime - The time in seconds to advance the animation
+   */
   advance(deltaTime: number) {
     if (!this.isRunning) return
 
@@ -45,29 +59,29 @@ export class Animate {
     this.onUpdate?.(this.value, completed)
   }
 
-  // Stop the animation
+  /** Stop the animation */
   stop() {
     this.isRunning = false
   }
 
-  // Set up the animation from a starting value to an ending value
-  // with optional parameters for lerping, duration, easing, and onUpdate callback
+  /**
+   * Set up the animation from a starting value to an ending value
+   * with optional parameters for lerping, duration, easing, and onUpdate callback
+   *
+   * @param from - The starting value
+   * @param to - The ending value
+   * @param options - Options for the animation
+   */
   fromTo(
     from: number,
     to: number,
     {
-      lerp,
-      duration,
-      easing,
+      lerp = 0.1,
+      duration = 1,
+      easing = (t) => t,
       onStart,
       onUpdate,
-    }: {
-      lerp?: number
-      duration?: number
-      easing?: Function
-      onStart?: Function
-      onUpdate?: Function
-    }
+    }: FromToOptions
   ) {
     this.from = this.value = from
     this.to = to
