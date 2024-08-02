@@ -288,6 +288,7 @@ prevent touch events only
 - [locomotive-scroll](https://github.com/locomotivemtl/locomotive-scroll) by [Locomotive](https://locomotive.ca/)
 - [vue-lenis](https://github.com/zeokku/vue-lenis) by [ZEOKKU](https://zeokku.com/)
 - [nuxt-lenis](https://www.npmjs.com/package/nuxt-lenis) by [Milkshake Studio](https://milkshake.studio/)
+- [lenis-svelte](https://www.npmjs.com/package/lenis-svelte) by [DaniAcu](https://github.com/DaniAcu)
 
 <br>
 
