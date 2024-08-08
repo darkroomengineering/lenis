@@ -123,6 +123,29 @@ gsap.ticker.add((time)=>{
 gsap.ticker.lagSmoothing(0)
 ```
 
+### Framer Motion:
+```jsx
+import Lenis from 'lenis';
+import { cancelFrame, frame, useIsomorphicLayoutEffect } from 'framer-motion';
+
+export const useLenis = () => {
+  useIsomorphicLayoutEffect(() => {
+    const lenis = new Lenis();
+
+    const update = time => {
+      lenis.raf(time.timestamp);
+    };
+
+    frame.update(update, true);
+
+    return () => {
+      cancelFrame(update);
+      lenis.destroy();
+    };
+  }, []);
+};
+```
+
 ### React:
 See documentation for [lenis/react](https://github.com/darkroomengineering/lenis/blob/main/packages/react/README.md).
 
