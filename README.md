@@ -307,6 +307,7 @@ prevent touch events only
 - [Edoardo Lunardi's portfolio](https://www.edoardolunardi.dev/) by [Edoardo Lunardi](https://www.edoardolunardi.dev/)
 - [DeSo](https://deso.com) by [Studio Freight](https://www.studiofreight.com/)
 - [Francesco Michelini's portfolio](https://www.francescomichelini.com/projects) by [Francesco Michelini](https://www.francescomichelini.com/)
+- [Joonas Sandell's portfolio](https://joonassandell.com) by [Joonas Sandell](https://x.com/joonassandell)
 
 <br/>
 
