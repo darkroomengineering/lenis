@@ -39,7 +39,7 @@
         return e.name = "SuppressedError", e.error = error, e.suppressed = suppressed, e;
     };
 
-    var version = "1.1.10-dev.0";
+    var version = "1.1.10";
 
     /**
      * Clamp a value between a minimum and maximum value
