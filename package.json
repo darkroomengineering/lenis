@@ -81,6 +81,7 @@
       "types": "./dist/lenis.d.ts",
       "default": "./dist/lenis.mjs"
     },
+    "./dist/*": "./dist/*",
     "./react": {
       "types": "./dist/lenis-react.d.ts",
       "default": "./dist/lenis-react.mjs"
