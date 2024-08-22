@@ -363,6 +363,8 @@ export default class Lenis {
    */
   resize() {
     this.dimensions.resize()
+    this.animatedScroll = this.targetScroll = this.actualScroll
+    this.emit()
   }
 
   private emit() {
@@ -530,7 +532,11 @@ export default class Lenis {
       target = clamp(0, target, this.limit)
     }
 
-    if (target === this.targetScroll) return
+    if (target === this.targetScroll) {
+      onStart?.(this)
+      onComplete?.(this)
+      return
+    }
 
     this.userData = userData ?? {}
 
