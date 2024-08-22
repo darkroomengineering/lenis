@@ -39,7 +39,7 @@
         return e.name = "SuppressedError", e.error = error, e.suppressed = suppressed, e;
     };
 
-    var version = "1.1.10";
+    var version = "1.1.11";
 
     /**
      * Clamp a value between a minimum and maximum value
@@ -664,6 +664,8 @@
          */
         resize() {
             this.dimensions.resize();
+            this.animatedScroll = this.targetScroll = this.actualScroll;
+            this.emit();
         }
         emit() {
             this.emitter.emit('scroll', this);
@@ -771,8 +773,11 @@
             else {
                 target = clamp(0, target, this.limit);
             }
-            if (target === this.targetScroll)
+            if (target === this.targetScroll) {
+                onStart === null || onStart === void 0 ? void 0 : onStart(this);
+                onComplete === null || onComplete === void 0 ? void 0 : onComplete(this);
                 return;
+            }
             this.userData = userData !== null && userData !== void 0 ? userData : {};
             if (immediate) {
                 this.animatedScroll = this.targetScroll = target;
