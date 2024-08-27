@@ -39,7 +39,7 @@
         return e.name = "SuppressedError", e.error = error, e.suppressed = suppressed, e;
     };
 
-    var version = "1.1.11";
+    var version = "1.1.12";
 
     /**
      * Clamp a value between a minimum and maximum value
@@ -151,7 +151,7 @@
          * @param to - The ending value
          * @param options - Options for the animation
          */
-        fromTo(from, to, { lerp = 0.1, duration = 1, easing = (t) => t, onStart, onUpdate, }) {
+        fromTo(from, to, { lerp, duration, easing, onStart, onUpdate }) {
             this.from = this.value = from;
             this.to = to;
             this.lerp = lerp;
