@@ -38,6 +38,18 @@ window.addEventListener('resize', () => {
   console.log(lenis.actualScroll, lenis.scroll, window.scrollY)
 })
 
+// Proxy test for lenis
+const proxyLenis = new Proxy(lenis, {})
+
+const scrollToTop = document.getElementById('scroll-to-top')
+
+scrollToTop.addEventListener('click', () => {
+  console.log(proxyLenis.isStopped)
+  proxyLenis.scrollTo(0, {
+    lerp: 0.1,
+  })
+})
+
 function raf(time) {
   lenis.raf(time)
   requestAnimationFrame(raf)

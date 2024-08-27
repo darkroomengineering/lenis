@@ -29,11 +29,11 @@ export * from './types'
 type OptionalPick<T, F extends keyof T> = Omit<T, F> & Partial<Pick<T, F>>
 
 export default class Lenis {
-  #isScrolling: Scrolling = false // true when scroll is animating
-  #isStopped = false // true if user should not be able to scroll - enable/disable programmatically
-  #isLocked = false // same as isStopped but enabled/disabled when scroll reaches target
-  #preventNextNativeScrollEvent = false
-  #resetVelocityTimeout: number | null = null
+  private _isScrolling: Scrolling = false // true when scroll is animating
+  private _isStopped = false // true if user should not be able to scroll - enable/disable programmatically
+  private _isLocked = false // same as isStopped but enabled/disabled when scroll reaches target
+  private _preventNextNativeScrollEvent = false
+  private _resetVelocityTimeout: number | null = null
 
   /**
    * Whether or not the user is touching the screen
@@ -372,13 +372,13 @@ export default class Lenis {
   }
 
   private onNativeScroll = () => {
-    if (this.#resetVelocityTimeout !== null) {
-      clearTimeout(this.#resetVelocityTimeout)
-      this.#resetVelocityTimeout = null
+    if (this._resetVelocityTimeout !== null) {
+      clearTimeout(this._resetVelocityTimeout)
+      this._resetVelocityTimeout = null
     }
 
-    if (this.#preventNextNativeScrollEvent) {
-      this.#preventNextNativeScrollEvent = false
+    if (this._preventNextNativeScrollEvent) {
+      this._preventNextNativeScrollEvent = false
       return
     }
 
@@ -394,7 +394,7 @@ export default class Lenis {
       this.emit()
 
       if (this.velocity !== 0) {
-        this.#resetVelocityTimeout = setTimeout(() => {
+        this._resetVelocityTimeout = setTimeout(() => {
           this.lastVelocity = this.velocity
           this.velocity = 0
           this.isScrolling = false
@@ -596,10 +596,10 @@ export default class Lenis {
   }
 
   private preventNextNativeScrollEvent() {
-    this.#preventNextNativeScrollEvent = true
+    this._preventNextNativeScrollEvent = true
 
     requestAnimationFrame(() => {
-      this.#preventNextNativeScrollEvent = false
+      this._preventNextNativeScrollEvent = false
     })
   }
 
@@ -667,12 +667,12 @@ export default class Lenis {
    * Current scroll state
    */
   get isScrolling() {
-    return this.#isScrolling
+    return this._isScrolling
   }
 
   private set isScrolling(value: Scrolling) {
-    if (this.#isScrolling !== value) {
-      this.#isScrolling = value
+    if (this._isScrolling !== value) {
+      this._isScrolling = value
       this.updateClassName()
     }
   }
@@ -681,12 +681,12 @@ export default class Lenis {
    * Check if lenis is stopped
    */
   get isStopped() {
-    return this.#isStopped
+    return this._isStopped
   }
 
   private set isStopped(value: boolean) {
-    if (this.#isStopped !== value) {
-      this.#isStopped = value
+    if (this._isStopped !== value) {
+      this._isStopped = value
       this.updateClassName()
     }
   }
@@ -695,12 +695,12 @@ export default class Lenis {
    * Check if lenis is locked
    */
   get isLocked() {
-    return this.#isLocked
+    return this._isLocked
   }
 
   private set isLocked(value: boolean) {
-    if (this.#isLocked !== value) {
-      this.#isLocked = value
+    if (this._isLocked !== value) {
+      this._isLocked = value
       this.updateClassName()
     }
   }
