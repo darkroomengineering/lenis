@@ -63,7 +63,8 @@
   },
   "peerDependencies": {
     "react": ">=17.0.0",
-    "react-dom": ">=17.0.0"
+    "react-dom": ">=17.0.0",
+    "vue": ">=3.0.0"
   },
   "peerDependenciesMeta": {
     "react": {
