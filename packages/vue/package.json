@@ -1,13 +1,19 @@
 {
+  "name": "lenis-vue",
   "scripts": {
     "prebuild": "shx rm -rf ./dist/*",
-    "build": "rollup --bundleConfigAsCjs -c",
+    "build": "vite build",
     "postbuild": "shx rm -rf ./dist/types/ && shx cp -r ./dist/* ../../dist",
-    "dev": "npm-run-all --parallel watch playground",
-    "watch": "rollup --bundleConfigAsCjs -c -w",
-    "playground": "npm run dev --prefix ./playground"
+    "dev": "vite",
+    "watch": "vite build --watch",
+    "playground": "vite"
   },
   "dependencies": {
     "lenis": "workspace:lenis*"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^5.1.2",
+    "vite": "^5.2.0",
+    "vite-plugin-dts": "^4.0.3"
   }
 }

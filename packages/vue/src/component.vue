@@ -45,7 +45,7 @@ function initLenis() {
 }
 
 onMounted(() => {
-  if (!lenis.value && !root) {
+  if (!lenis.value && root) {
     initLenis()
   }
 })
@@ -54,6 +54,12 @@ onMounted(() => {
 onBeforeUnmount(() => {
   lenis.value?.destroy()
   removeRaf.value?.()
+})
+</script>
+<script lang="ts">
+import { defineComponent } from 'vue'
+export default defineComponent({
+  name: 'lenis',
 })
 </script>
 
