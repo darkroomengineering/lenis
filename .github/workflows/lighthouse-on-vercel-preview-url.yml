@@ -7,7 +7,7 @@ on:
 
 jobs:
   generate_lighthouse_audit:
-    timeout-minutes: 30
+    timeout-minutes: 5
     runs-on: ubuntu-latest
     steps:
       # wait arbitrary 120s for the build to finish, changes it if your builds are longer. Potential fix: https://github.com/marketplace/actions/await-for-vercel-deployment
@@ -18,9 +18,9 @@ jobs:
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
         with:
-          # find project id here: https://vercel.com/studio-freight/satus/settings
-          vercel_team_id: 'studio-freight'
-          vercel_project_id: prj_GNzV5Jq8gnOAr2BF2xcDbiL22oWb
+          # find project id here: https://vercel.com/darkroom-engineering/satus/settings
+          vercel_team_id: 'darkroom-engineering'
+          vercel_project_id: ${{ secrets.VERCEL_PROJECT_ID }}
       - uses: actions/checkout@v4.1.7
       - name: Audit preview URL with Lighthouse
         id: lighthouse_audit
@@ -48,7 +48,6 @@ jobs:
                 `${score(result.accessibility)} Accessibility: ${result.accessibility}`,
                 `${score(result['best-practices'])} Best practices: ${result['best-practices']}`,
                 `${score(result.seo)} SEO: ${result.seo}`,
-                `${score(result.pwa)} PWA: ${result.pwa}`,
                 ' ',
                 `*Lighthouse ran on [${Object.keys(links)[0]}](${Object.keys(links)[0]})*`
             ].join('\n')
