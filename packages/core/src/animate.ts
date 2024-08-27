@@ -75,13 +75,7 @@ export class Animate {
   fromTo(
     from: number,
     to: number,
-    {
-      lerp = 0.1,
-      duration = 1,
-      easing = (t) => t,
-      onStart,
-      onUpdate,
-    }: FromToOptions
+    { lerp, duration, easing, onStart, onUpdate }: FromToOptions
   ) {
     this.from = this.value = from
     this.to = to

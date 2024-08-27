@@ -3,11 +3,12 @@ import Lenis from '../src/index.ts'
 import './style.css'
 
 document.querySelector('#app').innerHTML = new LoremIpsum().generateParagraphs(
-  10
+  30
 )
 
 const lenis = new Lenis({
   autoResize: false,
+  // lerp: 0.9,
   // virtualScroll: (e) => {
   //   // e.deltaY *= 10
   //   return !e.event.shiftKey
