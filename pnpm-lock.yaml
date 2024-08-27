@@ -145,6 +145,22 @@ importers:
         specifier: ^4.0.3
         version: 4.0.3(rollup@4.21.1)(typescript@5.4.5)(vite@5.4.2(terser@5.30.3))
 
+  packages/vue/playground:
+    dependencies:
+      lenis:
+        specifier: workspace:*
+        version: link:../../..
+      vue:
+        specifier: ^3.4.38
+        version: 3.4.38(typescript@5.4.5)
+    devDependencies:
+      '@vitejs/plugin-vue':
+        specifier: ^5.1.2
+        version: 5.1.2(vite@5.4.2(terser@5.30.3))(vue@3.4.38(typescript@5.4.5))
+      vite:
+        specifier: ^5.4.2
+        version: 5.4.2(terser@5.30.3)
+
 packages:
 
   '@ampproject/remapping@2.3.0':

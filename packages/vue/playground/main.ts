@@ -1,5 +1,5 @@
-import lenisVue from 'lenis/vue'
 import { createApp } from 'vue'
+import lenisVue from '../dist/lenis-vue'
 import App from './App.vue'
 import './style.css'
 

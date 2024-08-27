@@ -4,9 +4,9 @@
     "prebuild": "shx rm -rf ./dist/*",
     "build": "vite build",
     "postbuild": "shx rm -rf ./dist/types/ && shx cp -r ./dist/* ../../dist",
-    "dev": "vite",
+    "dev": "npm-run-all --parallel watch playground",
     "watch": "vite build --watch",
-    "playground": "vite"
+    "playground": "npm run dev --prefix ./playground"
   },
   "dependencies": {
     "lenis": "workspace:lenis*"

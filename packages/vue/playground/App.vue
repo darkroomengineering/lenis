@@ -1,5 +1,9 @@
+<script setup>
+import Child from './Child.vue'
+</script>
 <template>
   <lenis root :options="{ duration: 1.2 }">
+    <Child />
     <p>
       Adipisicing deserunt eiusmod quis Lorem veniam aliqua pariatur ipsum non
       irure nisi. Officia magna in cillum tempor exercitation laborum sit do

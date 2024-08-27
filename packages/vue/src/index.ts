@@ -1,5 +1,6 @@
 import type { App, Plugin } from 'vue'
 import LenisVue from './component.vue'
+import { useLenis } from './use-lenis'
 
 type SFCWithInstall<T> = T & Plugin
 
@@ -12,4 +13,4 @@ const withInstall = <T>(comp: T) => {
 }
 
 export default withInstall(LenisVue)
-// export { LenisVue, useLenis }
+export { LenisVue, useLenis }
