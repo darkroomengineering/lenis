@@ -25,6 +25,7 @@
   "scripts": {
     "dev:core": "npm run dev --prefix ./packages/core",
     "dev:react": "npm run dev --prefix ./packages/react",
+    "dev:vue": "npm run dev --prefix ./packages/vue",
     "dev:snap": "npm run dev --prefix ./packages/snap",
     "build:core": "npm run build --prefix ./packages/core",
     "build:react": "npm run build --prefix ./packages/react",
@@ -57,7 +58,8 @@
     "rollup-plugin-dts": "^6.1.0",
     "shx": "^0.3.4",
     "tslib": "^2.6.2",
-    "typescript": "^5.4.5"
+    "typescript": "^5.4.5",
+    "vue": "^3.4.38"
   },
   "peerDependencies": {
     "react": ">=17.0.0",
