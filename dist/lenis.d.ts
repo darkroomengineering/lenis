@@ -226,7 +226,11 @@ declare global {
 
 type OptionalPick<T, F extends keyof T> = Omit<T, F> & Partial<Pick<T, F>>;
 declare class Lenis {
-    #private;
+    private _isScrolling;
+    private _isStopped;
+    private _isLocked;
+    private _preventNextNativeScrollEvent;
+    private _resetVelocityTimeout;
     /**
      * Whether or not the user is touching the screen
      */
