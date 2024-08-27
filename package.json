@@ -92,6 +92,10 @@
     "./snap": {
       "types": "./dist/lenis-snap.d.ts",
       "default": "./dist/lenis-snap.mjs"
+    },
+    "./vue": {
+      "types": "./dist/lenis-vue.d.ts",
+      "default": "./dist/lenis-vue.mjs"
     }
   },
   "dependencies": {
