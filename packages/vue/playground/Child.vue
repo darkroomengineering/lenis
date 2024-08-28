@@ -1,8 +1,15 @@
 <script setup>
+import { nextTick, onMounted } from 'vue'
 import { useLenis } from '../dist/lenis-vue'
 
-const lenis = useLenis(() => {
-  console.log('scroll')
+const lenis = useLenis((lenis) => {
+  console.log('child scroll', lenis.scroll)
+})
+
+onMounted(() => {
+  nextTick(() => {
+    console.log('Lenis lerp:', lenis.value?.options.lerp)
+  })
 })
 </script>
 

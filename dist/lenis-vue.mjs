@@ -1,61 +1,66 @@
-import { defineComponent as f, shallowRef as m, ref as i, provide as y, onMounted as k, onBeforeUnmount as w, openBlock as _, createElementBlock as B, createElementVNode as $, renderSlot as c } from "vue";
-import h from "@darkroom.engineering/tempus";
-import g from "lenis";
-const E = f({
-  name: "lenis"
-}), L = /* @__PURE__ */ f({
-  ...E,
+import m from "lenis";
+import { defineComponent as p, ref as a, onMounted as s, onBeforeUnmount as c, provide as v, h as l, inject as w } from "vue";
+const d = Symbol("LenisContext");
+function B(n = () => {
+}) {
+  var t;
+  const e = w(d);
+  if (!e)
+    throw new Error("No global nor local lenis provider was found");
+  return (t = e.value) == null || t.on("scroll", n), c(() => {
+    var r;
+    return (r = e.value) == null ? void 0 : r.off("scroll", n);
+  }), e;
+}
+const y = p({
+  name: "LenisVue",
   props: {
     root: {
       type: Boolean,
-      default: () => !1
+      default: !1
     },
-    instance: { type: String },
+    autoRaf: {
+      type: Boolean,
+      default: !0
+    },
     options: {
       type: Object,
-      default: () => {
-      }
+      default: () => ({})
     }
   },
-  setup(e) {
-    const { root: o, instance: a, options: p } = e, t = m(), s = i(), u = i(), r = i(), d = `lenis${a ? `-${a}` : ""}`;
-    y(d, t);
-    function v() {
-      t.value || (t.value = new g({
-        ...p,
-        ...o ? {} : {
-          wrapper: s.value,
-          content: u.value,
-          eventsTarget: s.value
+  setup(n, { slots: e }) {
+    const t = a(null), r = a(), i = a();
+    return s(() => {
+      if (t.value = new m({
+        ...n.options,
+        ...n.root ? {} : {
+          wrapper: r.value,
+          content: i.value
         }
-      }), r.value = h.add((n) => {
-        t.value.raf(n);
-      }));
-    }
-    return k(() => {
-      !t.value && o && v();
-    }), w(() => {
-      var n, l;
-      (n = t.value) == null || n.destroy(), (l = r.value) == null || l.call(r);
-    }), (n, l) => e.root ? c(n.$slots, "default", { key: 1 }) : (_(), B("div", {
-      key: 0,
-      class: "lenis",
-      ref_key: "wrapper",
-      ref: s
-    }, [
-      $("div", {
-        ref_key: "content",
-        ref: u
-      }, [
-        c(n.$slots, "default")
-      ], 512)
-    ], 512));
+      }), n.autoRaf) {
+        let o = function(u) {
+          var f;
+          (f = t.value) == null || f.raf(u), requestAnimationFrame(o);
+        };
+        requestAnimationFrame(o);
+      }
+    }), c(() => {
+      var o;
+      (o = t.value) == null || o.destroy();
+    }), v(d, t), () => {
+      var o, u;
+      return n.root ? (o = e.default) == null ? void 0 : o.call(e) : l("div", { class: "lenis", ref: r }, [
+        l("div", { ref: i }, (u = e.default) == null ? void 0 : u.call(e))
+      ]);
+    };
   }
-}), S = (e) => (e.install = (o) => {
-  const a = e.name;
-  o.component(a, e);
-}, e), x = S(L);
+}), g = (n) => {
+  n.component("lenis", y);
+};
 export {
-  x as default
+  d as LenisSymbol,
+  y as LenisVue,
+  g as default,
+  B as useLenis
 };
 //# sourceMappingURL=lenis-vue.mjs.map
