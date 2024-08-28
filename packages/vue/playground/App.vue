@@ -1,9 +1,18 @@
 <script setup>
 import Child from './Child.vue'
+import InnerChild from './InnerChild.vue'
 </script>
 <template>
-  <lenis root :options="{ duration: 1.2 }">
+  <lenis root :options="{ lerp: 0.6 }">
     <Child />
+
+    <lenis
+      :options="{ lerp: 0.1 }"
+      style="height: 10vh; overflow: scroll"
+      class="inner"
+    >
+      <InnerChild />
+    </lenis>
     <p>
       Adipisicing deserunt eiusmod quis Lorem veniam aliqua pariatur ipsum non
       irure nisi. Officia magna in cillum tempor exercitation laborum sit do

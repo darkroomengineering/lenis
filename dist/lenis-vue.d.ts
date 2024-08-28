@@ -1,89 +1,70 @@
-import { AllowedComponentProps } from 'vue';
-import { ComponentCustomProps } from 'vue';
-import { ComponentOptionsBase } from 'vue';
 import { ComponentOptionsMixin } from 'vue';
-import { CreateComponentPublicInstance } from 'vue';
+import { default as default_2 } from 'lenis';
+import { DefineComponent } from 'vue';
 import { ExtractPropTypes } from 'vue';
+import { LenisOptions } from 'lenis';
 import { Plugin as Plugin_2 } from 'vue';
-import { VNodeProps } from 'vue';
+import { PropType } from 'vue';
+import { PublicProps } from 'vue';
+import { Ref } from 'vue';
+import { RendererElement } from 'vue';
+import { RendererNode } from 'vue';
+import { VNode } from 'vue';
 
-declare const _default: SFCWithInstall<{
-    new (...args: any[]): CreateComponentPublicInstance<Readonly<ExtractPropTypes<    {
-    root: {
-    type: BooleanConstructor;
-    default: () => boolean;
-    };
-    instance: {
-    type: StringConstructor;
-    };
-    options: {
-    type: ObjectConstructor;
-    default: () => void;
-    };
-    }>>, {}, unknown, {}, {}, ComponentOptionsMixin, ComponentOptionsMixin, {}, VNodeProps & AllowedComponentProps & ComponentCustomProps & Readonly<ExtractPropTypes<    {
-    root: {
-    type: BooleanConstructor;
-    default: () => boolean;
-    };
-    instance: {
-    type: StringConstructor;
-    };
-    options: {
-    type: ObjectConstructor;
-    default: () => void;
-    };
-    }>>, {
-    root: boolean;
-    options: Record<string, any>;
-    }, true, {}, {}, {
-    P: {};
-    B: {};
-    D: {};
-    C: {};
-    M: {};
-    Defaults: {};
-    }, Readonly<ExtractPropTypes<    {
-    root: {
-    type: BooleanConstructor;
-    default: () => boolean;
-    };
-    instance: {
-    type: StringConstructor;
-    };
-    options: {
-    type: ObjectConstructor;
-    default: () => void;
-    };
-    }>>, {}, {}, {}, {}, {
-    root: boolean;
-    options: Record<string, any>;
-    }>;
-    __isFragment?: undefined;
-    __isTeleport?: undefined;
-    __isSuspense?: undefined;
-} & ComponentOptionsBase<Readonly<ExtractPropTypes<    {
+export declare const LenisSymbol: unique symbol;
+
+export declare const LenisVue: DefineComponent<    {
 root: {
-type: BooleanConstructor;
-default: () => boolean;
+type: PropType<boolean>;
+default: boolean;
 };
-instance: {
-type: StringConstructor;
+autoRaf: {
+type: PropType<boolean>;
+default: boolean;
 };
 options: {
-type: ObjectConstructor;
-default: () => void;
+type: PropType<LenisOptions | undefined>;
+default: () => {};
 };
-}>>, {}, unknown, {}, {}, ComponentOptionsMixin, ComponentOptionsMixin, {}, string, {
+}, () => VNode<RendererNode, RendererElement, {
+[key: string]: any;
+}> | VNode<RendererNode, RendererElement, {
+[key: string]: any;
+}>[] | undefined, unknown, {}, {}, ComponentOptionsMixin, ComponentOptionsMixin, {}, string, PublicProps, Readonly<ExtractPropTypes<    {
+root: {
+type: PropType<boolean>;
+default: boolean;
+};
+autoRaf: {
+type: PropType<boolean>;
+default: boolean;
+};
+options: {
+type: PropType<LenisOptions | undefined>;
+default: () => {};
+};
+}>>, {
 root: boolean;
-options: Record<string, any>;
-}, {}, string, {}> & VNodeProps & AllowedComponentProps & ComponentCustomProps & (new () => {
-    $slots: {
-        default?(_: {}): any;
-        default?(_: {}): any;
-    };
-})>;
-export default _default;
+autoRaf: boolean;
+options: LenisOptions | undefined;
+}, {}>;
 
-declare type SFCWithInstall<T> = T & Plugin_2;
+export declare interface LenisVueProps {
+    root?: boolean;
+    autoRaf?: boolean;
+    options?: ConstructorParameters<typeof default_2>[0];
+}
+
+declare const plugin: Plugin_2;
+export default plugin;
+
+export declare function useLenis(callback?: () => void): Ref<default_2>;
 
 export { }
+
+
+declare module 'vue' {
+    interface GlobalComponents {
+        lenis: typeof LenisVue;
+    }
+}

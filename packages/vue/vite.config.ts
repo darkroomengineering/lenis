@@ -12,7 +12,7 @@ export default defineConfig({
     sourcemap: true,
     minify: true,
     rollupOptions: {
-      external: ['vue', '@darkroom.engineering/tempus', 'lenis'],
+      external: ['vue', 'lenis'],
       output: {
         strict: true,
         globals: {
