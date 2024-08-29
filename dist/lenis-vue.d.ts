@@ -1,70 +1,81 @@
-import { ComponentOptionsMixin } from 'vue';
-import { default as default_2 } from 'lenis';
-import { DefineComponent } from 'vue';
-import { ExtractPropTypes } from 'vue';
-import { LenisOptions } from 'lenis';
-import { Plugin as Plugin_2 } from 'vue';
-import { PropType } from 'vue';
-import { PublicProps } from 'vue';
-import { Ref } from 'vue';
-import { RendererElement } from 'vue';
-import { RendererNode } from 'vue';
-import { VNode } from 'vue';
+import * as vue from 'vue';
+import { InjectionKey, Ref, PropType, Plugin } from 'vue';
+import Lenis, { ScrollCallback, LenisOptions } from 'lenis';
 
-export declare const LenisSymbol: unique symbol;
-
-export declare const LenisVue: DefineComponent<    {
-root: {
-type: PropType<boolean>;
-default: boolean;
-};
-autoRaf: {
-type: PropType<boolean>;
-default: boolean;
-};
-options: {
-type: PropType<LenisOptions | undefined>;
-default: () => {};
-};
-}, () => VNode<RendererNode, RendererElement, {
-[key: string]: any;
-}> | VNode<RendererNode, RendererElement, {
-[key: string]: any;
-}>[] | undefined, unknown, {}, {}, ComponentOptionsMixin, ComponentOptionsMixin, {}, string, PublicProps, Readonly<ExtractPropTypes<    {
-root: {
-type: PropType<boolean>;
-default: boolean;
-};
-autoRaf: {
-type: PropType<boolean>;
-default: boolean;
-};
-options: {
-type: PropType<LenisOptions | undefined>;
-default: () => {};
-};
-}>>, {
-root: boolean;
-autoRaf: boolean;
-options: LenisOptions | undefined;
-}, {}>;
-
-export declare interface LenisVueProps {
+declare const LenisSymbol: InjectionKey<Ref<Lenis | undefined>>;
+declare function useLenis(callback?: ScrollCallback): Ref<Lenis | undefined>;
+type DivProps = Omit<JSX.IntrinsicElements['div'], 'ref'>;
+interface LenisVueProps {
+    /**
+     * Setup a global instance of Lenis
+     * @default false
+     */
     root?: boolean;
+    /**
+     * Lenis options
+     */
+    options?: LenisOptions;
+    /**
+     * Auto-setup requestAnimationFrame
+     * @default true
+     */
     autoRaf?: boolean;
-    options?: ConstructorParameters<typeof default_2>[0];
+    /**
+     * Additional props for the wrapper div
+     *
+     * When `root` is `false`, this will be applied to the wrapper div
+     */
+    props?: DivProps;
 }
-
-declare const plugin: Plugin_2;
-export default plugin;
-
-export declare function useLenis(callback?: () => void): Ref<default_2>;
-
-export { }
-
-
+declare const LenisVue: vue.DefineComponent<{
+    root: {
+        type: PropType<boolean>;
+        default: boolean;
+    };
+    autoRaf: {
+        type: PropType<boolean>;
+        default: boolean;
+    };
+    options: {
+        type: PropType<LenisOptions | undefined>;
+        default: () => {};
+    };
+    props: {
+        type: PropType<DivProps>;
+        default: () => {};
+    };
+}, () => vue.VNode<vue.RendererNode, vue.RendererElement, {
+    [key: string]: any;
+}> | vue.VNode<vue.RendererNode, vue.RendererElement, {
+    [key: string]: any;
+}>[] | undefined, unknown, {}, {}, vue.ComponentOptionsMixin, vue.ComponentOptionsMixin, {}, string, vue.PublicProps, Readonly<vue.ExtractPropTypes<{
+    root: {
+        type: PropType<boolean>;
+        default: boolean;
+    };
+    autoRaf: {
+        type: PropType<boolean>;
+        default: boolean;
+    };
+    options: {
+        type: PropType<LenisOptions | undefined>;
+        default: () => {};
+    };
+    props: {
+        type: PropType<DivProps>;
+        default: () => {};
+    };
+}>>, {
+    props: DivProps;
+    root: boolean;
+    autoRaf: boolean;
+    options: LenisOptions | undefined;
+}, {}>;
 declare module 'vue' {
     interface GlobalComponents {
         lenis: typeof LenisVue;
     }
 }
+declare const plugin: Plugin;
+
+export { LenisSymbol, LenisVue, type LenisVueProps, plugin as default, useLenis };

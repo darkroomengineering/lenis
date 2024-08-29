@@ -1,3 +1,6 @@
 packages:
   - 'packages/*'
   - 'packages/**/playground'
+
+catalog:
+  tsup: ^8.2.4
