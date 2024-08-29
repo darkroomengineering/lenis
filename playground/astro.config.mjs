@@ -5,5 +5,5 @@ import vue from '@astrojs/vue'
 
 // https://astro.build/config
 export default defineConfig({
-  integrations: [react(), vue()],
+  integrations: [react(), vue({ appEntrypoint: '/src/vue/setup' })],
 })
