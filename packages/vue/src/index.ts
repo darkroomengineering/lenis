@@ -37,7 +37,8 @@ export function useLenis(callback?: ScrollCallback) {
   return lenisInjection
 }
 
-type DivProps = Omit<JSX.IntrinsicElements['div'], 'ref'>
+// TODO: Find out how to get the props of a div in vue
+type DivProps = Record<string, any>
 
 export interface LenisVueProps {
   /**

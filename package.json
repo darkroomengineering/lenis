@@ -24,17 +24,11 @@
     "react"
   ],
   "scripts": {
-    "dev:core": "npm run dev --prefix ./packages/core",
-    "dev:react": "npm run dev --prefix ./packages/react",
-    "dev:vue": "npm run dev --prefix ./packages/vue",
-    "dev:snap": "npm run dev --prefix ./packages/snap",
-    "build:core": "npm run build --prefix ./packages/core",
-    "build:react": "npm run build --prefix ./packages/react",
-    "build:snap": "npm run build --prefix ./packages/snap",
-    "build": "npm-run-all clean build:core build:react build:snap",
-    "build:new": "tsup",
-    "clean": "shx rm -rf dist/*",
-    "readme": "node update-readme.js",
+    "build": "tsup",
+    "dev": "pnpm run -w --parallel /^dev.*/",
+    "dev:build": "tsup --watch",
+    "dev:playground": "pnpm --filter playground dev",
+    "readme": "node scripts/update-readme.js",
     "version:dev": "npm version prerelease --preid dev --force",
     "version:patch": "npm version patch --force",
     "version:minor": "npm version minor --force",
@@ -44,66 +38,48 @@
     "publish:dev": "npm publish --tag dev"
   },
   "files": [
-    "dist"
+    "dist-new"
   ],
+  "dependencies": {
+    "@darkroom.engineering/tempus": "^0.0.46"
+  },
   "devDependencies": {
-    "@rollup/plugin-commonjs": "^25.0.7",
-    "@rollup/plugin-json": "^6.1.0",
-    "@rollup/plugin-node-resolve": "^15.2.3",
-    "@rollup/plugin-terser": "^0.4.4",
-    "@rollup/plugin-typescript": "^11.1.6",
-    "@types/react": "^18.2.77",
-    "npm-run-all": "^4.1.5",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
-    "rollup": "^4.14.2",
-    "rollup-plugin-dts": "^6.1.0",
-    "shx": "^0.3.4",
-    "tslib": "^2.6.2",
     "tsup": "^8.2.4",
-    "typescript": "^5.4.5",
-    "vue": "^3.4.38"
+    "typescript": "^5.4.5"
   },
   "peerDependencies": {
     "react": ">=17.0.0",
-    "react-dom": ">=17.0.0",
     "vue": ">=3.0.0"
   },
   "peerDependenciesMeta": {
     "react": {
       "optional": true
     },
-    "react-dom": {
-      "optional": true
-    },
     "vue": {
       "optional": true
     }
   },
-  "unpkg": "./dist/lenis.mjs",
-  "main": "./dist/lenis.mjs",
-  "module": "./dist/lenis.mjs",
-  "types": "./dist/lenis.d.ts",
+  "unpkg": "./dist-new/lenis.mjs",
+  "main": "./dist-new/lenis.mjs",
+  "module": "./dist-new/lenis.mjs",
+  "types": "./dist-new/lenis.d.ts",
   "exports": {
     ".": {
-      "types": "./dist/lenis.d.ts",
-      "default": "./dist/lenis.mjs"
+      "types": "./dist-new/lenis.d.ts",
+      "default": "./dist-new/lenis.mjs"
     },
-    "./dist/*": "./dist/*",
+    "./dist/*": "./dist-new/*",
     "./react": {
-      "types": "./dist/lenis-react.d.ts",
-      "default": "./dist/lenis-react.mjs"
+      "types": "./dist-new/lenis-react.d.ts",
+      "default": "./dist-new/lenis-react.mjs"
     },
     "./snap": {
-      "types": "./dist/lenis-snap.d.ts",
-      "default": "./dist/lenis-snap.mjs"
+      "types": "./dist-new/lenis-snap.d.ts",
+      "default": "./dist-new/lenis-snap.mjs"
     },
     "./vue": {
-      "types": "./dist/lenis-vue.d.ts",
-      "default": "./dist/lenis-vue.mjs"
+      "types": "./dist-new/lenis-vue.d.ts",
+      "default": "./dist-new/lenis-vue.mjs"
     }
-  },
-  "dependencies": {
-    "@darkroom.engineering/tempus": "^0.0.46"
   }
 }
