@@ -72,6 +72,9 @@
     },
     "react-dom": {
       "optional": true
+    },
+    "vue": {
+      "optional": true
     }
   },
   "sideEffects": false,
