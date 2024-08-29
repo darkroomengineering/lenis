@@ -175,6 +175,7 @@ export class SnapElement {
   }
 
   onResize = ([entry]: ResizeObserverEntry[]) => {
+    if (!entry?.borderBoxSize[0]) return
     const width = entry.borderBoxSize[0].inlineSize
     const height = entry.borderBoxSize[0].blockSize
 

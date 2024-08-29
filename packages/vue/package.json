@@ -1,17 +1,7 @@
 {
   "name": "lenis-vue",
   "type": "module",
-  "scripts": {
-    "build": "tsup",
-    "postbuild": "shx cp -r ./dist/* ../../dist",
-    "dev": "npm-run-all --parallel watch playground",
-    "watch": "vite build --watch",
-    "playground": "npm run dev --prefix ./playground"
-  },
   "dependencies": {
     "lenis": "workspace:lenis*"
-  },
-  "devDependencies": {
-    "tsup": "catalog:"
   }
 }

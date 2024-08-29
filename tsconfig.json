@@ -1,5 +1,5 @@
 {
-  "exclude": ["playground", "dist"],
+  "exclude": ["**/dist", "website", "dist", "playground"],
   "compilerOptions": {
     /* Base Options: */
     "esModuleInterop": true,
@@ -10,6 +10,10 @@
     "moduleDetection": "force",
     "isolatedModules": true,
     "verbatimModuleSyntax": true,
+    "moduleResolution": "Bundler",
+    "lib": ["ESNext", "DOM"],
+    "rootDir": ".",
+    "jsx": "react-jsx",
 
     /* Strictness */
     "strict": true,
@@ -17,14 +21,11 @@
     "noImplicitOverride": true,
 
     /* If transpiling with TypeScript: */
-    "module": "NodeNext",
+    "module": "ESNext",
     "outDir": "dist",
     "sourceMap": true,
 
     /* AND if you're building for a library: */
-    "declaration": true,
-
-    /* AND if you're building for a library in a monorepo: */
-    "declarationMap": true
+    "declaration": true
   }
 }
