@@ -1,9 +1,9 @@
 {
   "name": "lenis-vue",
+  "type": "module",
   "scripts": {
-    "prebuild": "shx rm -rf ./dist/*",
-    "build": "vite build",
-    "postbuild": "shx rm -rf ./dist/types/ && shx cp -r ./dist/* ../../dist",
+    "build": "tsup",
+    "postbuild": "shx cp -r ./dist/* ../../dist",
     "dev": "npm-run-all --parallel watch playground",
     "watch": "vite build --watch",
     "playground": "npm run dev --prefix ./playground"
@@ -12,8 +12,6 @@
     "lenis": "workspace:lenis*"
   },
   "devDependencies": {
-    "@vitejs/plugin-vue": "^5.1.2",
-    "vite": "^5.2.0",
-    "vite-plugin-dts": "^4.0.3"
+    "tsup": "catalog:"
   }
 }

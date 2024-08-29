@@ -1,15 +1,14 @@
-import Lenis, { LenisOptions, ScrollCallback } from 'lenis'
-import type { InjectionKey, Plugin } from 'vue'
+import type { LenisOptions, ScrollCallback } from 'lenis'
+import Lenis from 'lenis'
+import type { InjectionKey, Plugin, PropType, Ref } from 'vue'
 import {
   defineComponent,
   h,
   inject,
   onBeforeUnmount,
   onMounted,
-  PropType,
   provide,
   ref,
-  Ref,
   watch,
 } from 'vue'
 
