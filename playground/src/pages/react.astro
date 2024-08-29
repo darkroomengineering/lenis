@@ -1,16 +1,8 @@
 ---
+import Layout from '../layouts/Layout.astro'
 import App from "../react/app"
 import '../react/style.css'
 ---
-<html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Lenis + React</title>
-	</head>
-	<body>
-		<App client:only />
-	</body>
-</html>
+<Layout title="Lenis + React">
+	<App client:only="react" />
+</Layout>

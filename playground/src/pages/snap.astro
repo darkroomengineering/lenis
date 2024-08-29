@@ -1,31 +1,23 @@
 ---
+import Layout from '../layouts/Layout.astro'
 import '../snap/style.css'
 ---
-<html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Lenis Snap</title>
-	</head>
-	<body>
-		<div id="wrapper">
-      <div id="content">
-        <section class="section section-1">
-          <div class="inner"></div>
-        </section>
-        <section class="section section-2">
-          <div class="inner"></div>
-        </section>
-        <section class="section section-3">
-          <div class="inner"></div>
-        </section>
-        <section class="section section-4">
-          <div class="inner"></div>
-        </section>
-      </div>
-    </div>
-		<script src="../snap/index.ts"></script>
-	</body>
-</html>
+<Layout title="Lenis Snap">
+	<div id="wrapper">
+		<div id="content">
+			<section class="section section-1">
+				<div class="inner"></div>
+			</section>
+			<section class="section section-2">
+				<div class="inner"></div>
+			</section>
+			<section class="section section-3">
+				<div class="inner"></div>
+			</section>
+			<section class="section section-4">
+				<div class="inner"></div>
+			</section>
+		</div>
+	</div>
+	<script src="../snap/index.ts"></script>
+</Layout>

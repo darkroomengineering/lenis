@@ -1,16 +1,8 @@
 ---
+import Layout from '../layouts/Layout.astro'
 import App from "../vue/App.vue"
 import '../vue/style.css'
 ---
-<html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Lenis + Vue</title>
-	</head>
-	<body>
-		<App client:only />
-	</body>
-</html>
+<Layout title="Lenis + Vue">
+	<App client:only="vue" />
+</Layout>

@@ -1,0 +1,78 @@
+---
+interface Props {
+	title: string;
+}
+
+const { title } = Astro.props;
+---
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+		<meta name="viewport" content="width=device-width" />
+		<meta name="generator" content={Astro.generator} />
+		<title>{title}</title>
+	</head>
+	<body>
+		<nav>
+			<a href="/">Home</a>
+			<a href="/core">Core</a>
+			<a href="/snap">Snap</a>
+			<a href="/react">React</a>
+			<a href="/vue">Vue</a>
+		</nav>
+		<slot />
+	</body>
+</html>
+
+<style is:global>
+:root {
+  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+}
+</style>
+
+<style>
+  nav {
+		position: fixed;
+		top: 0;
+		left: 50%;
+		transform: translateX(-50%);
+		background-color: #CF0001;
+		padding-inline: 1rem;
+		align-items: center;
+		border-radius: 0.5rem;
+		height: 3rem;
+		display: flex;
+		gap: 1rem;
+	}
+
+	a {
+		color: black;
+	}
+
+	a:hover {
+		color: black;
+		text-decoration: underline;
+	}
+
+	body {
+		padding-top: 4rem;
+	}
+</style>
