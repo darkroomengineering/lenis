@@ -1,5 +1,5 @@
 import { Emitter } from './emitter'
-import { VirtualScrollCallback } from './types'
+import type { VirtualScrollCallback } from './types'
 
 const LINE_HEIGHT = 100 / 6
 const listenerOptions: AddEventListenerOptions = { passive: false }

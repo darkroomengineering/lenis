@@ -1,8 +1,10 @@
 import Lenis, { type UserData } from 'lenis'
 import { debounce } from './debounce'
-import { SnapElement, SnapElementOptions } from './element'
+import type { SnapElementOptions } from './element'
+import { SnapElement } from './element'
 import type { SnapItem, SnapOptions } from './types'
-import { UID, uid } from './uid'
+import type { UID } from './uid'
+import { uid } from './uid'
 
 // TODO:
 // - horizontal
@@ -218,11 +220,11 @@ export default class Snap {
     snaps = snaps.sort((a, b) => Math.abs(a.value) - Math.abs(b.value))
 
     let prevSnap = snaps.findLast(({ value }) => value <= scroll)
-    if (prevSnap === undefined) prevSnap = snaps[0]
+    if (prevSnap === undefined) prevSnap = snaps[0]!
     const distanceToPrevSnap = Math.abs(scroll - prevSnap.value)
 
     let nextSnap = snaps.find(({ value }) => value >= scroll)
-    if (nextSnap === undefined) nextSnap = snaps[snaps.length - 1]
+    if (nextSnap === undefined) nextSnap = snaps[snaps.length - 1]!
     const distanceToNextSnap = Math.abs(scroll - nextSnap.value)
 
     const snap = distanceToPrevSnap < distanceToNextSnap ? prevSnap : nextSnap

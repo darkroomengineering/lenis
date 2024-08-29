@@ -187,7 +187,7 @@ const ReactLenis = forwardRef<LenisRef, LenisProps>(
 
       const onScroll: ScrollCallback = (data) => {
         for (let i = 0; i < callbacksRefs.current.length; i++) {
-          callbacksRefs.current[i].callback(data)
+          callbacksRefs.current[i]?.callback(data)
         }
       }
 

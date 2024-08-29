@@ -1,6 +1,8 @@
 {
   "name": "lenis",
   "version": "1.1.13",
+  "type": "module",
+  "sideEffects": false,
   "author": "darkroom.engineering",
   "license": "MIT",
   "repository": {
@@ -21,7 +23,6 @@
     "lenis",
     "react"
   ],
-  "type": "module",
   "scripts": {
     "dev:core": "npm run dev --prefix ./packages/core",
     "dev:react": "npm run dev --prefix ./packages/react",
@@ -31,6 +32,7 @@
     "build:react": "npm run build --prefix ./packages/react",
     "build:snap": "npm run build --prefix ./packages/snap",
     "build": "npm-run-all clean build:core build:react build:snap",
+    "build:new": "tsup",
     "clean": "shx rm -rf dist/*",
     "readme": "node update-readme.js",
     "version:dev": "npm version prerelease --preid dev --force",
@@ -58,6 +60,7 @@
     "rollup-plugin-dts": "^6.1.0",
     "shx": "^0.3.4",
     "tslib": "^2.6.2",
+    "tsup": "^8.2.4",
     "typescript": "^5.4.5",
     "vue": "^3.4.38"
   },
@@ -77,7 +80,6 @@
       "optional": true
     }
   },
-  "sideEffects": false,
   "unpkg": "./dist/lenis.mjs",
   "main": "./dist/lenis.mjs",
   "module": "./dist/lenis.mjs",
