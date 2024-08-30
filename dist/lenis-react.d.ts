@@ -1,4 +1,3 @@
-/// <reference types="react" />
 import * as react from 'react';
 import { ReactNode, ComponentPropsWithoutRef } from 'react';
 import Lenis, { ScrollCallback, LenisOptions } from 'lenis';

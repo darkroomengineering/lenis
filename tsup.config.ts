@@ -1,55 +1,87 @@
 import { defineConfig, type Format, type Options } from 'tsup'
 
-function makeBuildOptions(
+const OUT_DIR = 'dist'
+
+function makeBuildOptions<F extends Format>(
   fileName: string,
   entryPoint: string,
-  format: Format[]
-) {
+  format?: F,
+  overwrites: Options = {}
+): F extends 'esm' ? [Options] : [Options, Options] {
   const options = {
     entryPoints: { [fileName]: entryPoint },
     format,
-    outDir: 'dist-new',
+    outDir: OUT_DIR,
+    platform: 'browser',
     dts: true,
     sourcemap: true,
     external: ['react', 'vue', 'lenis', '@darkroom.engineering/tempus'],
     outExtension: ({ format }) =>
       format === 'esm' ? { js: '.mjs', dts: '.d.ts' } : { js: '.js' },
-    // Don't know why this doesn't have to be the same as outDir but it works anyway
-    publicDir: 'dist',
+    ...overwrites,
   } satisfies Options
 
   const minifyOptions = {
     ...options,
     minify: true,
-    outExtension: ({ format }) =>
-      format === 'esm' ? { js: '.min.mjs' } : { js: '.min.js' },
+    outExtension: () => ({ js: '.min.js' }),
+    ...overwrites,
   } satisfies Options
 
-  return [options, minifyOptions] as const
+  return (
+    format === 'esm' ? [options] : [options, minifyOptions]
+  ) as F extends 'esm' ? [Options] : [Options, Options]
 }
 
 // Builds
-const coreOptions = makeBuildOptions('lenis', 'packages/core/src/index.ts', [
-  'esm',
-  'iife',
-])
-const snapOptions = makeBuildOptions(
+export const coreESMOptions = makeBuildOptions(
+  'lenis',
+  'packages/core/src/index.ts',
+  'esm'
+)
+const coreIIFEOptions = makeBuildOptions(
+  'lenis',
+  'packages/core/src/index.ts',
+  'iife'
+)
+const coreCSSOptions = makeBuildOptions(
+  'lenis',
+  'packages/core/src/lenis.css',
+  undefined,
+  { dts: false, sourcemap: false }
+)
+
+const snapESMOptions = makeBuildOptions(
   'lenis-snap',
   'packages/snap/src/index.ts',
-  ['esm', 'iife']
+  'esm'
 )
+const snapIIFEOptions = makeBuildOptions(
+  'lenis-snap',
+  'packages/snap/src/index.ts',
+  'iife'
+)
+
 const reactOptions = makeBuildOptions(
   'lenis-react',
   'packages/react/src/index.tsx',
-  ['esm']
+  'esm'
 )
-const vueOptions = makeBuildOptions('lenis-vue', 'packages/vue/src/index.ts', [
-  'esm',
-])
+const vueOptions = makeBuildOptions(
+  'lenis-vue',
+  'packages/vue/src/index.ts',
+  'esm'
+)
 
-export default defineConfig([
-  ...coreOptions,
-  ...snapOptions,
-  ...reactOptions,
-  ...vueOptions,
-])
+export default defineConfig(() => {
+  console.log(`\x1b[31mLNS\x1b[0m\x1b[1m Building all packages\x1b[0m\n`)
+  return [
+    ...coreESMOptions,
+    ...coreIIFEOptions,
+    ...coreCSSOptions,
+    ...snapESMOptions,
+    ...snapIIFEOptions,
+    ...reactOptions,
+    ...vueOptions,
+  ]
+})

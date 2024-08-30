@@ -1,2 +1,159 @@
-import{jsx as r}from"react/jsx-runtime";import e from"@darkroom.engineering/tempus";import t from"lenis";import{useState as s,useEffect as n,createContext as i,forwardRef as l,useRef as o,useImperativeHandle as c,useCallback as a,useContext as u}from"react";const f=i(null),d=new class Store{constructor(r){this.state=r,this.listeners=[]}set(r){this.state=r;for(let r of this.listeners)r(this.state)}subscribe(r){return this.listeners=[...this.listeners,r],()=>{this.listeners=this.listeners.filter((e=>e!==r))}}get(){return this.state}}(null),p={};function useLenis(r,e=[],t=0){var i;const l=u(f),o=function useStore(r){const[e,t]=s(r.get());return n((()=>r.subscribe((r=>t(r)))),[r]),e}(d),c=null!==(i=null!=l?l:o)&&void 0!==i?i:p,{lenis:a,addCallback:b,removeCallback:h}=c;return n((()=>{if(r&&b&&h&&a)return b(r,t),r(a),()=>{h(r)}}),[a,b,h,t,...e]),a}const b=l((({children:i,root:l=!1,options:u={},autoRaf:p=!0,rafPriority:b=0,className:h,props:m},v)=>{const k=o(null),g=o(null),[y,C]=s(void 0);c(v,(()=>({wrapper:k.current,content:g.current,lenis:y})),[y]),n((()=>{const r=new t(Object.assign(Object.assign({},u),!l&&{wrapper:k.current,content:g.current}));return C(r),()=>{r.destroy(),C(void 0)}}),[l,JSON.stringify(u)]),n((()=>{if(y&&p)return e.add((r=>y.raf(r)),b)}),[y,p,b]);const j=o([]),w=a(((r,e)=>{j.current.push({callback:r,priority:e}),j.current.sort(((r,e)=>r.priority-e.priority))}),[]),O=a((r=>{j.current=j.current.filter((e=>e.callback!==r))}),[]);return n((()=>{if(l&&y)return d.set({lenis:y,addCallback:w,removeCallback:O}),()=>d.set(null)}),[l,y,w,O]),n((()=>{if(!y)return;const onScroll=r=>{for(let e=0;e<j.current.length;e++)j.current[e].callback(r)};return y.on("scroll",onScroll),()=>{y.off("scroll",onScroll)}}),[y]),r(f.Provider,{value:{lenis:y,addCallback:w,removeCallback:O},children:l?i:r("div",Object.assign({ref:k,className:h},m,{children:r("div",{ref:g,children:i})}))})}));export{b as Lenis,f as LenisContext,b as ReactLenis,b as default,useLenis};
+"use client";
+
+// packages/react/src/index.tsx
+import Tempus from "@darkroom.engineering/tempus";
+import Lenis from "lenis";
+import {
+  createContext,
+  forwardRef,
+  useCallback,
+  useContext,
+  useEffect as useEffect2,
+  useImperativeHandle,
+  useRef,
+  useState as useState2
+} from "react";
+
+// packages/react/src/store.ts
+import { useEffect, useState } from "react";
+var Store = class {
+  constructor(state) {
+    this.state = state;
+  }
+  listeners = [];
+  set(state) {
+    this.state = state;
+    for (let listener of this.listeners) {
+      listener(this.state);
+    }
+  }
+  subscribe(listener) {
+    this.listeners = [...this.listeners, listener];
+    return () => {
+      this.listeners = this.listeners.filter((l) => l !== listener);
+    };
+  }
+  get() {
+    return this.state;
+  }
+};
+function useStore(store) {
+  const [state, setState] = useState(store.get());
+  useEffect(() => {
+    return store.subscribe((state2) => setState(state2));
+  }, [store]);
+  return state;
+}
+
+// packages/react/src/index.tsx
+import { jsx } from "react/jsx-runtime";
+var LenisContext = createContext(null);
+var rootLenisContextStore = new Store(null);
+var fallbackContext = {};
+function useLenis(callback, deps = [], priority = 0) {
+  const localContext = useContext(LenisContext);
+  const rootContext = useStore(rootLenisContextStore);
+  const currentContext = localContext ?? rootContext ?? fallbackContext;
+  const { lenis, addCallback, removeCallback } = currentContext;
+  useEffect2(() => {
+    if (!callback || !addCallback || !removeCallback || !lenis) return;
+    addCallback(callback, priority);
+    callback(lenis);
+    return () => {
+      removeCallback(callback);
+    };
+  }, [lenis, addCallback, removeCallback, priority, ...deps]);
+  return lenis;
+}
+var ReactLenis = forwardRef(
+  ({
+    children,
+    root = false,
+    options = {},
+    autoRaf = true,
+    rafPriority = 0,
+    className,
+    props
+  }, ref) => {
+    const wrapperRef = useRef(null);
+    const contentRef = useRef(null);
+    const [lenis, setLenis] = useState2(void 0);
+    useImperativeHandle(
+      ref,
+      () => ({
+        wrapper: wrapperRef.current,
+        content: contentRef.current,
+        lenis
+      }),
+      [lenis]
+    );
+    useEffect2(() => {
+      const lenis2 = new Lenis({
+        ...options,
+        ...!root && {
+          wrapper: wrapperRef.current,
+          content: contentRef.current
+        }
+      });
+      setLenis(lenis2);
+      return () => {
+        lenis2.destroy();
+        setLenis(void 0);
+      };
+    }, [root, JSON.stringify(options)]);
+    useEffect2(() => {
+      if (!lenis || !autoRaf) return;
+      return Tempus.add((time) => lenis.raf(time), rafPriority);
+    }, [lenis, autoRaf, rafPriority]);
+    const callbacksRefs = useRef([]);
+    const addCallback = useCallback(
+      (callback, priority) => {
+        callbacksRefs.current.push({ callback, priority });
+        callbacksRefs.current.sort((a, b) => a.priority - b.priority);
+      },
+      []
+    );
+    const removeCallback = useCallback(
+      (callback) => {
+        callbacksRefs.current = callbacksRefs.current.filter(
+          (cb) => cb.callback !== callback
+        );
+      },
+      []
+    );
+    useEffect2(() => {
+      if (root && lenis) {
+        rootLenisContextStore.set({ lenis, addCallback, removeCallback });
+        return () => rootLenisContextStore.set(null);
+      }
+    }, [root, lenis, addCallback, removeCallback]);
+    useEffect2(() => {
+      if (!lenis) return;
+      const onScroll = (data) => {
+        for (let i = 0; i < callbacksRefs.current.length; i++) {
+          callbacksRefs.current[i]?.callback(data);
+        }
+      };
+      lenis.on("scroll", onScroll);
+      return () => {
+        lenis.off("scroll", onScroll);
+      };
+    }, [lenis]);
+    return /* @__PURE__ */ jsx(
+      LenisContext.Provider,
+      {
+        value: { lenis, addCallback, removeCallback },
+        children: root ? children : /* @__PURE__ */ jsx("div", { ref: wrapperRef, className, ...props, children: /* @__PURE__ */ jsx("div", { ref: contentRef, children }) })
+      }
+    );
+  }
+);
+var src_default = ReactLenis;
+export {
+  ReactLenis as Lenis,
+  LenisContext,
+  ReactLenis,
+  src_default as default,
+  useLenis
+};
 //# sourceMappingURL=lenis-react.mjs.map

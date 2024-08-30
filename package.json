@@ -21,10 +21,13 @@
     "scroll",
     "smooth",
     "lenis",
-    "react"
+    "react",
+    "vue"
   ],
   "scripts": {
-    "build": "tsup",
+    "build": "pnpm build:core && pnpm build:all",
+    "build:core": "tsup --config tsup.core.ts",
+    "build:all": "tsup",
     "dev": "pnpm run -w --parallel /^dev.*/",
     "dev:build": "tsup --watch",
     "dev:playground": "pnpm --filter playground dev",
@@ -33,12 +36,12 @@
     "version:patch": "npm version patch --force",
     "version:minor": "npm version minor --force",
     "version:major": "npm version major --force",
-    "postversion": "npm-run-all build readme",
+    "postversion": "pnpm build && pnpm readme",
     "publish": "npm publish",
     "publish:dev": "npm publish --tag dev"
   },
   "files": [
-    "dist-new"
+    "dist"
   ],
   "dependencies": {
     "@darkroom.engineering/tempus": "^0.0.46"
@@ -59,27 +62,27 @@
       "optional": true
     }
   },
-  "unpkg": "./dist-new/lenis.mjs",
-  "main": "./dist-new/lenis.mjs",
-  "module": "./dist-new/lenis.mjs",
-  "types": "./dist-new/lenis.d.ts",
+  "unpkg": "./dist/lenis.mjs",
+  "main": "./dist/lenis.mjs",
+  "module": "./dist/lenis.mjs",
+  "types": "./dist/lenis.d.ts",
   "exports": {
     ".": {
-      "types": "./dist-new/lenis.d.ts",
-      "default": "./dist-new/lenis.mjs"
+      "types": "./dist/lenis.d.ts",
+      "default": "./dist/lenis.mjs"
     },
-    "./dist/*": "./dist-new/*",
+    "./dist/*": "./dist/*",
     "./react": {
-      "types": "./dist-new/lenis-react.d.ts",
-      "default": "./dist-new/lenis-react.mjs"
+      "types": "./dist/lenis-react.d.ts",
+      "default": "./dist/lenis-react.mjs"
     },
     "./snap": {
-      "types": "./dist-new/lenis-snap.d.ts",
-      "default": "./dist-new/lenis-snap.mjs"
+      "types": "./dist/lenis-snap.d.ts",
+      "default": "./dist/lenis-snap.mjs"
     },
     "./vue": {
-      "types": "./dist-new/lenis-vue.d.ts",
-      "default": "./dist-new/lenis-vue.mjs"
+      "types": "./dist/lenis-vue.d.ts",
+      "default": "./dist/lenis-vue.mjs"
     }
   }
 }

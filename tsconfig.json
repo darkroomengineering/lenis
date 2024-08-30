@@ -1,5 +1,5 @@
 {
-  "exclude": ["**/dist", "website", "dist", "playground"],
+  "exclude": ["dist", "playground", "website"],
   "compilerOptions": {
     /* Base Options: */
     "esModuleInterop": true,
