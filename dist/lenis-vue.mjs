@@ -1,4 +1,5 @@
 // packages/vue/src/provider.ts
+import Tempus from "@darkroom.engineering/tempus";
 import Lenis from "lenis";
 import {
   defineComponent,
@@ -34,6 +35,7 @@ var VueLenis = defineComponent({
   },
   setup(props, { slots }) {
     const lenisRef = shallowRef();
+    const tempusCleanupRef = shallowRef();
     const wrapper = ref();
     const content = ref();
     onMounted(() => {
@@ -44,14 +46,6 @@ var VueLenis = defineComponent({
           content: content.value
         } : {}
       });
-      if (props.autoRaf) {
-        let raf2 = function(time) {
-          lenisRef.value?.raf(time);
-          requestAnimationFrame(raf2);
-        };
-        var raf = raf2;
-        requestAnimationFrame(raf2);
-      }
     });
     onBeforeUnmount(() => {
       lenisRef.value?.destroy();
@@ -81,6 +75,12 @@ var VueLenis = defineComponent({
           } : {}
         });
       }
+    });
+    watch([lenisRef, props], ([lenis, props2], [oldLenis, oldProps]) => {
+      if (props2.autoRaf === oldProps.autoRaf && lenis === oldLenis || !lenis)
+        return;
+      tempusCleanupRef.value?.();
+      tempusCleanupRef.value = Tempus.add((time) => lenis?.raf(time));
     });
     return () => {
       if (props.root) {

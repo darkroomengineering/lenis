@@ -1,3 +1,4 @@
+import Tempus from '@darkroom.engineering/tempus'
 import Lenis from 'lenis'
 import type {
   HTMLAttributes,
@@ -44,6 +45,7 @@ export const VueLenis = defineComponent({
   },
   setup(props: LenisVueProps, { slots }) {
     const lenisRef = shallowRef<Lenis>()
+    const tempusCleanupRef = shallowRef<() => void>()
     const wrapper = ref<HTMLDivElement>()
     const content = ref<HTMLDivElement>()
 
@@ -57,15 +59,6 @@ export const VueLenis = defineComponent({
             }
           : {}),
       })
-
-      if (props.autoRaf) {
-        function raf(time: number) {
-          lenisRef.value?.raf(time)
-          requestAnimationFrame(raf)
-        }
-
-        requestAnimationFrame(raf)
-      }
     })
 
     onBeforeUnmount(() => {
@@ -79,8 +72,8 @@ export const VueLenis = defineComponent({
       provide(LenisSymbol, lenisRef)
     }
 
+    // Sync global lenis instance
     const app = getCurrentInstance()
-
     watch([lenisRef, props], ([lenis, props]) => {
       if (props.root) {
         if (!app) throw new Error('No app found')
@@ -88,6 +81,7 @@ export const VueLenis = defineComponent({
       }
     })
 
+    // Sync options
     watch(props, (props, oldProps) => {
       const rootChanged = oldProps.root !== props.root
       const optionsChanged =
@@ -105,6 +99,14 @@ export const VueLenis = defineComponent({
             : {}),
         })
       }
+    })
+
+    // Sync autoRaf
+    watch([lenisRef, props], ([lenis, props], [oldLenis, oldProps]) => {
+      if ((props.autoRaf === oldProps.autoRaf && lenis === oldLenis) || !lenis)
+        return
+      tempusCleanupRef.value?.()
+      tempusCleanupRef.value = Tempus.add((time: number) => lenis?.raf(time))
     })
 
     return () => {
