@@ -4,7 +4,7 @@ import Lenis, { ScrollCallback, LenisOptions } from 'lenis';
 
 declare const LenisSymbol: InjectionKey<Ref<Lenis | undefined>>;
 declare function useLenis(callback?: ScrollCallback): Ref<Lenis | undefined>;
-type DivProps = Omit<JSX.IntrinsicElements['div'], 'ref'>;
+type DivProps = Record<string, any>;
 interface LenisVueProps {
     /**
      * Setup a global instance of Lenis

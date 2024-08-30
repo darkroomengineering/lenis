@@ -1,66 +1,102 @@
-import m from "lenis";
-import { defineComponent as p, ref as a, onMounted as s, onBeforeUnmount as c, provide as v, h as l, inject as w } from "vue";
-const d = Symbol("LenisContext");
-function B(n = () => {
-}) {
-  var t;
-  const e = w(d);
-  if (!e)
-    throw new Error("No global nor local lenis provider was found");
-  return (t = e.value) == null || t.on("scroll", n), c(() => {
-    var r;
-    return (r = e.value) == null ? void 0 : r.off("scroll", n);
-  }), e;
+// packages/vue/src/index.ts
+import Lenis from "lenis";
+import {
+  defineComponent,
+  h,
+  inject,
+  onBeforeUnmount,
+  onMounted,
+  provide,
+  ref,
+  watch
+} from "vue";
+var LenisSymbol = Symbol("LenisContext");
+function useLenis(callback) {
+  const lenisInjection = inject(LenisSymbol);
+  if (!lenisInjection) {
+    throw new Error("No lenis instance found");
+  }
+  watch(lenisInjection, (lenis) => {
+    if (lenis && callback) {
+      lenisInjection.value?.on("scroll", callback);
+    }
+  });
+  onBeforeUnmount(() => {
+    if (lenisInjection.value && callback) {
+      lenisInjection.value.off("scroll", callback);
+    }
+  });
+  return lenisInjection;
 }
-const y = p({
+var LenisVue = defineComponent({
   name: "LenisVue",
   props: {
     root: {
       type: Boolean,
-      default: !1
+      default: false
     },
     autoRaf: {
       type: Boolean,
-      default: !0
+      default: true
     },
     options: {
       type: Object,
       default: () => ({})
+    },
+    props: {
+      type: Object,
+      default: () => ({})
     }
   },
-  setup(n, { slots: e }) {
-    const t = a(null), r = a(), i = a();
-    return s(() => {
-      if (t.value = new m({
-        ...n.options,
-        ...n.root ? {} : {
-          wrapper: r.value,
-          content: i.value
-        }
-      }), n.autoRaf) {
-        let o = function(u) {
-          var f;
-          (f = t.value) == null || f.raf(u), requestAnimationFrame(o);
+  setup({ autoRaf = true, root = false, options = {}, props = {} }, { slots }) {
+    const lenis = ref();
+    const wrapper = ref();
+    const content = ref();
+    onMounted(() => {
+      lenis.value = new Lenis({
+        ...options,
+        ...!root ? {
+          wrapper: wrapper.value,
+          content: content.value
+        } : {}
+      });
+      if (autoRaf) {
+        let raf2 = function(time) {
+          lenis.value?.raf(time);
+          requestAnimationFrame(raf2);
         };
-        requestAnimationFrame(o);
+        var raf = raf2;
+        requestAnimationFrame(raf2);
       }
-    }), c(() => {
-      var o;
-      (o = t.value) == null || o.destroy();
-    }), v(d, t), () => {
-      var o, u;
-      return n.root ? (o = e.default) == null ? void 0 : o.call(e) : l("div", { class: "lenis", ref: r }, [
-        l("div", { ref: i }, (u = e.default) == null ? void 0 : u.call(e))
-      ]);
+    });
+    onBeforeUnmount(() => {
+      lenis.value?.destroy();
+    });
+    provide(LenisSymbol, lenis);
+    return () => {
+      if (root) {
+        return slots.default?.();
+      } else {
+        const { className, ...restProps } = props;
+        const combinedClassName = ["lenis", className].filter(Boolean).join(" ");
+        return h(
+          "div",
+          // This cries about the type, but I don't care. it recieves div props
+          { class: combinedClassName, ref: wrapper, ...restProps },
+          [h("div", { ref: content }, slots.default?.())]
+        );
+      }
     };
   }
-}), g = (n) => {
-  n.component("lenis", y);
+});
+var plugin = (app) => {
+  app.component("lenis", LenisVue);
 };
+var src_default = plugin;
 export {
-  d as LenisSymbol,
-  y as LenisVue,
-  g as default,
-  B as useLenis
+  LenisSymbol,
+  LenisVue,
+  src_default as default,
+  useLenis
 };
 //# sourceMappingURL=lenis-vue.mjs.map
