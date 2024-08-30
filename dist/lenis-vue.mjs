@@ -1,35 +1,16 @@
-// packages/vue/src/index.ts
+// packages/vue/src/provider.ts
 import Lenis from "lenis";
 import {
   defineComponent,
   h,
-  inject,
   onBeforeUnmount,
   onMounted,
   provide,
-  ref,
-  watch
+  ref
 } from "vue";
 var LenisSymbol = Symbol("LenisContext");
-function useLenis(callback) {
-  const lenisInjection = inject(LenisSymbol);
-  if (!lenisInjection) {
-    throw new Error("No lenis instance found");
-  }
-  watch(lenisInjection, (lenis) => {
-    if (lenis && callback) {
-      lenisInjection.value?.on("scroll", callback);
-    }
-  });
-  onBeforeUnmount(() => {
-    if (lenisInjection.value && callback) {
-      lenisInjection.value.off("scroll", callback);
-    }
-  });
-  return lenisInjection;
-}
-var LenisVue = defineComponent({
-  name: "LenisVue",
+var VueLenis = defineComponent({
+  name: "VueLenis",
   props: {
     root: {
       type: Boolean,
@@ -77,26 +58,42 @@ var LenisVue = defineComponent({
       if (root) {
         return slots.default?.();
       } else {
-        const { className, ...restProps } = props;
-        const combinedClassName = ["lenis", className].filter(Boolean).join(" ");
-        return h(
-          "div",
-          // This cries about the type, but I don't care. it recieves div props
-          { class: combinedClassName, ref: wrapper, ...restProps },
-          [h("div", { ref: content }, slots.default?.())]
-        );
+        const combinedClassName = ["lenis", props.class].filter(Boolean).join(" ");
+        delete props.class;
+        return h("div", { class: combinedClassName, ref: wrapper, ...props }, [
+          h("div", { ref: content }, slots.default?.())
+        ]);
       }
     };
   }
 });
-var plugin = (app) => {
-  app.component("lenis", LenisVue);
+var vueLenisPlugin = (app) => {
+  app.component("lenis", VueLenis);
 };
-var src_default = plugin;
+
+// packages/vue/src/use-lenis.ts
+import { inject, onBeforeUnmount as onBeforeUnmount2, watch } from "vue";
+function useLenis(callback) {
+  const lenisInjection = inject(LenisSymbol);
+  if (!lenisInjection) {
+    throw new Error("No lenis instance found");
+  }
+  watch(lenisInjection, (lenis) => {
+    if (lenis && callback) {
+      lenisInjection.value?.on("scroll", callback);
+    }
+  });
+  onBeforeUnmount2(() => {
+    if (lenisInjection.value && callback) {
+      lenisInjection.value.off("scroll", callback);
+    }
+  });
+  return lenisInjection;
+}
 export {
-  LenisSymbol,
-  LenisVue,
-  src_default as default,
+  VueLenis as Lenis,
+  VueLenis,
+  vueLenisPlugin as default,
   useLenis
 };
 //# sourceMappingURL=lenis-vue.mjs.map

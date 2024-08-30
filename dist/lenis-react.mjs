@@ -1,13 +1,12 @@
 "use client";
 
-// packages/react/src/index.tsx
+// packages/react/src/provider.tsx
 import Tempus from "@darkroom.engineering/tempus";
 import Lenis from "lenis";
 import {
   createContext,
   forwardRef,
   useCallback,
-  useContext,
   useEffect as useEffect2,
   useImperativeHandle,
   useRef,
@@ -45,26 +44,10 @@ function useStore(store) {
   return state;
 }
 
-// packages/react/src/index.tsx
+// packages/react/src/provider.tsx
 import { jsx } from "react/jsx-runtime";
 var LenisContext = createContext(null);
 var rootLenisContextStore = new Store(null);
-var fallbackContext = {};
-function useLenis(callback, deps = [], priority = 0) {
-  const localContext = useContext(LenisContext);
-  const rootContext = useStore(rootLenisContextStore);
-  const currentContext = localContext ?? rootContext ?? fallbackContext;
-  const { lenis, addCallback, removeCallback } = currentContext;
-  useEffect2(() => {
-    if (!callback || !addCallback || !removeCallback || !lenis) return;
-    addCallback(callback, priority);
-    callback(lenis);
-    return () => {
-      removeCallback(callback);
-    };
-  }, [lenis, addCallback, removeCallback, priority, ...deps]);
-  return lenis;
-}
 var ReactLenis = forwardRef(
   ({
     children,
@@ -148,12 +131,29 @@ var ReactLenis = forwardRef(
     );
   }
 );
-var src_default = ReactLenis;
+
+// packages/react/src/use-lenis.ts
+import { useContext, useEffect as useEffect3 } from "react";
+var fallbackContext = {};
+function useLenis(callback, deps = [], priority = 0) {
+  const localContext = useContext(LenisContext);
+  const rootContext = useStore(rootLenisContextStore);
+  const currentContext = localContext ?? rootContext ?? fallbackContext;
+  const { lenis, addCallback, removeCallback } = currentContext;
+  useEffect3(() => {
+    if (!callback || !addCallback || !removeCallback || !lenis) return;
+    addCallback(callback, priority);
+    callback(lenis);
+    return () => {
+      removeCallback(callback);
+    };
+  }, [lenis, addCallback, removeCallback, priority, ...deps]);
+  return lenis;
+}
 export {
   ReactLenis as Lenis,
-  LenisContext,
   ReactLenis,
-  src_default as default,
+  ReactLenis as default,
   useLenis
 };
 //# sourceMappingURL=lenis-react.mjs.map

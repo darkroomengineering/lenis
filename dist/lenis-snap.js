@@ -143,7 +143,7 @@
     return index++;
   }
 
-  // packages/snap/src/index.ts
+  // packages/snap/src/snap.ts
   var Snap = class {
     constructor(lenis, {
       type = "mandatory",
