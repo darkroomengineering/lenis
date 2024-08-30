@@ -77,6 +77,6 @@ declare module 'vue' {
     }
 }
 
-declare function useLenis(callback?: ScrollCallback): vue.Ref<lenis.default | undefined>;
+declare function useLenis(callback?: ScrollCallback): any;
 
 export { VueLenis as Lenis, type LenisVueProps, VueLenis, vueLenisPlugin as default, useLenis };

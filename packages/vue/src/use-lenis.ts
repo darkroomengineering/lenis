@@ -1,25 +1,41 @@
 import type { ScrollCallback } from 'lenis'
-import { inject, onBeforeUnmount, watch } from 'vue'
+import {
+  getCurrentInstance,
+  inject,
+  nextTick,
+  onBeforeUnmount,
+  watch,
+} from 'vue'
 import { LenisSymbol } from './provider'
 
 export function useLenis(callback?: ScrollCallback) {
   const lenisInjection = inject(LenisSymbol)
+  const app = getCurrentInstance()
 
-  if (!lenisInjection) {
-    throw new Error('No lenis instance found')
-  }
+  const lenis = lenisInjection || app?.appContext.config.globalProperties.$lenis
 
-  watch(lenisInjection, (lenis) => {
-    if (lenis && callback) {
-      lenisInjection.value?.on('scroll', callback)
+  // Wait two ticks to make sure the lenis instance is mounted
+  nextTick(() => {
+    nextTick(() => {
+      if (!lenis.value) {
+        throw new Error(
+          'No lenis instance found, either mount a root lenis instance or wrap your component in a lenis provider'
+        )
+      }
+    })
+  })
+
+  watch(lenis, (lenis) => {
+    if (callback) {
+      lenis?.on('scroll', callback)
     }
   })
 
   onBeforeUnmount(() => {
-    if (lenisInjection.value && callback) {
-      lenisInjection.value.off('scroll', callback)
+    if (callback) {
+      lenis.value?.off('scroll', callback)
     }
   })
 
-  return lenisInjection
+  return lenis
 }
