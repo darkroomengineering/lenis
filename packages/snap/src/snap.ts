@@ -13,9 +13,6 @@ import { uid } from './uid'
 // - fix touch scroll, do not snap when not released
 // - arrow, spacebar
 
-// Types
-export * from './types'
-
 type RequiredPick<T, F extends keyof T> = Omit<T, F> & Required<Pick<T, F>>
 
 /**
@@ -43,7 +40,7 @@ type RequiredPick<T, F extends keyof T> = Omit<T, F> & Required<Pick<T, F>>
  *   removeSnap()
  * }
  */
-export default class Snap {
+export class Snap {
   options: RequiredPick<SnapOptions, 'type' | 'velocityThreshold' | 'debounce'>
   elements = new Map<UID, SnapElement>()
   snaps = new Map<UID, SnapItem>()

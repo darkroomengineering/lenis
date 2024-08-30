@@ -1,99 +1,31 @@
-'use client'
-
 import Tempus from '@darkroom.engineering/tempus'
 import Lenis, { type ScrollCallback } from 'lenis'
 import {
   createContext,
   forwardRef,
   useCallback,
-  useContext,
   useEffect,
   useImperativeHandle,
   useRef,
   useState,
 } from 'react'
-import { Store, useStore } from './store'
+import { Store } from './store'
 import type { LenisContextValue, LenisProps, LenisRef } from './types'
 
 export const LenisContext = createContext<LenisContextValue | null>(null)
 
-const rootLenisContextStore = new Store<LenisContextValue | null>(null)
-
-// Fall back to an empty object if both context and store are not available
-const fallbackContext: Partial<LenisContextValue> = {}
-
 /**
- * Hook to access the Lenis instance and its methods
+ * The root store for the lenis context
  *
- * @example <caption>Scroll callback</caption>
- *          useLenis((lenis) => {
- *            if (lenis.isScrolling) {
- *              console.log('Scrolling...')
- *            }
- *
- *            if (lenis.progress === 1) {
- *              console.log('At the end!')
- *            }
- *          })
- *
- * @example <caption>Scroll callback with dependencies</caption>
- *          useLenis((lenis) => {
- *            if (lenis.isScrolling) {
- *              console.log('Scrolling...', someDependency)
- *            }
- *          }, [someDependency])
- * @example <caption>Scroll callback with priority</caption>
- *          useLenis((lenis) => {
- *            if (lenis.isScrolling) {
- *              console.log('Scrolling...')
- *            }
- *          }, [], 1)
- * @example <caption>Instance access</caption>
- *          const lenis = useLenis()
- *
- *          handleClick() {
- *            lenis.scrollTo(100, {
- *              lerp: 0.1,
- *              duration: 1,
- *              easing: (t) => t,
- *              onComplete: () => {
- *                console.log('Complete!')
- *              }
- *            })
- *          }
+ * This store serves as a fallback for the context if it is not available
+ * and allows us to use the global lenis instance above a provider
  */
-export function useLenis(
-  callback?: ScrollCallback,
-  deps: any[] = [],
-  priority = 0
-) {
-  // Try to get the lenis instance from the context first
-  const localContext = useContext(LenisContext)
-  // Fall back to the root store if the context is not available
-  const rootContext = useStore(rootLenisContextStore)
-  // Fall back to the fallback context if all else fails
-  const currentContext = localContext ?? rootContext ?? fallbackContext
-
-  const { lenis, addCallback, removeCallback } = currentContext
-
-  useEffect(() => {
-    if (!callback || !addCallback || !removeCallback || !lenis) return
-
-    addCallback(callback, priority)
-    callback(lenis)
-
-    return () => {
-      removeCallback(callback)
-    }
-  }, [lenis, addCallback, removeCallback, priority, ...deps])
-
-  return lenis
-}
+export const rootLenisContextStore = new Store<LenisContextValue | null>(null)
 
 /**
  * React component to setup a Lenis instance
  */
-const ReactLenis = forwardRef<LenisRef, LenisProps>(
+export const ReactLenis = forwardRef<LenisRef, LenisProps>(
   (
     {
       children,
@@ -213,7 +145,3 @@ const ReactLenis = forwardRef<LenisRef, LenisProps>(
     )
   }
 )
-
-export * from './types'
-export { ReactLenis as Lenis, ReactLenis }
-export default ReactLenis

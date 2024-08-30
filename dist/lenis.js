@@ -328,8 +328,8 @@
     };
   };
 
-  // packages/core/src/index.ts
-  var Lenis2 = class {
+  // packages/core/src/lenis.ts
+  var Lenis = class {
     _isScrolling = false;
     // true when scroll is animating
     _isStopped = false;

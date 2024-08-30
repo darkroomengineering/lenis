@@ -15,9 +15,6 @@ import type {
 } from './types'
 import { VirtualScroll } from './virtual-scroll'
 
-// Types
-export * from './types'
-
 // Technical explanation
 // - listen to 'wheel' events
 // - prevent 'wheel' event to prevent scroll
@@ -28,7 +25,7 @@ export * from './types'
 
 type OptionalPick<T, F extends keyof T> = Omit<T, F> & Partial<Pick<T, F>>
 
-export default class Lenis {
+export class Lenis {
   private _isScrolling: Scrolling = false // true when scroll is animating
   private _isStopped = false // true if user should not be able to scroll - enable/disable programmatically
   private _isLocked = false // same as isStopped but enabled/disabled when scroll reaches target

@@ -1,4 +1,4 @@
-// packages/snap/src/index.ts
+// packages/snap/src/snap.ts
 import "lenis";
 
 // packages/snap/src/debounce.ts
@@ -144,7 +144,7 @@ function uid() {
   return index++;
 }
 
-// packages/snap/src/index.ts
+// packages/snap/src/snap.ts
 var Snap = class {
   constructor(lenis, {
     type = "mandatory",
