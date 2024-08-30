@@ -1,9 +1,14 @@
 <script setup>
+import { useLenis } from 'lenis/vue'
 import { LoremIpsum } from 'lorem-ipsum'
 import Child from './Child.vue'
 import InnerChild from './InnerChild.vue'
 
 const lorem = new LoremIpsum().generateParagraphs(200)
+
+useLenis((lenis) => {
+  console.log('root scroll', lenis.options.lerp, lenis.scroll)
+})
 </script>
 <template>
   <lenis root :options="{ lerp: 0.1 }">
