@@ -4,15 +4,21 @@ import {
   inject,
   nextTick,
   onBeforeUnmount,
+  toRefs,
   watch,
 } from 'vue'
 import { LenisSymbol } from './provider'
+import type { LenisContextValue } from './types'
 
-export function useLenis(callback?: ScrollCallback) {
+export function useLenis(callback?: ScrollCallback, priority = 0) {
   const lenisInjection = inject(LenisSymbol)
   const app = getCurrentInstance()
 
-  const lenis = lenisInjection || app?.appContext.config.globalProperties.$lenis
+  const context =
+    lenisInjection ||
+    (app?.appContext.config.globalProperties.$lenisContext as LenisContextValue)
+
+  const { lenis } = toRefs(context)
 
   // Wait two ticks to make sure the lenis instance is mounted
   nextTick(() => {
@@ -25,16 +31,21 @@ export function useLenis(callback?: ScrollCallback) {
     })
   })
 
-  watch(lenis, (lenis) => {
-    if (callback) {
-      lenis?.on('scroll', callback)
-    }
-  })
+  watch(
+    () => context,
+    ({ lenis, addCallback, removeCallback }) => {
+      if (!lenis || !addCallback || !removeCallback || !callback) return
+      removeCallback?.(callback)
+
+      addCallback?.(callback, priority)
+      callback?.(lenis)
+    },
+    { deep: true }
+  )
 
   onBeforeUnmount(() => {
-    if (callback) {
-      lenis.value?.off('scroll', callback)
-    }
+    if (!context.removeCallback || !callback) return
+    context.removeCallback(callback)
   })
 
   return lenis

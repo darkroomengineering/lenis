@@ -8,6 +8,7 @@ import {
   onBeforeUnmount,
   onMounted,
   provide,
+  reactive,
   ref,
   shallowRef,
   watch
@@ -24,6 +25,10 @@ var VueLenis = defineComponent({
       type: Boolean,
       default: true
     },
+    rafPriority: {
+      type: Number,
+      default: 0
+    },
     options: {
       type: Object,
       default: () => ({})
@@ -34,7 +39,7 @@ var VueLenis = defineComponent({
     }
   },
   setup(props, { slots }) {
-    const lenisRef = shallowRef();
+    const lenisRef = shallowRef(null);
     const tempusCleanupRef = shallowRef();
     const wrapper = ref();
     const content = ref();
@@ -49,18 +54,7 @@ var VueLenis = defineComponent({
     });
     onBeforeUnmount(() => {
       lenisRef.value?.destroy();
-    });
-    if (props.root) {
-      provide(LenisSymbol, null);
-    } else {
-      provide(LenisSymbol, lenisRef);
-    }
-    const app = getCurrentInstance();
-    watch([lenisRef, props], ([lenis, props2]) => {
-      if (props2.root) {
-        if (!app) throw new Error("No app found");
-        app.appContext.config.globalProperties.$lenis.value = lenis;
-      }
+      lenisRef.value = null;
     });
     watch(props, (props2, oldProps) => {
       const rootChanged = oldProps.root !== props2.root;
@@ -82,6 +76,52 @@ var VueLenis = defineComponent({
       tempusCleanupRef.value?.();
       tempusCleanupRef.value = Tempus.add((time) => lenis?.raf(time));
     });
+    const callbacks = reactive([]);
+    function addCallback(callback, priority) {
+      callbacks.push({ callback, priority });
+      callbacks.sort((a, b) => a.priority - b.priority);
+    }
+    function removeCallback(callback) {
+      callbacks.splice(
+        callbacks.findIndex((cb) => cb.callback === callback),
+        1
+      );
+    }
+    const onScroll = (data) => {
+      for (let i = 0; i < callbacks.length; i++) {
+        callbacks[i]?.callback(data);
+      }
+    };
+    watch(lenisRef, (lenis) => {
+      lenis?.off("scroll", onScroll);
+      lenis?.on("scroll", onScroll);
+    });
+    const context = reactive({
+      lenis: lenisRef.value,
+      addCallback,
+      removeCallback
+    });
+    watch(lenisRef, (lenis) => {
+      context.lenis = lenis;
+    });
+    if (props.root) {
+      provide(LenisSymbol, null);
+    } else {
+      provide(LenisSymbol, context);
+    }
+    const app = getCurrentInstance();
+    watch(
+      () => context,
+      (context2) => {
+        if (props.root) {
+          if (!app) throw new Error("No app found");
+          app.appContext.config.globalProperties.$lenisContext.lenis = context2.lenis;
+          app.appContext.config.globalProperties.$lenisContext.addCallback = context2.addCallback;
+          app.appContext.config.globalProperties.$lenisContext.removeCallback = context2.removeCallback;
+        }
+      },
+      { deep: true }
+    );
     return () => {
       if (props.root) {
         return slots.default?.();
@@ -98,7 +138,13 @@ var VueLenis = defineComponent({
 var vueLenisPlugin = (app) => {
   app.component("lenis", VueLenis);
   app.provide(LenisSymbol, null);
-  app.config.globalProperties.$lenis = shallowRef();
+  app.config.globalProperties.$lenisContext = reactive({
+    lenis: null,
+    addCallback: () => {
+    },
+    removeCallback: () => {
+    }
+  });
 };
 
 // packages/vue/src/use-lenis.ts
@@ -107,12 +153,14 @@ import {
   inject,
   nextTick,
   onBeforeUnmount as onBeforeUnmount2,
+  toRefs,
   watch as watch2
 } from "vue";
-function useLenis(callback) {
+function useLenis(callback, priority = 0) {
   const lenisInjection = inject(LenisSymbol);
   const app = getCurrentInstance2();
-  const lenis = lenisInjection || app?.appContext.config.globalProperties.$lenis;
+  const context = lenisInjection || app?.appContext.config.globalProperties.$lenisContext;
+  const { lenis } = toRefs(context);
   nextTick(() => {
     nextTick(() => {
       if (!lenis.value) {
@@ -122,15 +170,19 @@ function useLenis(callback) {
       }
     });
   });
-  watch2(lenis, (lenis2) => {
-    if (callback) {
-      lenis2?.on("scroll", callback);
-    }
-  });
+  watch2(
+    () => context,
+    ({ lenis: lenis2, addCallback, removeCallback }) => {
+      if (!lenis2 || !addCallback || !removeCallback || !callback) return;
+      removeCallback?.(callback);
+      addCallback?.(callback, priority);
+      callback?.(lenis2);
+    },
+    { deep: true }
+  );
   onBeforeUnmount2(() => {
-    if (callback) {
-      lenis.value?.off("scroll", callback);
-    }
+    if (!context.removeCallback || !callback) return;
+    context.removeCallback(callback);
   });
   return lenis;
 }

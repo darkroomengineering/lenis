@@ -1,28 +1,11 @@
-import type { LenisOptions } from 'lenis'
-import type { HTMLAttributes } from 'vue'
+import type Lenis from 'lenis'
+import type { ScrollCallback } from 'lenis'
 import type { VueLenis } from './provider'
 
-export interface LenisVueProps {
-  /**
-   * Setup a global instance of Lenis
-   * @default false
-   */
-  root?: boolean
-  /**
-   * Lenis options
-   */
-  options?: LenisOptions
-  /**
-   * Auto-setup requestAnimationFrame
-   * @default true
-   */
-  autoRaf?: boolean
-  /**
-   * Additional props for the wrapper div
-   *
-   * When `root` is `false`, this will be applied to the wrapper div
-   */
-  props?: HTMLAttributes
+export type LenisContextValue = {
+  lenis: Lenis | null
+  addCallback: (callback: ScrollCallback, priority: number) => void
+  removeCallback: (callback: ScrollCallback) => void
 }
 
 declare module 'vue' {
