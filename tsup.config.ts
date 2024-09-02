@@ -13,6 +13,8 @@ function makeBuildOptions<F extends Format>(
     format,
     outDir: OUT_DIR,
     platform: 'browser',
+    target: 'es2022',
+    cjsInterop: false,
     dts: true,
     sourcemap: true,
     external: ['react', 'vue', 'lenis', '@darkroom.engineering/tempus'],
@@ -42,7 +44,11 @@ export const coreESMOptions = makeBuildOptions(
 const coreIIFEOptions = makeBuildOptions(
   'lenis',
   'packages/core/index.ts',
-  'iife'
+  'iife',
+  {
+    globalName: 'LenisModule',
+    footer: { js: `globalThis.Lenis = LenisScope.default;` },
+  }
 )
 const coreCSSOptions = makeBuildOptions(
   'lenis',
@@ -59,7 +65,11 @@ const snapESMOptions = makeBuildOptions(
 const snapIIFEOptions = makeBuildOptions(
   'lenis-snap',
   'packages/snap/index.ts',
-  'iife'
+  'iife',
+  {
+    globalName: 'SnapModule',
+    footer: { js: 'globalThis.Snap = SnapModule.default' },
+  }
 )
 
 const reactOptions = makeBuildOptions(
