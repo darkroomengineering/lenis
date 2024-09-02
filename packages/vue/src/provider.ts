@@ -1,12 +1,6 @@
 import Tempus from '@darkroom.engineering/tempus'
-import Lenis from 'lenis'
-import type {
-  HTMLAttributes,
-  InjectionKey,
-  Plugin,
-  PropType,
-  ShallowRef,
-} from 'vue'
+import Lenis, { type ScrollCallback } from 'lenis'
+import type { HTMLAttributes, InjectionKey, Plugin, PropType } from 'vue'
 import {
   defineComponent,
   getCurrentInstance,
@@ -14,14 +8,13 @@ import {
   onBeforeUnmount,
   onMounted,
   provide,
+  reactive,
   ref,
   shallowRef,
   watch,
 } from 'vue'
-import type { LenisVueProps } from './types'
 
-export const LenisSymbol: InjectionKey<ShallowRef<Lenis | undefined> | null> =
-  Symbol('LenisContext')
+export const LenisSymbol: InjectionKey<null> = Symbol('LenisContext')
 
 export const VueLenis = defineComponent({
   name: 'VueLenis',
@@ -34,6 +27,10 @@ export const VueLenis = defineComponent({
       type: Boolean as PropType<boolean>,
       default: true,
     },
+    rafPriority: {
+      type: Number as PropType<number>,
+      default: 0,
+    },
     options: {
       type: Object as PropType<ConstructorParameters<typeof Lenis>[0]>,
       default: () => ({}),
@@ -43,8 +40,8 @@ export const VueLenis = defineComponent({
       default: () => ({}),
     },
   },
-  setup(props: LenisVueProps, { slots }) {
-    const lenisRef = shallowRef<Lenis>()
+  setup(props, { slots }) {
+    const lenisRef = shallowRef<Lenis | null>(null)
     const tempusCleanupRef = shallowRef<() => void>()
     const wrapper = ref<HTMLDivElement>()
     const content = ref<HTMLDivElement>()
@@ -63,22 +60,7 @@ export const VueLenis = defineComponent({
 
     onBeforeUnmount(() => {
       lenisRef.value?.destroy()
-    })
-
-    if (props.root) {
-      // Provide a null value to not get the empty injection warning
-      provide(LenisSymbol, null)
-    } else {
-      provide(LenisSymbol, lenisRef)
-    }
-
-    // Sync global lenis instance
-    const app = getCurrentInstance()
-    watch([lenisRef, props], ([lenis, props]) => {
-      if (props.root) {
-        if (!app) throw new Error('No app found')
-        app.appContext.config.globalProperties.$lenis.value = lenis
-      }
+      lenisRef.value = null
     })
 
     // Sync options
@@ -109,6 +91,68 @@ export const VueLenis = defineComponent({
       tempusCleanupRef.value = Tempus.add((time: number) => lenis?.raf(time))
     })
 
+    const callbacks = reactive<
+      { callback: ScrollCallback; priority: number }[]
+    >([])
+
+    function addCallback(callback: ScrollCallback, priority: number) {
+      callbacks.push({ callback, priority })
+      callbacks.sort((a, b) => a.priority - b.priority)
+    }
+
+    function removeCallback(callback: ScrollCallback) {
+      callbacks.splice(
+        callbacks.findIndex((cb) => cb.callback === callback),
+        1
+      )
+    }
+
+    const onScroll: ScrollCallback = (data) => {
+      for (let i = 0; i < callbacks.length; i++) {
+        callbacks[i]?.callback(data)
+      }
+    }
+
+    watch(lenisRef, (lenis) => {
+      lenis?.off('scroll', onScroll)
+      lenis?.on('scroll', onScroll)
+    })
+
+    const context = reactive({
+      lenis: lenisRef.value,
+      addCallback,
+      removeCallback,
+    })
+
+    watch(lenisRef, (lenis) => {
+      context.lenis = lenis
+    })
+
+    if (props.root) {
+      // Provide a null value to not get the empty injection warning
+      provide(LenisSymbol, null)
+    } else {
+      provide(LenisSymbol, context as any)
+    }
+
+    // Sync global lenis instance
+    const app = getCurrentInstance()
+    watch(
+      () => context,
+      (context) => {
+        if (props.root) {
+          if (!app) throw new Error('No app found')
+          app.appContext.config.globalProperties.$lenisContext.lenis =
+            context.lenis
+          app.appContext.config.globalProperties.$lenisContext.addCallback =
+            context.addCallback
+          app.appContext.config.globalProperties.$lenisContext.removeCallback =
+            context.removeCallback
+        }
+      },
+      { deep: true }
+    )
+
     return () => {
       if (props.root) {
         return slots.default?.()
@@ -130,5 +174,9 @@ export const vueLenisPlugin: Plugin = (app) => {
   app.component('lenis', VueLenis)
   // Setup a global provide to silence top level useLenis injection warning
   app.provide(LenisSymbol, null)
-  app.config.globalProperties.$lenis = shallowRef<Lenis>()
+  app.config.globalProperties.$lenisContext = reactive({
+    lenis: null,
+    addCallback: () => {},
+    removeCallback: () => {},
+  })
 }

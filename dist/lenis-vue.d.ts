@@ -1,7 +1,7 @@
 import * as vue from 'vue';
 import { PropType, HTMLAttributes, Plugin } from 'vue';
 import * as lenis from 'lenis';
-import { LenisOptions, ScrollCallback } from 'lenis';
+import lenis__default, { ScrollCallback } from 'lenis';
 
 declare const VueLenis: vue.DefineComponent<{
     root: {
@@ -11,6 +11,10 @@ declare const VueLenis: vue.DefineComponent<{
     autoRaf: {
         type: PropType<boolean>;
         default: boolean;
+    };
+    rafPriority: {
+        type: PropType<number>;
+        default: number;
     };
     options: {
         type: PropType<lenis.LenisOptions | undefined>;
@@ -33,6 +37,10 @@ declare const VueLenis: vue.DefineComponent<{
         type: PropType<boolean>;
         default: boolean;
     };
+    rafPriority: {
+        type: PropType<number>;
+        default: number;
+    };
     options: {
         type: PropType<lenis.LenisOptions | undefined>;
         default: () => {};
@@ -45,38 +53,22 @@ declare const VueLenis: vue.DefineComponent<{
     props: HTMLAttributes;
     root: boolean;
     autoRaf: boolean;
+    rafPriority: number;
     options: lenis.LenisOptions | undefined;
 }, {}>;
 declare const vueLenisPlugin: Plugin;
 
-interface LenisVueProps {
-    /**
-     * Setup a global instance of Lenis
-     * @default false
-     */
-    root?: boolean;
-    /**
-     * Lenis options
-     */
-    options?: LenisOptions;
-    /**
-     * Auto-setup requestAnimationFrame
-     * @default true
-     */
-    autoRaf?: boolean;
-    /**
-     * Additional props for the wrapper div
-     *
-     * When `root` is `false`, this will be applied to the wrapper div
-     */
-    props?: HTMLAttributes;
-}
+type LenisContextValue = {
+    lenis: lenis__default | null;
+    addCallback: (callback: ScrollCallback, priority: number) => void;
+    removeCallback: (callback: ScrollCallback) => void;
+};
 declare module 'vue' {
     interface GlobalComponents {
         lenis: typeof VueLenis;
     }
 }
 
-declare function useLenis(callback?: ScrollCallback): any;
+declare function useLenis(callback?: ScrollCallback, priority?: number): vue.Ref<lenis.default | null>;
 
-export { VueLenis as Lenis, type LenisVueProps, VueLenis, vueLenisPlugin as default, useLenis };
+export { VueLenis as Lenis, type LenisContextValue, VueLenis, vueLenisPlugin as default, useLenis };
