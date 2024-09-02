@@ -1,16 +1,16 @@
-import { defineConfig, type Format, type Options } from 'tsup'
+import { defineConfig, type Options } from 'tsup'
 
 const OUT_DIR = 'dist'
 
-function makeBuildOptions<F extends Format>(
+function makeBuildOptions(
   fileName: string,
   entryPoint: string,
-  format?: F,
+  format?: 'esm' | 'browser',
   overwrites: Options = {}
-): F extends 'esm' ? [Options] : [Options, Options] {
+): Options[] {
   const options = {
     entryPoints: { [fileName]: entryPoint },
-    format,
+    format: 'esm',
     outDir: OUT_DIR,
     platform: 'browser',
     target: 'es2022',
@@ -18,7 +18,7 @@ function makeBuildOptions<F extends Format>(
     dts: true,
     sourcemap: true,
     external: ['react', 'vue', 'lenis', '@darkroom.engineering/tempus'],
-    outExtension: ({ format }) =>
+    outExtension: () =>
       format === 'esm' ? { js: '.mjs', dts: '.d.ts' } : { js: '.js' },
     ...overwrites,
   } satisfies Options
@@ -30,9 +30,7 @@ function makeBuildOptions<F extends Format>(
     ...overwrites,
   } satisfies Options
 
-  return (
-    format === 'esm' ? [options] : [options, minifyOptions]
-  ) as F extends 'esm' ? [Options] : [Options, Options]
+  return format === 'esm' ? [options] : [options, minifyOptions]
 }
 
 // Builds
@@ -41,14 +39,11 @@ export const coreESMOptions = makeBuildOptions(
   'packages/core/index.ts',
   'esm'
 )
-const coreIIFEOptions = makeBuildOptions(
+const coreBrowserOptions = makeBuildOptions(
   'lenis',
-  'packages/core/index.ts',
-  'iife',
-  {
-    globalName: 'LenisModule',
-    footer: { js: `globalThis.Lenis = LenisScope.default;` },
-  }
+  'packages/core/browser.ts',
+  'browser',
+  { dts: false }
 )
 const coreCSSOptions = makeBuildOptions(
   'lenis',
@@ -62,14 +57,11 @@ const snapESMOptions = makeBuildOptions(
   'packages/snap/index.ts',
   'esm'
 )
-const snapIIFEOptions = makeBuildOptions(
+const snapBrowserOptions = makeBuildOptions(
   'lenis-snap',
-  'packages/snap/index.ts',
-  'iife',
-  {
-    globalName: 'SnapModule',
-    footer: { js: 'globalThis.Snap = SnapModule.default' },
-  }
+  'packages/snap/browser.ts',
+  'browser',
+  { dts: false }
 )
 
 const reactOptions = makeBuildOptions(
@@ -84,10 +76,10 @@ export default defineConfig(() => {
   console.log(`\x1b[31mLNS\x1b[0m\x1b[1m Building all packages\x1b[0m\n`)
   return [
     ...coreESMOptions,
-    ...coreIIFEOptions,
+    ...coreBrowserOptions,
     ...coreCSSOptions,
     ...snapESMOptions,
-    ...snapIIFEOptions,
+    ...snapBrowserOptions,
     ...reactOptions,
     ...vueOptions,
   ]
