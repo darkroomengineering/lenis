@@ -1,6 +1,3 @@
-// packages/snap/src/snap.ts
-import "lenis";
-
 // packages/snap/src/debounce.ts
 function debounce(callback, delay) {
   let timer;
