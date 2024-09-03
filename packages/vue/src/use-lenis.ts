@@ -1,13 +1,11 @@
 import type { ScrollCallback } from 'lenis'
+import { computed, inject, onBeforeUnmount, watch } from 'vue'
 import {
-  getCurrentInstance,
-  inject,
-  nextTick,
-  onBeforeUnmount,
-  watch,
-} from 'vue'
-import { LenisSymbol } from './provider'
-import type { LenisContextValue } from './types'
+  AddCallbackSymbol,
+  LenisSymbol,
+  RemoveCallbackSymbol,
+} from './provider'
+import { globalAddCallback, globalLenis, globalRemoveCallback } from './store'
 
 export function useLenis(
   callback?: ScrollCallback,
@@ -15,48 +13,48 @@ export function useLenis(
   log = 'useLenis'
 ) {
   const lenisInjection = inject(LenisSymbol)
-  const app = getCurrentInstance()
+  const addCallbackInjection = inject(AddCallbackSymbol)
+  const removeCallbackInjection = inject(RemoveCallbackSymbol)
 
-  const context =
-    lenisInjection ||
-    (app?.appContext.config.globalProperties.$lenisContext as LenisContextValue)
+  const addCallback = computed(() =>
+    addCallbackInjection ? addCallbackInjection : globalAddCallback.value
+  )
+  const removeCallback = computed(() =>
+    removeCallbackInjection
+      ? removeCallbackInjection
+      : globalRemoveCallback.value
+  )
 
-  // watch(
-  //   () => context.lenis,
-  //   (context) => {
-  //     console.log(context, log)
-  //   },
-  //   { deep: true }
-  // )
+  const lenis = computed(() =>
+    lenisInjection?.value ? lenisInjection.value : globalLenis.value
+  )
 
   // Wait two ticks to make sure the lenis instance is mounted
-  nextTick(() => {
-    nextTick(() => {
-      if (!context.lenis.value) {
-        throw new Error(
-          'No lenis instance found, either mount a root lenis instance or wrap your component in a lenis provider'
-        )
-      }
-    })
-  })
+  // nextTick(() => {
+  //   nextTick(() => {
+  //     if (!lenis.value) {
+  //       throw new Error(
+  //         'No lenis instance found, either mount a root lenis instance or wrap your component in a lenis provider'
+  //       )
+  //     }
+  //   })
+  // })
 
   watch(
-    [context.lenis, context.addCallback, context.removeCallback],
+    [lenis, addCallback, removeCallback],
     ([lenis, addCallback, removeCallback]) => {
-      console.log(lenis, addCallback, removeCallback, callback, log)
       if (!lenis || !addCallback || !removeCallback || !callback) return
-      removeCallback?.(callback)
 
       addCallback?.(callback, priority)
-      callback?.(lenis)
+      callback?.(lenis as any)
     },
     { deep: true }
   )
 
   onBeforeUnmount(() => {
-    if (!context.removeCallback || !callback) return
-    context.removeCallback.value?.(callback)
+    if (!removeCallback.value || !callback) return
+    removeCallback.value?.(callback)
   })
 
-  return context.lenis
+  return lenis
 }

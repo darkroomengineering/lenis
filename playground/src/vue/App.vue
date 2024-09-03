@@ -18,29 +18,28 @@ const lenis = useLenis(
   'root'
 )
 
-console.log(lenis)
-
 // watch(lenis, (lenis) => {
 //   console.log('lenis in callback', lenis)
 // })
 </script>
 <template>
-  <lenis root :options="{ lerp }" :autoRaf="autoRaf">
+  <lenis-vue root :options="{ lerp }" :autoRaf="autoRaf">
     <Child />
     <button @click="lerp += 0.1">more lerp</button>
     <button @click="lerp -= 0.1">less lerp</button>
     <button @click="autoRaf = !autoRaf">toggle autoRaf</button>
-    <lenis
+    <button @click="lenis.scrollTo(200)">scroll to 200</button>
+    <lenis-vue
       :options="{ lerp: 0.2 }"
       style="height: 50svh; overflow: scroll"
       class="inner"
     >
       <InnerChild />
-    </lenis>
+    </lenis-vue>
     <p>
       {{ lorem }}
     </p>
-  </lenis>
+  </lenis-vue>
 </template>
 
 <style scoped>

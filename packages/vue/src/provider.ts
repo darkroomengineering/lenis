@@ -1,9 +1,14 @@
 import Tempus from '@darkroom.engineering/tempus'
 import Lenis, { type ScrollCallback } from 'lenis'
-import type { HTMLAttributes, InjectionKey, Plugin, PropType } from 'vue'
+import type {
+  HTMLAttributes,
+  InjectionKey,
+  Plugin,
+  PropType,
+  ShallowRef,
+} from 'vue'
 import {
   defineComponent,
-  getCurrentInstance,
   h,
   onBeforeUnmount,
   onMounted,
@@ -13,10 +18,15 @@ import {
   shallowRef,
   watch,
 } from 'vue'
-import type { LenisContextValue } from './types'
+import { globalAddCallback, globalLenis, globalRemoveCallback } from './store'
 
-export const LenisSymbol: InjectionKey<LenisContextValue | null> =
+export const LenisSymbol: InjectionKey<ShallowRef<Lenis | undefined>> =
   Symbol('LenisContext')
+export const AddCallbackSymbol: InjectionKey<
+  (callback: any, priority: number) => void
+> = Symbol('AddCallback')
+export const RemoveCallbackSymbol: InjectionKey<(callback: any) => void> =
+  Symbol('RemoveCallback')
 
 export const VueLenis = defineComponent({
   name: 'VueLenis',
@@ -43,7 +53,7 @@ export const VueLenis = defineComponent({
     },
   },
   setup(props, { slots }) {
-    const lenisRef = shallowRef<Lenis | null>(null)
+    const lenisRef = shallowRef<Lenis>()
     const tempusCleanupRef = shallowRef<() => void>()
     const wrapper = ref<HTMLDivElement>()
     const content = ref<HTMLDivElement>()
@@ -64,7 +74,7 @@ export const VueLenis = defineComponent({
     // Destroy the lenis instance when the component is unmounted
     onBeforeUnmount(() => {
       lenisRef.value?.destroy()
-      lenisRef.value = null
+      lenisRef.value = undefined
     })
 
     // Sync options
@@ -93,7 +103,7 @@ export const VueLenis = defineComponent({
 
     // Sync autoRaf
     watch(
-      [lenisRef, () => props.autoRaf, () => props.rafPriority],
+      [() => lenisRef.value, () => props.autoRaf, () => props.rafPriority],
       ([lenis, autoRaf, rafPriority]) => {
         if (!lenis || !autoRaf) {
           // If lenis is not defined or autoRaf is false, stop the raf if there is one
@@ -133,33 +143,19 @@ export const VueLenis = defineComponent({
       }
     }
 
-    // Sync global lenis instance
-    const app = getCurrentInstance()
-
     watch(lenisRef, (lenis) => {
       lenis?.on('scroll', onScroll)
 
       if (props.root) {
-        if (!app) throw new Error('No app found')
-        app.appContext.config.globalProperties.$lenisContext.lenis.value = lenis
+        globalLenis.value = lenis
+        globalAddCallback.value = addCallback
+        globalRemoveCallback.value = removeCallback
       }
     })
-
-    if (props.root) {
-      // Provide a null value to not get the empty injection warning
-      provide(LenisSymbol, null)
-      if (!app) throw new Error('No app found')
-
-      app.appContext.config.globalProperties.$lenisContext.addCallback.value =
-        addCallback
-      app.appContext.config.globalProperties.$lenisContext.removeCallback.value =
-        removeCallback
-    } else {
-      provide(LenisSymbol, {
-        lenis: lenisRef,
-        addCallback: shallowRef(addCallback),
-        removeCallback: shallowRef(removeCallback),
-      })
+    if (!props.root) {
+      provide(LenisSymbol, lenisRef)
+      provide(AddCallbackSymbol, addCallback)
+      provide(RemoveCallbackSymbol, removeCallback)
     }
 
     return () => {
@@ -180,12 +176,16 @@ export const VueLenis = defineComponent({
 })
 
 export const vueLenisPlugin: Plugin = (app) => {
-  app.component('lenis', VueLenis)
+  app.component('lenis-vue', VueLenis)
   // Setup a global provide to silence top level useLenis injection warning
-  app.provide(LenisSymbol, null)
-  app.config.globalProperties.$lenisContext = {
-    lenis: shallowRef(null),
-    addCallback: shallowRef(null),
-    removeCallback: shallowRef(null),
+  app.provide(LenisSymbol, shallowRef(undefined))
+  app.provide(AddCallbackSymbol, undefined as any)
+  app.provide(RemoveCallbackSymbol, undefined as any)
+}
+
+// @ts-ignore
+declare module '@vue/runtime-core' {
+  export interface GlobalComponents {
+    'lenis-vue': typeof VueLenis
   }
 }
