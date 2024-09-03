@@ -4,7 +4,6 @@ import {
   inject,
   nextTick,
   onBeforeUnmount,
-  toRefs,
   watch,
 } from 'vue'
 import { LenisSymbol } from './provider'
@@ -22,20 +21,18 @@ export function useLenis(
     lenisInjection ||
     (app?.appContext.config.globalProperties.$lenisContext as LenisContextValue)
 
-  watch(
-    () => lenisInjection,
-    (context) => {
-      console.log(context, log)
-    },
-    { deep: true }
-  )
-
-  const { lenis } = toRefs(context)
+  // watch(
+  //   () => context.lenis,
+  //   (context) => {
+  //     console.log(context, log)
+  //   },
+  //   { deep: true }
+  // )
 
   // Wait two ticks to make sure the lenis instance is mounted
   nextTick(() => {
     nextTick(() => {
-      if (!lenis.value) {
+      if (!context.lenis.value) {
         throw new Error(
           'No lenis instance found, either mount a root lenis instance or wrap your component in a lenis provider'
         )
@@ -44,8 +41,9 @@ export function useLenis(
   })
 
   watch(
-    () => context,
-    ({ lenis, addCallback, removeCallback }) => {
+    [context.lenis, context.addCallback, context.removeCallback],
+    ([lenis, addCallback, removeCallback]) => {
+      console.log(lenis, addCallback, removeCallback, callback, log)
       if (!lenis || !addCallback || !removeCallback || !callback) return
       removeCallback?.(callback)
 
@@ -57,8 +55,8 @@ export function useLenis(
 
   onBeforeUnmount(() => {
     if (!context.removeCallback || !callback) return
-    context.removeCallback(callback)
+    context.removeCallback.value?.(callback)
   })
 
-  return lenis
+  return context.lenis
 }

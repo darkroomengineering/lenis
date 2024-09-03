@@ -13,8 +13,10 @@ import {
   shallowRef,
   watch,
 } from 'vue'
+import type { LenisContextValue } from './types'
 
-export const LenisSymbol: InjectionKey<null> = Symbol('LenisContext')
+export const LenisSymbol: InjectionKey<LenisContextValue | null> =
+  Symbol('LenisContext')
 
 export const VueLenis = defineComponent({
   name: 'VueLenis',
@@ -131,48 +133,34 @@ export const VueLenis = defineComponent({
       }
     }
 
-    const context = reactive({
-      lenis: lenisRef.value,
-      addCallback,
-      removeCallback,
-    })
+    // Sync global lenis instance
+    const app = getCurrentInstance()
 
     watch(lenisRef, (lenis) => {
-      context.lenis = lenis
-    })
+      lenis?.on('scroll', onScroll)
 
-    watch(
-      () => context.lenis,
-      (lenis) => {
-        lenis?.off('scroll', onScroll)
-        lenis?.on('scroll', onScroll)
+      if (props.root) {
+        if (!app) throw new Error('No app found')
+        app.appContext.config.globalProperties.$lenisContext.lenis.value = lenis
       }
-    )
+    })
 
     if (props.root) {
       // Provide a null value to not get the empty injection warning
       provide(LenisSymbol, null)
-    } else {
-      provide(LenisSymbol, context as any)
-    }
+      if (!app) throw new Error('No app found')
 
-    // Sync global lenis instance
-    const app = getCurrentInstance()
-    watch(
-      () => context,
-      (context) => {
-        if (props.root) {
-          if (!app) throw new Error('No app found')
-          app.appContext.config.globalProperties.$lenisContext.lenis =
-            context.lenis
-          app.appContext.config.globalProperties.$lenisContext.addCallback =
-            context.addCallback
-          app.appContext.config.globalProperties.$lenisContext.removeCallback =
-            context.removeCallback
-        }
-      },
-      { deep: true }
-    )
+      app.appContext.config.globalProperties.$lenisContext.addCallback.value =
+        addCallback
+      app.appContext.config.globalProperties.$lenisContext.removeCallback.value =
+        removeCallback
+    } else {
+      provide(LenisSymbol, {
+        lenis: lenisRef,
+        addCallback: shallowRef(addCallback),
+        removeCallback: shallowRef(removeCallback),
+      })
+    }
 
     return () => {
       if (props.root) {
@@ -195,9 +183,9 @@ export const vueLenisPlugin: Plugin = (app) => {
   app.component('lenis', VueLenis)
   // Setup a global provide to silence top level useLenis injection warning
   app.provide(LenisSymbol, null)
-  app.config.globalProperties.$lenisContext = reactive({
-    lenis: null,
-    addCallback: () => {},
-    removeCallback: () => {},
-  })
+  app.config.globalProperties.$lenisContext = {
+    lenis: shallowRef(null),
+    addCallback: shallowRef(null),
+    removeCallback: shallowRef(null),
+  }
 }

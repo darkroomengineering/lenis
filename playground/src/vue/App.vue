@@ -10,13 +10,19 @@ const lorem = new LoremIpsum().generateParagraphs(200)
 const lerp = ref(0.1)
 const autoRaf = ref(true)
 
-useLenis(
+const lenis = useLenis(
   (lenis) => {
     console.log('root scroll', lenis.options.lerp, lenis.scroll)
   },
   0,
   'root'
 )
+
+console.log(lenis)
+
+// watch(lenis, (lenis) => {
+//   console.log('lenis in callback', lenis)
+// })
 </script>
 <template>
   <lenis root :options="{ lerp }" :autoRaf="autoRaf">
