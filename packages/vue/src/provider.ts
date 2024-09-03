@@ -46,6 +46,7 @@ export const VueLenis = defineComponent({
     const wrapper = ref<HTMLDivElement>()
     const content = ref<HTMLDivElement>()
 
+    // Setup the lenis instance when the component is mounted
     onMounted(() => {
       lenisRef.value = new Lenis({
         ...props.options,
@@ -58,38 +59,55 @@ export const VueLenis = defineComponent({
       })
     })
 
+    // Destroy the lenis instance when the component is unmounted
     onBeforeUnmount(() => {
       lenisRef.value?.destroy()
       lenisRef.value = null
     })
 
     // Sync options
-    watch(props, (props, oldProps) => {
-      const rootChanged = oldProps.root !== props.root
-      const optionsChanged =
-        JSON.stringify(oldProps.options) !== JSON.stringify(props.options)
+    watch(
+      () => props.options,
+      (options, oldOptions) => {
+        const optionsChanged =
+          JSON.stringify(oldOptions) !== JSON.stringify(options)
 
-      if (rootChanged || optionsChanged) {
-        lenisRef.value?.destroy()
-        lenisRef.value = new Lenis({
-          ...props.options,
-          ...(!props.root
-            ? {
-                wrapper: wrapper.value,
-                content: content.value,
-              }
-            : {}),
-        })
-      }
-    })
+        // If any of the options changed, destroy the lenis instance and create a new one
+        if (optionsChanged) {
+          lenisRef.value?.destroy()
+          lenisRef.value = new Lenis({
+            ...props.options,
+            ...(!props.root
+              ? {
+                  wrapper: wrapper.value,
+                  content: content.value,
+                }
+              : {}),
+          })
+        }
+      },
+      { deep: true }
+    )
 
     // Sync autoRaf
-    watch([lenisRef, props], ([lenis, props], [oldLenis, oldProps]) => {
-      if ((props.autoRaf === oldProps.autoRaf && lenis === oldLenis) || !lenis)
-        return
-      tempusCleanupRef.value?.()
-      tempusCleanupRef.value = Tempus.add((time: number) => lenis?.raf(time))
-    })
+    watch(
+      [lenisRef, () => props.autoRaf, () => props.rafPriority],
+      ([lenis, autoRaf, rafPriority]) => {
+        if (!lenis || !autoRaf) {
+          // If lenis is not defined or autoRaf is false, stop the raf if there is one
+          return tempusCleanupRef.value?.()
+        }
+
+        // If either lenis, autoRaf or rafPriority changed, stop the raf if there is one and start a new one
+        tempusCleanupRef.value?.()
+        if (autoRaf) {
+          tempusCleanupRef.value = Tempus.add(
+            (time: number) => lenis?.raf(time),
+            rafPriority
+          )
+        }
+      }
+    )
 
     const callbacks = reactive<
       { callback: ScrollCallback; priority: number }[]
@@ -113,11 +131,6 @@ export const VueLenis = defineComponent({
       }
     }
 
-    watch(lenisRef, (lenis) => {
-      lenis?.off('scroll', onScroll)
-      lenis?.on('scroll', onScroll)
-    })
-
     const context = reactive({
       lenis: lenisRef.value,
       addCallback,
@@ -127,6 +140,14 @@ export const VueLenis = defineComponent({
     watch(lenisRef, (lenis) => {
       context.lenis = lenis
     })
+
+    watch(
+      () => context.lenis,
+      (lenis) => {
+        lenis?.off('scroll', onScroll)
+        lenis?.on('scroll', onScroll)
+      }
+    )
 
     if (props.root) {
       // Provide a null value to not get the empty injection warning

@@ -10,13 +10,25 @@ import {
 import { LenisSymbol } from './provider'
 import type { LenisContextValue } from './types'
 
-export function useLenis(callback?: ScrollCallback, priority = 0) {
+export function useLenis(
+  callback?: ScrollCallback,
+  priority = 0,
+  log = 'useLenis'
+) {
   const lenisInjection = inject(LenisSymbol)
   const app = getCurrentInstance()
 
   const context =
     lenisInjection ||
     (app?.appContext.config.globalProperties.$lenisContext as LenisContextValue)
+
+  watch(
+    () => lenisInjection,
+    (context) => {
+      console.log(context, log)
+    },
+    { deep: true }
+  )
 
   const { lenis } = toRefs(context)
 

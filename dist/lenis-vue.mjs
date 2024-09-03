@@ -56,26 +56,38 @@ var VueLenis = defineComponent({
       lenisRef.value?.destroy();
       lenisRef.value = null;
     });
-    watch(props, (props2, oldProps) => {
-      const rootChanged = oldProps.root !== props2.root;
-      const optionsChanged = JSON.stringify(oldProps.options) !== JSON.stringify(props2.options);
-      if (rootChanged || optionsChanged) {
-        lenisRef.value?.destroy();
-        lenisRef.value = new Lenis({
-          ...props2.options,
-          ...!props2.root ? {
-            wrapper: wrapper.value,
-            content: content.value
-          } : {}
-        });
+    watch(
+      () => props.options,
+      (options, oldOptions) => {
+        const optionsChanged = JSON.stringify(oldOptions) !== JSON.stringify(options);
+        if (optionsChanged) {
+          lenisRef.value?.destroy();
+          lenisRef.value = new Lenis({
+            ...props.options,
+            ...!props.root ? {
+              wrapper: wrapper.value,
+              content: content.value
+            } : {}
+          });
+        }
+      },
+      { deep: true }
+    );
+    watch(
+      [lenisRef, () => props.autoRaf, () => props.rafPriority],
+      ([lenis, autoRaf, rafPriority]) => {
+        if (!lenis || !autoRaf) {
+          return tempusCleanupRef.value?.();
+        }
+        tempusCleanupRef.value?.();
+        if (autoRaf) {
+          tempusCleanupRef.value = Tempus.add(
+            (time) => lenis?.raf(time),
+            rafPriority
+          );
+        }
       }
-    });
-    watch([lenisRef, props], ([lenis, props2], [oldLenis, oldProps]) => {
-      if (props2.autoRaf === oldProps.autoRaf && lenis === oldLenis || !lenis)
-        return;
-      tempusCleanupRef.value?.();
-      tempusCleanupRef.value = Tempus.add((time) => lenis?.raf(time));
-    });
+    );
     const callbacks = reactive([]);
     function addCallback(callback, priority) {
       callbacks.push({ callback, priority });
@@ -92,10 +104,6 @@ var VueLenis = defineComponent({
         callbacks[i]?.callback(data);
       }
     };
-    watch(lenisRef, (lenis) => {
-      lenis?.off("scroll", onScroll);
-      lenis?.on("scroll", onScroll);
-    });
     const context = reactive({
       lenis: lenisRef.value,
       addCallback,
@@ -104,6 +112,13 @@ var VueLenis = defineComponent({
     watch(lenisRef, (lenis) => {
       context.lenis = lenis;
     });
+    watch(
+      () => context.lenis,
+      (lenis) => {
+        lenis?.off("scroll", onScroll);
+        lenis?.on("scroll", onScroll);
+      }
+    );
     if (props.root) {
       provide(LenisSymbol, null);
     } else {
@@ -156,10 +171,17 @@ import {
   toRefs,
   watch as watch2
 } from "vue";
-function useLenis(callback, priority = 0) {
+function useLenis(callback, priority = 0, log = "useLenis") {
   const lenisInjection = inject(LenisSymbol);
   const app = getCurrentInstance2();
   const context = lenisInjection || app?.appContext.config.globalProperties.$lenisContext;
+  watch2(
+    () => lenisInjection,
+    (context2) => {
+      console.log(context2, log);
+    },
+    { deep: true }
+  );
   const { lenis } = toRefs(context);
   nextTick(() => {
     nextTick(() => {
