@@ -1,19 +1,29 @@
 <script setup>
 import { useLenis } from 'lenis/vue'
 import { LoremIpsum } from 'lorem-ipsum'
+import { ref } from 'vue'
 import Child from './Child.vue'
 import InnerChild from './InnerChild.vue'
 
 const lorem = new LoremIpsum().generateParagraphs(200)
 
-useLenis((lenis) => {
-  console.log('root scroll', lenis.options.lerp, lenis.scroll)
-})
+const lerp = ref(0.1)
+const autoRaf = ref(true)
+
+useLenis(
+  (lenis) => {
+    console.log('root scroll', lenis.options.lerp, lenis.scroll)
+  },
+  0,
+  'root'
+)
 </script>
 <template>
-  <lenis root :options="{ lerp: 0.1 }">
+  <lenis root :options="{ lerp }" :autoRaf="autoRaf">
     <Child />
-
+    <button @click="lerp += 0.1">more lerp</button>
+    <button @click="lerp -= 0.1">less lerp</button>
+    <button @click="autoRaf = !autoRaf">toggle autoRaf</button>
     <lenis
       :options="{ lerp: 0.2 }"
       style="height: 50svh; overflow: scroll"
