@@ -104,39 +104,26 @@ var VueLenis = defineComponent({
         callbacks[i]?.callback(data);
       }
     };
-    const context = reactive({
-      lenis: lenisRef.value,
-      addCallback,
-      removeCallback
-    });
+    const app = getCurrentInstance();
     watch(lenisRef, (lenis) => {
-      context.lenis = lenis;
-    });
-    watch(
-      () => context.lenis,
-      (lenis) => {
-        lenis?.off("scroll", onScroll);
-        lenis?.on("scroll", onScroll);
+      lenis?.on("scroll", onScroll);
+      if (props.root) {
+        if (!app) throw new Error("No app found");
+        app.appContext.config.globalProperties.$lenisContext.lenis.value = lenis;
       }
-    );
+    });
     if (props.root) {
       provide(LenisSymbol, null);
+      if (!app) throw new Error("No app found");
+      app.appContext.config.globalProperties.$lenisContext.addCallback.value = addCallback;
+      app.appContext.config.globalProperties.$lenisContext.removeCallback.value = removeCallback;
     } else {
-      provide(LenisSymbol, context);
+      provide(LenisSymbol, {
+        lenis: lenisRef,
+        addCallback: shallowRef(addCallback),
+        removeCallback: shallowRef(removeCallback)
+      });
     }
-    const app = getCurrentInstance();
-    watch(
-      () => context,
-      (context2) => {
-        if (props.root) {
-          if (!app) throw new Error("No app found");
-          app.appContext.config.globalProperties.$lenisContext.lenis = context2.lenis;
-          app.appContext.config.globalProperties.$lenisContext.addCallback = context2.addCallback;
-          app.appContext.config.globalProperties.$lenisContext.removeCallback = context2.removeCallback;
-        }
-      },
-      { deep: true }
-    );
     return () => {
       if (props.root) {
         return slots.default?.();
@@ -153,13 +140,11 @@ var VueLenis = defineComponent({
 var vueLenisPlugin = (app) => {
   app.component("lenis", VueLenis);
   app.provide(LenisSymbol, null);
-  app.config.globalProperties.$lenisContext = reactive({
-    lenis: null,
-    addCallback: () => {
-    },
-    removeCallback: () => {
-    }
-  });
+  app.config.globalProperties.$lenisContext = {
+    lenis: shallowRef(null),
+    addCallback: shallowRef(null),
+    removeCallback: shallowRef(null)
+  };
 };
 
 // packages/vue/src/use-lenis.ts
@@ -168,24 +153,15 @@ import {
   inject,
   nextTick,
   onBeforeUnmount as onBeforeUnmount2,
-  toRefs,
   watch as watch2
 } from "vue";
 function useLenis(callback, priority = 0, log = "useLenis") {
   const lenisInjection = inject(LenisSymbol);
   const app = getCurrentInstance2();
   const context = lenisInjection || app?.appContext.config.globalProperties.$lenisContext;
-  watch2(
-    () => lenisInjection,
-    (context2) => {
-      console.log(context2, log);
-    },
-    { deep: true }
-  );
-  const { lenis } = toRefs(context);
   nextTick(() => {
     nextTick(() => {
-      if (!lenis.value) {
+      if (!context.lenis.value) {
         throw new Error(
           "No lenis instance found, either mount a root lenis instance or wrap your component in a lenis provider"
         );
@@ -193,20 +169,21 @@ function useLenis(callback, priority = 0, log = "useLenis") {
     });
   });
   watch2(
-    () => context,
-    ({ lenis: lenis2, addCallback, removeCallback }) => {
-      if (!lenis2 || !addCallback || !removeCallback || !callback) return;
+    [context.lenis, context.addCallback, context.removeCallback],
+    ([lenis, addCallback, removeCallback]) => {
+      console.log(lenis, addCallback, removeCallback, callback, log);
+      if (!lenis || !addCallback || !removeCallback || !callback) return;
       removeCallback?.(callback);
       addCallback?.(callback, priority);
-      callback?.(lenis2);
+      callback?.(lenis);
     },
     { deep: true }
   );
   onBeforeUnmount2(() => {
     if (!context.removeCallback || !callback) return;
-    context.removeCallback(callback);
+    context.removeCallback.value?.(callback);
   });
-  return lenis;
+  return context.lenis;
 }
 export {
   VueLenis as Lenis,
