@@ -4,5 +4,4 @@ export {
   VueLenis,
   vueLenisPlugin as default,
 } from './src/provider'
-export * from './src/types'
 export { useLenis } from './src/use-lenis'

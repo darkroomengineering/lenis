@@ -1,18 +1,7 @@
 import * as vue from 'vue';
-import { ShallowRef, PropType, HTMLAttributes, Plugin } from 'vue';
+import { PropType, HTMLAttributes, Plugin } from 'vue';
 import * as lenis from 'lenis';
-import lenis__default, { ScrollCallback } from 'lenis';
-
-type LenisContextValue = {
-    lenis: ShallowRef<lenis__default | null>;
-    addCallback: ShallowRef<(callback: ScrollCallback, priority: number) => void>;
-    removeCallback: ShallowRef<(callback: ScrollCallback) => void>;
-};
-declare module 'vue' {
-    interface GlobalComponents {
-        lenis: typeof VueLenis;
-    }
-}
+import { ScrollCallback } from 'lenis';
 
 declare const VueLenis: vue.DefineComponent<{
     root: {
@@ -68,7 +57,12 @@ declare const VueLenis: vue.DefineComponent<{
     options: lenis.LenisOptions | undefined;
 }, {}>;
 declare const vueLenisPlugin: Plugin;
+declare module '@vue/runtime-core' {
+    interface GlobalComponents {
+        'lenis-vue': typeof VueLenis;
+    }
+}
 
-declare function useLenis(callback?: ScrollCallback, priority?: number, log?: string): vue.ShallowRef<lenis.default | null>;
+declare function useLenis(callback?: ScrollCallback, priority?: number, log?: string): vue.ComputedRef<lenis.default | undefined>;
 
-export { VueLenis as Lenis, type LenisContextValue, VueLenis, vueLenisPlugin as default, useLenis };
+export { VueLenis as Lenis, VueLenis, vueLenisPlugin as default, useLenis };

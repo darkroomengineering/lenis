@@ -3,17 +3,26 @@ import Tempus from "@darkroom.engineering/tempus";
 import Lenis from "lenis";
 import {
   defineComponent,
-  getCurrentInstance,
   h,
   onBeforeUnmount,
   onMounted,
   provide,
   reactive,
   ref,
-  shallowRef,
+  shallowRef as shallowRef2,
   watch
 } from "vue";
+
+// packages/vue/src/store.ts
+import { shallowRef } from "vue";
+var globalLenis = shallowRef();
+var globalAddCallback = shallowRef();
+var globalRemoveCallback = shallowRef();
+
+// packages/vue/src/provider.ts
 var LenisSymbol = Symbol("LenisContext");
+var AddCallbackSymbol = Symbol("AddCallback");
+var RemoveCallbackSymbol = Symbol("RemoveCallback");
 var VueLenis = defineComponent({
   name: "VueLenis",
   props: {
@@ -39,8 +48,8 @@ var VueLenis = defineComponent({
     }
   },
   setup(props, { slots }) {
-    const lenisRef = shallowRef(null);
-    const tempusCleanupRef = shallowRef();
+    const lenisRef = shallowRef2();
+    const tempusCleanupRef = shallowRef2();
     const wrapper = ref();
     const content = ref();
     onMounted(() => {
@@ -54,7 +63,7 @@ var VueLenis = defineComponent({
     });
     onBeforeUnmount(() => {
       lenisRef.value?.destroy();
-      lenisRef.value = null;
+      lenisRef.value = void 0;
     });
     watch(
       () => props.options,
@@ -74,7 +83,7 @@ var VueLenis = defineComponent({
       { deep: true }
     );
     watch(
-      [lenisRef, () => props.autoRaf, () => props.rafPriority],
+      [() => lenisRef.value, () => props.autoRaf, () => props.rafPriority],
       ([lenis, autoRaf, rafPriority]) => {
         if (!lenis || !autoRaf) {
           return tempusCleanupRef.value?.();
@@ -104,25 +113,18 @@ var VueLenis = defineComponent({
         callbacks[i]?.callback(data);
       }
     };
-    const app = getCurrentInstance();
     watch(lenisRef, (lenis) => {
       lenis?.on("scroll", onScroll);
       if (props.root) {
-        if (!app) throw new Error("No app found");
-        app.appContext.config.globalProperties.$lenisContext.lenis.value = lenis;
+        globalLenis.value = lenis;
+        globalAddCallback.value = addCallback;
+        globalRemoveCallback.value = removeCallback;
       }
     });
-    if (props.root) {
-      provide(LenisSymbol, null);
-      if (!app) throw new Error("No app found");
-      app.appContext.config.globalProperties.$lenisContext.addCallback.value = addCallback;
-      app.appContext.config.globalProperties.$lenisContext.removeCallback.value = removeCallback;
-    } else {
-      provide(LenisSymbol, {
-        lenis: lenisRef,
-        addCallback: shallowRef(addCallback),
-        removeCallback: shallowRef(removeCallback)
-      });
+    if (!props.root) {
+      provide(LenisSymbol, lenisRef);
+      provide(AddCallbackSymbol, addCallback);
+      provide(RemoveCallbackSymbol, removeCallback);
     }
     return () => {
       if (props.root) {
@@ -138,52 +140,41 @@ var VueLenis = defineComponent({
   }
 });
 var vueLenisPlugin = (app) => {
-  app.component("lenis", VueLenis);
-  app.provide(LenisSymbol, null);
-  app.config.globalProperties.$lenisContext = {
-    lenis: shallowRef(null),
-    addCallback: shallowRef(null),
-    removeCallback: shallowRef(null)
-  };
+  app.component("lenis-vue", VueLenis);
+  app.provide(LenisSymbol, shallowRef2(void 0));
+  app.provide(AddCallbackSymbol, void 0);
+  app.provide(RemoveCallbackSymbol, void 0);
 };
 
 // packages/vue/src/use-lenis.ts
-import {
-  getCurrentInstance as getCurrentInstance2,
-  inject,
-  nextTick,
-  onBeforeUnmount as onBeforeUnmount2,
-  watch as watch2
-} from "vue";
+import { computed, inject, onBeforeUnmount as onBeforeUnmount2, watch as watch2 } from "vue";
 function useLenis(callback, priority = 0, log = "useLenis") {
   const lenisInjection = inject(LenisSymbol);
-  const app = getCurrentInstance2();
-  const context = lenisInjection || app?.appContext.config.globalProperties.$lenisContext;
-  nextTick(() => {
-    nextTick(() => {
-      if (!context.lenis.value) {
-        throw new Error(
-          "No lenis instance found, either mount a root lenis instance or wrap your component in a lenis provider"
-        );
-      }
-    });
-  });
+  const addCallbackInjection = inject(AddCallbackSymbol);
+  const removeCallbackInjection = inject(RemoveCallbackSymbol);
+  const addCallback = computed(
+    () => addCallbackInjection ? addCallbackInjection : globalAddCallback.value
+  );
+  const removeCallback = computed(
+    () => removeCallbackInjection ? removeCallbackInjection : globalRemoveCallback.value
+  );
+  const lenis = computed(
+    () => lenisInjection?.value ? lenisInjection.value : globalLenis.value
+  );
   watch2(
-    [context.lenis, context.addCallback, context.removeCallback],
-    ([lenis, addCallback, removeCallback]) => {
-      console.log(lenis, addCallback, removeCallback, callback, log);
-      if (!lenis || !addCallback || !removeCallback || !callback) return;
-      removeCallback?.(callback);
-      addCallback?.(callback, priority);
-      callback?.(lenis);
+    [lenis, addCallback, removeCallback],
+    ([lenis2, addCallback2, removeCallback2]) => {
+      if (!lenis2 || !addCallback2 || !removeCallback2 || !callback) return;
+      addCallback2?.(callback, priority);
+      callback?.(lenis2);
     },
     { deep: true }
   );
   onBeforeUnmount2(() => {
-    if (!context.removeCallback || !callback) return;
-    context.removeCallback.value?.(callback);
+    if (!removeCallback.value || !callback) return;
+    removeCallback.value?.(callback);
   });
-  return context.lenis;
+  return lenis;
 }
 export {
   VueLenis as Lenis,
