@@ -22,6 +22,7 @@ const lenis = useLenis(
 //   console.log('lenis in callback', lenis)
 // })
 </script>
+
 <template>
   <lenis-vue root :options="{ lerp }" :autoRaf="autoRaf">
     <Child />

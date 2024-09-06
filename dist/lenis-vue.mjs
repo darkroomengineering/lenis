@@ -83,7 +83,7 @@ var VueLenis = defineComponent({
       { deep: true }
     );
     watch(
-      [() => lenisRef.value, () => props.autoRaf, () => props.rafPriority],
+      [lenisRef, () => props.autoRaf, () => props.rafPriority],
       ([lenis, autoRaf, rafPriority]) => {
         if (!lenis || !autoRaf) {
           return tempusCleanupRef.value?.();
@@ -148,7 +148,7 @@ var vueLenisPlugin = (app) => {
 
 // packages/vue/src/use-lenis.ts
 import { computed, inject, onBeforeUnmount as onBeforeUnmount2, watch as watch2 } from "vue";
-function useLenis(callback, priority = 0, log = "useLenis") {
+function useLenis(callback, priority = 0) {
   const lenisInjection = inject(LenisSymbol);
   const addCallbackInjection = inject(AddCallbackSymbol);
   const removeCallbackInjection = inject(RemoveCallbackSymbol);
@@ -167,8 +167,7 @@ function useLenis(callback, priority = 0, log = "useLenis") {
       if (!lenis2 || !addCallback2 || !removeCallback2 || !callback) return;
       addCallback2?.(callback, priority);
       callback?.(lenis2);
-    },
-    { deep: true }
+    }
   );
   onBeforeUnmount2(() => {
     if (!removeCallback.value || !callback) return;

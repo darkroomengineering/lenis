@@ -103,7 +103,7 @@ export const VueLenis = defineComponent({
 
     // Sync autoRaf
     watch(
-      [() => lenisRef.value, () => props.autoRaf, () => props.rafPriority],
+      [lenisRef, () => props.autoRaf, () => props.rafPriority],
       ([lenis, autoRaf, rafPriority]) => {
         if (!lenis || !autoRaf) {
           // If lenis is not defined or autoRaf is false, stop the raf if there is one
@@ -152,6 +152,7 @@ export const VueLenis = defineComponent({
         globalRemoveCallback.value = removeCallback
       }
     })
+
     if (!props.root) {
       provide(LenisSymbol, lenisRef)
       provide(AddCallbackSymbol, addCallback)
