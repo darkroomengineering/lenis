@@ -7,11 +7,7 @@ import {
 } from './provider'
 import { globalAddCallback, globalLenis, globalRemoveCallback } from './store'
 
-export function useLenis(
-  callback?: ScrollCallback,
-  priority = 0,
-  log = 'useLenis'
-) {
+export function useLenis(callback?: ScrollCallback, priority = 0) {
   const lenisInjection = inject(LenisSymbol)
   const addCallbackInjection = inject(AddCallbackSymbol)
   const removeCallbackInjection = inject(RemoveCallbackSymbol)
@@ -47,8 +43,7 @@ export function useLenis(
 
       addCallback?.(callback, priority)
       callback?.(lenis as any)
-    },
-    { deep: true }
+    }
   )
 
   onBeforeUnmount(() => {

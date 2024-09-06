@@ -63,6 +63,6 @@ declare module '@vue/runtime-core' {
     }
 }
 
-declare function useLenis(callback?: ScrollCallback, priority?: number, log?: string): vue.ComputedRef<lenis.default | undefined>;
+declare function useLenis(callback?: ScrollCallback, priority?: number): vue.ComputedRef<lenis.default | undefined>;
 
 export { VueLenis as Lenis, VueLenis, vueLenisPlugin as default, useLenis };
