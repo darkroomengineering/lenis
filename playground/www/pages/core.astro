@@ -6,4 +6,11 @@ import Layout from '../layouts/Layout.astro'
 	<button id="scroll-100">Scroll 100</button>
 	<div id="app"></div>
 	<script src="../../core/test.ts"></script>
+	<!-- THESE ARE HERE TO TEST THE BROWSER VERSION BUNDLE -->
+	<!-- <script is:raw src="../../node_modules/lenis/dist/lenis.min.js"></script> -->
+	<!-- <script is:raw src="../../core/browser.js"></script> -->
+	 <!-- <script>
+		import { LoremIpsum } from 'lorem-ipsum'
+		document.querySelector('#app').innerHTML = new LoremIpsum().generateParagraphs(30)
+	</script> -->
 </Layout>
