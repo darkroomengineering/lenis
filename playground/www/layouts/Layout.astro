@@ -1,4 +1,5 @@
 ---
+import "lenis/dist/lenis.css";
 interface Props {
 	title: string;
 }
@@ -15,7 +16,11 @@ const { title } = Astro.props;
 	</head>
 	<body>
 		<nav>
-			<a href="/">Home</a>
+			<a href="/">
+				<svg width="15" height="16" viewBox="0 0 15 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+					<path d="M8.6273 0C13.4362 0 15 2.35534 15 6.37565C15 11.4112 12.2502 16 6.58123 16L0.221572 16L0 15.7699L2.64556 0.216595L2.86707 0L8.6273 0Z" fill="#E30613"/>
+				</svg>
+			</a>
 			<a href="/core">Core</a>
 			<a href="/snap">Snap</a>
 			<a href="/react">React</a>
@@ -41,6 +46,10 @@ const { title } = Astro.props;
   box-sizing: border-box;
 }
 
+html {
+	overflow-y: scroll;
+}
+
 body {
   margin: 0;
   min-width: 320px;
@@ -51,25 +60,34 @@ body {
 <style>
   nav {
 		position: fixed;
-		top: 0;
-		left: 50%;
-		transform: translateX(-50%);
-		background-color: #CF0001;
-		padding-inline: 1rem;
+		top: 2px;
+		left: 2px;
 		align-items: center;
 		border-radius: 0.5rem;
 		height: 3rem;
 		display: flex;
-		gap: 1rem;
+		gap: 2px;
 	}
 
 	a {
-		color: black;
+		width: 60px;
+		height: 100%;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		text-align: center;
+		font-family: monospace;
+		text-transform: uppercase;
+		color: white;
+		background-color: #0E0E0E;
+		text-decoration: none;
+		border-radius: 4px;
+		transition: all 0.2s ease-in-out;
 	}
 
 	a:hover {
-		color: black;
-		text-decoration: underline;
+		color: #E30613;
+		border-radius: 12px;
 	}
 
 	body {
