@@ -19,6 +19,7 @@ const lenis = new Lenis({
   //   return true
   // },
 })
+
 // console.log(lenis.dimensions.height)
 lenis.on('scroll', (e) => {
   console.log(e.scroll, e.velocity)
@@ -48,14 +49,16 @@ const proxyLenis = new Proxy(lenis, {})
 
 const scroll100 = document.getElementById('scroll-100')
 
-scroll100!.addEventListener('click', () => {
-  console.log(proxyLenis.isStopped)
-  proxyLenis.scrollTo(100, {
+scroll100?.addEventListener('click', () => {
+  proxyLenis?.scrollTo(100, {
+    lerp: 0.1,
+  })
+  lenis.scrollTo(100, {
     lerp: 0.1,
   })
 })
 
-function raf(time) {
+function raf(time: number) {
   lenis.raf(time)
   requestAnimationFrame(raf)
 }
