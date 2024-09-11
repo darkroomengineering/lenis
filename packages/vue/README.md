@@ -1,7 +1,7 @@
-# lenis/react
+# lenis/vue
 
 ## Introduction
-lenis/react provides a `<ReactLenis>` component that creates a [Lenis](https://github.com/darkroomengineering/lenis) instance and provides it to its children via context. This allows you to use Lenis in your React app without worrying about passing the instance down through props. It also provides a `useLenis` hook that allows you to access the Lenis instance from any component in your app.
+lenis/vue provides a `<VueLenis>` component that creates a [Lenis](https://github.com/darkroomengineering/lenis) instance and provides it to its children via context. This allows you to use Lenis in your Vue app without worrying about passing the instance down through props. It also provides a `useLenis` hook that allows you to access the Lenis instance from any component in your app. lenis/vue provides a vueLenisPlugin that you can use to register the component globally. This allows you to use the component in your templates without having to import it, by using the `vue-lenis` template tag.
 
 
 ## Installation
@@ -14,33 +14,46 @@ npm i lenis
 
 ### Basic
 
-```jsx
-import { ReactLenis, useLenis } from 'lenis/react'
+```vue
+<script setup>
+import { VueLenis, useLenis } from 'lenis/react'
 
-function Layout() {
-  const lenis = useLenis(({ scroll }) => {
-    // called every scroll
-  })
+const lenis = useLenis(({ scroll }) => {
+  // called every scroll
+})
+</script>
 
-  return (
-    <ReactLenis root>
-      { /* content */ }
-    </ReactLenis>
-  )
-}
+<template>
+  <VueLenis root>
+    <!-- content -->
+  </VueLenis>
+</template>
 ```
 
-### RSC
-```jsx
-// libs/lenis.js
+### Plugin
+```js
+import { createApp } from 'vue'
+import vueLenisPlugin from 'lenis/vue'
 
-'use client'
+const app = createApp({})
 
-export * from 'lenis/react'
+app.use(vueLenisPlugin)
 ```
 
-```jsx
-import { ReactLenis, useLenis } from 'libs/lenis'
+```vue
+<script setup>
+import { useLenis } from 'lenis/react'
+
+const lenis = useLenis(({ scroll }) => {
+  // called every scroll
+})
+</script>
+
+<template>
+  <vue-lenis root>
+    <!-- content -->
+  </vue-lenis>
+</template>
 ```
 
 ## Props
@@ -48,66 +61,58 @@ import { ReactLenis, useLenis } from 'libs/lenis'
 - `root`: Lenis will be instanciate using `<html>` scroll. Default: `false`.
 - `autoRaf`: if `false`, `lenis.raf` needs to be called manually. Default: `true`.
 - `rafPriority`: [Tempus](https://github.com/studio-freight/tempus#readme) execution priority. Default: `0`.
-- `className`: Class name for the wrapper div. Default: `''`.
-
-
+- `props`: Props to pass to the wrapper div. Default: `{}`.
 
 ## Hooks
-Once the Lenis context is set (components mounted inside `<ReactLenis>`) you can use these handy hooks:
+Once the Lenis context is set (components mounted inside `<VueLenis>` or `<vue-lenis>`) you can use these handy hooks:
 
 `useLenis` is a hook that returns the Lenis instance
 
 The hook takes three argument:
 - `callback`: The function to be called whenever a scroll event is emitted
-- `deps`: Trigger callback on change
 - `priority`: Manage callback execution order
 
 ## Examples
 
 GSAP integration
 
-```jsx
-function Component() {
-  const lenisRef = useRef()
-  
-  useEffect(() => {
-    function update(time) {
-      lenisRef.current?.lenis?.raf(time * 1000)
-    }
-  
-    gsap.ticker.add(update)
-  
-    return () => {
-      gsap.ticker.remove(update)
-    }
+```vue
+<script setup>
+import { ref, watchEffect } from 'vue'
+import { VueLenis, useLenis } from 'lenis/react'
+import gsap from 'gsap'
+
+const lenisRef = ref()
+
+watchEffect((onInvalidate) => {
+  function update(time) {
+    lenisRef.value?.lenis?.raf(time * 1000)
+  }
+  gsap.ticker.add(update)
+
+  onInvalidate(() => {
+    gsap.ticker.remove(update)
   })
-  
-  return (
-    <ReactLenis ref={lenisRef} autoRaf={false}>
-      { /* content */ }
-    </ReactLenis>
-  )
-}
+})
+</script>
+
+<template>
+  <VueLenis ref="lenisRef" :autoRaf="false">
+    <!-- content -->
+  </VueLenis>
+</template>
 ```
-
-
-
-## lenis/react in use
-
-- [@darkroom.engineering/satus](https://github.com/darkroomengineering/satus) Our starter kit.
-
-<br/>
 
 ## Authors
 
 This tool is maintained by the darkroom.engineering team:
 
-- Clément Roche ([@clementroche\_](https://twitter.com/clementroche_)) – [darkroom.engineering](https://www.darkroom.engineering/)
-- Guido Fier ([@uido15](https://twitter.com/uido15)) – [darkroom.engineering](https://www.darkroom.engineering/)
-- Leandro Soengas ([@lsoengas](https://twitter.com/lsoengas)) - [darkroom.engineering](https://www.darkroom.engineering/)
-- Franco Arza ([@arzafran](https://twitter.com/arzafran)) - [darkroom.engineering](https://www.darkroom.engineering/)
-
-<br/>
+- Clément Roche ([@clementroche\_](https://twitter.com/clementroche_)) – [darkroom.engineering](https://darkroom.engineering)
+- Guido Fier ([@uido15](https://twitter.com/uido15)) – [darkroom.engineering](https://darkroom.engineering)
+- Leandro Soengas ([@lsoengas](https://twitter.com/lsoengas)) - [darkroom.engineering](https://darkroom.engineering)
+- Fermin Fernandez ([@Fermin_FerBridd](https://twitter.com/Fermin_FerBridd)) - [darkroom.engineering](https://darkroom.engineering)
+- Felix Mayr ([@feledori](https://twitter.com/feledori)) - [darkroom.engineering](https://darkroom.engineering)
+- Franco Arza ([@arzafran](https://twitter.com/arzafran)) - [darkroom.engineering](https://darkroom.engineering)
 
 ## License
 
