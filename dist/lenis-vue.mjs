@@ -47,11 +47,16 @@ var VueLenis = defineComponent({
       default: () => ({})
     }
   },
-  setup(props, { slots }) {
+  setup(props, { slots, expose }) {
     const lenisRef = shallowRef2();
     const tempusCleanupRef = shallowRef2();
     const wrapper = ref();
     const content = ref();
+    expose({
+      lenis: lenisRef,
+      wrapper,
+      content
+    });
     onMounted(() => {
       lenisRef.value = new Lenis({
         ...props.options,
@@ -140,14 +145,14 @@ var VueLenis = defineComponent({
   }
 });
 var vueLenisPlugin = (app) => {
-  app.component("lenis-vue", VueLenis);
+  app.component("vue-lenis", VueLenis);
   app.provide(LenisSymbol, shallowRef2(void 0));
   app.provide(AddCallbackSymbol, void 0);
   app.provide(RemoveCallbackSymbol, void 0);
 };
 
 // packages/vue/src/use-lenis.ts
-import { computed, inject, onBeforeUnmount as onBeforeUnmount2, watch as watch2 } from "vue";
+import { computed, inject, nextTick, onBeforeUnmount as onBeforeUnmount2, watch as watch2 } from "vue";
 function useLenis(callback, priority = 0) {
   const lenisInjection = inject(LenisSymbol);
   const addCallbackInjection = inject(AddCallbackSymbol);
@@ -161,6 +166,15 @@ function useLenis(callback, priority = 0) {
   const lenis = computed(
     () => lenisInjection?.value ? lenisInjection.value : globalLenis.value
   );
+  nextTick(() => {
+    nextTick(() => {
+      if (!lenis.value) {
+        throw new Error(
+          "No lenis instance found, either mount a root lenis instance or wrap your component in a lenis provider"
+        );
+      }
+    });
+  });
   watch2(
     [lenis, addCallback, removeCallback],
     ([lenis2, addCallback2, removeCallback2]) => {

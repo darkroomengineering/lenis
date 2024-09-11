@@ -59,7 +59,7 @@ declare const VueLenis: vue.DefineComponent<{
 declare const vueLenisPlugin: Plugin;
 declare module '@vue/runtime-core' {
     interface GlobalComponents {
-        'lenis-vue': typeof VueLenis;
+        'vue-lenis': typeof VueLenis;
     }
 }
 

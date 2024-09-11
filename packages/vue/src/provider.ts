@@ -52,11 +52,18 @@ export const VueLenis = defineComponent({
       default: () => ({}),
     },
   },
-  setup(props, { slots }) {
+  setup(props, { slots, expose }) {
     const lenisRef = shallowRef<Lenis>()
     const tempusCleanupRef = shallowRef<() => void>()
     const wrapper = ref<HTMLDivElement>()
     const content = ref<HTMLDivElement>()
+
+    // Setup exposed properties
+    expose({
+      lenis: lenisRef,
+      wrapper,
+      content,
+    })
 
     // Setup the lenis instance when the component is mounted
     onMounted(() => {
@@ -177,7 +184,7 @@ export const VueLenis = defineComponent({
 })
 
 export const vueLenisPlugin: Plugin = (app) => {
-  app.component('lenis-vue', VueLenis)
+  app.component('vue-lenis', VueLenis)
   // Setup a global provide to silence top level useLenis injection warning
   app.provide(LenisSymbol, shallowRef(undefined))
   app.provide(AddCallbackSymbol, undefined as any)
@@ -187,6 +194,6 @@ export const vueLenisPlugin: Plugin = (app) => {
 // @ts-ignore
 declare module '@vue/runtime-core' {
   export interface GlobalComponents {
-    'lenis-vue': typeof VueLenis
+    'vue-lenis': typeof VueLenis
   }
 }
