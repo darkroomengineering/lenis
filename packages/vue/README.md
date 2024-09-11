@@ -103,6 +103,8 @@ watchEffect((onInvalidate) => {
 </template>
 ```
 
+<br/>
+
 ## Authors
 
 This tool is maintained by the darkroom.engineering team:
@@ -113,6 +115,8 @@ This tool is maintained by the darkroom.engineering team:
 - Fermin Fernandez ([@Fermin_FerBridd](https://twitter.com/Fermin_FerBridd)) - [darkroom.engineering](https://darkroom.engineering)
 - Felix Mayr ([@feledori](https://twitter.com/feledori)) - [darkroom.engineering](https://darkroom.engineering)
 - Franco Arza ([@arzafran](https://twitter.com/arzafran)) - [darkroom.engineering](https://darkroom.engineering)
+
+<br/>
 
 ## License
 
