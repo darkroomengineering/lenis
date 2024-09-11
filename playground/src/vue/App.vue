@@ -1,7 +1,7 @@
 <script setup>
 import { useLenis } from 'lenis/vue'
 import { LoremIpsum } from 'lorem-ipsum'
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
 import Child from './Child.vue'
 import InnerChild from './InnerChild.vue'
 
@@ -18,29 +18,36 @@ const lenis = useLenis(
   'root'
 )
 
-// watch(lenis, (lenis) => {
-//   console.log('lenis in callback', lenis)
-// })
+const lenisRef = ref()
+
+watch(lenis, (lenis) => {
+  console.log('lenis in callback', lenis)
+})
+
+watch(lenisRef, (lenisRef) => {
+  console.log('lenis in ref', lenisRef.lenis)
+})
 </script>
 
 <template>
-  <lenis-vue root :options="{ lerp }" :autoRaf="autoRaf">
+  <vue-lenis ref="lenisRef" root :options="{ lerp }" :autoRaf="autoRaf">
     <Child />
     <button @click="lerp += 0.1">more lerp</button>
     <button @click="lerp -= 0.1">less lerp</button>
     <button @click="autoRaf = !autoRaf">toggle autoRaf</button>
     <button @click="lenis.scrollTo(200)">scroll to 200</button>
-    <lenis-vue
+    <button @click="lenisRef.lenis.scrollTo(200)">ref scroll to 200</button>
+    <vue-lenis
       :options="{ lerp: 0.2 }"
       style="height: 50svh; overflow: scroll"
       class="inner"
     >
       <InnerChild />
-    </lenis-vue>
+    </vue-lenis>
     <p>
       {{ lorem }}
     </p>
-  </lenis-vue>
+  </vue-lenis>
 </template>
 
 <style scoped>
