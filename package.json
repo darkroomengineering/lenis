@@ -31,7 +31,7 @@
     "dev": "pnpm run -w --parallel /^dev.*/",
     "dev:build": "tsup --watch",
     "dev:playground": "pnpm --filter playground dev",
-    "readme": "node 'scripts/update-readme.js'",
+    "readme": "node ./scripts/update-readme.js",
     "version:dev": "npm version prerelease --preid dev --force",
     "version:patch": "npm version patch --force",
     "version:minor": "npm version minor --force",
