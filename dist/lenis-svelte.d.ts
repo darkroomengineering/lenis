@@ -1,4 +1,3 @@
-/// <reference types="svelte" />
 import Lenis, { LenisOptions } from 'lenis';
 import { Action } from 'svelte/action';
 import { Readable } from 'svelte/store';
@@ -20,8 +19,8 @@ type LenisConfig = Partial<{
 }>;
 
 interface WithInstanceGet {
-    instance(id: string): Readable<Lenis>;
-    root(): Readable<Lenis>;
+    instance(id: string): Readable<Lenis | undefined>;
+    root(): Readable<Lenis | undefined>;
 }
 declare const lenis: Action<HTMLElement, LenisConfig | undefined> & WithInstanceGet;
 

@@ -63,6 +63,9 @@
     },
     "vue": {
       "optional": true
+    },
+    "svelte": {
+      "optional": true
     }
   },
   "unpkg": "./dist/lenis.mjs",

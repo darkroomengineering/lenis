@@ -6,8 +6,8 @@ import type { LenisConfig } from './config/config.js';
 import LenisInstanceManager from './instance-manager/intance-manager.js';
 
 interface WithInstanceGet {
-    instance(id: string): Readable<Lenis>;
-    root(): Readable<Lenis>;
+    instance(id: string): Readable<Lenis | undefined>;
+    root(): Readable<Lenis | undefined>;
 }
 
 export const lenis: Action<HTMLElement, LenisConfig | undefined> & WithInstanceGet= (el, config = {}) => {
