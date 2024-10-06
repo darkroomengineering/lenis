@@ -1,10 +1,10 @@
-/// <reference types="react" />
 import * as react from 'react';
 import { ReactNode, ComponentPropsWithoutRef } from 'react';
-import Lenis, { ScrollCallback, LenisOptions } from 'lenis';
+import * as Lenis from 'lenis';
+import Lenis__default, { ScrollCallback, LenisOptions } from 'lenis';
 
 type LenisContextValue = {
-    lenis: Lenis;
+    lenis: Lenis__default;
     addCallback: (callback: ScrollCallback, priority: number) => void;
     removeCallback: (callback: ScrollCallback) => void;
 };
@@ -61,10 +61,14 @@ type LenisRef = {
     /**
      * The lenis instance
      */
-    lenis?: Lenis;
+    lenis?: Lenis__default;
 };
 
-declare const LenisContext: react.Context<LenisContextValue | null>;
+/**
+ * React component to setup a Lenis instance
+ */
+declare const ReactLenis: react.ForwardRefExoticComponent<LenisProps & react.RefAttributes<LenisRef>>;
+
 /**
  * Hook to access the Lenis instance and its methods
  *
@@ -105,10 +109,6 @@ declare const LenisContext: react.Context<LenisContextValue | null>;
  *            })
  *          }
  */
-declare function useLenis(callback?: ScrollCallback, deps?: any[], priority?: number): Lenis | undefined;
-/**
- * React component to setup a Lenis instance
- */
-declare const ReactLenis: react.ForwardRefExoticComponent<LenisProps & react.RefAttributes<LenisRef>>;
+declare function useLenis(callback?: ScrollCallback, deps?: any[], priority?: number): Lenis.default | undefined;
 
-export { ReactLenis as Lenis, LenisContext, type LenisContextValue, type LenisProps, type LenisRef, ReactLenis, ReactLenis as default, useLenis };
+export { ReactLenis as Lenis, type LenisContextValue, type LenisProps, type LenisRef, ReactLenis, ReactLenis as default, useLenis };

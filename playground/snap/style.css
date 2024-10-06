@@ -1,0 +1,63 @@
+/* html {
+  scroll-snap-type: y mandatory;
+  scroll-behavior: smooth;
+}
+
+.section {
+  scroll-snap-align: start;
+} */
+
+/* palette from https://twitter.com/tranmautritam/status/1783420779709026785 */
+
+.section {
+  padding: 24px;
+
+  .inner {
+    height: 100%;
+    width: 100%;
+    border-radius: 16px;
+  }
+}
+
+.section:not(:last-child) {
+  margin-bottom: -24px;
+}
+
+.section-1 {
+  height: 150vh;
+
+  .inner {
+    background-color: #255bec;
+  }
+}
+
+.section-2 {
+  height: 50vh;
+
+  .inner {
+    background-color: #f6c74d;
+  }
+}
+
+.section-3 {
+  height: 80vh;
+
+  .inner {
+    background-color: #b49df8;
+  }
+}
+
+.section-4 {
+  height: 150vh;
+
+  .inner {
+    background-color: #ea6e38;
+  }
+}
+
+/* #wrapper {
+  height: 80vh;
+  overflow-y: auto;
+  position: relative;
+  top: 10vh;
+} */

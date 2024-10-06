@@ -1,4 +1,4 @@
-import Lenis from '.'
+import type { Lenis } from './lenis'
 
 export type OnUpdateCallback = (value: number, completed: boolean) => void
 export type OnStartCallback = () => void

@@ -1,6 +1,8 @@
 {
   "name": "lenis",
   "version": "1.1.13",
+  "type": "module",
+  "sideEffects": false,
   "author": "darkroom.engineering",
   "contributors": [
     "Daniel Nahuel Acuña <danielnahuelacuna98@gmail.com> (https://github.com/DaniAcu)"
@@ -22,61 +24,47 @@
     "scroll",
     "smooth",
     "lenis",
-    "react"
+    "react",
+    "vue"
   ],
-  "type": "module",
   "scripts": {
-    "dev:core": "npm run dev --prefix ./packages/core",
-    "dev:react": "npm run dev --prefix ./packages/react",
-    "dev:snap": "npm run dev --prefix ./packages/snap",
-    "dev:svelte": "npm run dev --prefix ./packages/svelte",
-    "build:core": "npm run build --prefix ./packages/core",
-    "build:react": "npm run build --prefix ./packages/react",
-    "build:snap": "npm run build --prefix ./packages/snap",
-    "build:svelte": "npm run build --prefix ./packages/svelte",
-    "build": "npm-run-all clean build:core build:react build:snap build:svelte",
-    "clean": "shx rm -rf dist/*",
-    "readme": "node update-readme.js",
+    "build": "pnpm build:core && pnpm build:all",
+    "build:core": "tsup --config tsup.core.ts",
+    "build:all": "tsup",
+    "dev": "pnpm run -w --parallel /^dev.*/",
+    "dev:build": "tsup --watch",
+    "dev:playground": "pnpm --filter playground dev",
+    "readme": "node scripts/update-readme.js",
     "version:dev": "npm version prerelease --preid dev --force",
     "version:patch": "npm version patch --force",
     "version:minor": "npm version minor --force",
     "version:major": "npm version major --force",
-    "postversion": "npm-run-all build readme",
+    "postversion": "pnpm build && pnpm readme",
     "publish": "npm publish",
     "publish:dev": "npm publish --tag dev"
   },
   "files": [
     "dist"
   ],
+  "dependencies": {
+    "@darkroom.engineering/tempus": "^0.0.46"
+  },
   "devDependencies": {
-    "@rollup/plugin-commonjs": "^25.0.7",
-    "@rollup/plugin-json": "^6.1.0",
-    "@rollup/plugin-node-resolve": "^15.2.3",
-    "@rollup/plugin-terser": "^0.4.4",
-    "@rollup/plugin-typescript": "^11.1.6",
-    "@types/react": "^18.2.77",
-    "npm-run-all": "^4.1.5",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
-    "rollup": "^4.14.2",
-    "rollup-plugin-dts": "^6.1.0",
-    "shx": "^0.3.4",
-    "tslib": "^2.6.2",
+    "tsup": "^8.2.4",
     "typescript": "^5.4.5"
   },
   "peerDependencies": {
     "react": ">=17.0.0",
-    "react-dom": ">=17.0.0"
+    "vue": ">=3.0.0"
   },
   "peerDependenciesMeta": {
     "react": {
       "optional": true
     },
-    "react-dom": {
+    "vue": {
       "optional": true
     }
   },
-  "sideEffects": false,
   "unpkg": "./dist/lenis.mjs",
   "main": "./dist/lenis.mjs",
   "module": "./dist/lenis.mjs",
@@ -94,9 +82,10 @@
     "./snap": {
       "types": "./dist/lenis-snap.d.ts",
       "default": "./dist/lenis-snap.mjs"
+    },
+    "./vue": {
+      "types": "./dist/lenis-vue.d.ts",
+      "default": "./dist/lenis-vue.mjs"
     }
-  },
-  "dependencies": {
-    "@darkroom.engineering/tempus": "^0.0.46"
   }
 }

@@ -1,0 +1,10 @@
+{
+  "name": "lenis-vue",
+  "type": "module",
+  "dependencies": {
+    "lenis": "workspace:lenis*"
+  },
+  "devDependencies": {
+    "vue": "^3.4.38"
+  }
+}

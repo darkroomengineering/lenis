@@ -38,5 +38,10 @@ yarn-error.log*
 
 .npmrc
 
-/.svelte-kit
-packages/**/dist/
+
+packages/core/dist/
+packages/react/dist/
+packages/snap/dist/
+packages/vue/dist/
+
+dist-new/
