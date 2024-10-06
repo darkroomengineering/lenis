@@ -89,6 +89,10 @@
     "./vue": {
       "types": "./dist/lenis-vue.d.ts",
       "default": "./dist/lenis-vue.mjs"
+    },
+    "./svelte": {
+      "types": "./dist/lenis-svelte.d.ts",
+      "default": "./dist/lenis-svelte.mjs"
     }
   }
 }
