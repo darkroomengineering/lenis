@@ -2,6 +2,9 @@
   "name": "lenis",
   "version": "1.1.13",
   "author": "darkroom.engineering",
+  "contributors": [
+    "Daniel Nahuel Acuña <danielnahuelacuna98@gmail.com> (https://github.com/DaniAcu)"
+  ],
   "license": "MIT",
   "repository": {
     "type": "git",
@@ -26,10 +29,12 @@
     "dev:core": "npm run dev --prefix ./packages/core",
     "dev:react": "npm run dev --prefix ./packages/react",
     "dev:snap": "npm run dev --prefix ./packages/snap",
+    "dev:svelte": "npm run dev --prefix ./packages/svelte",
     "build:core": "npm run build --prefix ./packages/core",
     "build:react": "npm run build --prefix ./packages/react",
     "build:snap": "npm run build --prefix ./packages/snap",
-    "build": "npm-run-all clean build:core build:react build:snap",
+    "build:svelte": "npm run build --prefix ./packages/svelte",
+    "build": "npm-run-all clean build:core build:react build:snap build:svelte",
     "clean": "shx rm -rf dist/*",
     "readme": "node update-readme.js",
     "version:dev": "npm version prerelease --preid dev --force",
