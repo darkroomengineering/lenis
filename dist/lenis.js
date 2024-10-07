@@ -1,5 +1,5 @@
 // package.json
-var version = "1.1.13";
+var version = "1.1.14-dev.0";
 
 // packages/core/src/maths.ts
 function clamp(min, input, max) {
