@@ -37,7 +37,7 @@
     "version:minor": "npm version minor --force",
     "version:major": "npm version major --force",
     "postversion": "pnpm build && pnpm readme",
-    "publish": "npm publish",
+    "publish:main": "npm publish",
     "publish:dev": "npm publish --tag dev"
   },
   "files": [
