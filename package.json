@@ -1,6 +1,6 @@
 {
   "name": "lenis",
-  "version": "1.1.14-dev.5",
+  "version": "1.1.14-dev.0",
   "type": "module",
   "sideEffects": false,
   "author": "darkroom.engineering",
@@ -28,7 +28,7 @@
     "build": "pnpm build:core && pnpm build:all",
     "build:core": "tsup --config tsup.core.ts",
     "build:all": "tsup",
-    "dev": "pnpm run -w --parallel /^dev.*/",
+    "dev": "pnpm run -w --parallel /^dev:.*/",
     "dev:build": "tsup --watch",
     "dev:playground": "pnpm --filter playground dev",
     "readme": "node ./scripts/update-readme.js",
