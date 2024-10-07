@@ -105,6 +105,7 @@ export class Lenis {
     autoResize = true,
     prevent,
     virtualScroll,
+    overscroll = false,
     __experimental__naiveDimensions = false,
   }: LenisOptions = {}) {
     // Set version
@@ -139,6 +140,7 @@ export class Lenis {
       autoResize,
       prevent,
       virtualScroll,
+      overscroll,
       __experimental__naiveDimensions,
     }
 
@@ -303,7 +305,12 @@ export class Lenis {
             (isTouch && node.hasAttribute?.('data-lenis-prevent-touch')) ||
             (isWheel && node.hasAttribute?.('data-lenis-prevent-wheel')) ||
             (node.classList?.contains('lenis') &&
-              !node.classList?.contains('lenis-stopped'))) // nested lenis instance
+              !node.classList?.contains('lenis-stopped') &&
+              !node.classList?.contains('lenis-locked') &&
+              (node.classList?.contains('lenis-overscroll')
+                ? node.classList?.contains('lenis-scrolling') &&
+                  node.classList?.contains('lenis-smooth')
+                : true))) // nested lenis instance
       )
     )
       return
@@ -718,6 +725,7 @@ export class Lenis {
     if (this.isLocked) className += ' lenis-locked'
     if (this.isScrolling) className += ' lenis-scrolling'
     if (this.isScrolling === 'smooth') className += ' lenis-smooth'
+    if (this.options.overscroll) className += ' lenis-overscroll'
     return className
   }
 

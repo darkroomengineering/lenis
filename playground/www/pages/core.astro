@@ -4,7 +4,11 @@ import Layout from '../layouts/Layout.astro'
 ---
 <Layout title="Lenis">
 	<button id="scroll-100">Scroll 100</button>
-	<div id="app"></div>
+	<div id="app">
+		<div id="nested">
+			<div id="nested-content"></div>
+		</div>
+	</div>
 	<script src="../../core/test.ts"></script>
 	<!-- THESE ARE HERE TO TEST THE BROWSER VERSION BUNDLE -->
 	<!-- <script is:raw src="../../node_modules/lenis/dist/lenis.min.js"></script> -->

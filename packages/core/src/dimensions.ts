@@ -21,8 +21,8 @@ export class Dimensions {
   private contentResizeObserver?: ResizeObserver
 
   constructor(
-    private wrapper: HTMLElement | Window,
-    private content: HTMLElement,
+    private wrapper: HTMLElement | Window | Element,
+    private content: HTMLElement | Element,
     { autoResize = true, debounce: debounceValue = 250 } = {}
   ) {
     if (autoResize) {

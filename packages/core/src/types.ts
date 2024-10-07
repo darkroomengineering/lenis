@@ -106,17 +106,17 @@ export type LenisOptions = {
    * The element that will be used as the scroll container
    * @default window
    */
-  wrapper?: Window | HTMLElement
+  wrapper?: Window | HTMLElement | Element
   /**
    * The element that contains the content that will be scrolled, usually `wrapper`'s direct child
    * @default document.documentElement
    */
-  content?: HTMLElement
+  content?: HTMLElement | Element
   /**
    * The element that will listen to `wheel` and `touch` events
    * @default window
    */
-  eventsTarget?: Window | HTMLElement
+  eventsTarget?: Window | HTMLElement | Element
   /**
    * Smooth the scroll initiated by `wheel` events
    * @default true
@@ -189,6 +189,11 @@ export type LenisOptions = {
    * Manually modify the events before they get consumed
    */
   virtualScroll?: (data: VirtualScrollData) => boolean
+  /**
+   * Wether or not to enable overscroll on a nested lenis instance, similar to CSS overscroll-behavior (https://developer.mozilla.org/en-US/docs/Web/CSS/overscroll-behavior)
+   * @default false
+   */
+  overscroll?: boolean
   /**
    * If `true`, Lenis will not try to detect the size of the content and wrapper
    * @default false
