@@ -56,18 +56,22 @@ using scripts:
 ### Basic:
 
 ```js
-const lenis = new Lenis()
+// Initialize Lenis
+const lenis = new Lenis();
 
+// Listen for the scroll event and log the event data
 lenis.on('scroll', (e) => {
-  console.log(e)
-})
+  console.log(e);
+});
 
+// Use requestAnimationFrame to continuously update the scroll
 function raf(time) {
-  lenis.raf(time)
-  requestAnimationFrame(raf)
+  lenis.raf(time);
+  requestAnimationFrame(raf);
 }
 
-requestAnimationFrame(raf)
+requestAnimationFrame(raf);
+
 ```
 
 #### Recommended CSS:
@@ -108,19 +112,26 @@ import 'lenis/dist/lenis.css'
 
 ### GSAP ScrollTrigger:
 ```js
-const lenis = new Lenis()
+// Initialize a new Lenis instance for smooth scrolling
+const lenis = new Lenis();
 
+// Listen for the 'scroll' event and log the event data to the console
 lenis.on('scroll', (e) => {
-  console.log(e)
-})
+  console.log(e);
+});
 
-lenis.on('scroll', ScrollTrigger.update)
+// Synchronize Lenis scrolling with GSAP's ScrollTrigger plugin
+lenis.on('scroll', ScrollTrigger.update);
 
-gsap.ticker.add((time)=>{
-  lenis.raf(time * 1000)
-})
+// Add Lenis's requestAnimationFrame (raf) method to GSAP's ticker
+// This ensures Lenis's smooth scroll animation updates on each GSAP tick
+gsap.ticker.add((time) => {
+  lenis.raf(time * 1000); // Convert time from seconds to milliseconds
+});
 
-gsap.ticker.lagSmoothing(0)
+// Disable lag smoothing in GSAP to prevent any delay in scroll animations
+gsap.ticker.lagSmoothing(0);
+
 ```
 
 ### React:
@@ -147,7 +158,7 @@ See documentation for [lenis/react](https://github.com/darkroomengineering/lenis
 | `gestureOrientation`     | `string`              | `vertical`                                         | The orientation of the gestures. Can be `vertical`, `horizontal` or `both`                                                                                                                                                                                                       |
 | `syncTouch`              | `boolean`             | `false`                                            | Mimic touch device scroll while allowing scroll sync (can be unstable on iOS<16)                                                                                                                                                                                                 |
 | `syncTouchLerp`          | `number`              | `0.075`                                            | Lerp applied during `syncTouch` inertia                                                                                                                                                                                                                                          |
-| `touchInertiaMultiplier` | `number`              | `35`                                               | Manage the the strength of `syncTouch` inertia                                                                                                                                                                                                                                   |
+| `touchInertiaMultiplier` | `number`              | `35`                                               | Manage the strength of syncTouch inertia                                                                                                                                                                                                                                   |
 | `wheelMultiplier`        | `number`              | `1`                                                | The multiplier to use for mouse wheel events                                                                                                                                                                                                                                     |
 | `touchMultiplier`        | `number`              | `1`                                                | The multiplier to use for touch events                                                                                                                                                                                                                                           |
 | `infinite`               | `boolean`             | `false`                                            | Enable infinite scrolling! `syncTouch: true` is required on touch devices. ([See example](https://codepen.io/ClementRoche/pen/OJqBLod))                                                                                                                                          |
