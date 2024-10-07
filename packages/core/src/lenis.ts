@@ -105,7 +105,7 @@ export class Lenis {
     autoResize = true,
     prevent,
     virtualScroll,
-    overscroll = false,
+    overscroll = true,
     __experimental__naiveDimensions = false,
   }: LenisOptions = {}) {
     // Set version
