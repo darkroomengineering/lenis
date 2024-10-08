@@ -1,0 +1,10 @@
+{
+	"name": "lenis-svelte",
+	"type": "module",
+	"dependencies": {
+	  "lenis": "workspace:lenis*"
+	},
+	"devDependencies": {
+	  "svelte": "^4.2.19"
+	}
+  }
