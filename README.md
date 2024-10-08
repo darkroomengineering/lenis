@@ -158,7 +158,7 @@ See documentation for [lenis/react](https://github.com/darkroomengineering/lenis
 | `gestureOrientation`     | `string`              | `vertical`                                         | The orientation of the gestures. Can be `vertical`, `horizontal` or `both`                                                                                                                                                                                                       |
 | `syncTouch`              | `boolean`             | `false`                                            | Mimic touch device scroll while allowing scroll sync (can be unstable on iOS<16)                                                                                                                                                                                                 |
 | `syncTouchLerp`          | `number`              | `0.075`                                            | Lerp applied during `syncTouch` inertia                                                                                                                                                                                                                                          |
-| `touchInertiaMultiplier` | `number`              | `35`                                               | Manage the strength of syncTouch inertia                                                                                                                                                                                                                                   |
+| `touchInertiaMultiplier` | `number`              | `35`                                               | Manage the strength of syncTouch inertia                                                                                                                                                                                                                                         |
 | `wheelMultiplier`        | `number`              | `1`                                                | The multiplier to use for mouse wheel events                                                                                                                                                                                                                                     |
 | `touchMultiplier`        | `number`              | `1`                                                | The multiplier to use for touch events                                                                                                                                                                                                                                           |
 | `infinite`               | `boolean`             | `false`                                            | Enable infinite scrolling! `syncTouch: true` is required on touch devices. ([See example](https://codepen.io/ClementRoche/pen/OJqBLod))                                                                                                                                          |
@@ -297,27 +297,17 @@ prevent touch events only
 
 - [r3f-scroll-rig](https://github.com/14islands/r3f-scroll-rig) by [14islands](https://14islands.com/)
 - [locomotive-scroll](https://github.com/locomotivemtl/locomotive-scroll) by [Locomotive](https://locomotive.ca/)
-- [vue-lenis](https://github.com/zeokku/vue-lenis) by [ZEOKKU](https://zeokku.com/)
-- [nuxt-lenis](https://www.npmjs.com/package/nuxt-lenis) by [Milkshake Studio](https://milkshake.studio/)
 
 <br>
 
 ## Lenis in use
 
-- [Lunchbox](https://lunchbox.io/) by [Studio Freight](https://www.studiofreight.com/)
-- [Easol](https://easol.com/) by [Studio Freight](https://www.studiofreight.com/)
-- [Dragonfly](https://dragonfly.xyz/) by [Studio Freight](https://www.studiofreight.com/)
-- [Yuga Labs](https://yuga.com/) by [Antinomy Studio](https://antinomy.studio/)
-- [Quentin Hocde's Portfolio](https://quentinhocde.com) by [Quentin Hocde](https://twitter.com/QuentinHocde)
-- [Houses Of](https://housesof.world) by [Félix P.](https://flayks.com/) & [Shelby Kay](https://shelbykay.dev/)
-- [Shelby Kay's Portfolio](https://shelbykay.dev) by [Shelby Kay](https://shelbykay.dev/)
-- [Heights Agency Portfolio](https://www.heights.agency/) by [Francesco Michelini](https://www.francescomichelini.com/)
-- [Goodship](https://goodship.io) by [Studio Freight](https://www.studiofreight.com/)
-- [Flayks' Portfolio](https://flayks.com) by [Félix P.](https://flayks.com/) & [Shelby Kay](https://shelbykay.dev/)
-- [Matt Rothenberg's portfolio](https://mattrothenberg.com) by [Matt Rothenberg](https://twitter.com/mattrothenberg)
-- [Edoardo Lunardi's portfolio](https://www.edoardolunardi.dev/) by [Edoardo Lunardi](https://www.edoardolunardi.dev/)
 - [DeSo](https://deso.com) by [Studio Freight](https://www.studiofreight.com/)
-- [Francesco Michelini's portfolio](https://www.francescomichelini.com/projects) by [Francesco Michelini](https://www.francescomichelini.com/)
+- [Sculpting Harmony](https://gehry.getty.edu/) by [Resn](https://resn.co.nz/)
+- [Superpower](https://superpower.com/)
+- [Daylight Computer](https://daylightcomputer.com/) by [Basement Studio](https://basement.studio/)
+- [Lifeworld by Olafur Eliasson](https://lifeworld.wetransfer.com/) by Nicolas Garnier, Simon Riisnæs Dagfinrud, Lumír Španihel, Everton Guilherme, Diana Alcausin, Cristiana Sousa
+
 
 <br/>
 
