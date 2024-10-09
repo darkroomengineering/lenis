@@ -1,8 +1,8 @@
 import cn from 'clsx'
 import { CustomHead } from 'components/custom-head'
+import Lenis from 'lenis'
+import Snap from 'lenis/snap'
 import { useEffect, useRef } from 'react'
-import Snap from '../../../dist/lenis-snap.mjs'
-import Lenis from '../../../dist/lenis.mjs'
 import s from './snap.module.scss'
 
 export default function Page() {

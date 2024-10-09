@@ -28,7 +28,6 @@
     "build": "pnpm build:core && pnpm build:all",
     "build:core": "tsup --config tsup.core.ts",
     "build:all": "tsup",
-    "build:website": "pnpm build && pnpm --filter website build",
     "dev": "pnpm run -w --parallel /^dev:.*/",
     "dev:build": "tsup --watch",
     "dev:playground": "pnpm --filter playground dev",
