@@ -1,5 +1,5 @@
 {
-  "name": "lenis-website",
+  "name": "website",
   "version": "1.0.0",
   "description": "Lenis is a smooth scroll library to normalize the scrolling experience across devices",
   "scripts": {
@@ -23,7 +23,6 @@
     "clsx": "^1.2.1",
     "glslify-loader": "^2.0.0",
     "gsap": "npm:@gsap/business@^3.12.4",
-    "lenis": "workspace:*",
     "leva": "^0.9.34",
     "nanoevents": "^7.0.1",
     "next": "^13.2.4",
@@ -31,7 +30,7 @@
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-use": "^17.4.0",
-    "three": "^0.150.1",
+    "three": "^0.169.0",
     "zustand": "4.3.6"
   },
   "devDependencies": {
@@ -54,15 +53,5 @@
     "prettier-eslint": "^15.0.1",
     "sass": "^1.59.3",
     "stats.js": "^0.17.0"
-  },
-  "pnpm": {
-    "overrides": {
-      "extend-shallow": "3.0.2",
-      "is-extendable": "1.0.1",
-      "react-is": "18.2.0",
-      "scheduler": "0.23.0",
-      "throttle-debounce": "5.0.0",
-      "zustand": "4.3.6"
-    }
   }
 }

@@ -1,6 +1,6 @@
 import { useFrame } from '@studio-freight/hamo'
-import Lenis from 'lenis'
 import { useEffect, useRef, useState } from 'react'
+import Lenis from '../../../dist/lenis.mjs'
 import s from './docs.module.scss'
 
 export default function Docs() {
