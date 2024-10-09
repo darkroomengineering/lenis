@@ -4,11 +4,11 @@ import { CustomHead } from 'components/custom-head'
 import { Footer } from 'components/footer'
 import { Intro } from 'components/intro'
 import { Scrollbar } from 'components/scrollbar'
+import Lenis from 'lenis'
 import { useStore } from 'lib/store'
 import dynamic from 'next/dynamic'
 import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react'
-import Lenis from '../../../dist/lenis.mjs'
 import s from './layout.module.scss'
 
 const Cursor = dynamic(
