@@ -5,10 +5,10 @@ document.querySelector('#nested-content')!.innerHTML =
   new LoremIpsum().generateParagraphs(30)
 document
   .querySelector('#app')!
-  .insertAdjacentText('afterbegin', new LoremIpsum().generateParagraphs(10))
+  .insertAdjacentText('afterbegin', new LoremIpsum().generateParagraphs(20))
 document
   .querySelector('#app')!
-  .insertAdjacentText('beforeend', new LoremIpsum().generateParagraphs(10))
+  .insertAdjacentText('beforeend', new LoremIpsum().generateParagraphs(20))
 
 const lenis = new Lenis({
   // autoResize: false,
@@ -35,7 +35,10 @@ const lenis = new Lenis({
 const nestedLenis = new Lenis({
   wrapper: document.querySelector('#nested')!,
   content: document.querySelector('#nested-content')!,
-  overscroll: true,
+  // overscroll: false,
+  // orientation: 'horizontal',
+  // gestureOrientation: 'horizontal',
+  // infinite: true,
 
   // smoothWheel: false,
 })
@@ -44,7 +47,7 @@ window.nestedLenis = nestedLenis
 
 // console.log(lenis.dimensions.height)
 lenis.on('scroll', (e) => {
-  console.log(e.scroll, e.velocity)
+  // console.log(e.scroll, e.velocity)
   // console.log(e.scroll, e.velocity, e.isScrolling, e.userData)
 })
 // lenis.on('virtual-scroll', (e) => {

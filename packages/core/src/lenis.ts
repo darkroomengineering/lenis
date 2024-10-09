@@ -246,6 +246,8 @@ export class Lenis {
 
     // keep zoom feature
     if (event.ctrlKey) return
+    // @ts-ignore
+    if (event.lenisStopPropagation) return
 
     const isTouch = event.type.includes('touch')
     const isWheel = event.type.includes('wheel')
@@ -303,14 +305,7 @@ export class Lenis {
           ((typeof prevent === 'function' && prevent?.(node)) ||
             node.hasAttribute?.('data-lenis-prevent') ||
             (isTouch && node.hasAttribute?.('data-lenis-prevent-touch')) ||
-            (isWheel && node.hasAttribute?.('data-lenis-prevent-wheel')) ||
-            (node.classList?.contains('lenis') &&
-              !node.classList?.contains('lenis-stopped') &&
-              !node.classList?.contains('lenis-locked') &&
-              (node.classList?.contains('lenis-overscroll')
-                ? node.classList?.contains('lenis-scrolling') &&
-                  node.classList?.contains('lenis-smooth')
-                : true))) // nested lenis instance
+            (isWheel && node.hasAttribute?.('data-lenis-prevent-wheel')))
       )
     )
       return
@@ -327,10 +322,10 @@ export class Lenis {
     if (!isSmooth) {
       this.isScrolling = 'native'
       this.animate.stop()
+      // @ts-ignore
+      event.lenisStopPropagation = true
       return
     }
-
-    event.preventDefault()
 
     let delta = deltaY
     if (this.options.gestureOrientation === 'both') {
@@ -338,6 +333,21 @@ export class Lenis {
     } else if (this.options.gestureOrientation === 'horizontal') {
       delta = deltaX
     }
+
+    if (
+      !this.options.overscroll ||
+      this.options.infinite ||
+      (this.options.wrapper !== window &&
+        ((this.animatedScroll > 0 && this.animatedScroll < this.limit) ||
+          (this.animatedScroll === 0 && deltaY > 0) ||
+          (this.animatedScroll === this.limit && deltaY < 0)))
+    ) {
+      // @ts-ignore
+      event.lenisStopPropagation = true
+      // event.stopPropagation()
+    }
+
+    event.preventDefault()
 
     const syncTouch = isTouch && this.options.syncTouch
     const isTouchEnd = isTouch && event.type === 'touchend'
@@ -725,7 +735,6 @@ export class Lenis {
     if (this.isLocked) className += ' lenis-locked'
     if (this.isScrolling) className += ' lenis-scrolling'
     if (this.isScrolling === 'smooth') className += ' lenis-smooth'
-    if (this.options.overscroll) className += ' lenis-overscroll'
     return className
   }
 
