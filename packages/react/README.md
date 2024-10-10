@@ -30,19 +30,6 @@ function Layout() {
 }
 ```
 
-### RSC
-```jsx
-// libs/lenis.js
-
-'use client'
-
-export * from 'lenis/react'
-```
-
-```jsx
-import { ReactLenis, useLenis } from 'libs/lenis'
-```
-
 ## Props
 - `options`: [Lenis options](https://github.com/darkroomengineering/lenis#instance-settings).
 - `root`: Lenis will be instanciate using `<html>` scroll. Default: `false`.
