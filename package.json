@@ -1,6 +1,6 @@
 {
   "name": "lenis",
-  "version": "1.1.14-dev.2",
+  "version": "1.1.14",
   "type": "module",
   "sideEffects": false,
   "author": "darkroom.engineering",

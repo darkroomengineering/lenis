@@ -1,7 +1,7 @@
 import fs from 'fs'
 import packageJson from '../package.json' assert { type: 'json' }
 
-const readmePath = '../README.md'
+const readmePath = './README.md'
 
 function updateVersion() {
   return new Promise((resolve, reject) => {
