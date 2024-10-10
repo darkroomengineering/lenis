@@ -190,7 +190,7 @@ export type LenisOptions = {
    */
   virtualScroll?: (data: VirtualScrollData) => boolean
   /**
-   * Wether or not to enable overscroll on a nested lenis instance, similar to CSS overscroll-behavior (https://developer.mozilla.org/en-US/docs/Web/CSS/overscroll-behavior)
+   * Wether or not to enable overscroll on a nested Lenis instance, similar to CSS overscroll-behavior (https://developer.mozilla.org/en-US/docs/Web/CSS/overscroll-behavior)
    * @default true
    */
   overscroll?: boolean
