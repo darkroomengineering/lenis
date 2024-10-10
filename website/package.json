@@ -10,7 +10,8 @@
     "postbuild": "next-sitemap",
     "analyze": "cross-env ANALYZE=true next build",
     "analyze:server": "cross-env BUNDLE_ANALYZE=server next build",
-    "analyze:browser": "cross-env BUNDLE_ANALYZE=browser next build"
+    "analyze:browser": "cross-env BUNDLE_ANALYZE=browser next build",
+    "npmrc": "pnpx npmrc-replace-env -w"
   },
   "keywords": [],
   "author": "",
