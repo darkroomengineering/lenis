@@ -38,7 +38,7 @@ export default function Page() {
     // snap.add(500)
 
     snap.addElement(section1, {
-      align: 'end', // 'start', 'center', 'end'
+      align: ['start', 'end'], // 'start', 'center', 'end'
     })
 
     snap.addElement(section2, {
@@ -50,7 +50,7 @@ export default function Page() {
     })
 
     snap.addElement(section4, {
-      align: 'start', // 'start', 'center', 'end'
+      align: ['start', 'end'], // 'start', 'center', 'end'
     })
 
     function raf(time) {
