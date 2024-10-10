@@ -10,7 +10,7 @@ export default function Page() {
 
   useEffect(() => {
     const lenis = new Lenis({
-      lerp: 0.1,
+      // lerp: 0.1,
       prevent: (node) => node.nodeName === 'VERCEL-LIVE-FEEDBACK',
     })
     window.lenis = lenis
