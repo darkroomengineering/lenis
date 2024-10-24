@@ -21,7 +21,7 @@ jobs:
           # find project id here: https://vercel.com/darkroom-engineering/satus/settings
           vercel_team_id: 'darkroom-engineering'
           vercel_project_id: ${{ secrets.VERCEL_PROJECT_ID }}
-      - uses: actions/checkout@v4.2.1
+      - uses: actions/checkout@v4.2.2
       - name: Audit preview URL with Lighthouse
         id: lighthouse_audit
         uses: treosh/lighthouse-ci-action@v12
