@@ -66,7 +66,7 @@ function Component() {
     const rafId = requestAnimationFrame(update)
   
     return () => cancelAnimationFrame(rafId)
-  })
+  }, [])
   
   return (
     <ReactLenis ref={lenisRef}>
@@ -95,7 +95,7 @@ function Component() {
     gsap.ticker.add(update)
   
     return () => gsap.ticker.remove(update)
-  })
+  }, [])
   
   return (
     <ReactLenis ref={lenisRef}>
