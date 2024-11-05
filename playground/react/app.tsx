@@ -1,6 +1,6 @@
-import ReactLenis, { useLenis } from 'lenis/react'
+import { ReactLenis, useLenis } from 'lenis/react'
 import { LoremIpsum } from 'lorem-ipsum'
-import { useEffect, useRef, useState } from 'react'
+import { useRef, useState } from 'react'
 
 function App() {
   const [lorem] = useState(() => new LoremIpsum().generateParagraphs(200))
@@ -11,27 +11,22 @@ function App() {
 
   const lenisRef = useRef()
 
-  useEffect(() => {
-    console.log('lenis ref', lenisRef.current)
+  // useEffect(() => {
+  //   console.log('lenis ref', lenisRef.current)
 
-    function raf(time: number) {
-      lenisRef.current?.lenis?.raf(time)
-    }
+  //   function raf(time: number) {
+  //     lenisRef.current?.lenis?.raf(time)
+  //   }
 
-    const rafId = requestAnimationFrame(raf)
+  //   const rafId = requestAnimationFrame(raf)
 
-    return () => cancelAnimationFrame(rafId)
-  }, [lenis])
+  //   return () => cancelAnimationFrame(rafId)
+  // }, [lenis])
 
   return (
     <>
       {/* <ReactLenis root /> */}
-      <ReactLenis
-        className="wrapper"
-        root
-        options={{ autoRaf: true }}
-        ref={lenisRef}
-      >
+      <ReactLenis className="wrapper" root ref={lenisRef}>
         {lorem}
       </ReactLenis>
     </>

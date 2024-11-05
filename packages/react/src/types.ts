@@ -21,13 +21,9 @@ export type LenisProps = {
   /**
    * Auto-setup requestAnimationFrame
    * @default true
+   * @deprecated use options.autoRaf instead
    */
   autoRaf?: boolean
-  /**
-   * RequestAnimationFrame priority
-   * @default 0
-   */
-  rafPriority?: number
   /**
    * Children
    */

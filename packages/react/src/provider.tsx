@@ -26,7 +26,14 @@ export const rootLenisContextStore = new Store<LenisContextValue | null>(null)
  */
 export const ReactLenis = forwardRef<LenisRef, LenisProps>(
   (
-    { children, root = false, options = {}, className, props }: LenisProps,
+    {
+      children,
+      root = false,
+      options = {},
+      className,
+      autoRaf = true,
+      props,
+    }: LenisProps,
     ref
   ) => {
     const wrapperRef = useRef<HTMLDivElement | null>(null)
@@ -53,6 +60,7 @@ export const ReactLenis = forwardRef<LenisRef, LenisProps>(
           wrapper: wrapperRef.current!,
           content: contentRef.current!,
         }),
+        autoRaf: options?.autoRaf ?? autoRaf, // this is to avoid breaking the autoRaf prop if it's still used (require breaking change)
       })
 
       setLenis(lenis)
