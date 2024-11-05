@@ -57,6 +57,20 @@ using scripts:
 
 ```js
 // Initialize Lenis
+const lenis = new Lenis({
+  autoRaf: true,
+});
+
+// Listen for the scroll event and log the event data
+lenis.on('scroll', (e) => {
+  console.log(e);
+});
+```
+
+### Custom raf loop:
+
+```js
+// Initialize Lenis
 const lenis = new Lenis();
 
 // Listen for the scroll event and log the event data
@@ -71,10 +85,22 @@ function raf(time) {
 }
 
 requestAnimationFrame(raf);
-
 ```
 
 #### Recommended CSS:
+
+import stylesheet
+```js
+import 'lenis/dist/lenis.css'
+```
+
+or link the CSS file:
+
+```html
+<link rel="stylesheet" href="https://unpkg.com/lenis@1.1.14/dist/lenis.css">
+```
+
+or add it manually:
 
 ```css
 html.lenis, html.lenis body {
@@ -96,18 +122,6 @@ html.lenis, html.lenis body {
 .lenis.lenis-smooth iframe {
   pointer-events: none;
 }
-```
-
-or link the CSS file:
-
-```html
-<link rel="stylesheet" href="https://unpkg.com/lenis@1.1.14/dist/lenis.css">
-```
-
-or import it:
-
-```js
-import 'lenis/dist/lenis.css'
 ```
 
 ### GSAP ScrollTrigger:

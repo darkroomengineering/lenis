@@ -1,4 +1,3 @@
-import Tempus from '@darkroom.engineering/tempus'
 import Lenis, { type ScrollCallback } from 'lenis'
 import {
   createContext,
@@ -27,15 +26,7 @@ export const rootLenisContextStore = new Store<LenisContextValue | null>(null)
  */
 export const ReactLenis = forwardRef<LenisRef, LenisProps>(
   (
-    {
-      children,
-      root = false,
-      options = {},
-      autoRaf = true,
-      rafPriority = 0,
-      className,
-      props,
-    }: LenisProps,
+    { children, root = false, options = {}, className, props }: LenisProps,
     ref
   ) => {
     const wrapperRef = useRef<HTMLDivElement | null>(null)
@@ -71,13 +62,6 @@ export const ReactLenis = forwardRef<LenisRef, LenisProps>(
         setLenis(undefined)
       }
     }, [root, JSON.stringify(options)])
-
-    // Setup raf
-    useEffect(() => {
-      if (!lenis || !autoRaf) return
-
-      return Tempus.add((time: number) => lenis.raf(time), rafPriority)
-    }, [lenis, autoRaf, rafPriority])
 
     // Handle callbacks
     const callbacksRefs = useRef<

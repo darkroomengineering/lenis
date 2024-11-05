@@ -1,4 +1,4 @@
-import Tempus from '@darkroom.engineering/tempus'
+// import Tempus from '@darkroom.engineering/tempus'
 import Lenis, { type ScrollCallback } from 'lenis'
 import type {
   HTMLAttributes,
@@ -35,14 +35,14 @@ export const VueLenis = defineComponent({
       type: Boolean as PropType<boolean>,
       default: false,
     },
-    autoRaf: {
-      type: Boolean as PropType<boolean>,
-      default: true,
-    },
-    rafPriority: {
-      type: Number as PropType<number>,
-      default: 0,
-    },
+    // autoRaf: {
+    //   type: Boolean as PropType<boolean>,
+    //   default: true,
+    // },
+    // rafPriority: {
+    //   type: Number as PropType<number>,
+    //   default: 0,
+    // },
     options: {
       type: Object as PropType<ConstructorParameters<typeof Lenis>[0]>,
       default: () => ({}),
@@ -54,7 +54,7 @@ export const VueLenis = defineComponent({
   },
   setup(props, { slots, expose }) {
     const lenisRef = shallowRef<Lenis>()
-    const tempusCleanupRef = shallowRef<() => void>()
+    // const tempusCleanupRef = shallowRef<() => void>()
     const wrapper = ref<HTMLDivElement>()
     const content = ref<HTMLDivElement>()
 
@@ -109,24 +109,24 @@ export const VueLenis = defineComponent({
     )
 
     // Sync autoRaf
-    watch(
-      [lenisRef, () => props.autoRaf, () => props.rafPriority],
-      ([lenis, autoRaf, rafPriority]) => {
-        if (!lenis || !autoRaf) {
-          // If lenis is not defined or autoRaf is false, stop the raf if there is one
-          return tempusCleanupRef.value?.()
-        }
+    // watch(
+    //   [lenisRef, () => props.autoRaf, () => props.rafPriority],
+    //   ([lenis, autoRaf, rafPriority]) => {
+    //     if (!lenis || !autoRaf) {
+    //       // If lenis is not defined or autoRaf is false, stop the raf if there is one
+    //       return tempusCleanupRef.value?.()
+    //     }
 
-        // If either lenis, autoRaf or rafPriority changed, stop the raf if there is one and start a new one
-        tempusCleanupRef.value?.()
-        if (autoRaf) {
-          tempusCleanupRef.value = Tempus.add(
-            (time: number) => lenis?.raf(time),
-            rafPriority
-          )
-        }
-      }
-    )
+    //     // If either lenis, autoRaf or rafPriority changed, stop the raf if there is one and start a new one
+    //     tempusCleanupRef.value?.()
+    //     if (autoRaf) {
+    //       tempusCleanupRef.value = Tempus.add(
+    //         (time: number) => lenis?.raf(time),
+    //         rafPriority
+    //       )
+    //     }
+    //   }
+    // )
 
     const callbacks = reactive<
       { callback: ScrollCallback; priority: number }[]

@@ -17,13 +17,13 @@ npm i lenis
 ```jsx
 import { ReactLenis, useLenis } from 'lenis/react'
 
-function Layout() {
+function Component() {
   const lenis = useLenis(({ scroll }) => {
     // called every scroll
   })
 
   return (
-    <ReactLenis root>
+    <ReactLenis root options={{ autoRaf: true }}>
       { /* content */ }
     </ReactLenis>
   )
@@ -33,8 +33,6 @@ function Layout() {
 ## Props
 - `options`: [Lenis options](https://github.com/darkroomengineering/lenis#instance-settings).
 - `root`: Lenis will be instanciate using `<html>` scroll. Default: `false`.
-- `autoRaf`: if `false`, `lenis.raf` needs to be called manually. Default: `true`.
-- `rafPriority`: [Tempus](https://github.com/studio-freight/tempus#readme) execution priority. Default: `0`.
 - `className`: Class name for the wrapper div. Default: `''`.
 
 
@@ -51,9 +49,41 @@ The hook takes three argument:
 
 ## Examples
 
-GSAP integration
+### Custom requestAnimationFrame loop:
 
 ```jsx
+import { ReactLenis } from 'lenis/react'
+import { useEffect, useRef } from 'react'
+
+function Component() {
+  const lenisRef = useRef()
+  
+  useEffect(() => {
+    function update(time) {
+      lenisRef.current?.lenis?.raf(time)
+    }
+  
+    const rafId = requestAnimationFrame(update)
+  
+    return () => cancelAnimationFrame(rafId)
+  })
+  
+  return (
+    <ReactLenis ref={lenisRef}>
+      { /* content */ }
+    </ReactLenis>
+  )
+}
+```
+
+
+### GSAP integration
+
+```jsx
+import gsap from 'gsap'
+import { ReactLenis } from 'lenis/react'
+import { useEffect, useRef } from 'react'
+
 function Component() {
   const lenisRef = useRef()
   
@@ -64,20 +94,44 @@ function Component() {
   
     gsap.ticker.add(update)
   
-    return () => {
-      gsap.ticker.remove(update)
-    }
+    return () => gsap.ticker.remove(update)
   })
   
   return (
-    <ReactLenis ref={lenisRef} autoRaf={false}>
+    <ReactLenis ref={lenisRef}>
       { /* content */ }
     </ReactLenis>
   )
 }
 ```
 
+### Framer Motion integration:
+```jsx
+import { ReactLenis } from 'lenis/react'
+import { cancelFrame, frame } from 'framer-motion';
+import { useEffect, useRef } from 'react';
 
+function Component() {
+  const lenisRef = useRef()
+
+  useEffect(() => {
+    function raf(time) {
+      lenisRef.current?.lenis?.raf(time)
+    }
+
+    frame.update(update, true)
+
+    return () => cancelFrame(update)
+  }, [])
+
+
+  return (
+    <ReactLenis ref={lenisRef}>
+      { /* content */ }
+    </ReactLenis>
+  )
+}
+```
 
 ## lenis/react in use
 

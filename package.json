@@ -43,9 +43,6 @@
   "files": [
     "dist"
   ],
-  "dependencies": {
-    "@darkroom.engineering/tempus": "^0.0.46"
-  },
   "devDependencies": {
     "tsup": "^8.2.4",
     "typescript": "^5.4.5"
