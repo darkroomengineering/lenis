@@ -2,4 +2,3 @@ packages:
   - 'packages/*'
   - 'packages/**/playground'
   - 'playground'
-  - 'website'
