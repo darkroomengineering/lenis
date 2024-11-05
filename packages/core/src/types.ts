@@ -198,6 +198,11 @@ export type LenisOptions = {
    * If `true`, Lenis will not try to detect the size of the content and wrapper
    * @default false
    */
+  autoRaf?: boolean
+  /**
+   * If `true`, Lenis will automatically run `requestAnimationFrame` loop
+   * @default false
+   */
   __experimental__naiveDimensions?: boolean
 }
 

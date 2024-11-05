@@ -11,6 +11,7 @@ document
   .insertAdjacentText('beforeend', new LoremIpsum().generateParagraphs(20))
 
 const lenis = new Lenis({
+  autoRaf: true,
   // autoResize: false,
   // lerp: 0.9,
   // virtualScroll: (e) => {
@@ -35,6 +36,7 @@ const lenis = new Lenis({
 const nestedLenis = new Lenis({
   wrapper: document.querySelector('#nested')!,
   content: document.querySelector('#nested-content')!,
+  // autoRaf: true,
   // overscroll: false,
   // orientation: 'horizontal',
   // gestureOrientation: 'horizontal',
@@ -87,10 +89,10 @@ document.documentElement.addEventListener('wheel', (e) => {
   console.log('wheel')
 })
 
-function raf(time: number) {
-  lenis.raf(time)
-  nestedLenis.raf(time)
-  requestAnimationFrame(raf)
-}
+// function raf(time: number) {
+//   lenis.raf(time)
+//   nestedLenis.raf(time)
+//   requestAnimationFrame(raf)
+// }
 
-requestAnimationFrame(raf)
+// requestAnimationFrame(raf)
