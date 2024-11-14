@@ -31,6 +31,7 @@ export class Lenis {
   private _isLocked = false // same as isStopped but enabled/disabled when scroll reaches target
   private _preventNextNativeScrollEvent = false
   private _resetVelocityTimeout: number | null = null
+  private __rafID: number | null = null
 
   /**
    * Whether or not the user is touching the screen
@@ -105,6 +106,8 @@ export class Lenis {
     autoResize = true,
     prevent,
     virtualScroll,
+    overscroll = true,
+    autoRaf = false,
     __experimental__naiveDimensions = false,
   }: LenisOptions = {}) {
     // Set version
@@ -139,6 +142,8 @@ export class Lenis {
       autoResize,
       prevent,
       virtualScroll,
+      overscroll,
+      autoRaf,
       __experimental__naiveDimensions,
     }
 
@@ -166,6 +171,10 @@ export class Lenis {
       wheelMultiplier,
     })
     this.virtualScroll.on('scroll', this.onVirtualScroll)
+
+    if (this.options.autoRaf) {
+      this.__rafID = requestAnimationFrame(this.raf)
+    }
   }
 
   /**
@@ -189,6 +198,10 @@ export class Lenis {
     this.dimensions.destroy()
 
     this.cleanUpClassName()
+
+    if (this.__rafID) {
+      cancelAnimationFrame(this.__rafID)
+    }
   }
 
   /**
@@ -244,6 +257,8 @@ export class Lenis {
 
     // keep zoom feature
     if (event.ctrlKey) return
+    // @ts-ignore
+    if (event.lenisStopPropagation) return
 
     const isTouch = event.type.includes('touch')
     const isWheel = event.type.includes('wheel')
@@ -301,9 +316,7 @@ export class Lenis {
           ((typeof prevent === 'function' && prevent?.(node)) ||
             node.hasAttribute?.('data-lenis-prevent') ||
             (isTouch && node.hasAttribute?.('data-lenis-prevent-touch')) ||
-            (isWheel && node.hasAttribute?.('data-lenis-prevent-wheel')) ||
-            (node.classList?.contains('lenis') &&
-              !node.classList?.contains('lenis-stopped'))) // nested lenis instance
+            (isWheel && node.hasAttribute?.('data-lenis-prevent-wheel')))
       )
     )
       return
@@ -320,10 +333,10 @@ export class Lenis {
     if (!isSmooth) {
       this.isScrolling = 'native'
       this.animate.stop()
+      // @ts-ignore
+      event.lenisStopPropagation = true
       return
     }
-
-    event.preventDefault()
 
     let delta = deltaY
     if (this.options.gestureOrientation === 'both') {
@@ -331,6 +344,21 @@ export class Lenis {
     } else if (this.options.gestureOrientation === 'horizontal') {
       delta = deltaX
     }
+
+    if (
+      !this.options.overscroll ||
+      this.options.infinite ||
+      (this.options.wrapper !== window &&
+        ((this.animatedScroll > 0 && this.animatedScroll < this.limit) ||
+          (this.animatedScroll === 0 && deltaY > 0) ||
+          (this.animatedScroll === this.limit && deltaY < 0)))
+    ) {
+      // @ts-ignore
+      event.lenisStopPropagation = true
+      // event.stopPropagation()
+    }
+
+    event.preventDefault()
 
     const syncTouch = isTouch && this.options.syncTouch
     const isTouchEnd = isTouch && event.type === 'touchend'
@@ -435,11 +463,15 @@ export class Lenis {
    *
    * @param time The time in ms from an external clock like `requestAnimationFrame` or Tempus
    */
-  raf(time: number) {
+  raf = (time: number) => {
     const deltaTime = time - (this.time || time)
     this.time = time
 
     this.animate.advance(deltaTime * 0.001)
+
+    if (this.options.autoRaf) {
+      this.__rafID = requestAnimationFrame(this.raf)
+    }
   }
 
   /**

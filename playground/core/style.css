@@ -7,3 +7,15 @@
   background-color: #fff;
   cursor: pointer;
 }
+
+#nested {
+  width: 50vw;
+  margin: 0 auto;
+  height: 200px;
+  overflow-y: auto;
+  /* overflow-x: auto; */
+
+  /* > * {
+    width: 100vw;
+  } */
+}

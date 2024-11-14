@@ -1,9 +1,0 @@
-# *
-User-agent: *
-Allow: /
-
-# Host
-Host: https://lenis.darkroom.engineering/
-
-# Sitemaps
-Sitemap: https://lenis.darkroom.engineering/sitemap.xml

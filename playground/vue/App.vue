@@ -30,15 +30,14 @@ watch(lenisRef, (lenisRef) => {
 </script>
 
 <template>
-  <vue-lenis ref="lenisRef" root :options="{ lerp }" :autoRaf="autoRaf">
+  <vue-lenis ref="lenisRef" root :options="{ lerp, autoRaf }">
     <Child />
     <button @click="lerp += 0.1">more lerp</button>
     <button @click="lerp -= 0.1">less lerp</button>
-    <button @click="autoRaf = !autoRaf">toggle autoRaf</button>
     <button @click="lenis.scrollTo(200)">scroll to 200</button>
     <button @click="lenisRef.lenis.scrollTo(200)">ref scroll to 200</button>
     <vue-lenis
-      :options="{ lerp: 0.2 }"
+      :options="{ lerp: 0.2, autoRaf }"
       style="height: 50svh; overflow: scroll"
       class="inner"
     >

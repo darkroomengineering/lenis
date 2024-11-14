@@ -1,6 +1,6 @@
 {
   "name": "lenis",
-  "version": "1.1.13",
+  "version": "1.1.16",
   "type": "module",
   "sideEffects": false,
   "author": "darkroom.engineering",
@@ -31,24 +31,21 @@
     "build": "pnpm build:core && pnpm build:all",
     "build:core": "tsup --config tsup.core.ts",
     "build:all": "tsup",
-    "dev": "pnpm run -w --parallel /^dev.*/",
+    "dev": "pnpm run -w --parallel /^dev:.*/",
     "dev:build": "tsup --watch",
     "dev:playground": "pnpm --filter playground dev",
-    "readme": "node scripts/update-readme.js",
-    "version:dev": "npm version prerelease --preid dev --force",
-    "version:patch": "npm version patch --force",
-    "version:minor": "npm version minor --force",
-    "version:major": "npm version major --force",
+    "readme": "node ./scripts/update-readme.js",
+    "version:dev": "npm version prerelease --preid dev --force --no-git-tag-version",
+    "version:patch": "npm version patch --force --no-git-tag-version",
+    "version:minor": "npm version minor --force --no-git-tag-version",
+    "version:major": "npm version major --force --no-git-tag-version",
     "postversion": "pnpm build && pnpm readme",
-    "publish": "npm publish",
+    "publish:main": "npm publish",
     "publish:dev": "npm publish --tag dev"
   },
   "files": [
     "dist"
   ],
-  "dependencies": {
-    "@darkroom.engineering/tempus": "^0.0.46"
-  },
   "devDependencies": {
     "tsup": "^8.2.4",
     "typescript": "^5.4.5"

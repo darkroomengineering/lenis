@@ -8,9 +8,6 @@ importers:
 
   .:
     dependencies:
-      '@darkroom.engineering/tempus':
-        specifier: ^0.0.46
-        version: 0.0.46
       react:
         specifier: '>=17.0.0'
         version: 18.3.1
@@ -70,7 +67,7 @@ importers:
     dependencies:
       '@astrojs/check':
         specifier: ^0.9.3
-        version: 0.9.4(typescript@5.6.2)
+        version: 0.9.4(prettier@2.8.7)(typescript@5.6.2)
       '@astrojs/react':
         specifier: ^3.6.2
         version: 3.6.2(@types/react-dom@18.3.0)(@types/react@18.3.11)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(vite@5.4.8(terser@5.30.3))
@@ -420,9 +417,6 @@ packages:
   '@babel/types@7.25.7':
     resolution: {integrity: sha512-vwIVdXG+j+FOpkwqHRcBgHLYNL7XMkufrlaFvL9o6Ai9sJn9+PdyIL5qa0XzTZw084c+u9LOls53eoZWP/W5WQ==}
     engines: {node: '>=6.9.0'}
-
-  '@darkroom.engineering/tempus@0.0.46':
-    resolution: {integrity: sha512-s5vav3KMHYezvUCl4ee5epg0oimF6M8C9gAaKxFnFaTvX2q3ywFDryIv6XLd0mRFUt3S1uHDJqKaiEcs2ZVSvw==}
 
   '@emmetio/abbreviation@2.3.3':
     resolution: {integrity: sha512-mgv58UrU3rh4YgbE/TzgLQwJ3pFsHHhCLqY20aJq+9comytTXUDNGG/SMtSeMJdkpxgXSXunBGLD8Boka3JyVA==}
@@ -2947,9 +2941,9 @@ snapshots:
 
   '@antfu/utils@0.7.10': {}
 
-  '@astrojs/check@0.9.4(typescript@5.6.2)':
+  '@astrojs/check@0.9.4(prettier@2.8.7)(typescript@5.6.2)':
     dependencies:
-      '@astrojs/language-server': 2.15.0(typescript@5.6.2)
+      '@astrojs/language-server': 2.15.0(prettier@2.8.7)(typescript@5.6.2)
       chokidar: 4.0.1
       kleur: 4.1.5
       typescript: 5.6.2
@@ -2962,7 +2956,7 @@ snapshots:
 
   '@astrojs/internal-helpers@0.4.1': {}
 
-  '@astrojs/language-server@2.15.0(typescript@5.6.2)':
+  '@astrojs/language-server@2.15.0(prettier@2.8.7)(typescript@5.6.2)':
     dependencies:
       '@astrojs/compiler': 2.10.3
       '@astrojs/yaml2ts': 0.2.1
@@ -2976,12 +2970,14 @@ snapshots:
       volar-service-css: 0.0.61(@volar/language-service@2.4.5)
       volar-service-emmet: 0.0.61(@volar/language-service@2.4.5)
       volar-service-html: 0.0.61(@volar/language-service@2.4.5)
-      volar-service-prettier: 0.0.61(@volar/language-service@2.4.5)
+      volar-service-prettier: 0.0.61(@volar/language-service@2.4.5)(prettier@2.8.7)
       volar-service-typescript: 0.0.61(@volar/language-service@2.4.5)
       volar-service-typescript-twoslash-queries: 0.0.61(@volar/language-service@2.4.5)
       volar-service-yaml: 0.0.61(@volar/language-service@2.4.5)
       vscode-html-languageservice: 5.3.1
       vscode-uri: 3.0.8
+    optionalDependencies:
+      prettier: 2.8.7
     transitivePeerDependencies:
       - typescript
 
@@ -3417,8 +3413,6 @@ snapshots:
       '@babel/helper-string-parser': 7.25.7
       '@babel/helper-validator-identifier': 7.25.7
       to-fast-properties: 2.0.0
-
-  '@darkroom.engineering/tempus@0.0.46': {}
 
   '@emmetio/abbreviation@2.3.3':
     dependencies:
@@ -5992,11 +5986,12 @@ snapshots:
     optionalDependencies:
       '@volar/language-service': 2.4.5
 
-  volar-service-prettier@0.0.61(@volar/language-service@2.4.5):
+  volar-service-prettier@0.0.61(@volar/language-service@2.4.5)(prettier@2.8.7):
     dependencies:
       vscode-uri: 3.0.8
     optionalDependencies:
       '@volar/language-service': 2.4.5
+      prettier: 2.8.7
 
   volar-service-typescript-twoslash-queries@0.0.61(@volar/language-service@2.4.5):
     dependencies:
