@@ -23,7 +23,7 @@ function Component() {
   })
 
   return (
-    <ReactLenis root options={{ autoRaf: true }}>
+    <ReactLenis root>
       { /* content */ }
     </ReactLenis>
   )
@@ -69,7 +69,7 @@ function Component() {
   }, [])
   
   return (
-    <ReactLenis ref={lenisRef}>
+    <ReactLenis options={{ autoRaf: false }} ref={lenisRef}>
       { /* content */ }
     </ReactLenis>
   )
@@ -98,7 +98,7 @@ function Component() {
   }, [])
   
   return (
-    <ReactLenis ref={lenisRef}>
+    <ReactLenis options={{ autoRaf: false }} ref={lenisRef}>
       { /* content */ }
     </ReactLenis>
   )
@@ -126,7 +126,7 @@ function Component() {
 
 
   return (
-    <ReactLenis ref={lenisRef}>
+    <ReactLenis options={{ autoRaf: false }} ref={lenisRef}>
       { /* content */ }
     </ReactLenis>
   )
