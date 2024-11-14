@@ -12,12 +12,12 @@ interface WithInstanceGet {
 
 export const lenis: Action<HTMLElement, LenisConfig | undefined> & WithInstanceGet= (el, config = {}) => {
     const id = config.id || 'root';
-    const isGlobal = id === 'root'
+    const isRoot = id === 'root';
 
     const lenis = new Lenis({
         ...config.options,
         ...(
-            !isGlobal && {
+            !isRoot && {
                 wrapper: el,
                 content: el.firstChild as HTMLElement,
             }
@@ -26,22 +26,9 @@ export const lenis: Action<HTMLElement, LenisConfig | undefined> & WithInstanceG
 
     LenisInstanceManager.register(id, lenis)
 
-    let rafId: number;
-
-    const autoRaf = config.autoRaf || true;
-    if (autoRaf) {
-        const raf = (time: number) => {
-            lenis.raf(time);
-            rafId = requestAnimationFrame(raf)
-        }
-        rafId = requestAnimationFrame(raf);
-    }
-
     return {
         destroy () {
-            if (!rafId) return;
             LenisInstanceManager.unregister(id);
-            cancelAnimationFrame(rafId);
         }
     };
 };
