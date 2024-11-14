@@ -45,5 +45,4 @@ packages/snap/dist/
 packages/vue/dist/
 packages/svelte/dist/
 
-dist-new/
 dist/
