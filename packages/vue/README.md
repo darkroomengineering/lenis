@@ -16,7 +16,7 @@ npm i lenis
 
 ```vue
 <script setup>
-import { VueLenis, useLenis } from 'lenis/react'
+import { VueLenis, useLenis } from 'lenis/vue'
 
 const lenis = useLenis(({ scroll }) => {
   // called every scroll
