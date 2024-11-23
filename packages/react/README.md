@@ -115,7 +115,7 @@ function Component() {
   const lenisRef = useRef()
 
   useEffect(() => {
-    function raf(time) {
+    function update(time) {
       lenisRef.current?.lenis?.raf(time)
     }
 
