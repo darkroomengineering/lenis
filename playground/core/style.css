@@ -19,3 +19,8 @@
     width: 100vw;
   } */
 }
+
+#debug {
+  position: sticky;
+  top: 4rem;
+}

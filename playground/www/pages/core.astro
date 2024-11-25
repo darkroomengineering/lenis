@@ -3,7 +3,11 @@ import '~/core/style.css'
 import Layout from '../layouts/Layout.astro'
 ---
 <Layout title="Lenis">
-	<button id="scroll-100">Scroll 100</button>
+	<div id="debug">
+		<button id="scroll-100">Scroll 100</button>
+		<button id="stop">Stop</button>
+		<button id="start">Start</button>
+	</div>
 	<div id="app">
 		<div id="nested">
 			<div id="nested-content"></div>

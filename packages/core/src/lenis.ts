@@ -415,7 +415,11 @@ export class Lenis {
       this.direction = Math.sign(
         this.animatedScroll - lastScroll
       ) as Lenis['direction']
-      this.isScrolling = 'native'
+
+      if (!this.isStopped) {
+        this.isScrolling = 'native'
+      }
+
       this.emit()
 
       if (this.velocity !== 0) {
@@ -442,9 +446,9 @@ export class Lenis {
    */
   start() {
     if (!this.isStopped) return
-    this.isStopped = false
-
     this.reset()
+
+    this.isStopped = false
   }
 
   /**
@@ -452,10 +456,9 @@ export class Lenis {
    */
   stop() {
     if (this.isStopped) return
-    this.isStopped = true
-    this.animate.stop()
-
     this.reset()
+
+    this.isStopped = true
   }
 
   /**

@@ -96,3 +96,15 @@ document.documentElement.addEventListener('wheel', (e) => {
 // }
 
 // requestAnimationFrame(raf)
+
+const stopButton = document.getElementById('stop')
+const startButton = document.getElementById('start')
+
+stopButton?.addEventListener('click', () => {
+  lenis.stop()
+  console.log('stop')
+})
+
+startButton?.addEventListener('click', () => {
+  lenis.start()
+})
