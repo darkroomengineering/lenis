@@ -12,6 +12,7 @@ document
 
 const lenis = new Lenis({
   autoRaf: true,
+  syncTouch: true,
   // autoResize: false,
   // lerp: 0.9,
   // virtualScroll: (e) => {

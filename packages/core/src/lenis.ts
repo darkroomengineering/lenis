@@ -274,10 +274,13 @@ export class Lenis {
     //   return
     // }
 
+    const isClickOrTap = deltaX === 0 && deltaY === 0
+
     const isTapToStop =
       this.options.syncTouch &&
       isTouch &&
       event.type === 'touchstart' &&
+      isClickOrTap &&
       !this.isStopped &&
       !this.isLocked
 
@@ -285,8 +288,6 @@ export class Lenis {
       this.reset()
       return
     }
-
-    const isClick = deltaX === 0 && deltaY === 0 // click event
 
     // const isPullToRefresh =
     //   this.options.gestureOrientation === 'vertical' &&
@@ -298,7 +299,7 @@ export class Lenis {
       (this.options.gestureOrientation === 'vertical' && deltaY === 0) ||
       (this.options.gestureOrientation === 'horizontal' && deltaX === 0)
 
-    if (isClick || isUnknownGesture) {
+    if (isClickOrTap || isUnknownGesture) {
       // console.log('prevent')
       return
     }
@@ -360,7 +361,7 @@ export class Lenis {
 
     event.preventDefault()
 
-    const syncTouch = isTouch && this.options.syncTouch
+    const isSyncTouch = isTouch && this.options.syncTouch
     const isTouchEnd = isTouch && event.type === 'touchend'
 
     const hasTouchInertia = isTouchEnd && Math.abs(delta) > 5
@@ -371,9 +372,10 @@ export class Lenis {
 
     this.scrollTo(this.targetScroll + delta, {
       programmatic: false,
-      ...(syncTouch
+      ...(isSyncTouch
         ? {
             lerp: hasTouchInertia ? this.options.syncTouchLerp : 1,
+            // immediate: !hasTouchInertia,
           }
         : {
             lerp: this.options.lerp,
