@@ -8,13 +8,18 @@
 
 ## Introduction
 
-Lenis is a lightweight, robust, and performant smooth scroll library. It's designed by [@darkroom.engineering](https://twitter.com/darkroomdevs) to be simple to use and easy to integrate into your projects. It's built with performance in mind and is optimized for modern browsers. It's perfect for creating smooth scrolling experiences on your website such as webgl scroll synching, parallax effects and much more, see [ Demo](https://lenis.darkroom.engineering/) and [Showcase](#lenis-in-use). Read our [Manifesto](https://github.com/darkroomengineering/lenis/blob/main/MANIFESTO.md) to learn more about the inspiration behind Lenis.
+Lenis ("smooth" in latin) is a lightweight, robust, and performant smooth scroll library. It's designed by [@darkroom.engineering](https://twitter.com/darkroomdevs) to be simple to use and easy to integrate into your projects. It's built with performance in mind and is optimized for modern browsers. It's perfect for creating smooth scrolling experiences on your website such as webgl scroll synching, parallax effects and much more, see [ Demo](https://lenis.darkroom.engineering/) and [Showcase](#lenis-in-use).
+
+Read our [Manifesto](https://github.com/darkroomengineering/lenis/blob/main/MANIFESTO.md) to learn more about the inspiration behind Lenis.
 
 <br/>
 
-## Sponsorship
+## Sponsors
 
-If you like Lenis, please consider [sponsoring us](https://github.com/sponsors/darkroomengineering). Your support helps us maintain the project and continue to improve it.
+If you like Lenis, please consider [becoming a sponsor](https://github.com/sponsors/darkroomengineering). Your support helps us to smooth the web one library at a time.
+
+#### They make it possible:
+[![Scott Sunarto](https://avatars.githubusercontent.com/u/4402697?s=80&v=4)](https://smsunarto.com/) [![cachet.studio](https://avatars.githubusercontent.com/u/75880965?s=80&v=4)](https://www.cachet.studio/) [![Mario Sanchez Maselli](https://avatars.githubusercontent.com/u/1336977?s=80&v=4)](https://non-linear.studio/)
 
 <br>
 
