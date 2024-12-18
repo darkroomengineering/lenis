@@ -23,8 +23,8 @@ const lenis = new Lenis({
   syncTouch: true,
   // wrapper: document.body,
   // content: document.querySelector('main'),
-  wrapper: document.querySelector('main')!,
-  content: document.querySelector('main')?.children[0],
+  // wrapper: document.querySelector('main')!,
+  // content: document.querySelector('main')?.children[0],
   // autoResize: false,
   // lerp: 0.9,
   // virtualScroll: (e) => {

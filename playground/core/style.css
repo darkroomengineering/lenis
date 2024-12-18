@@ -36,7 +36,7 @@ body {
 } */
 
 /* this prevents UI to collapse on scroll */
-html,
+/* html,
 body {
   overflow: hidden;
   height: 100%;
@@ -45,4 +45,4 @@ body {
 main {
   height: 100%;
   overflow-y: auto;
-}
+} */
