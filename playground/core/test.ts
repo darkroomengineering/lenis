@@ -8,11 +8,23 @@ document
   .insertAdjacentText('afterbegin', new LoremIpsum().generateParagraphs(20))
 document
   .querySelector('#app')!
-  .insertAdjacentText('beforeend', new LoremIpsum().generateParagraphs(20))
+  .insertAdjacentText(
+    'beforeend',
+    new LoremIpsum().generateParagraphs(20) + 'test123'
+  )
+
+document.querySelector('main')?.addEventListener('scrollend', () => {
+  console.log('scrollend')
+})
 
 const lenis = new Lenis({
+  // smoothWheel: false,
   autoRaf: true,
   syncTouch: true,
+  // wrapper: document.body,
+  // content: document.querySelector('main'),
+  wrapper: document.querySelector('main')!,
+  content: document.querySelector('main')?.children[0],
   // autoResize: false,
   // lerp: 0.9,
   // virtualScroll: (e) => {

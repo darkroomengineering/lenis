@@ -113,12 +113,8 @@ export class Lenis {
     // Set version
     window.lenisVersion = version
 
-    // Check if wrapper is html or body, fallback to window
-    if (
-      !wrapper ||
-      wrapper === document.documentElement ||
-      wrapper === document.body
-    ) {
+    // Check if wrapper is <html>, fallback to window
+    if (!wrapper || wrapper === document.documentElement) {
       wrapper = window
     }
 
@@ -231,10 +227,21 @@ export class Lenis {
 
   private setScroll(scroll: number) {
     // apply scroll value immediately
+    this.rootElement.addEventListener(
+      'scrollend',
+      (e) => {
+        e.stopPropagation()
+      },
+      {
+        capture: true,
+        once: true,
+      }
+    )
+
     if (this.isHorizontal) {
-      this.rootElement.scrollLeft = scroll
+      this.rootElement.scrollTo({ left: scroll, behavior: 'instant' })
     } else {
-      this.rootElement.scrollTop = scroll
+      this.rootElement.scrollTo({ top: scroll, behavior: 'instant' })
     }
   }
 
