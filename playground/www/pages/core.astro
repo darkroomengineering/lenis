@@ -2,22 +2,60 @@
 import '~/core/style.css'
 import Layout from '../layouts/Layout.astro'
 ---
+
 <Layout title="Lenis">
-	<div id="debug">
-		<button id="scroll-100">Scroll 100</button>
-		<button id="stop">Stop</button>
-		<button id="start">Start</button>
-	</div>
-	<div id="app">
-		<div id="nested">
-			<div id="nested-content"></div>
-		</div>
-	</div>
-	<script src="../../core/test.ts"></script>
-	<!-- THESE ARE HERE TO TEST THE BROWSER VERSION BUNDLE -->
-	<!-- <script is:raw src="../../node_modules/lenis/dist/lenis.min.js"></script> -->
-	<!-- <script is:raw src="../../core/browser.js"></script> -->
-	 <!-- <script>
+  <div id="debug">
+    <button id="scroll-100">Scroll 100</button>
+    <button id="stop">Stop</button>
+    <button id="start">Start</button>
+  </div>
+  <div id="app">
+    <div id="about">
+      <h2>about</h2>
+      <p>
+        Lorem ipsum, dolor sit amet consectetur adipisicing elit. Dolorum, amet
+        illum repellendus vitae nulla provident eveniet totam laborum neque odio
+        veritatis accusantium, hic quam et qui ipsum eos excepturi molestiae?
+      </p>
+    </div>
+    <div id="work">
+      <h2>work</h2>
+      <p>
+        Lorem ipsum, dolor sit amet consectetur adipisicing elit. Dolorum, amet
+        illum repellendus vitae nulla provident eveniet totam laborum neque odio
+        veritatis accusantium, hic quam et qui ipsum eos excepturi molestiae?
+      </p>
+    </div>
+
+    <div id="contact">
+      <h2>contact</h2>
+      <p>
+        Lorem ipsum, dolor sit amet consectetur adipisicing elit. Dolorum, amet
+        illum repellendus vitae nulla provident eveniet totam laborum neque odio
+        veritatis accusantium, hic quam et qui ipsum eos excepturi molestiae?
+      </p>
+    </div>
+    <div>
+      <a href="#about"> <span>about</span></a>
+      <a href="#work"> <span>work</span></a>
+      <a href="#contact"> <span>contact</span></a>
+      <a href="#a"> <span>void</span></a>
+      <a
+        href="https://developer.mozilla.org/en-US/docs/Web/API/HTMLAnchorElement"
+        target="_blank"
+      >
+        <span>mdn</span></a
+      >
+    </div>
+    <div id="nested">
+      <div id="nested-content"></div>
+    </div>
+  </div>
+  <script src="../../core/test.ts"></script>
+  <!-- THESE ARE HERE TO TEST THE BROWSER VERSION BUNDLE -->
+  <!-- <script is:raw src="../../node_modules/lenis/dist/lenis.min.js"></script> -->
+  <!-- <script is:raw src="../../core/browser.js"></script> -->
+  <!-- <script>
 		import { LoremIpsum } from 'lorem-ipsum'
 		document.querySelector('#app').innerHTML = new LoremIpsum().generateParagraphs(30)
 	</script> -->

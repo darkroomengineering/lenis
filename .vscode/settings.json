@@ -13,5 +13,8 @@
   "eslint.workingDirectories": ["./website"],
   "[markdown]": {
     "editor.defaultFormatter": "darkriszty.markdown-table-prettify"
+  },
+  "[astro]": {
+    "editor.defaultFormatter": "astro-build.astro-vscode"
   }
 }

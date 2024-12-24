@@ -13,14 +13,24 @@ document
     new LoremIpsum().generateParagraphs(20) + 'test123'
   )
 
-document.querySelector('main')?.addEventListener('scrollend', () => {
+// document.querySelector('main')?.addEventListener('scrollend', () => {
+//   console.log('scrollend')
+// })
+
+window.addEventListener('scrollend', () => {
   console.log('scrollend')
+})
+
+window.addEventListener('hashchange', () => {
+  console.log('hashchange')
 })
 
 const lenis = new Lenis({
   // smoothWheel: false,
   autoRaf: true,
-  syncTouch: true,
+  anchors: true,
+  // syncTouch: true,
+  // lerp: 0.01,
   // wrapper: document.body,
   // content: document.querySelector('main'),
   // wrapper: document.querySelector('main')!,
@@ -46,6 +56,18 @@ const lenis = new Lenis({
   // },
 })
 
+// document.querySelectorAll('a[href*="#"]').forEach((node) => {
+//   node.addEventListener('click', (e) => {
+//     // lenis.reset()
+//     // e.preventDefault()
+//     // console.log(node.href)
+//   })
+// })
+
+// window.addEventListener('hashchange', () => {
+//   console.log('hashchange')
+// })
+
 const nestedLenis = new Lenis({
   wrapper: document.querySelector('#nested')!,
   content: document.querySelector('#nested-content')!,
@@ -62,6 +84,7 @@ window.nestedLenis = nestedLenis
 
 // console.log(lenis.dimensions.height)
 lenis.on('scroll', (e) => {
+  // console.log(e.isScrolling)
   // console.log(e.scroll, e.velocity)
   // console.log(e.scroll, e.velocity, e.isScrolling, e.userData)
 })
@@ -98,9 +121,9 @@ declare global {
 //   })
 // })
 
-document.documentElement.addEventListener('wheel', (e) => {
-  console.log('wheel')
-})
+// document.documentElement.addEventListener('wheel', (e) => {
+//   console.log('wheel')
+// })
 
 // function raf(time: number) {
 //   lenis.raf(time)
@@ -110,14 +133,14 @@ document.documentElement.addEventListener('wheel', (e) => {
 
 // requestAnimationFrame(raf)
 
-const stopButton = document.getElementById('stop')
-const startButton = document.getElementById('start')
+// const stopButton = document.getElementById('stop')
+// const startButton = document.getElementById('start')
 
-stopButton?.addEventListener('click', () => {
-  lenis.stop()
-  console.log('stop')
-})
+// stopButton?.addEventListener('click', () => {
+//   lenis.stop()
+//   console.log('stop')
+// })
 
-startButton?.addEventListener('click', () => {
-  lenis.start()
-})
+// startButton?.addEventListener('click', () => {
+//   lenis.start()
+// })

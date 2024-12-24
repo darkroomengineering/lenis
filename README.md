@@ -257,6 +257,7 @@ prevent wheel events only
 ```
 
 prevent touch events only
+
 ```html
 <div data-lenis-prevent-touch>scrollable content</div>
 ```
@@ -264,8 +265,24 @@ prevent touch events only
 
 
 ### Anchor links
-```html
-<a href="#anchor" onclick="lenis.scrollTo('#anchor')">scroll to anchor</a>
+By default Lenis will prevent anchor links click while scrolling, to fix that you must set `anchors: true`.
+
+```js
+  new Lenis({
+    anchors: true
+  })
+```
+
+You can also use `scrollTo` options.
+```js
+  new Lenis({
+    anchors: {
+      offset: 100,
+      onComplete: ()=>{
+        console.log('scrolled to anchor')
+      },
+    }
+  })
 ```
 
 <br>

@@ -108,6 +108,7 @@ export class Lenis {
     virtualScroll,
     overscroll = true,
     autoRaf = false,
+    anchors = false,
     __experimental__naiveDimensions = false,
   }: LenisOptions = {}) {
     // Set version
@@ -140,6 +141,7 @@ export class Lenis {
       virtualScroll,
       overscroll,
       autoRaf,
+      anchors,
       __experimental__naiveDimensions,
     }
 
@@ -154,6 +156,14 @@ export class Lenis {
 
     // Add event listeners
     this.options.wrapper.addEventListener('scroll', this.onNativeScroll, false)
+
+    if (this.options.anchors && this.options.wrapper === window) {
+      this.options.wrapper.addEventListener(
+        'click',
+        this.onClick as EventListener,
+        false
+      )
+    }
 
     this.options.wrapper.addEventListener(
       'pointerdown',
@@ -189,6 +199,14 @@ export class Lenis {
       this.onPointerDown as EventListener,
       false
     )
+
+    if (this.options.anchors && this.options.wrapper === window) {
+      this.options.wrapper.removeEventListener(
+        'click',
+        this.onClick as EventListener,
+        false
+      )
+    }
 
     this.virtualScroll.destroy()
     this.dimensions.destroy()
@@ -226,8 +244,7 @@ export class Lenis {
   }
 
   private setScroll(scroll: number) {
-    // apply scroll value immediately
-    this.rootElement.addEventListener(
+    this.options.wrapper.addEventListener(
       'scrollend',
       (e) => {
         e.stopPropagation()
@@ -238,10 +255,31 @@ export class Lenis {
       }
     )
 
+    // behavior: 'instant' bypasses the scroll-behavior CSS property
+
     if (this.isHorizontal) {
       this.rootElement.scrollTo({ left: scroll, behavior: 'instant' })
     } else {
       this.rootElement.scrollTo({ top: scroll, behavior: 'instant' })
+    }
+  }
+
+  private onClick = (event: PointerEvent | MouseEvent) => {
+    const path = event.composedPath()
+    const anchor = path.find(
+      (node) =>
+        node instanceof HTMLAnchorElement &&
+        node.getAttribute('href')?.startsWith('#')
+    ) as HTMLAnchorElement | undefined
+    if (anchor) {
+      const id = anchor.getAttribute('href')
+      if (id) {
+        const options =
+          typeof this.options.anchors === 'object' && this.options.anchors
+            ? this.options.anchors
+            : undefined
+        this.scrollTo(id, options)
+      }
     }
   }
 
