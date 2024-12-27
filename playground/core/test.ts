@@ -18,7 +18,11 @@ document
 // })
 
 window.addEventListener('scrollend', (e) => {
-  console.log('scrollend', e)
+  console.log('window scrollend', e)
+})
+
+document.querySelector('#nested')?.addEventListener('scrollend', (e) => {
+  console.log('nested scrollend', e)
 })
 
 window.addEventListener('hashchange', () => {

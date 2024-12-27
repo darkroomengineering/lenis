@@ -676,8 +676,8 @@ export class Lenis {
 
           this.options.wrapper.dispatchEvent(
             new CustomEvent('scrollend', {
-              bubbles: true,
-              cancelable: false,
+              bubbles: this.options.wrapper === window,
+              // cancelable: false,
               detail: {
                 lenisScrollEnd: true,
               },
