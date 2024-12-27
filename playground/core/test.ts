@@ -141,6 +141,14 @@ declare global {
 
 // requestAnimationFrame(raf)
 
+const scrollButton = document.getElementById('scroll-100')
+
+scrollButton?.addEventListener('click', () => {
+  lenis.scrollTo(100, {
+    immediate: true,
+  })
+})
+
 // const stopButton = document.getElementById('stop')
 // const startButton = document.getElementById('start')
 

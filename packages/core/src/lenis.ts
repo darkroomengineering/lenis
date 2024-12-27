@@ -260,6 +260,18 @@ export class Lenis {
     }
   }
 
+  private dispatchScrollendEvent = () => {
+    this.options.wrapper.dispatchEvent(
+      new CustomEvent('scrollend', {
+        bubbles: this.options.wrapper === window,
+        // cancelable: false,
+        detail: {
+          lenisScrollEnd: true,
+        },
+      })
+    )
+  }
+
   private setScroll(scroll: number) {
     // behavior: 'instant' bypasses the scroll-behavior CSS property
 
@@ -633,6 +645,10 @@ export class Lenis {
       this.emit()
       onComplete?.(this)
       this.userData = {}
+
+      requestAnimationFrame(() => {
+        this.dispatchScrollendEvent()
+      })
       return
     }
 
@@ -675,15 +691,7 @@ export class Lenis {
           this.userData = {}
 
           requestAnimationFrame(() => {
-            this.options.wrapper.dispatchEvent(
-              new CustomEvent('scrollend', {
-                bubbles: this.options.wrapper === window,
-                // cancelable: false,
-                detail: {
-                  lenisScrollEnd: true,
-                },
-              })
-            )
+            this.dispatchScrollendEvent()
           })
 
           // avoid emitting event twice
