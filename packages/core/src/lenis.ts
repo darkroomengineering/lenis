@@ -157,6 +157,10 @@ export class Lenis {
     // Add event listeners
     this.options.wrapper.addEventListener('scroll', this.onNativeScroll, false)
 
+    this.options.wrapper.addEventListener('scrollend', this.onScrollEnd, {
+      capture: true,
+    })
+
     if (this.options.anchors && this.options.wrapper === window) {
       this.options.wrapper.addEventListener(
         'click',
@@ -194,6 +198,11 @@ export class Lenis {
       this.onNativeScroll,
       false
     )
+
+    this.options.wrapper.removeEventListener('scrollend', this.onScrollEnd, {
+      capture: true,
+    })
+
     this.options.wrapper.removeEventListener(
       'pointerdown',
       this.onPointerDown as EventListener,
@@ -243,18 +252,15 @@ export class Lenis {
     return this.emitter.off(event, callback)
   }
 
-  private setScroll(scroll: number) {
-    this.options.wrapper.addEventListener(
-      'scrollend',
-      (e) => {
+  private onScrollEnd = (e: Event | CustomEvent) => {
+    if (!(e instanceof CustomEvent)) {
+      if (this.isScrolling === 'smooth' || this.isScrolling === false) {
         e.stopPropagation()
-      },
-      {
-        capture: true,
-        once: true,
       }
-    )
+    }
+  }
 
+  private setScroll(scroll: number) {
     // behavior: 'instant' bypasses the scroll-behavior CSS property
 
     if (this.isHorizontal) {
@@ -667,6 +673,17 @@ export class Lenis {
           this.emit()
           onComplete?.(this)
           this.userData = {}
+
+          this.options.wrapper.dispatchEvent(
+            new CustomEvent('scrollend', {
+              bubbles: true,
+              cancelable: false,
+              detail: {
+                lenisScrollEnd: true,
+              },
+            })
+          )
+
           // avoid emitting event twice
           this.preventNextNativeScrollEvent()
         }

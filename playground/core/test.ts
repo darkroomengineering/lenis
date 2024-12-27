@@ -17,8 +17,8 @@ document
 //   console.log('scrollend')
 // })
 
-window.addEventListener('scrollend', () => {
-  console.log('scrollend')
+window.addEventListener('scrollend', (e) => {
+  console.log('scrollend', e)
 })
 
 window.addEventListener('hashchange', () => {
