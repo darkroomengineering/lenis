@@ -674,15 +674,17 @@ export class Lenis {
           onComplete?.(this)
           this.userData = {}
 
-          this.options.wrapper.dispatchEvent(
-            new CustomEvent('scrollend', {
-              bubbles: this.options.wrapper === window,
-              // cancelable: false,
-              detail: {
-                lenisScrollEnd: true,
-              },
-            })
-          )
+          requestAnimationFrame(() => {
+            this.options.wrapper.dispatchEvent(
+              new CustomEvent('scrollend', {
+                bubbles: this.options.wrapper === window,
+                // cancelable: false,
+                detail: {
+                  lenisScrollEnd: true,
+                },
+              })
+            )
+          })
 
           // avoid emitting event twice
           this.preventNextNativeScrollEvent()

@@ -17,6 +17,10 @@ document
 //   console.log('scrollend')
 // })
 
+window.addEventListener('scroll', (e) => {
+  console.log('window scroll', e)
+})
+
 window.addEventListener('scrollend', (e) => {
   console.log('window scrollend', e)
 })
