@@ -268,21 +268,21 @@ prevent touch events only
 By default Lenis will prevent anchor links click while scrolling, to fix that you must set `anchors: true`.
 
 ```js
-  new Lenis({
-    anchors: true
-  })
+new Lenis({
+  anchors: true
+})
 ```
 
 You can also use `scrollTo` options.
 ```js
-  new Lenis({
-    anchors: {
-      offset: 100,
-      onComplete: ()=>{
-        console.log('scrolled to anchor')
-      },
+new Lenis({
+  anchors: {
+    offset: 100,
+    onComplete: ()=>{
+      console.log('scrolled to anchor')
     }
-  })
+  }
+})
 ```
 
 <br>
