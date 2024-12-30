@@ -45,6 +45,7 @@
     "dist"
   ],
   "devDependencies": {
+    "terser": "^5.37.0",
     "tsup": "^8.2.4",
     "typescript": "^5.4.5"
   },

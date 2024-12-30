@@ -25,7 +25,12 @@ function makeBuildOptions(
 
   const minifyOptions = {
     ...options,
-    minify: true,
+    minify: 'terser',
+    terserOptions: {
+      mangle: {
+        reserved: ['Lenis'],
+      },
+    },
     outExtension: () => ({ js: '.min.js' }),
     ...overwrites,
   } satisfies Options
