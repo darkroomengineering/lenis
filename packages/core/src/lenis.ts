@@ -747,9 +747,12 @@ export class Lenis {
    */
   get actualScroll() {
     // value browser takes into account
+    // it has to be this way because of DOCTYPE declaration
+    const wrapper = this.options.wrapper as Window | HTMLElement
+
     return this.isHorizontal
-      ? this.rootElement.scrollLeft
-      : this.rootElement.scrollTop
+      ? (wrapper as Window).scrollX ?? (wrapper as HTMLElement).scrollLeft
+      : (wrapper as Window).scrollY ?? (wrapper as HTMLElement).scrollTop
   }
 
   /**
