@@ -276,9 +276,9 @@ export class Lenis {
     // behavior: 'instant' bypasses the scroll-behavior CSS property
 
     if (this.isHorizontal) {
-      this.rootElement.scrollTo({ left: scroll, behavior: 'instant' })
+      this.options.wrapper.scrollTo({ left: scroll, behavior: 'instant' })
     } else {
-      this.rootElement.scrollTo({ top: scroll, behavior: 'instant' })
+      this.options.wrapper.scrollTo({ top: scroll, behavior: 'instant' })
     }
   }
 
