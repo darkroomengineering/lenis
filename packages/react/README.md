@@ -107,15 +107,17 @@ function Component() {
 
 ### Framer Motion integration:
 ```jsx
-import { ReactLenis } from 'lenis/react'
+import { ReactLenis } from 'lenis/react';
+import type { LenisRef } from 'lenis/react';
 import { cancelFrame, frame } from 'framer-motion';
 import { useEffect, useRef } from 'react';
 
 function Component() {
-  const lenisRef = useRef()
+  const lenisRef = useRef<LenisRef>(null)
 
   useEffect(() => {
-    function update(time) {
+    function update(data: { timestamp: number }) {
+      const time = data.timestamp
       lenisRef.current?.lenis?.raf(time)
     }
 
