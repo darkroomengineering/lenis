@@ -96,7 +96,7 @@ export class Lenis {
     syncTouchLerp = 0.075,
     touchInertiaMultiplier = 35,
     duration, // in seconds
-    easing = (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+    easing = (t) => Math.min(1, 1.001 - 2 ** (-10 * t)),
     lerp = 0.1,
     infinite = false,
     orientation = 'vertical', // vertical, horizontal
@@ -374,7 +374,7 @@ export class Lenis {
     const prevent = this.options.prevent
 
     if (
-      !!composedPath.find(
+      composedPath.find(
         (node) =>
           node instanceof HTMLElement &&
           ((typeof prevent === 'function' && prevent?.(node)) ||
@@ -592,7 +592,7 @@ export class Lenis {
     ) {
       target = this.limit
     } else {
-      let node
+      let node: HTMLElement | null = null
 
       if (typeof target === 'string') {
         // CSS selector
@@ -727,12 +727,12 @@ export class Lenis {
     if (this.options.__experimental__naiveDimensions) {
       if (this.isHorizontal) {
         return this.rootElement.scrollWidth - this.rootElement.clientWidth
-      } else {
-        return this.rootElement.scrollHeight - this.rootElement.clientHeight
       }
-    } else {
-      return this.dimensions.limit[this.isHorizontal ? 'x' : 'y']
+
+      return this.rootElement.scrollHeight - this.rootElement.clientHeight
     }
+
+    return this.dimensions.limit[this.isHorizontal ? 'x' : 'y']
   }
 
   /**
@@ -751,8 +751,8 @@ export class Lenis {
     const wrapper = this.options.wrapper as Window | HTMLElement
 
     return this.isHorizontal
-      ? (wrapper as Window).scrollX ?? (wrapper as HTMLElement).scrollLeft
-      : (wrapper as Window).scrollY ?? (wrapper as HTMLElement).scrollTop
+      ? ((wrapper as Window).scrollX ?? (wrapper as HTMLElement).scrollLeft)
+      : ((wrapper as Window).scrollY ?? (wrapper as HTMLElement).scrollTop)
   }
 
   /**

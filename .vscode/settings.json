@@ -1,20 +1,13 @@
 {
-  "eslint.format.enable": true,
   "editor.formatOnSave": true,
   "editor.codeActionsOnSave": {
-    "source.organizeImports": "explicit",
     "source.fixAll.eslint": "explicit"
   },
-  "files.associations": {
-    "*.js": "javascriptreact"
+  "editor.defaultFormatter": "biomejs.biome",
+  "[typescript]": {
+    "editor.defaultFormatter": "biomejs.biome"
   },
-  "prettier.enable": true,
-  "editor.defaultFormatter": "esbenp.prettier-vscode",
-  "eslint.workingDirectories": ["./website"],
-  "[markdown]": {
-    "editor.defaultFormatter": "darkriszty.markdown-table-prettify"
+  "[typescriptreact]": {
+    "editor.defaultFormatter": "biomejs.biome"
   },
-  "[astro]": {
-    "editor.defaultFormatter": "astro-build.astro-vscode"
-  }
 }

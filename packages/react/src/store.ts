@@ -10,7 +10,7 @@ export class Store<S> {
   set(state: S) {
     this.state = state
 
-    for (let listener of this.listeners) {
+    for (const listener of this.listeners) {
       listener(this.state)
     }
   }

@@ -4,19 +4,43 @@
       body {
         height: 300vh;
       }
+
+      #nested {
+        height: 100px;
+        width: 100px;
+        overflow-y: auto;
+      }
     </style>
     <script src="../../dist/lenis.min.js"></script>
-    <script>
-      const lenis = new Lenis({
-        autoRaf: true,
-      })
-      console.log(lenis)
-    </script>
   </head>
   <body>
     Lorem ipsum dolor, sit amet consectetur adipisicing elit. Inventore aliquid
     aliquam quam officiis hic ut voluptatibus dicta perferendis, voluptate iure
     modi iste ratione explicabo architecto impedit ipsa. Blanditiis, tenetur
     itaque.
+
+    <div id="nested">
+      <div id="inner">
+        Lorem ipsum dolor, sit amet consectetur adipisicing elit. Inventore
+        aliquid aliquam quam officiis hic ut voluptatibus dicta perferendis,
+        voluptate iure modi iste ratione explicabo architecto impedit ipsa.
+        Blanditiis, tenetur itaque.
+      </div>
+    </div>
+
+    <script>
+      const lenis = new Lenis({
+        autoRaf: true,
+      })
+      console.log(lenis)
+
+      const nestedLenis = new Lenis({
+        wrapper: document.getElementById('nested'),
+        content: document.getElementById('inner'),
+        autoRaf: true,
+      })
+
+      console.log(nestedLenis)
+    </script>
   </body>
 </html>

@@ -1,0 +1,8 @@
+{
+  "recommendations": [
+    "biomejs.biome",
+    "waderyan.gitblame",
+    "csstools.postcss",
+    "graphql.vscode-graphql-syntax"
+  ]
+}
