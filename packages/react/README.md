@@ -17,7 +17,7 @@ npm i lenis
 ```jsx
 import { ReactLenis, useLenis } from 'lenis/react'
 
-function Component() {
+function App() {
   const lenis = useLenis(({ scroll }) => {
     // called every scroll
   })
@@ -55,7 +55,7 @@ The hook takes three argument:
 import { ReactLenis } from 'lenis/react'
 import { useEffect, useRef } from 'react'
 
-function Component() {
+function App() {
   const lenisRef = useRef()
   
   useEffect(() => {
@@ -84,7 +84,7 @@ import gsap from 'gsap'
 import { ReactLenis } from 'lenis/react'
 import { useEffect, useRef } from 'react'
 
-function Component() {
+function App() {
   const lenisRef = useRef()
   
   useEffect(() => {
@@ -112,7 +112,7 @@ import type { LenisRef } from 'lenis/react';
 import { cancelFrame, frame } from 'framer-motion';
 import { useEffect, useRef } from 'react';
 
-function Component() {
+function App() {
   const lenisRef = useRef<LenisRef>(null)
 
   useEffect(() => {
