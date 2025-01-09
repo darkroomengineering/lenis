@@ -1,6 +1,6 @@
 import type Lenis from 'lenis'
 import type { LenisOptions, ScrollCallback } from 'lenis'
-import type { ComponentPropsWithoutRef, ReactNode } from 'react'
+import type { ComponentPropsWithoutRef, CSSProperties, ReactNode } from 'react'
 
 export type LenisContextValue = {
   lenis: Lenis
@@ -34,6 +34,12 @@ export type LenisProps = {
    * When `root` is `false`, this will be applied to the wrapper div
    */
   className?: string
+  /**
+   * Style for the wrapper div
+   *
+   * When `root` is `false`, this will be applied to the wrapper div
+   */
+  style?: CSSProperties
   /**
    * Additional props for the wrapper div
    *
