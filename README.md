@@ -50,7 +50,7 @@ import Lenis from 'lenis'
 using scripts:
 
 ```html
-<script src="https://unpkg.com/lenis@1.1.19/dist/lenis.min.js"></script> 
+<script src="https://unpkg.com/lenis@1.1.20/dist/lenis.min.js"></script> 
 ```
 
 
@@ -97,7 +97,7 @@ import 'lenis/dist/lenis.css'
 or link the CSS file:
 
 ```html
-<link rel="stylesheet" href="https://unpkg.com/lenis@1.1.19/dist/lenis.css">
+<link rel="stylesheet" href="https://unpkg.com/lenis@1.1.20/dist/lenis.css">
 ```
 
 or add it manually:
