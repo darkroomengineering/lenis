@@ -10,17 +10,17 @@
     "astro": "astro"
   },
   "dependencies": {
-    "@astrojs/check": "^0.9.3",
-    "@astrojs/react": "^3.6.2",
-    "@astrojs/vue": "^4.5.0",
-    "@types/react": "^18.3.4",
-    "@types/react-dom": "^18.3.0",
-    "astro": "^4.16.1",
+    "@astrojs/check": "^0.9.4",
+    "@astrojs/react": "^4.1.6",
+    "@astrojs/vue": "^5.0.6",
+    "@types/react": "^19.0.7",
+    "@types/react-dom": "^19.0.3",
+    "astro": "^5.1.8",
     "lenis": "workspace:*",
     "lorem-ipsum": "^2.0.8",
-    "react": "^18.3.1",
-    "react-dom": "^18.3.1",
-    "typescript": "^5.5.4",
-    "vue": "^3.4.38"
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "typescript": "^5.7.3",
+    "vue": "^3.5.13"
   }
 }
