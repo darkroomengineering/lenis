@@ -5,7 +5,7 @@
     "lenis": "workspace:lenis*"
   },
   "devDependencies": {
-    "react": "^18.2.0",
-    "@types/react": "^18.2.77"
+    "@types/react": "^19.0.7",
+    "react": "^19.0.0"
   }
 }
