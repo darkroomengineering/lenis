@@ -10,13 +10,12 @@ import type {
 import {
   defineComponent,
   h,
-  onBeforeUnmount,
-  onMounted,
+  onWatcherCleanup,
   provide,
   reactive,
   ref,
   shallowRef,
-  watch,
+  watch
 } from 'vue'
 import { globalAddCallback, globalLenis, globalRemoveCallback } from './store'
 
@@ -35,10 +34,10 @@ export const VueLenis = defineComponent({
       type: Boolean as PropType<boolean>,
       default: false,
     },
-    // autoRaf: {
-    //   type: Boolean as PropType<boolean>,
-    //   default: true,
-    // },
+    autoRaf: {
+      type: Boolean as PropType<boolean>,
+      default: true,
+    },
     // rafPriority: {
     //   type: Number as PropType<number>,
     //   default: 0,
@@ -65,47 +64,58 @@ export const VueLenis = defineComponent({
       content,
     })
 
+
+
     // Setup the lenis instance when the component is mounted
-    onMounted(() => {
-      lenisRef.value = new Lenis({
-        ...props.options,
-        ...(!props.root
-          ? {
-              wrapper: wrapper.value,
-              content: content.value,
-            }
-          : {}),
-      })
-    })
+    // onMounted(() => {
+
+    //   lenisRef.value = new Lenis({
+    //     ...props.options,
+    //     ...(!props.root
+    //       ? {
+    //         wrapper: wrapper.value,
+    //         content: content.value,
+    //       }
+    //       : {}),
+    //     autoRaf: options?.autoRaf ?? autoRaf, // this is to avoid breaking the autoRaf prop if it's still used (require breaking change)
+    //   })
+    // })
 
     // Destroy the lenis instance when the component is unmounted
-    onBeforeUnmount(() => {
-      lenisRef.value?.destroy()
-      lenisRef.value = undefined
-    })
+    // onBeforeUnmount(() => {
+    //   lenisRef.value?.destroy()
+    //   lenisRef.value = undefined
+    // })
 
     // Sync options
     watch(
-      () => props.options,
+      [() => props.options, wrapper, content],
       (options, oldOptions) => {
-        const optionsChanged =
-          JSON.stringify(oldOptions) !== JSON.stringify(options)
+        const isClient = typeof window !== 'undefined'
 
-        // If any of the options changed, destroy the lenis instance and create a new one
-        if (optionsChanged) {
+        if (!isClient) return
+
+        if (!props.root && (!wrapper.value || !content.value)) return
+
+        console.log('setup')
+        lenisRef.value = new Lenis({
+          ...props.options,
+          ...(!props.root
+            ? {
+              wrapper: wrapper.value,
+              content: content.value,
+            }
+            : {}),
+          autoRaf: props.options?.autoRaf ?? props.autoRaf,
+        })
+
+        onWatcherCleanup(() => {
+          console.log('cleanup')
           lenisRef.value?.destroy()
-          lenisRef.value = new Lenis({
-            ...props.options,
-            ...(!props.root
-              ? {
-                  wrapper: wrapper.value,
-                  content: content.value,
-                }
-              : {}),
-          })
-        }
+          lenisRef.value = undefined
+        })
       },
-      { deep: true }
+      { deep: true, immediate: true }
     )
 
     // Sync autoRaf
@@ -170,12 +180,12 @@ export const VueLenis = defineComponent({
       if (props.root) {
         return slots.default?.()
       } else {
-        const combinedClassName = ['lenis', props.props?.class]
-          .filter(Boolean)
-          .join(' ')
-        delete props.props?.class
+        // const combinedClassName = ['lenis', props.props?.class]
+        //   .filter(Boolean)
+        //   .join(' ')
+        // delete props.props?.class
 
-        return h('div', { class: combinedClassName, ref: wrapper, ...props }, [
+        return h('div', { ref: wrapper, ...props }, [
           h('div', { ref: content }, slots.default?.()),
         ])
       }

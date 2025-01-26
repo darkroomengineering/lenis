@@ -32,6 +32,7 @@
     "dev": "pnpm run -w --parallel /^dev:.*/",
     "dev:build": "tsup --watch",
     "dev:playground": "pnpm --filter playground dev",
+    "dev:nuxt": "pnpm --filter playground-nuxt dev",
     "readme": "node ./scripts/update-readme.js",
     "version:dev": "npm version prerelease --preid dev --force --no-git-tag-version",
     "version:patch": "npm version patch --force --no-git-tag-version",
@@ -83,5 +84,6 @@
       "default": "./dist/lenis-vue.mjs"
     },
     "./dist/*": "./dist/*"
-  }
+  },
+  "packageManager": "pnpm@9.15.4+sha512.b2dc20e2fc72b3e18848459b37359a32064663e5627a51e4c74b2c29dd8e8e0491483c3abb40789cfd578bf362fb6ba8261b05f0387d76792ed6e23ea3b1b6a0"
 }
