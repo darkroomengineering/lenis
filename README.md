@@ -1,4 +1,4 @@
-[![LENIS](https://assets.darkroom.engineering/lenis/header.png)](https://github.com/darkroomengineering/lenis)
+[![LENIS](https://assets.darkroom.engineering/lenis/banner.gif)](https://github.com/darkroomengineering/lenis)
 
 [![npm](https://img.shields.io/npm/v/lenis?colorA=000000&colorB=ff98a2
 )](https://www.npmjs.com/package/lenis)
