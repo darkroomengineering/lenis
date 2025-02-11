@@ -1,4 +1,4 @@
-[![LENIS](https://mathiasbynens.be/demo/animated-webp)](https://github.com/darkroomengineering/lenis)
+[![LENIS](https://mathiasbynens.be/demo/animated-webp-supported.webp)](https://github.com/darkroomengineering/lenis)
 
 [![npm](https://img.shields.io/npm/v/lenis?colorA=E30613&colorB=000000
 )](https://www.npmjs.com/package/lenis)
