@@ -36,7 +36,8 @@ Read our [Manifesto](https://github.com/darkroomengineering/lenis/blob/main/MANI
 
 If you like Lenis, please consider [becoming a sponsor](https://github.com/sponsors/darkroomengineering). Your support helps us to smooth the web one library at a time.
 
-[![Scott Sunarto](https://avatars.githubusercontent.com/u/4402697?s=80&v=4)](https://smsunarto.com/) [![Iron Velvet](https://avatars.githubusercontent.com/u/58460073?s=80&v=4)](https://www.ironvelvet.studio/) [![cachet.studio](https://avatars.githubusercontent.com/u/75880965?s=80&v=4)](https://www.cachet.studio/) [![Mario Sanchez Maselli](https://avatars.githubusercontent.com/u/1336977?s=80&v=4)](https://non-linear.studio/) [![Federico Valla](https://avatars.githubusercontent.com/u/38297526?s=80&v=4)](https://www.federic.ooo/) 
+[![Scott Sunarto](https://avatars.githubusercontent.com/u/4402697?s=80&v=4)](https://smsunarto.com/) [![Iron Velvet](https://avatars.githubusercontent.com/u/58460073?s=80&v=4)](https://www.ironvelvet.studio/) [![cachet.studio](https://avatars.githubusercontent.com/u/75880965?s=80&v=4)](https://www.cachet.studio/) [![Mario Sanchez Maselli](https://avatars.githubusercontent.com/u/1336977?s=80&v=4)](https://non-linear.studio/) [![Federico Valla](https://avatars.githubusercontent.com/u/38297526?s=80&v=4)](https://www.federic.ooo/)
+
 <br>
 
 ## Packages
