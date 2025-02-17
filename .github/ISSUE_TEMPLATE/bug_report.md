@@ -1,5 +1,5 @@
 ## Before to submit your issue
-- Read the [Troubleshooting](https://github.com/darkroomengineering/lenis#troubleshooting) section.
+Read the [Troubleshooting](https://github.com/darkroomengineering/lenis#troubleshooting) section.
 
 ## Describe the bug
 A clear and concise description of what the bug is.
