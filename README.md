@@ -14,6 +14,24 @@ Read our [Manifesto](https://github.com/darkroomengineering/lenis/blob/main/MANI
 
 <br/>
 
+- [Sponsors](#sponsors)
+- [Packages](#packages)
+- [Installation](#installation)
+- [Setup](#setup)
+- [Settings](#settings)
+- [Properties](#properties)
+- [Methods](#methods)
+- [Events](#events)
+- [Considerations](#considerations)
+- [Limitations](#limitations)
+- [Troubleshooting](#troubleshooting)
+- [Tutorials](#tutorials)
+- [Plugins](#plugins)
+- [Lenis is Use](#lenis-in-use)
+- [License](#license)
+
+<br/>
+
 ## Sponsors
 
 If you like Lenis, please consider [becoming a sponsor](https://github.com/sponsors/darkroomengineering). Your support helps us to smooth the web one library at a time.
@@ -87,7 +105,7 @@ function raf(time) {
 requestAnimationFrame(raf);
 ```
 
-#### Recommended CSS:
+### Recommended CSS:
 
 import stylesheet
 ```js
@@ -132,7 +150,7 @@ gsap.ticker.lagSmoothing(0);
 <br/>
 
 
-## Instance settings
+## Settings
 
 | Option                   | Type                        | Default                                            | Description                                                                                                                                                                                                                                                                      |
 |--------------------------|-----------------------------|----------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
@@ -175,7 +193,7 @@ gsap.ticker.lagSmoothing(0);
 - `lock`(`boolean`): whether or not to prevent user from scrolling until target reached
 - `onComplete`(`function`): called when target is reached -->
 
-## Instance Props
+## Properties
 
 | Property                | Type              | Description                                                                |
 |-------------------------|-------------------|----------------------------------------------------------------------------|
@@ -200,7 +218,7 @@ gsap.ticker.lagSmoothing(0);
 
 <br/>
 
-## Instance Methods
+## Methods
 
 | Method                      | Description                                                                     | Arguments                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
 |-----------------------------|---------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
@@ -214,7 +232,7 @@ gsap.ticker.lagSmoothing(0);
 
 
 
-## Instance Events
+## Events
 
 | Event            | Callback Arguments        |
 |------------------|---------------------------|
