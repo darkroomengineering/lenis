@@ -298,6 +298,15 @@ new Lenis({
 
 <br>
 
+## Troubleshooting
+- Make sure you use the latest version of [Lenis](https://www.npmjs.com/package/lenis?activeTab=versions)
+- Include recommended CSS.
+- Remove GSAP ScrollTrigger.
+- Remove Lenis and be sure that your element/page is scrollable anyway.
+- Be sure to use `autoRaf: true` or to manually call `lenis.raf(time)`.
+
+<br>
+
 ## Tutorials
 
 - [Scroll Animation Ideas for Image Grids](https://tympanus.net/Development/ScrollAnimationsGrid/) by [Codrops](https://tympanus.net/codrops)
