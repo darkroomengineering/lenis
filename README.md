@@ -51,8 +51,6 @@ If you like Lenis, please consider [becoming a sponsor](https://github.com/spons
 
 ## Installation
 
-### JavaScript
-
 using a package manager:
 
 ```bash
