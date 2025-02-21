@@ -1,6 +1,6 @@
 {
   "name": "lenis",
-  "version": "1.1.20",
+  "version": "1.1.21-dev.0",
   "description": "How smooth scroll should be",
   "type": "module",
   "sideEffects": false,
@@ -82,9 +82,6 @@
     "./vue": {
       "types": "./dist/lenis-vue.d.ts",
       "default": "./dist/lenis-vue.mjs"
-    },
-    "./nuxt": {
-      "default": "./dist/lenis-vue-nuxt.mjs"
     },
     "./dist/*": "./dist/*"
   },

@@ -9,9 +9,9 @@
     "postinstall": "nuxt prepare"
   },
   "dependencies": {
+    "lenis": "workspace:*",
     "nuxt": "^3.15.3",
     "vue": "latest",
-    "vue-router": "latest",
-    "lenis": "workspace:*"
+    "vue-router": "latest"
   }
 }
