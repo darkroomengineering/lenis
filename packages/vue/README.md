@@ -23,12 +23,11 @@ app.use(LenisVue)
 
 ### Nuxt 
 ```js
-// plugins/lenis.js
-import LenisVue from 'lenis/vue'
-
-export default defineNuxtPlugin((nuxtApp) => {
-  nuxtApp.vueApp.use(LenisVue)
+// nuxt.config.js
+export default defineNuxtConfig({
+  plugins: ['lenis/nuxt'],
 })
+
 ```
 
 ## Usage

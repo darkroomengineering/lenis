@@ -10,3 +10,4 @@ const plugin = defineNuxtPlugin({
 })
 
 export default plugin
+export * from 'lenis/vue'
