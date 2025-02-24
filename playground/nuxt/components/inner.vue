@@ -2,10 +2,12 @@
 import { useLenis } from 'lenis/vue'
 
 const lenis = useLenis((lenis) => {
-  console.log('lenis in callback', lenis)
+  console.log('component callback', lenis)
 })
 
-console.log('lenis in component', lenis)
+watch(lenis, (lenis) => {
+  console.log('component lenis', lenis)
+})
 </script>
 
 <template>
