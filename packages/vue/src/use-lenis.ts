@@ -43,6 +43,9 @@ export function useLenis(callback?: ScrollCallback, priority = 0) {
 
       addCallback?.(callback, priority)
       callback?.(lenis as any)
+    },
+    {
+      immediate: true,
     }
   )
 

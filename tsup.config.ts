@@ -76,6 +76,12 @@ const reactOptions = makeBuildOptions(
   { banner: { js: '"use client";' } }
 )
 const vueOptions = makeBuildOptions('lenis-vue', 'packages/vue/index.ts', 'esm')
+const vueNuxtOptions = makeBuildOptions(
+  'lenis-vue-nuxt',
+  'packages/vue/nuxt.ts',
+  'esm',
+  { external: ['#app', 'lenis'], dts: false, sourcemap: false }
+)
 
 export default defineConfig(() => {
   console.log(`\x1b[31mLNS\x1b[0m\x1b[1m Building all packages\x1b[0m\n`)
@@ -87,5 +93,6 @@ export default defineConfig(() => {
     ...snapBrowserOptions,
     ...reactOptions,
     ...vueOptions,
+    ...vueNuxtOptions,
   ]
 })

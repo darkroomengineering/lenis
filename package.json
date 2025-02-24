@@ -1,6 +1,6 @@
 {
   "name": "lenis",
-  "version": "1.1.20",
+  "version": "1.1.21-dev.0",
   "description": "How smooth scroll should be",
   "type": "module",
   "sideEffects": false,
@@ -32,6 +32,7 @@
     "dev": "pnpm run -w --parallel /^dev:.*/",
     "dev:build": "tsup --watch",
     "dev:playground": "pnpm --filter playground dev",
+    "dev:nuxt": "pnpm --filter playground-nuxt dev",
     "readme": "node ./scripts/update-readme.js",
     "version:dev": "npm version prerelease --preid dev --force --no-git-tag-version",
     "version:patch": "npm version patch --force --no-git-tag-version",
@@ -81,6 +82,9 @@
     "./vue": {
       "types": "./dist/lenis-vue.d.ts",
       "default": "./dist/lenis-vue.mjs"
+    },
+    "./nuxt": {
+      "default": "./dist/lenis-vue-nuxt.mjs"
     },
     "./dist/*": "./dist/*"
   }

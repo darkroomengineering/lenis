@@ -10,16 +10,39 @@ lenis/vue provides a `<VueLenis>` component that creates a [Lenis](https://githu
 npm i lenis
 ```
 
-## Usage
+### Vue
+```js
+// main.js
+import { createApp } from 'vue'
+import LenisVue from 'lenis/vue'
 
-### Basic
+const app = createApp({})
+
+app.use(LenisVue)
+```
+
+### Nuxt 
+```js
+// nuxt.config.js
+export default defineNuxtConfig({
+  plugins: ['lenis/nuxt'],
+})
+
+```
+
+## Usage
 
 ```vue
 <script setup>
 import { VueLenis, useLenis } from 'lenis/vue'
+import { watch } from 'vue'
 
 const lenis = useLenis(({ scroll }) => {
   // called every scroll
+})
+
+watch(lenis, (lenis) => {
+  // lenis instance
 })
 </script>
 
@@ -30,38 +53,11 @@ const lenis = useLenis(({ scroll }) => {
 </template>
 ```
 
-### Plugin
-```js
-import { createApp } from 'vue'
-import vueLenisPlugin from 'lenis/vue'
 
-const app = createApp({})
-
-app.use(vueLenisPlugin)
-```
-
-```vue
-<script setup>
-import { useLenis } from 'lenis/react'
-
-const lenis = useLenis(({ scroll }) => {
-  // called every scroll
-})
-</script>
-
-<template>
-  <vue-lenis root>
-    <!-- content -->
-  </vue-lenis>
-</template>
-```
 
 ## Props
 - `options`: [Lenis options](https://github.com/darkroomengineering/lenis#instance-settings).
 - `root`: Lenis will be instanciate using `<html>` scroll. Default: `false`.
-- `autoRaf`: if `false`, `lenis.raf` needs to be called manually. Default: `true`.
-- `rafPriority`: [Tempus](https://github.com/studio-freight/tempus#readme) execution priority. Default: `0`.
-- `props`: Props to pass to the wrapper div. Default: `{}`.
 
 ## Hooks
 Once the Lenis context is set (components mounted inside `<VueLenis>` or `<vue-lenis>`) you can use these handy hooks:
@@ -79,7 +75,7 @@ GSAP integration
 ```vue
 <script setup>
 import { ref, watchEffect } from 'vue'
-import { VueLenis, useLenis } from 'lenis/react'
+import { VueLenis, useLenis } from 'lenis/vue'
 import gsap from 'gsap'
 
 const lenisRef = ref()
@@ -105,19 +101,6 @@ watchEffect((onInvalidate) => {
 
 <br/>
 
-## Authors
-
-This tool is maintained by the darkroom.engineering team:
-
-- Clément Roche ([@clementroche\_](https://twitter.com/clementroche_)) – [darkroom.engineering](https://darkroom.engineering)
-- Guido Fier ([@uido15](https://twitter.com/uido15)) – [darkroom.engineering](https://darkroom.engineering)
-- Leandro Soengas ([@lsoengas](https://twitter.com/lsoengas)) - [darkroom.engineering](https://darkroom.engineering)
-- Fermin Fernandez ([@Fermin_FerBridd](https://twitter.com/Fermin_FerBridd)) - [darkroom.engineering](https://darkroom.engineering)
-- Felix Mayr ([@feledori](https://twitter.com/feledori)) - [darkroom.engineering](https://darkroom.engineering)
-- Franco Arza ([@arzafran](https://twitter.com/arzafran)) - [darkroom.engineering](https://darkroom.engineering)
-
-<br/>
-
 ## License
 
-[The MIT License.](https://opensource.org/licenses/MIT)
+MIT © [darkroom.engineering](https://github.com/darkroomengineering)
