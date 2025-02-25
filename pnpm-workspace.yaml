@@ -1,4 +1,4 @@
 packages:
   - 'packages/*'
-  - 'packages/**/playground'
   - 'playground'
+  - 'playground/*'

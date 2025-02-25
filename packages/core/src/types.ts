@@ -203,6 +203,7 @@ export type LenisOptions = {
    * If `true`, Lenis will automatically run `requestAnimationFrame` loop
    * @default false
    */
+  anchors?: boolean | ScrollToOptions
   __experimental__naiveDimensions?: boolean
 }
 

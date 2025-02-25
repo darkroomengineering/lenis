@@ -26,7 +26,12 @@ function App() {
   return (
     <>
       {/* <ReactLenis root /> */}
-      <ReactLenis className="wrapper" root ref={lenisRef}>
+      <ReactLenis
+        className="wrapper"
+        // root
+        ref={lenisRef}
+        style={{ height: '100vh', overflowY: 'auto' }}
+      >
         {lorem}
       </ReactLenis>
     </>

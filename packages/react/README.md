@@ -17,13 +17,13 @@ npm i lenis
 ```jsx
 import { ReactLenis, useLenis } from 'lenis/react'
 
-function Component() {
+function App() {
   const lenis = useLenis(({ scroll }) => {
     // called every scroll
   })
 
   return (
-    <ReactLenis root options={{ autoRaf: true }}>
+    <ReactLenis root>
       { /* content */ }
     </ReactLenis>
   )
@@ -33,9 +33,6 @@ function Component() {
 ## Props
 - `options`: [Lenis options](https://github.com/darkroomengineering/lenis#instance-settings).
 - `root`: Lenis will be instanciate using `<html>` scroll. Default: `false`.
-- `className`: Class name for the wrapper div. Default: `''`.
-
-
 
 ## Hooks
 Once the Lenis context is set (components mounted inside `<ReactLenis>`) you can use these handy hooks:
@@ -55,7 +52,7 @@ The hook takes three argument:
 import { ReactLenis } from 'lenis/react'
 import { useEffect, useRef } from 'react'
 
-function Component() {
+function App() {
   const lenisRef = useRef()
   
   useEffect(() => {
@@ -69,7 +66,7 @@ function Component() {
   }, [])
   
   return (
-    <ReactLenis ref={lenisRef}>
+    <ReactLenis options={{ autoRaf: false }} ref={lenisRef}>
       { /* content */ }
     </ReactLenis>
   )
@@ -84,7 +81,7 @@ import gsap from 'gsap'
 import { ReactLenis } from 'lenis/react'
 import { useEffect, useRef } from 'react'
 
-function Component() {
+function App() {
   const lenisRef = useRef()
   
   useEffect(() => {
@@ -98,7 +95,7 @@ function Component() {
   }, [])
   
   return (
-    <ReactLenis ref={lenisRef}>
+    <ReactLenis options={{ autoRaf: false }} ref={lenisRef}>
       { /* content */ }
     </ReactLenis>
   )
@@ -107,15 +104,17 @@ function Component() {
 
 ### Framer Motion integration:
 ```jsx
-import { ReactLenis } from 'lenis/react'
+import { ReactLenis } from 'lenis/react';
+import type { LenisRef } from 'lenis/react';
 import { cancelFrame, frame } from 'framer-motion';
 import { useEffect, useRef } from 'react';
 
-function Component() {
-  const lenisRef = useRef()
+function App() {
+  const lenisRef = useRef<LenisRef>(null)
 
   useEffect(() => {
-    function raf(time) {
+    function update(data: { timestamp: number }) {
+      const time = data.timestamp
       lenisRef.current?.lenis?.raf(time)
     }
 
@@ -126,7 +125,7 @@ function Component() {
 
 
   return (
-    <ReactLenis ref={lenisRef}>
+    <ReactLenis options={{ autoRaf: false }} ref={lenisRef}>
       { /* content */ }
     </ReactLenis>
   )
@@ -139,19 +138,6 @@ function Component() {
 
 <br/>
 
-## Authors
-
-This tool is maintained by the darkroom.engineering team:
-
-- Clément Roche ([@clementroche\_](https://twitter.com/clementroche_)) – [darkroom.engineering](https://darkroom.engineering)
-- Guido Fier ([@uido15](https://twitter.com/uido15)) – [darkroom.engineering](https://darkroom.engineering)
-- Leandro Soengas ([@lsoengas](https://twitter.com/lsoengas)) - [darkroom.engineering](https://darkroom.engineering)
-- Fermin Fernandez ([@Fermin_FerBridd](https://twitter.com/Fermin_FerBridd)) - [darkroom.engineering](https://darkroom.engineering)
-- Felix Mayr ([@feledori](https://twitter.com/feledori)) - [darkroom.engineering](https://darkroom.engineering)
-- Franco Arza ([@arzafran](https://twitter.com/arzafran)) - [darkroom.engineering](https://darkroom.engineering)
-
-<br/>
-
 ## License
 
-[The MIT License.](https://opensource.org/licenses/MIT)
+MIT © [darkroom.engineering](https://github.com/darkroomengineering)

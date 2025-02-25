@@ -19,3 +19,30 @@
     width: 100vw;
   } */
 }
+
+#debug {
+  position: fixed;
+  top: 4rem;
+}
+
+/* html {
+  overflow: hidden;
+  height: 100%;
+}
+
+body {
+  overflow-y: auto;
+  height: 100%;
+} */
+
+/* this prevents UI to collapse on scroll */
+/* html,
+body {
+  overflow: hidden;
+  height: 100%;
+}
+
+main {
+  height: 100%;
+  overflow-y: auto;
+} */

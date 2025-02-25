@@ -1,6 +1,7 @@
 {
   "name": "lenis",
-  "version": "1.1.16",
+  "version": "1.1.21",
+  "description": "How smooth scroll should be",
   "type": "module",
   "sideEffects": false,
   "author": "darkroom.engineering",
@@ -34,6 +35,7 @@
     "dev": "pnpm run -w --parallel /^dev:.*/",
     "dev:build": "tsup --watch",
     "dev:playground": "pnpm --filter playground dev",
+    "dev:nuxt": "pnpm --filter playground-nuxt dev",
     "readme": "node ./scripts/update-readme.js",
     "version:dev": "npm version prerelease --preid dev --force --no-git-tag-version",
     "version:patch": "npm version patch --force --no-git-tag-version",
@@ -47,6 +49,7 @@
     "dist"
   ],
   "devDependencies": {
+    "terser": "^5.37.0",
     "tsup": "^8.4.0",
     "typescript": "^5.4.5"
   },
@@ -75,7 +78,6 @@
       "types": "./dist/lenis.d.ts",
       "default": "./dist/lenis.mjs"
     },
-    "./dist/*": "./dist/*",
     "./react": {
       "types": "./dist/lenis-react.d.ts",
       "default": "./dist/lenis-react.mjs"
@@ -91,6 +93,10 @@
     "./svelte": {
       "types": "./dist/lenis-svelte.d.ts",
       "default": "./dist/lenis-svelte.mjs"
-    }
+    },
+    "./nuxt": {
+      "default": "./dist/lenis-vue-nuxt.mjs"
+    },
+    "./dist/*": "./dist/*"
   }
 }

@@ -27,7 +27,11 @@ const { title } = Astro.props;
 			<a href="/vue">Vue</a>
 			<a href="/svelte">Svelte</a>
 		</nav>
-		<slot />
+		<main>
+			<div>
+				<slot />
+			</div>
+		</main>
 	</body>
 </html>
 
@@ -47,14 +51,14 @@ const { title } = Astro.props;
   box-sizing: border-box;
 }
 
-html {
+/* html {
 	overflow-y: scroll;
-}
+} */
 
 body {
   margin: 0;
-  min-width: 320px;
-  min-height: 100vh;
+  /* min-width: 320px; */
+  /* min-height: 100vh; */
 }
 </style>
 
@@ -92,6 +96,6 @@ body {
 	}
 
 	body {
-		padding-top: 4rem;
+		/* padding-top: 4rem; */
 	}
 </style>

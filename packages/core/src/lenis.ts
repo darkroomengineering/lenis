@@ -108,17 +108,14 @@ export class Lenis {
     virtualScroll,
     overscroll = true,
     autoRaf = false,
+    anchors = false,
     __experimental__naiveDimensions = false,
   }: LenisOptions = {}) {
     // Set version
     window.lenisVersion = version
 
-    // Check if wrapper is html or body, fallback to window
-    if (
-      !wrapper ||
-      wrapper === document.documentElement ||
-      wrapper === document.body
-    ) {
+    // Check if wrapper is <html>, fallback to window
+    if (!wrapper || wrapper === document.documentElement) {
       wrapper = window
     }
 
@@ -144,6 +141,7 @@ export class Lenis {
       virtualScroll,
       overscroll,
       autoRaf,
+      anchors,
       __experimental__naiveDimensions,
     }
 
@@ -158,6 +156,18 @@ export class Lenis {
 
     // Add event listeners
     this.options.wrapper.addEventListener('scroll', this.onNativeScroll, false)
+
+    this.options.wrapper.addEventListener('scrollend', this.onScrollEnd, {
+      capture: true,
+    })
+
+    if (this.options.anchors && this.options.wrapper === window) {
+      this.options.wrapper.addEventListener(
+        'click',
+        this.onClick as EventListener,
+        false
+      )
+    }
 
     this.options.wrapper.addEventListener(
       'pointerdown',
@@ -188,11 +198,24 @@ export class Lenis {
       this.onNativeScroll,
       false
     )
+
+    this.options.wrapper.removeEventListener('scrollend', this.onScrollEnd, {
+      capture: true,
+    })
+
     this.options.wrapper.removeEventListener(
       'pointerdown',
       this.onPointerDown as EventListener,
       false
     )
+
+    if (this.options.anchors && this.options.wrapper === window) {
+      this.options.wrapper.removeEventListener(
+        'click',
+        this.onClick as EventListener,
+        false
+      )
+    }
 
     this.virtualScroll.destroy()
     this.dimensions.destroy()
@@ -229,12 +252,52 @@ export class Lenis {
     return this.emitter.off(event, callback)
   }
 
+  private onScrollEnd = (e: Event | CustomEvent) => {
+    if (!(e instanceof CustomEvent)) {
+      if (this.isScrolling === 'smooth' || this.isScrolling === false) {
+        e.stopPropagation()
+      }
+    }
+  }
+
+  private dispatchScrollendEvent = () => {
+    this.options.wrapper.dispatchEvent(
+      new CustomEvent('scrollend', {
+        bubbles: this.options.wrapper === window,
+        // cancelable: false,
+        detail: {
+          lenisScrollEnd: true,
+        },
+      })
+    )
+  }
+
   private setScroll(scroll: number) {
-    // apply scroll value immediately
+    // behavior: 'instant' bypasses the scroll-behavior CSS property
+
     if (this.isHorizontal) {
-      this.rootElement.scrollLeft = scroll
+      this.options.wrapper.scrollTo({ left: scroll, behavior: 'instant' })
     } else {
-      this.rootElement.scrollTop = scroll
+      this.options.wrapper.scrollTo({ top: scroll, behavior: 'instant' })
+    }
+  }
+
+  private onClick = (event: PointerEvent | MouseEvent) => {
+    const path = event.composedPath()
+    const anchor = path.find(
+      (node) =>
+        node instanceof HTMLAnchorElement &&
+        node.getAttribute('href')?.startsWith('#')
+    ) as HTMLAnchorElement | undefined
+    if (anchor) {
+      const id = anchor.getAttribute('href')
+      if (id) {
+        const options =
+          typeof this.options.anchors === 'object' && this.options.anchors
+            ? this.options.anchors
+            : undefined
+        this.scrollTo(id, options)
+      }
     }
   }
 
@@ -274,10 +337,13 @@ export class Lenis {
     //   return
     // }
 
+    const isClickOrTap = deltaX === 0 && deltaY === 0
+
     const isTapToStop =
       this.options.syncTouch &&
       isTouch &&
       event.type === 'touchstart' &&
+      isClickOrTap &&
       !this.isStopped &&
       !this.isLocked
 
@@ -285,8 +351,6 @@ export class Lenis {
       this.reset()
       return
     }
-
-    const isClick = deltaX === 0 && deltaY === 0 // click event
 
     // const isPullToRefresh =
     //   this.options.gestureOrientation === 'vertical' &&
@@ -298,7 +362,7 @@ export class Lenis {
       (this.options.gestureOrientation === 'vertical' && deltaY === 0) ||
       (this.options.gestureOrientation === 'horizontal' && deltaX === 0)
 
-    if (isClick || isUnknownGesture) {
+    if (isClickOrTap || isUnknownGesture) {
       // console.log('prevent')
       return
     }
@@ -360,7 +424,7 @@ export class Lenis {
 
     event.preventDefault()
 
-    const syncTouch = isTouch && this.options.syncTouch
+    const isSyncTouch = isTouch && this.options.syncTouch
     const isTouchEnd = isTouch && event.type === 'touchend'
 
     const hasTouchInertia = isTouchEnd && Math.abs(delta) > 5
@@ -371,9 +435,10 @@ export class Lenis {
 
     this.scrollTo(this.targetScroll + delta, {
       programmatic: false,
-      ...(syncTouch
+      ...(isSyncTouch
         ? {
             lerp: hasTouchInertia ? this.options.syncTouchLerp : 1,
+            // immediate: !hasTouchInertia,
           }
         : {
             lerp: this.options.lerp,
@@ -415,7 +480,11 @@ export class Lenis {
       this.direction = Math.sign(
         this.animatedScroll - lastScroll
       ) as Lenis['direction']
-      this.isScrolling = 'native'
+
+      if (!this.isStopped) {
+        this.isScrolling = 'native'
+      }
+
       this.emit()
 
       if (this.velocity !== 0) {
@@ -442,9 +511,9 @@ export class Lenis {
    */
   start() {
     if (!this.isStopped) return
-    this.isStopped = false
-
     this.reset()
+
+    this.isStopped = false
   }
 
   /**
@@ -452,10 +521,9 @@ export class Lenis {
    */
   stop() {
     if (this.isStopped) return
-    this.isStopped = true
-    this.animate.stop()
-
     this.reset()
+
+    this.isStopped = true
   }
 
   /**
@@ -577,6 +645,10 @@ export class Lenis {
       this.emit()
       onComplete?.(this)
       this.userData = {}
+
+      requestAnimationFrame(() => {
+        this.dispatchScrollendEvent()
+      })
       return
     }
 
@@ -617,6 +689,11 @@ export class Lenis {
           this.emit()
           onComplete?.(this)
           this.userData = {}
+
+          requestAnimationFrame(() => {
+            this.dispatchScrollendEvent()
+          })
+
           // avoid emitting event twice
           this.preventNextNativeScrollEvent()
         }
@@ -670,9 +747,12 @@ export class Lenis {
    */
   get actualScroll() {
     // value browser takes into account
+    // it has to be this way because of DOCTYPE declaration
+    const wrapper = this.options.wrapper as Window | HTMLElement
+
     return this.isHorizontal
-      ? this.rootElement.scrollLeft
-      : this.rootElement.scrollTop
+      ? (wrapper as Window).scrollX ?? (wrapper as HTMLElement).scrollLeft
+      : (wrapper as Window).scrollY ?? (wrapper as HTMLElement).scrollTop
   }
 
   /**

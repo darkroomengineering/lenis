@@ -25,7 +25,12 @@ function makeBuildOptions(
 
   const minifyOptions = {
     ...options,
-    minify: true,
+    minify: 'terser',
+    terserOptions: {
+      mangle: {
+        reserved: ['Lenis'],
+      },
+    },
     outExtension: () => ({ js: '.min.js' }),
     ...overwrites,
   } satisfies Options
@@ -71,6 +76,12 @@ const reactOptions = makeBuildOptions(
   { banner: { js: '"use client";' } }
 )
 const vueOptions = makeBuildOptions('lenis-vue', 'packages/vue/index.ts', 'esm')
+const vueNuxtOptions = makeBuildOptions(
+  'lenis-vue-nuxt',
+  'packages/vue/nuxt.ts',
+  'esm',
+  { external: ['#app', 'lenis'], dts: false, sourcemap: false }
+)
 const svelteOptions = makeBuildOptions('lenis-svelte', 'packages/svelte/index.ts', 'esm', { dts: false })
 
 export default defineConfig(() => {
@@ -84,5 +95,6 @@ export default defineConfig(() => {
     ...reactOptions,
     ...vueOptions,
     ...svelteOptions,
+    ...vueNuxtOptions,
   ]
 })
