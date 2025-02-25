@@ -12,6 +12,7 @@
   "dependencies": {
     "@astrojs/check": "^0.9.3",
     "@astrojs/react": "^3.6.2",
+    "@astrojs/svelte": "^6.0.0",
     "@astrojs/vue": "^4.5.0",
     "@types/react": "^18.3.4",
     "@types/react-dom": "^18.3.0",
@@ -20,7 +21,8 @@
     "lorem-ipsum": "^2.0.8",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
-    "typescript": "^5.5.4",
+    "svelte": "^5.19.3",
+    "typescript": "^5.7.3",
     "vue": "^3.4.38"
   }
 }

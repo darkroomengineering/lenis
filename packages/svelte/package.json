@@ -5,6 +5,6 @@
 	  "lenis": "workspace:lenis*"
 	},
 	"devDependencies": {
-	  "svelte": "^4.2.19"
+	  "svelte": "^5.19.3"
 	}
   }
