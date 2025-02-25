@@ -17,7 +17,7 @@ function makeBuildOptions(
     cjsInterop: false,
     dts: true,
     sourcemap: true,
-    external: ['react', 'vue', 'lenis'],
+    external: ['react', 'vue', 'svelte','lenis'],
     outExtension: () =>
       format === 'esm' ? { js: '.mjs', dts: '.d.ts' } : { js: '.js' },
     ...overwrites,
@@ -82,6 +82,7 @@ const vueNuxtOptions = makeBuildOptions(
   'esm',
   { external: ['#app', 'lenis'], dts: false, sourcemap: false }
 )
+const svelteOptions = makeBuildOptions('lenis-svelte', 'packages/svelte/index.ts', 'esm', { dts: false })
 
 export default defineConfig(() => {
   console.log(`\x1b[31mLNS\x1b[0m\x1b[1m Building all packages\x1b[0m\n`)
@@ -93,6 +94,7 @@ export default defineConfig(() => {
     ...snapBrowserOptions,
     ...reactOptions,
     ...vueOptions,
+    ...svelteOptions,
     ...vueNuxtOptions,
   ]
 })
