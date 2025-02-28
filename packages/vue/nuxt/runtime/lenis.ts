@@ -1,6 +1,6 @@
 import vuePlugin from 'lenis/vue'
 // @ts-expect-error - nuxt weird static types man
-import { defineNuxtPlugin } from '#app'
+import { defineNuxtPlugin } from '#imports'
 
 const plugin = defineNuxtPlugin({
   name: 'lenis',
@@ -10,4 +10,3 @@ const plugin = defineNuxtPlugin({
 })
 
 export default plugin
-export * from 'lenis/vue'

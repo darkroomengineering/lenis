@@ -52,13 +52,17 @@
   },
   "peerDependencies": {
     "react": ">=17.0.0",
-    "vue": ">=3.0.0"
+    "vue": ">=3.0.0",
+    "@nuxt/kit": ">=3.0.0"
   },
   "peerDependenciesMeta": {
     "react": {
       "optional": true
     },
     "vue": {
+      "optional": true
+    },
+    "@nuxt/kit": {
       "optional": true
     }
   },
@@ -85,6 +89,9 @@
     },
     "./nuxt": {
       "default": "./dist/lenis-vue-nuxt.mjs"
+    },
+    "./nuxt/runtime/*": {
+      "default": "./dist/nuxt/runtime/*.mjs"
     },
     "./dist/*": "./dist/*"
   }
