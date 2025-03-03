@@ -76,11 +76,18 @@ const reactOptions = makeBuildOptions(
   { banner: { js: '"use client";' } }
 )
 const vueOptions = makeBuildOptions('lenis-vue', 'packages/vue/index.ts', 'esm')
-const vueNuxtOptions = makeBuildOptions(
+const nuxtOptions = makeBuildOptions(
   'lenis-vue-nuxt',
-  'packages/vue/nuxt.ts',
+  'packages/vue/nuxt/module.ts',
   'esm',
-  { external: ['#app', 'lenis'], dts: false, sourcemap: false }
+  { external: ['#imports', 'lenis'], dts: false, sourcemap: false }
+)
+
+const nuxtOptionsRuntime = makeBuildOptions(
+  'nuxt/runtime/lenis',
+  'packages/vue/nuxt/runtime/lenis.ts',
+  'esm',
+  { external: ['#imports', 'lenis'], dts: false, sourcemap: false }
 )
 
 export default defineConfig(() => {
@@ -93,6 +100,7 @@ export default defineConfig(() => {
     ...snapBrowserOptions,
     ...reactOptions,
     ...vueOptions,
-    ...vueNuxtOptions,
+    ...nuxtOptions,
+    ...nuxtOptionsRuntime,
   ]
 })

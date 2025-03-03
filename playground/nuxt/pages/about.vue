@@ -1,6 +1,6 @@
 <script setup>
 import Inner from '../components/inner.vue'
-import { useLenis } from 'lenis/nuxt'
+import { useLenis } from 'lenis/vue'
 
 const lenis = useLenis((lenis) => {
   console.log('page callback', lenis)

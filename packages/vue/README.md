@@ -25,7 +25,7 @@ app.use(LenisVue)
 ```js
 // nuxt.config.js
 export default defineNuxtConfig({
-  plugins: ['lenis/nuxt'],
+  modules: ['lenis/nuxt'],
 })
 
 ```

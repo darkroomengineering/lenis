@@ -1,6 +1,6 @@
 {
   "name": "lenis",
-  "version": "1.1.21",
+  "version": "1.1.22",
   "description": "How smooth scroll should be",
   "type": "module",
   "sideEffects": false,
@@ -57,7 +57,8 @@
   "peerDependencies": {
     "react": ">=17.0.0",
     "svelte": "^5.19.3",
-    "vue": ">=3.0.0"
+    "vue": ">=3.0.0",
+    "@nuxt/kit": ">=3.0.0"
   },
   "peerDependenciesMeta": {
     "react": {
@@ -67,6 +68,9 @@
       "optional": true
     },
     "svelte": {
+      "optional": true
+    },
+    "@nuxt/kit": {
       "optional": true
     }
   },
@@ -97,6 +101,9 @@
     },
     "./nuxt": {
       "default": "./dist/lenis-vue-nuxt.mjs"
+    },
+    "./nuxt/runtime/*": {
+      "default": "./dist/nuxt/runtime/*.mjs"
     },
     "./dist/*": "./dist/*"
   }
