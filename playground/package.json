@@ -12,7 +12,7 @@
   "dependencies": {
     "@astrojs/check": "^0.9.4",
     "@astrojs/react": "^4.1.6",
-    "@astrojs/svelte": "^6.0.0",
+    "@astrojs/svelte": "^7.0.5",
     "@astrojs/vue": "^5.0.6",
     "@types/react": "^19.0.7",
     "@types/react-dom": "^19.0.3",

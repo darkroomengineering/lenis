@@ -1,7 +1,7 @@
-<script lang="ts">
+<script>
     import { LoremIpsum } from "lorem-ipsum"
 
-    import { SvelteLenis, useLenis } from '../../packages/svelte'
+    import { SvelteLenis, useLenis } from 'lenis/svelte'
 
     const lorem = new LoremIpsum().generateParagraphs(200);
 
@@ -29,5 +29,3 @@
         { lorem }
     </p>
 </SvelteLenis>
-
-    

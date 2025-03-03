@@ -45,6 +45,9 @@ const { title } = Astro.props;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+
+  /* Variables */
+  --tab-width: 60px;
 }
 
 * {
@@ -75,7 +78,7 @@ body {
 	}
 
 	a {
-		width: 60px;
+		width: var(--tab-width);
 		height: 100%;
 		display: flex;
 		justify-content: center;
@@ -93,6 +96,10 @@ body {
 	a:hover {
 		color: #E30613;
 		border-radius: 12px;
+	}
+
+	main {
+		padding-top: var(--tab-width);
 	}
 
 	body {

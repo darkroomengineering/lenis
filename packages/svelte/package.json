@@ -1,10 +1,24 @@
 {
 	"name": "lenis-svelte",
 	"type": "module",
+	"scripts": {
+		"build": "svelte-package -i ./src -o ../../dist/svelte"
+	},
+	"exports": {
+		".": {
+			"svelte": "./dist/svelte/index.js",
+			"default": "./dist/svelte/index.js"
+		}
+	},
 	"dependencies": {
-	  "lenis": "workspace:lenis*"
+		"lenis": "workspace:lenis*"
+	},
+	"peerDependencies": {
+		"svelte": "^5.19.3"
 	},
 	"devDependencies": {
-	  "svelte": "^5.19.3"
+		"@sveltejs/package": "^2.3.10",
+		"svelte": "^5.19.3",
+		"typescript": "^5.4.5"
 	}
-  }
+}
