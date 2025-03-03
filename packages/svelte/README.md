@@ -1,94 +1,43 @@
 # Lenis Svelte
 
-Lenis Svelte provides an [action](https://svelte.dev/docs/svelte-action) that instantiate [Lenis](https://lenis.darkroom.engineering/) for you in a Svelte app.
-This facilitate the use of Lenis in Svelte App without worry about how use it cross the component tree.
+lenis/svelte provides a `<SvelteLenis>` component that creates a [Lenis](https://github.com/darkroomengineering/lenis) instance and provides it to its children via context. This allows you to use Lenis in your Svelte app without worrying about passing the instance down through props. It also provides a `useLenis` hook that allows you to access the Lenis instance from any component in your app.
 
-> If you are more interested realted to Lenis. Please check out their repository [here](https://github.com/darkroomengineering/lenis)
+
+## Installation
+
+```bash
+npm i lenis
+```
 
 ## Usage
 
-### Using for global scrolling
+### Basic
 
-If the action is just add iot
+```jsx
+import { SvelteLenis, useLenis } from 'lenis/svelte'
 
-```svelte
-<script>
-    import { lenis } from "lenis/svelte";
+function App() {
+  const lenis = useLenis(({ scroll }) => {
+    // called every scroll
+  })
 
-    const root = lenis.instance('root');
-    //        or lenis.root();
-
-    onMount(() => {
-        $root?.on('scroll', () => console.log(`[Lenis root] scrolling...`))
-    });
-
-</script>
-<main use:lenis>
- {...}
-</main>
+  return (
+    <SvelteLenis root>
+      { /* content */ }
+    </SvelteLenis>
+  )
+}
 ```
 
-### Using it for section scroll
+## Props
+- `options`: [Lenis options](https://github.com/darkroomengineering/lenis#instance-settings).
+- `root`: Lenis will be instanciate using `<html>` scroll. Default: `false`.
 
-```svelte
-<script>
-    import { lenis } from "lenis/svelte";
+## Hooks
+Once the Lenis context is set (components mounted inside `<SveltetLenis>`) you can use these handy hooks:
 
-    const lenisInstance = lenis.instance('__identifier__');
+`useLenis` is a hook that returns the Lenis instance
 
-    onMount(() => {
-        $lenisInstance?.on('scroll', () => console.log(`[Lenis in section] scrolling...`))
-    });
-
-</script>
-<div use:lenis={{ id: '__identifier__' }}>
- {...}
-</div>
-```
-
-You can also use the `lenis.instance(<id>)` in sub components to get the instance that you want to manage.
-
-
-## Metadata
-
-### Action params
-
-- `id`:
-    This is used to identify the lenis instance. You can getting back using `lenis.instance(<id>)`
-    - type: `string`
-    - default: `"root"`
-
-- `autoRaf`:
-    If you want to run lenis.raf() by yourself, set it to `false`
-    - type: `boolean`
-    - default: `true`
-
-- `options`:
-    You can send any Lenis config here. [LenisOptions](https://github.com/darkroomengineering/lenis#instance-settings)
-    - type: `LenisOptions`
-    - default: none just the lib defaults
-
-```svelte
-<script>
-    import { lenis } from "lenis/svelte";
-</script>
-<div use:lenis={/* action params */}>
- {...}
-</div>
-```
-
-### Action extra methods
-
-- `.instance`: Method use for get the intance by id
-    - type: `instance(id: string): Readable<Lenis>`
-    - default: none
-- `.root`: Is just an alias for `lenis.instance('root')` which get global lenis instance.
-
-Usage:
-```js
-    import { lenis } from "lenis/svelte";
-    
-    const box = lenis.instance('box-1');
-    const root = lenis.root();
-```
-
+The hook takes three argument:
+- `callback`: The function to be called whenever a scroll event is emitted
+- `priority`: Manage callback execution order
