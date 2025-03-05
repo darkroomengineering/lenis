@@ -52,7 +52,6 @@ export const VueLenis = defineComponent({
     // const tempusCleanupRef = shallowRef<() => void>()
     const wrapper = ref<HTMLDivElement>()
     const content = ref<HTMLDivElement>()
-
     // Setup exposed properties
     expose({
       lenis: lenisRef,
@@ -63,7 +62,7 @@ export const VueLenis = defineComponent({
     // Sync options
     watch(
       [() => props.options, wrapper, content],
-      (options, oldOptions) => {
+      () => {
         const isClient = typeof window !== 'undefined'
 
         if (!isClient) return
@@ -111,15 +110,25 @@ export const VueLenis = defineComponent({
       }
     }
 
-    watch(lenisRef, (lenis) => {
-      lenis?.on('scroll', onScroll)
+    watch(
+      [lenisRef, () => props.root],
+      ([lenis, root]) => {
+        lenis?.on('scroll', onScroll)
 
-      if (props.root) {
-        globalLenis.value = lenis
-        globalAddCallback.value = addCallback
-        globalRemoveCallback.value = removeCallback
-      }
-    })
+        if (root) {
+          globalLenis.value = lenis
+          globalAddCallback.value = addCallback
+          globalRemoveCallback.value = removeCallback
+
+          onWatcherCleanup(() => {
+            globalLenis.value = undefined
+            globalAddCallback.value = undefined
+            globalRemoveCallback.value = undefined
+          })
+        }
+      },
+      { immediate: true }
+    )
 
     if (!props.root) {
       provide(LenisSymbol, lenisRef)
@@ -131,7 +140,7 @@ export const VueLenis = defineComponent({
       if (props.root) {
         return slots.default?.()
       } else {
-        return h('div', { ref: wrapper, ...props }, [
+        return h('div', { ref: wrapper, ...props?.props }, [
           h('div', { ref: content }, slots.default?.()),
         ])
       }

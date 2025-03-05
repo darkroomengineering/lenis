@@ -3,7 +3,7 @@
     <NuxtLink to="/">Home</NuxtLink>
     <NuxtLink to="/about">About</NuxtLink>
   </nav>
-  <vue-lenis class="scroller">
+  <vue-lenis class="scroller" root>
     <NuxtPage />
   </vue-lenis>
 </template>
