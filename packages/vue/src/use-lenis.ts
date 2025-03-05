@@ -31,8 +31,7 @@ export function useLenis(callback?: ScrollCallback, priority = 0) {
       nextTick(() => {
         if (!lenis.value) {
           console.warn(
-            'No lenis instance found, either mount a root lenis instance or wrap your component in a lenis provider' +
-              typeof window
+            'No lenis instance found, either mount a root lenis instance or wrap your component in a lenis provider'
           )
         }
       })
