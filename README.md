@@ -43,9 +43,10 @@ If you like Lenis, please consider [becoming a sponsor](https://github.com/spons
 ## Packages
 
 - [lenis](https://github.com/darkroomengineering/lenis/blob/main/README.md)
-- [lenis/react](https://github.com/darkroomengineering/lenis/blob/main/packages/react/README.md)
-- [lenis/vue](https://github.com/darkroomengineering/lenis/tree/main/packages/vue/README.md)
 - [lenis/snap](https://github.com/darkroomengineering/lenis/tree/main/packages/snap/README.md)
+- [lenis/react](https://github.com/darkroomengineering/lenis/blob/main/packages/react/README.md)
+- [lenis/vue](https://github.com/darkroomengineering/lenis/blob/main/packages/vue/README.md)
+- [lenis/svelte](https://github.com/darkroomengineering/lenis/blob/main/packages/svelte/README.md)
 
 
 <br>
