@@ -298,7 +298,7 @@ export class Lenis {
           typeof this.options.anchors === 'object' && this.options.anchors
             ? this.options.anchors
             : undefined
-        this.scrollTo(id, options)
+        this.scrollTo(`#${id.split('#')[1]}`, options)
       }
     }
   }
