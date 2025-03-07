@@ -287,7 +287,9 @@ export class Lenis {
     const anchor = path.find(
       (node) =>
         node instanceof HTMLAnchorElement &&
-        node.getAttribute('href')?.startsWith('#')
+        (node.getAttribute('href')?.startsWith('#') ||
+          node.getAttribute('href')?.startsWith('/#') ||
+          node.getAttribute('href')?.startsWith('./#'))
     ) as HTMLAnchorElement | undefined
     if (anchor) {
       const id = anchor.getAttribute('href')
