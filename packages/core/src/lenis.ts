@@ -30,7 +30,7 @@ export class Lenis {
   private _isStopped = false // true if user should not be able to scroll - enable/disable programmatically
   private _isLocked = false // same as isStopped but enabled/disabled when scroll reaches target
   private _preventNextNativeScrollEvent = false
-  private _resetVelocityTimeout: number | null = null
+  private _resetVelocityTimeout: ReturnType<typeof setTimeout> | null = null
   private __rafID: number | null = null
 
   /**
@@ -109,6 +109,7 @@ export class Lenis {
     overscroll = true,
     autoRaf = false,
     anchors = false,
+    autoToggle = false,
     __experimental__naiveDimensions = false,
   }: LenisOptions = {}) {
     // Set version
@@ -142,6 +143,7 @@ export class Lenis {
       overscroll,
       autoRaf,
       anchors,
+      autoToggle,
       __experimental__naiveDimensions,
     }
 
@@ -182,6 +184,19 @@ export class Lenis {
     })
     this.virtualScroll.on('scroll', this.onVirtualScroll)
 
+    if (this.options.autoToggle) {
+      this.rootElement.addEventListener('transitionend', this.onTransitionEnd, {
+        passive: true,
+      })
+
+      this.rootElement.style.setProperty('transition-property', 'overflow')
+      this.rootElement.style.setProperty('transition-duration', '1ms')
+      this.rootElement.style.setProperty(
+        'transition-behavior',
+        'allow-discrete'
+      )
+    }
+
     if (this.options.autoRaf) {
       this.__rafID = requestAnimationFrame(this.raf)
     }
@@ -219,6 +234,12 @@ export class Lenis {
 
     this.virtualScroll.destroy()
     this.dimensions.destroy()
+
+    if (this.options.autoToggle) {
+      this.rootElement.style.removeProperty('transition-property')
+      this.rootElement.style.removeProperty('transition-duration')
+      this.rootElement.style.removeProperty('transition-behavior')
+    }
 
     this.cleanUpClassName()
 
@@ -270,6 +291,22 @@ export class Lenis {
         },
       })
     )
+  }
+
+  private onTransitionEnd = (event: TransitionEvent) => {
+    if (event.propertyName.includes('overflow')) {
+      const property = this.isHorizontal ? 'overflow-x' : 'overflow-y'
+
+      const overflow = getComputedStyle(this.rootElement)[
+        property as keyof CSSStyleDeclaration
+      ] as string
+
+      if (['hidden', 'clip'].includes(overflow)) {
+        this.stop()
+      } else {
+        this.start()
+      }
+    }
   }
 
   private setScroll(scroll: number) {
@@ -379,7 +416,8 @@ export class Lenis {
       !!composedPath.find(
         (node) =>
           node instanceof HTMLElement &&
-          ((typeof prevent === 'function' && prevent?.(node)) ||
+          ((typeof prevent === 'function' &&
+            prevent?.(node, { event, lenis: this })) ||
             node.hasAttribute?.('data-lenis-prevent') ||
             (isTouch && node.hasAttribute?.('data-lenis-prevent-touch')) ||
             (isWheel && node.hasAttribute?.('data-lenis-prevent-wheel')))
@@ -828,6 +866,7 @@ export class Lenis {
    */
   get className() {
     let className = 'lenis'
+    if (this.options.autoToggle) className += ' lenis-autoToggle'
     if (this.isStopped) className += ' lenis-stopped'
     if (this.isLocked) className += ' lenis-locked'
     if (this.isScrolling) className += ' lenis-scrolling'
