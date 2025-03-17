@@ -184,7 +184,16 @@ export type LenisOptions = {
   /**
    * Manually prevent scroll to be smoothed based on elements traversed by events
    */
-  prevent?: (node: HTMLElement) => boolean
+  prevent?: (
+    node: HTMLElement,
+    {
+      event,
+      lenis,
+    }: {
+      event: WheelEvent | TouchEvent
+      lenis: Lenis
+    }
+  ) => boolean
   /**
    * Manually modify the events before they get consumed
    */
@@ -204,6 +213,11 @@ export type LenisOptions = {
    * @default false
    */
   anchors?: boolean | ScrollToOptions
+  /**
+   * If `true`, Lenis will automatically start/stop based on wrapper's overflow property
+   * @default false
+   */
+  autoToggle?: boolean
   __experimental__naiveDimensions?: boolean
 }
 

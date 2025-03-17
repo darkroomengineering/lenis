@@ -37,6 +37,7 @@ const lenis = new Lenis({
   // smoothWheel: false,
   autoRaf: true,
   anchors: true,
+  autoToggle: true,
   // syncTouch: true,
   // lerp: 0.01,
   // wrapper: document.body,
