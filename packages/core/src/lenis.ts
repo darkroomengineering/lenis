@@ -188,13 +188,6 @@ export class Lenis {
       this.rootElement.addEventListener('transitionend', this.onTransitionEnd, {
         passive: true,
       })
-
-      this.rootElement.style.setProperty('transition-property', 'overflow')
-      this.rootElement.style.setProperty('transition-duration', '1ms')
-      this.rootElement.style.setProperty(
-        'transition-behavior',
-        'allow-discrete'
-      )
     }
 
     if (this.options.autoRaf) {
@@ -234,12 +227,6 @@ export class Lenis {
 
     this.virtualScroll.destroy()
     this.dimensions.destroy()
-
-    if (this.options.autoToggle) {
-      this.rootElement.style.removeProperty('transition-property')
-      this.rootElement.style.removeProperty('transition-duration')
-      this.rootElement.style.removeProperty('transition-behavior')
-    }
 
     this.cleanUpClassName()
 
