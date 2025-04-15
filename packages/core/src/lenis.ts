@@ -758,13 +758,20 @@ export class Lenis {
       clientHeight
 
     if (time - (cache.time ?? 0) > 2000) {
+      cache.time = Date.now()
+
       const computedStyle = window.getComputedStyle(node)
+      cache.computedStyle = computedStyle
 
       const overflowXString = computedStyle.overflowX
       const overflowYString = computedStyle.overflowY
 
       hasOverflowX = ['auto', 'overlay', 'scroll'].includes(overflowXString)
       hasOverflowY = ['auto', 'overlay', 'scroll'].includes(overflowYString)
+      cache.hasOverflowX = hasOverflowX
+      cache.hasOverflowY = hasOverflowY
+
+      if (!hasOverflowX && !hasOverflowY) return false // if no overflow, it's not scrollable no matter what, early return saves some computations
 
       scrollWidth = node.scrollWidth
       scrollHeight = node.scrollHeight
@@ -775,12 +782,8 @@ export class Lenis {
       isScrollableX = scrollWidth > clientWidth
       isScrollableY = scrollHeight > clientHeight
 
-      cache.time = Date.now()
-      cache.computedStyle = computedStyle
       cache.isScrollableX = isScrollableX
       cache.isScrollableY = isScrollableY
-      cache.hasOverflowX = hasOverflowX
-      cache.hasOverflowY = hasOverflowY
       cache.scrollWidth = scrollWidth
       cache.scrollHeight = scrollHeight
       cache.clientWidth = clientWidth
@@ -796,7 +799,10 @@ export class Lenis {
       clientHeight = cache.clientHeight
     }
 
-    if (!hasOverflowX && !hasOverflowY && !isScrollableX && !isScrollableY) {
+    if (
+      (!hasOverflowX && !hasOverflowY) ||
+      (!isScrollableX && !isScrollableY)
+    ) {
       return false
     }
 
