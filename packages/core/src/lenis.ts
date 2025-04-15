@@ -745,6 +745,7 @@ export class Lenis {
   ) {
     const time = Date.now()
 
+    // @ts-ignore
     const cache = (node._lenis ??= {})
 
     let hasOverflowX,
