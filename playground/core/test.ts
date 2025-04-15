@@ -3,6 +3,8 @@ import { LoremIpsum } from 'lorem-ipsum'
 
 document.querySelector('#nested-content')!.innerHTML =
   new LoremIpsum().generateParagraphs(30)
+document.querySelector('#nested-horizontal-content')!.innerHTML =
+  new LoremIpsum().generateParagraphs(3)
 document
   .querySelector('#app')!
   .insertAdjacentText('afterbegin', new LoremIpsum().generateParagraphs(20))
@@ -18,7 +20,7 @@ document
 // })
 
 window.addEventListener('scroll', (e) => {
-  console.log('window scroll', e)
+  // console.log('window scroll', e)
 })
 
 window.addEventListener('scrollend', (e) => {
@@ -26,7 +28,7 @@ window.addEventListener('scrollend', (e) => {
 })
 
 document.querySelector('#nested')?.addEventListener('scrollend', (e) => {
-  console.log('nested scrollend', e)
+  // console.log('nested scrollend', e)
 })
 
 window.addEventListener('hashchange', () => {
@@ -38,6 +40,7 @@ const lenis = new Lenis({
   autoRaf: true,
   anchors: true,
   autoToggle: true,
+  allowNestedScroll: true,
   // syncTouch: true,
   // lerp: 0.01,
   // wrapper: document.body,
@@ -77,19 +80,19 @@ const lenis = new Lenis({
 //   console.log('hashchange')
 // })
 
-const nestedLenis = new Lenis({
-  wrapper: document.querySelector('#nested')!,
-  content: document.querySelector('#nested-content')!,
-  autoRaf: true,
-  // overscroll: false,
-  // orientation: 'horizontal',
-  // gestureOrientation: 'horizontal',
-  // infinite: true,
+// const nestedLenis = new Lenis({
+//   wrapper: document.querySelector('#nested')!,
+//   content: document.querySelector('#nested-content')!,
+//   autoRaf: true,
+//   // overscroll: false,
+//   // orientation: 'horizontal',
+//   // gestureOrientation: 'horizontal',
+//   // infinite: true,
 
-  // smoothWheel: false,
-})
+//   // smoothWheel: false,
+// })
 
-window.nestedLenis = nestedLenis
+// window.nestedLenis = nestedLenis
 
 // console.log(lenis.dimensions.height)
 lenis.on('scroll', (e) => {

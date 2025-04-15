@@ -184,16 +184,7 @@ export type LenisOptions = {
   /**
    * Manually prevent scroll to be smoothed based on elements traversed by events
    */
-  prevent?: (
-    node: HTMLElement,
-    {
-      event,
-      lenis,
-    }: {
-      event: WheelEvent | TouchEvent
-      lenis: Lenis
-    }
-  ) => boolean
+  prevent?: (node: HTMLElement) => boolean
   /**
    * Manually modify the events before they get consumed
    */
@@ -218,6 +209,15 @@ export type LenisOptions = {
    * @default false
    */
   autoToggle?: boolean
+  /**
+   * If `true`, Lenis will allow nested scroll
+   * @default false
+   */
+  allowNestedScroll?: boolean
+  /**
+   * If `true`, Lenis will use naive dimensions calculation
+   * @default false
+   */
   __experimental__naiveDimensions?: boolean
 }
 

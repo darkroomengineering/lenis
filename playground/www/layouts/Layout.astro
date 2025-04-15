@@ -1,100 +1,107 @@
 ---
-import "lenis/dist/lenis.css";
+import 'lenis/dist/lenis.css'
 interface Props {
-	title: string;
+  title: string
 }
 
-const { title } = Astro.props;
+const { title } = Astro.props
 ---
+
 <html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
-		<title>{title}</title>
-	</head>
-	<body>
-		<nav>
-			<a href="/">
-				<svg width="15" height="16" viewBox="0 0 15 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-					<path d="M8.6273 0C13.4362 0 15 2.35534 15 6.37565C15 11.4112 12.2502 16 6.58123 16L0.221572 16L0 15.7699L2.64556 0.216595L2.86707 0L8.6273 0Z" fill="#E30613"/>
-				</svg>
-			</a>
-			<a href="/core">Core</a>
-			<a href="/snap">Snap</a>
-			<a href="/react">React</a>
-			<a href="/vue">Vue</a>
-		</nav>
-		<main>
-			<div>
-				<slot />
-			</div>
-		</main>
-	</body>
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width" />
+    <meta name="generator" content={Astro.generator} />
+    <title>{title}</title>
+  </head>
+  <body>
+    <nav>
+      <a href="/">
+        <svg
+          width="15"
+          height="16"
+          viewBox="0 0 15 16"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="M8.6273 0C13.4362 0 15 2.35534 15 6.37565C15 11.4112 12.2502 16 6.58123 16L0.221572 16L0 15.7699L2.64556 0.216595L2.86707 0L8.6273 0Z"
+            fill="#E30613"></path>
+        </svg>
+      </a>
+      <a href="/core">Core</a>
+      <a href="/snap">Snap</a>
+      <a href="/react">React</a>
+      <a href="/vue">Vue</a>
+      <a href="/horizontal">Horizontal</a>
+    </nav>
+    <slot />
+  </body>
 </html>
 
 <style is:global>
-:root {
-  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
-  line-height: 1.5;
-  font-weight: 400;
+  :root {
+    font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+    line-height: 1.5;
+    font-weight: 400;
 
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
+    font-synthesis: none;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
 
-* {
-  box-sizing: border-box;
-}
+  * {
+    box-sizing: border-box;
+  }
 
-/* html {
+  /* html {
 	overflow-y: scroll;
 } */
 
-body {
-  margin: 0;
-  /* min-width: 320px; */
-  /* min-height: 100vh; */
-}
+  body {
+    margin: 0;
+    /* min-width: 320px; */
+    /* min-height: 100vh; */
+  }
 </style>
 
 <style>
   nav {
-		position: fixed;
-		top: 2px;
-		left: 2px;
-		align-items: center;
-		border-radius: 0.5rem;
-		height: 3rem;
-		display: flex;
-		gap: 2px;
-	}
+    position: fixed;
+    top: 2px;
+    left: 2px;
+    align-items: center;
+    border-radius: 0.5rem;
+    height: 3rem;
+    display: flex;
+    gap: 2px;
+  }
 
-	a {
-		width: 60px;
-		height: 100%;
-		display: flex;
-		justify-content: center;
-		align-items: center;
-		text-align: center;
-		font-family: monospace;
-		text-transform: uppercase;
-		color: white;
-		background-color: #0E0E0E;
-		text-decoration: none;
-		border-radius: 4px;
-		transition: all 0.2s ease-in-out;
-	}
+  a {
+    min-width: 60px;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    font-family: monospace;
+    text-transform: uppercase;
+    color: white;
+    background-color: #0e0e0e;
+    text-decoration: none;
+    border-radius: 4px;
+    transition: all 0.2s ease-in-out;
+    padding: 0 1rem;
+  }
 
-	a:hover {
-		color: #E30613;
-		border-radius: 12px;
-	}
+  a:hover {
+    color: #e30613;
+    border-radius: 12px;
+  }
 
-	body {
-		/* padding-top: 4rem; */
-	}
+  body {
+    /* padding-top: 4rem; */
+  }
 </style>

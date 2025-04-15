@@ -110,6 +110,7 @@ export class Lenis {
     autoRaf = false,
     anchors = false,
     autoToggle = false, // https://caniuse.com/?search=transition-behavior
+    allowNestedScroll = false,
     __experimental__naiveDimensions = false,
   }: LenisOptions = {}) {
     // Set version
@@ -144,6 +145,7 @@ export class Lenis {
       autoRaf,
       anchors,
       autoToggle,
+      allowNestedScroll,
       __experimental__naiveDimensions,
     }
 
@@ -403,11 +405,12 @@ export class Lenis {
       !!composedPath.find(
         (node) =>
           node instanceof HTMLElement &&
-          ((typeof prevent === 'function' &&
-            prevent?.(node, { event, lenis: this })) ||
+          ((typeof prevent === 'function' && prevent?.(node)) ||
             node.hasAttribute?.('data-lenis-prevent') ||
             (isTouch && node.hasAttribute?.('data-lenis-prevent-touch')) ||
-            (isWheel && node.hasAttribute?.('data-lenis-prevent-wheel')))
+            (isWheel && node.hasAttribute?.('data-lenis-prevent-wheel')) ||
+            (this.options.allowNestedScroll &&
+              this.checkNestedScroll(node, { deltaX, deltaY })))
       )
     )
       return
@@ -734,6 +737,108 @@ export class Lenis {
     requestAnimationFrame(() => {
       this._preventNextNativeScrollEvent = false
     })
+  }
+
+  private checkNestedScroll(
+    node: HTMLElement,
+    { deltaX, deltaY }: { deltaX: number; deltaY: number }
+  ) {
+    const time = Date.now()
+
+    const cache = (node._lenis ??= {})
+
+    let hasOverflowX,
+      hasOverflowY,
+      isScrollableX,
+      isScrollableY,
+      scrollWidth,
+      scrollHeight,
+      clientWidth,
+      clientHeight
+
+    if (time - (cache.time ?? 0) > 2000) {
+      const computedStyle = window.getComputedStyle(node)
+
+      const overflowXString = computedStyle.overflowX
+      const overflowYString = computedStyle.overflowY
+
+      hasOverflowX = ['auto', 'overlay', 'scroll'].includes(overflowXString)
+      hasOverflowY = ['auto', 'overlay', 'scroll'].includes(overflowYString)
+
+      scrollWidth = node.scrollWidth
+      scrollHeight = node.scrollHeight
+
+      clientWidth = node.clientWidth
+      clientHeight = node.clientHeight
+
+      isScrollableX = scrollWidth > clientWidth
+      isScrollableY = scrollHeight > clientHeight
+
+      cache.time = Date.now()
+      cache.computedStyle = computedStyle
+      cache.isScrollableX = isScrollableX
+      cache.isScrollableY = isScrollableY
+      cache.hasOverflowX = hasOverflowX
+      cache.hasOverflowY = hasOverflowY
+      cache.scrollWidth = scrollWidth
+      cache.scrollHeight = scrollHeight
+      cache.clientWidth = clientWidth
+      cache.clientHeight = clientHeight
+    } else {
+      isScrollableX = cache.isScrollableX
+      isScrollableY = cache.isScrollableY
+      hasOverflowX = cache.hasOverflowX
+      hasOverflowY = cache.hasOverflowY
+      scrollWidth = cache.scrollWidth
+      scrollHeight = cache.scrollHeight
+      clientWidth = cache.clientWidth
+      clientHeight = cache.clientHeight
+    }
+
+    if (!hasOverflowX && !hasOverflowY && !isScrollableX && !isScrollableY) {
+      return false
+    }
+
+    const gestureOrientation = this.options.gestureOrientation
+
+    let orientation: 'x' | 'y' | undefined
+
+    if (gestureOrientation === 'horizontal') {
+      orientation = 'x'
+    } else if (gestureOrientation === 'vertical') {
+      orientation = 'y'
+    } else {
+      const isScrollingX = deltaX !== 0
+      const isScrollingY = deltaY !== 0
+
+      if (isScrollingX && hasOverflowX && isScrollableX) {
+        orientation = 'x'
+      }
+
+      if (isScrollingY && hasOverflowY && isScrollableY) {
+        orientation = 'y'
+      }
+    }
+
+    if (!orientation) return false
+
+    let scroll, maxScroll, delta
+
+    if (orientation === 'x') {
+      scroll = node.scrollLeft
+      maxScroll = scrollWidth - clientWidth
+      delta = deltaX
+    } else if (orientation === 'y') {
+      scroll = node.scrollTop
+      maxScroll = scrollHeight - clientHeight
+      delta = deltaY
+    } else {
+      return false
+    }
+
+    const willScroll = delta > 0 ? scroll < maxScroll : scroll > 0
+
+    return willScroll
   }
 
   /**
