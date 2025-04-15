@@ -109,7 +109,7 @@ export class Lenis {
     overscroll = true,
     autoRaf = false,
     anchors = false,
-    autoToggle = false,
+    autoToggle = false, // https://caniuse.com/?search=transition-behavior
     __experimental__naiveDimensions = false,
   }: LenisOptions = {}) {
     // Set version
