@@ -757,6 +757,8 @@ export class Lenis {
       clientWidth,
       clientHeight
 
+    const gestureOrientation = this.options.gestureOrientation
+
     if (time - (cache.time ?? 0) > 2000) {
       cache.time = Date.now()
 
@@ -772,6 +774,8 @@ export class Lenis {
       cache.hasOverflowY = hasOverflowY
 
       if (!hasOverflowX && !hasOverflowY) return false // if no overflow, it's not scrollable no matter what, early return saves some computations
+      if (gestureOrientation === 'vertical' && !hasOverflowY) return false
+      if (gestureOrientation === 'horizontal' && !hasOverflowX) return false
 
       scrollWidth = node.scrollWidth
       scrollHeight = node.scrollHeight
@@ -806,7 +810,14 @@ export class Lenis {
       return false
     }
 
-    const gestureOrientation = this.options.gestureOrientation
+    if (gestureOrientation === 'vertical' && (!hasOverflowY || !isScrollableY))
+      return false
+
+    if (
+      gestureOrientation === 'horizontal' &&
+      (!hasOverflowX || !isScrollableX)
+    )
+      return false
 
     let orientation: 'x' | 'y' | undefined
 
@@ -829,23 +840,29 @@ export class Lenis {
 
     if (!orientation) return false
 
-    let scroll, maxScroll, delta
+    let scroll, maxScroll, delta, hasOverflow, isScrollable
 
     if (orientation === 'x') {
       scroll = node.scrollLeft
       maxScroll = scrollWidth - clientWidth
       delta = deltaX
+
+      hasOverflow = hasOverflowX
+      isScrollable = isScrollableX
     } else if (orientation === 'y') {
       scroll = node.scrollTop
       maxScroll = scrollHeight - clientHeight
       delta = deltaY
+
+      hasOverflow = hasOverflowY
+      isScrollable = isScrollableY
     } else {
       return false
     }
 
     const willScroll = delta > 0 ? scroll < maxScroll : scroll > 0
 
-    return willScroll
+    return willScroll && hasOverflow && isScrollable
   }
 
   /**
