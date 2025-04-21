@@ -21,7 +21,7 @@ jobs:
           token: ${{ secrets.PAT }}
           file: 'README.md'
           organization: true
-          template: '<a href="{{ websiteUrl }}"><img src="{{ avatarUrl }}" width="65px" alt="User avatar: {{ name }}" /></a>'
+          template: '<a href="{{ websiteUrl }}"><img src="{{ avatarUrl }}" width="60px" alt="User avatar: {{ name }}" /></a>'
 
       - name: Setup Git 🛠️
         run: |
@@ -43,5 +43,4 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           title: 'Update Sponsors List 💖'
           body: 'This PR updates the README with the latest list of sponsors.'
-          base: sponsors
-          head: ${{ env.BRANCH_NAME }}
+          base: main
