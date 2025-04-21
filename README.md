@@ -34,8 +34,7 @@ Read our [Manifesto](https://github.com/darkroomengineering/lenis/blob/main/MANI
 
 
 
-<!-- sponsors -->
-<!-- sponsors -->
+<!-- sponsors --><!-- sponsors -->
 
 ## Sponsors
 
