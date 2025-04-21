@@ -2,7 +2,7 @@ import Lenis from 'lenis'
 import { LoremIpsum } from 'lorem-ipsum'
 
 document.querySelector('#nested-content')!.innerHTML =
-  new LoremIpsum().generateParagraphs(30)
+  new LoremIpsum().generateParagraphs(60)
 document.querySelector('#nested-horizontal-content')!.innerHTML =
   new LoremIpsum().generateParagraphs(3)
 document
@@ -12,7 +12,7 @@ document
   .querySelector('#app')!
   .insertAdjacentText(
     'beforeend',
-    new LoremIpsum().generateParagraphs(20) + 'test123'
+    new LoremIpsum().generateParagraphs(40) + 'test123'
   )
 
 // document.querySelector('main')?.addEventListener('scrollend', () => {
@@ -146,9 +146,15 @@ declare global {
 
 // requestAnimationFrame(raf)
 
-const scrollButton = document.getElementById('scroll')
+document.getElementById('scroll-start')?.addEventListener('click', () => {
+  lenis.scrollTo(100)
+})
 
-scrollButton?.addEventListener('click', () => {
+document.getElementById('scroll-center')?.addEventListener('click', () => {
+  lenis.scrollTo(lenis.limit / 2)
+})
+
+document.getElementById('scroll-end')?.addEventListener('click', () => {
   lenis.scrollTo(lenis.limit - 100)
 })
 
