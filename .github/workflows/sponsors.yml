@@ -25,7 +25,7 @@ jobs:
           token: ${{ github.token }}
           file: README.md
           organization: true
-          template: '<a href="{{ websiteUrl }}"><img src="{{ avatarUrl }}" width="65px" alt="User avatar: {{ name }}" /></a>'
+          template: '<a href="{{ websiteUrl }}"><img src="{{ avatarUrl }}" width="60px" alt="User avatar: {{ name }}" /></a>'
 
       # 3 · Create or update the PR (v7 syntax)
       - id: cpr
