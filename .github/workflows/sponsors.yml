@@ -20,6 +20,7 @@ jobs:
         with:
           token: ${{ secrets.PAT }}
           file: 'README.md'
+          organization: darkroomengineering
 
       # ⚠️ Note: You can use any deployment step here to automatically push the README
       # changes back to your branch.
