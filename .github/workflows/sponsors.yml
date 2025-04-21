@@ -23,10 +23,20 @@ jobs:
           organization: true
           template: '<a href="{{ websiteUrl }}"><img src="{{ avatarUrl }}" width="60px" alt="User avatar: {{ name }}" /></a>'
 
-      # ⚠️ Note: You can use any deployment step here to automatically push the README
-      # changes back to your branch.
-      - name: Deploy to GitHub Pages 🚀
-        uses: JamesIves/github-pages-deploy-action@v4
+      - name: Create branch and commit changes 🔀
+        run: |
+          BRANCH="update-sponsors-$(date +%Y%m%d%H%M%S)"
+          git checkout -b $BRANCH
+          git add README.md
+          git commit -m "chore: update sponsors list"
+          git push origin $BRANCH
+          echo "BRANCH_NAME=$BRANCH" >> $GITHUB_ENV
+
+      - name: Create Pull Request 📬
+        uses: peter-evans/create-pull-request@v7
         with:
-          branch: sponsors
-          folder: '.'
+          token: ${{ secrets.GITHUB_TOKEN }}
+          title: 'Update Sponsors List 💖'
+          body: 'This PR updates the README with the latest list of sponsors.'
+          base: sponsors
+          head: ${{ env.BRANCH_NAME }}
