@@ -34,7 +34,7 @@ Read our [Manifesto](https://github.com/darkroomengineering/lenis/blob/main/MANI
 
 
 
-<!-- sponsors --><!-- sponsors -->
+<!-- sponsors --><a href="https://github.com/cachet-studio"><img src="https:&#x2F;&#x2F;github.com&#x2F;cachet-studio.png" width="60px" alt="User avatar: cachet.studio" /></a><a href="https://github.com/smsunarto"><img src="https:&#x2F;&#x2F;github.com&#x2F;smsunarto.png" width="60px" alt="User avatar: Scott Sunarto" /></a><a href="https://github.com/mariosmaselli"><img src="https:&#x2F;&#x2F;github.com&#x2F;mariosmaselli.png" width="60px" alt="User avatar: Mario Sanchez Maselli" /></a><a href="https://github.com/thearkis"><img src="https:&#x2F;&#x2F;github.com&#x2F;thearkis.png" width="60px" alt="User avatar: ΛRK" /></a><a href="https://github.com/vallafederico"><img src="https:&#x2F;&#x2F;github.com&#x2F;vallafederico.png" width="60px" alt="User avatar: Federico Valla" /></a><a href="https://github.com/ironvelvet"><img src="https:&#x2F;&#x2F;github.com&#x2F;ironvelvet.png" width="60px" alt="User avatar: Iron Velvet" /></a><a href="https://github.com/UX-By-Us"><img src="https:&#x2F;&#x2F;github.com&#x2F;UX-By-Us.png" width="60px" alt="User avatar: UX By Us" /></a><a href="https://github.com/MoT1998-star"><img src="https:&#x2F;&#x2F;github.com&#x2F;MoT1998-star.png" width="60px" alt="User avatar: " /></a><a href="https://github.com/Alexi5000"><img src="https:&#x2F;&#x2F;github.com&#x2F;Alexi5000.png" width="60px" alt="User avatar: Alex Cinovoj" /></a><a href="https://github.com/ae-com"><img src="https:&#x2F;&#x2F;github.com&#x2F;ae-com.png" width="60px" alt="User avatar: Æ" /></a><!-- sponsors -->
 
 ## Sponsors
 
