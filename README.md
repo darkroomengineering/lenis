@@ -32,6 +32,9 @@ Read our [Manifesto](https://github.com/darkroomengineering/lenis/blob/main/MANI
 
 <br/>
 
+
+<!-- sponsors --><!-- sponsors -->
+
 ## Sponsors
 
 If you like Lenis, please consider [becoming a sponsor](https://github.com/sponsors/darkroomengineering). Your support helps us to smooth the web one library at a time.
