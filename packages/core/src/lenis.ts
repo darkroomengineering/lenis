@@ -319,12 +319,19 @@ export class Lenis {
     ) as HTMLAnchorElement | undefined
     if (anchor) {
       const id = anchor.getAttribute('href')
+
       if (id) {
         const options =
           typeof this.options.anchors === 'object' && this.options.anchors
             ? this.options.anchors
             : undefined
-        this.scrollTo(`#${id.split('#')[1]}`, options)
+
+        let target: number | string = `#${id.split('#')[1]}`
+        if (['#', '/#', './#', '#top', '/#top', './#top'].includes(id)) {
+          target = 0
+        }
+
+        this.scrollTo(target, options)
       }
     }
   }
