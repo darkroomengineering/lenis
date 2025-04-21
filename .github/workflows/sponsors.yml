@@ -23,6 +23,11 @@ jobs:
           organization: true
           template: '<a href="{{ websiteUrl }}"><img src="{{ avatarUrl }}" width="60px" alt="User avatar: {{ name }}" /></a>'
 
+      - name: Setup Git 🛠️
+        run: |
+          git config --local user.name "github-actions[bot]"
+          git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
       - name: Create branch and commit changes 🔀
         run: |
           BRANCH="update-sponsors-$(date +%Y%m%d%H%M%S)"
