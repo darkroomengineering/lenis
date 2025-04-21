@@ -41,6 +41,7 @@ const lenis = new Lenis({
   anchors: true,
   autoToggle: true,
   allowNestedScroll: true,
+  infinite: true,
   // syncTouch: true,
   // lerp: 0.01,
   // wrapper: document.body,
@@ -145,12 +146,10 @@ declare global {
 
 // requestAnimationFrame(raf)
 
-const scrollButton = document.getElementById('scroll-100')
+const scrollButton = document.getElementById('scroll')
 
 scrollButton?.addEventListener('click', () => {
-  lenis.scrollTo(100, {
-    immediate: true,
-  })
+  lenis.scrollTo(lenis.limit - 100)
 })
 
 // const stopButton = document.getElementById('stop')
