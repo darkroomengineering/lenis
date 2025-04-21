@@ -1,46 +1,55 @@
+# .github/workflows/generate-sponsors-readme.yml
 name: Generate Sponsors README
+
 on:
   workflow_dispatch:
-  push:
-    branches:
-      - sponsors
   schedule:
     - cron: 30 15 * * 0-6
+
 permissions:
   contents: write
+  pull-requests: write
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout 🛎️
-        uses: actions/checkout@v2
-
-      - name: Generate Sponsors 💖
-        uses: JamesIves/github-sponsors-readme-action@v1
+      # 1 · Checkout
+      - uses: actions/checkout@v4
         with:
-          token: ${{ secrets.PAT }}
-          file: 'README.md'
+          fetch-depth: 0
+
+      # 2 · Regenerate README.md
+      - uses: JamesIves/github-sponsors-readme-action@v1
+        with:
+          token: ${{ github.token }}
+          file: README.md
           organization: true
-          template: '<a href="{{ websiteUrl }}"><img src="{{ avatarUrl }}" width="60px" alt="User avatar: {{ name }}" /></a>'
+          template: |
+            <a href="{{ websiteUrl }}"><img src="{{ avatarUrl }}" width="60px" alt="{{ name }}" /></a>
 
-      - name: Setup Git 🛠️
-        run: |
-          git config --local user.name "github-actions[bot]"
-          git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
-
-      - name: Create branch and commit changes 🔀
-        run: |
-          BRANCH="update-sponsors-$(date +%Y%m%d%H%M%S)"
-          git checkout -b $BRANCH
-          git add README.md
-          git commit -m "chore: update sponsors list"
-          git push origin $BRANCH
-          echo "BRANCH_NAME=$BRANCH" >> $GITHUB_ENV
-
-      - name: Create Pull Request 📬
+      # 3 · Create or update the PR (v7 syntax)
+      - id: cpr
         uses: peter-evans/create-pull-request@v7
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          title: 'Update Sponsors List 💖'
-          body: 'This PR updates the README with the latest list of sponsors.'
-          base: main
+          token:        ${{ github.token }}
+          branch-token: ${{ github.token }}
+
+          add-paths: README.md
+          commit-message: docs(readme):automated sponsors update
+          sign-commits: true
+          branch: ci/sponsors-readme
+          delete-branch: true
+
+          title: docs:update sponsors list
+          body: Automated update of README.md with latest sponsors.
+          maintainer-can-modify: true
+
+      # 4 · Enable Auto‑merge the first time the PR is created
+      - name: Enable auto-merge
+        if: steps.cpr.outputs.pull-request-operation == 'created'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh pr merge ${{ steps.cpr.outputs.pull-request-number }} \
+            --auto --squash --delete-branch
