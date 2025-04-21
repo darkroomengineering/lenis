@@ -655,10 +655,12 @@ export class Lenis {
       if (programmatic) {
         this.targetScroll = this.animatedScroll = this.scroll
 
-        const distance = Math.abs(target - this.animatedScroll)
+        const distance = target - this.animatedScroll
 
         if (distance > this.limit / 2) {
           target = target - this.limit
+        } else if (distance < -this.limit / 2) {
+          target = target + this.limit
         }
       }
     } else {
