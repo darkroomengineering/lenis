@@ -8,7 +8,7 @@
 
 ## Introduction
 
-Lenis ("smooth" in latin) is a lightweight, robust, and performant smooth scroll library. It's designed by [@darkroom.engineering](https://twitter.com/darkroomdevs) to be simple to use and easy to integrate into your projects. It's built with performance in mind and is optimized for modern browsers. It's perfect for creating smooth scrolling experiences on your website such as webgl scroll synching, parallax effects and much more, see [ Demo](https://lenis.darkroom.engineering/) and [Showcase](#lenis-in-use).
+Lenis ("smooth" in latin) is a lightweight, robust, and performant smooth scroll library. It's designed by [@darkroom.engineering](https://twitter.com/darkroomdevs) to be simple to use and easy to integrate into your projects. It's built with performance in mind and is optimized for modern browsers. It's perfect for creating smooth scrolling experiences on your website such as WebGL scroll syncing, parallax effects, and much more, see [ Demo](https://lenis.darkroom.engineering/) and [Showcase](#lenis-in-use).
 
 Read our [Manifesto](https://github.com/darkroomengineering/lenis/blob/main/MANIFESTO.md) to learn more about the inspiration behind Lenis.
 
@@ -55,7 +55,7 @@ Your support helps us smooth out the internet one library at a time—and lets u
 
 ## Installation
 
-using a package manager:
+Using a package manager:
 
 ```bash
 npm i lenis
@@ -66,7 +66,7 @@ import Lenis from 'lenis'
 
 <br/>
 
-using scripts:
+Using scripts:
 
 ```html
 <script src="https://unpkg.com/lenis@1.3.1/dist/lenis.min.js"></script> 
@@ -286,7 +286,7 @@ prevent touch events only
 
 
 ### Anchor links
-By default Lenis will prevent anchor links click while scrolling, to fix that you must set `anchors: true`.
+By default, Lenis will prevent anchor links, click while scrolling, to fix that you must set `anchors: true`.
 
 ```js
 new Lenis({
