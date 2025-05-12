@@ -2,7 +2,9 @@ import Lenis from 'lenis'
 import { LoremIpsum } from 'lorem-ipsum'
 
 document.querySelector('#nested-content')!.innerHTML =
-  new LoremIpsum().generateParagraphs(30)
+  new LoremIpsum().generateParagraphs(60)
+document.querySelector('#nested-horizontal-content')!.innerHTML =
+  new LoremIpsum().generateParagraphs(3)
 document
   .querySelector('#app')!
   .insertAdjacentText('afterbegin', new LoremIpsum().generateParagraphs(20))
@@ -10,7 +12,7 @@ document
   .querySelector('#app')!
   .insertAdjacentText(
     'beforeend',
-    new LoremIpsum().generateParagraphs(20) + 'test123'
+    new LoremIpsum().generateParagraphs(40) + 'test123'
   )
 
 // document.querySelector('main')?.addEventListener('scrollend', () => {
@@ -18,7 +20,7 @@ document
 // })
 
 window.addEventListener('scroll', (e) => {
-  console.log('window scroll', e)
+  // console.log('window scroll', e)
 })
 
 window.addEventListener('scrollend', (e) => {
@@ -26,7 +28,7 @@ window.addEventListener('scrollend', (e) => {
 })
 
 document.querySelector('#nested')?.addEventListener('scrollend', (e) => {
-  console.log('nested scrollend', e)
+  // console.log('nested scrollend', e)
 })
 
 window.addEventListener('hashchange', () => {
@@ -37,6 +39,9 @@ const lenis = new Lenis({
   // smoothWheel: false,
   autoRaf: true,
   anchors: true,
+  autoToggle: true,
+  allowNestedScroll: true,
+  infinite: true,
   // syncTouch: true,
   // lerp: 0.01,
   // wrapper: document.body,
@@ -76,19 +81,19 @@ const lenis = new Lenis({
 //   console.log('hashchange')
 // })
 
-const nestedLenis = new Lenis({
-  wrapper: document.querySelector('#nested')!,
-  content: document.querySelector('#nested-content')!,
-  autoRaf: true,
-  // overscroll: false,
-  // orientation: 'horizontal',
-  // gestureOrientation: 'horizontal',
-  // infinite: true,
+// const nestedLenis = new Lenis({
+//   wrapper: document.querySelector('#nested')!,
+//   content: document.querySelector('#nested-content')!,
+//   autoRaf: true,
+//   // overscroll: false,
+//   // orientation: 'horizontal',
+//   // gestureOrientation: 'horizontal',
+//   // infinite: true,
 
-  // smoothWheel: false,
-})
+//   // smoothWheel: false,
+// })
 
-window.nestedLenis = nestedLenis
+// window.nestedLenis = nestedLenis
 
 // console.log(lenis.dimensions.height)
 lenis.on('scroll', (e) => {
@@ -141,12 +146,16 @@ declare global {
 
 // requestAnimationFrame(raf)
 
-const scrollButton = document.getElementById('scroll-100')
+document.getElementById('scroll-start')?.addEventListener('click', () => {
+  lenis.scrollTo(100)
+})
 
-scrollButton?.addEventListener('click', () => {
-  lenis.scrollTo(100, {
-    immediate: true,
-  })
+document.getElementById('scroll-center')?.addEventListener('click', () => {
+  lenis.scrollTo(lenis.limit / 2)
+})
+
+document.getElementById('scroll-end')?.addEventListener('click', () => {
+  lenis.scrollTo(lenis.limit - 100)
 })
 
 // const stopButton = document.getElementById('stop')

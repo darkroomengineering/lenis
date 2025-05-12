@@ -1,41 +1,44 @@
 ---
 import Layout from '../layouts/Layout.astro'
 ---
+
 <Layout title="Lenis Playground">
-	<main>
-		<h1>
-			Welcome to the Lenis Playground!
-		</h1>
-		<p>
-			<br>
-			This is a playground for the Lenis library. It's a great way to test and experiment with the library without having to set up a project.
-			<br>
-			<br>
-			If you see this, it means you are trying to contribute to the project and we appreciate that!
-			<br>
-			Playground and build pipeline for all packages run at the same time, so you can change the code and see the changes in real-time in the playground.
-		</p>
-	</main>
+  <main>
+    <h1>Welcome to the Lenis Playground!</h1>
+    <p>
+      <br />
+      This is a playground for the Lenis library. It's a great way to test and experiment
+      with the library without having to set up a project.
+      <br />
+      <br />
+      If you see this, it means you are trying to contribute to the project and we
+      appreciate that!
+      <br />
+      Playground and build pipeline for all packages run at the same time, so you
+      can change the code and see the changes in real-time in the playground.
+    </p>
+  </main>
 </Layout>
 
 <style>
-	main {
-		display: flex;
-		flex-direction: column;
-		justify-content: center;
-		align-items: center;
-		height: 90svh;
-		width: 50vw;
-		margin: 0 auto;
-	}
+  main {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100svh;
+    width: 50vw;
+    margin: 0 auto;
+  }
 
-	h1,p {
-		margin: 0;
-		font-family: monospace;
-		text-align: center;
-	}
+  h1,
+  p {
+    margin: 0;
+    font-family: monospace;
+    text-align: center;
+  }
 
-	h1 {
-		text-transform: uppercase;
-	}
+  h1 {
+    text-transform: uppercase;
+  }
 </style>

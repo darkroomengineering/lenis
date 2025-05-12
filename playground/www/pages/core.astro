@@ -5,7 +5,9 @@ import Layout from '../layouts/Layout.astro'
 
 <Layout title="Lenis">
   <div id="debug">
-    <button id="scroll-100">Scroll 100</button>
+    <button id="scroll-start">Scroll start</button>
+    <button id="scroll-center">Scroll center</button>
+    <button id="scroll-end">Scroll end</button>
     <button id="stop">Stop</button>
     <button id="start">Start</button>
   </div>
@@ -36,6 +38,8 @@ import Layout from '../layouts/Layout.astro'
       </p>
     </div>
     <div>
+      <a href="#"> <span>#</span></a>
+      <a href="#top"> <span>top</span></a>
       <a href="#about"> <span>about</span></a>
       <a href="#work"> <span>work</span></a>
       <a href="#contact"> <span>contact</span></a>
@@ -46,6 +50,9 @@ import Layout from '../layouts/Layout.astro'
       >
         <span>mdn</span></a
       >
+    </div>
+    <div id="nested-horizontal">
+      <div id="nested-horizontal-content"></div>
     </div>
     <div id="nested">
       <div id="nested-content"></div>

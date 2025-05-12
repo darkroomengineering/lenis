@@ -30,7 +30,7 @@ export class Lenis {
   private _isStopped = false // true if user should not be able to scroll - enable/disable programmatically
   private _isLocked = false // same as isStopped but enabled/disabled when scroll reaches target
   private _preventNextNativeScrollEvent = false
-  private _resetVelocityTimeout: number | null = null
+  private _resetVelocityTimeout: ReturnType<typeof setTimeout> | null = null
   private __rafID: number | null = null
 
   /**
@@ -109,6 +109,8 @@ export class Lenis {
     overscroll = true,
     autoRaf = false,
     anchors = false,
+    autoToggle = false, // https://caniuse.com/?search=transition-behavior
+    allowNestedScroll = false,
     __experimental__naiveDimensions = false,
   }: LenisOptions = {}) {
     // Set version
@@ -142,6 +144,8 @@ export class Lenis {
       overscroll,
       autoRaf,
       anchors,
+      autoToggle,
+      allowNestedScroll,
       __experimental__naiveDimensions,
     }
 
@@ -181,6 +185,12 @@ export class Lenis {
       wheelMultiplier,
     })
     this.virtualScroll.on('scroll', this.onVirtualScroll)
+
+    if (this.options.autoToggle) {
+      this.rootElement.addEventListener('transitionend', this.onTransitionEnd, {
+        passive: true,
+      })
+    }
 
     if (this.options.autoRaf) {
       this.__rafID = requestAnimationFrame(this.raf)
@@ -272,6 +282,22 @@ export class Lenis {
     )
   }
 
+  private onTransitionEnd = (event: TransitionEvent) => {
+    if (event.propertyName.includes('overflow')) {
+      const property = this.isHorizontal ? 'overflow-x' : 'overflow-y'
+
+      const overflow = getComputedStyle(this.rootElement)[
+        property as keyof CSSStyleDeclaration
+      ] as string
+
+      if (['hidden', 'clip'].includes(overflow)) {
+        this.stop()
+      } else {
+        this.start()
+      }
+    }
+  }
+
   private setScroll(scroll: number) {
     // behavior: 'instant' bypasses the scroll-behavior CSS property
 
@@ -287,16 +313,25 @@ export class Lenis {
     const anchor = path.find(
       (node) =>
         node instanceof HTMLAnchorElement &&
-        node.getAttribute('href')?.startsWith('#')
+        (node.getAttribute('href')?.startsWith('#') ||
+          node.getAttribute('href')?.startsWith('/#') ||
+          node.getAttribute('href')?.startsWith('./#'))
     ) as HTMLAnchorElement | undefined
     if (anchor) {
       const id = anchor.getAttribute('href')
+
       if (id) {
         const options =
           typeof this.options.anchors === 'object' && this.options.anchors
             ? this.options.anchors
             : undefined
-        this.scrollTo(id, options)
+
+        let target: number | string = `#${id.split('#')[1]}`
+        if (['#', '/#', './#', '#top', '/#top', './#top'].includes(id)) {
+          target = 0
+        }
+
+        this.scrollTo(target, options)
       }
     }
   }
@@ -380,7 +415,9 @@ export class Lenis {
           ((typeof prevent === 'function' && prevent?.(node)) ||
             node.hasAttribute?.('data-lenis-prevent') ||
             (isTouch && node.hasAttribute?.('data-lenis-prevent-touch')) ||
-            (isWheel && node.hasAttribute?.('data-lenis-prevent-wheel')))
+            (isWheel && node.hasAttribute?.('data-lenis-prevent-wheel')) ||
+            (this.options.allowNestedScroll &&
+              this.checkNestedScroll(node, { deltaX, deltaY })))
       )
     )
       return
@@ -624,6 +661,14 @@ export class Lenis {
     if (this.options.infinite) {
       if (programmatic) {
         this.targetScroll = this.animatedScroll = this.scroll
+
+        const distance = target - this.animatedScroll
+
+        if (distance > this.limit / 2) {
+          target = target - this.limit
+        } else if (distance < -this.limit / 2) {
+          target = target + this.limit
+        }
       }
     } else {
       target = clamp(0, target, this.limit)
@@ -707,6 +752,132 @@ export class Lenis {
     requestAnimationFrame(() => {
       this._preventNextNativeScrollEvent = false
     })
+  }
+
+  private checkNestedScroll(
+    node: HTMLElement,
+    { deltaX, deltaY }: { deltaX: number; deltaY: number }
+  ) {
+    const time = Date.now()
+
+    // @ts-ignore
+    const cache = (node._lenis ??= {})
+
+    let hasOverflowX,
+      hasOverflowY,
+      isScrollableX,
+      isScrollableY,
+      scrollWidth,
+      scrollHeight,
+      clientWidth,
+      clientHeight
+
+    const gestureOrientation = this.options.gestureOrientation
+
+    if (time - (cache.time ?? 0) > 2000) {
+      cache.time = Date.now()
+
+      const computedStyle = window.getComputedStyle(node)
+      cache.computedStyle = computedStyle
+
+      const overflowXString = computedStyle.overflowX
+      const overflowYString = computedStyle.overflowY
+
+      hasOverflowX = ['auto', 'overlay', 'scroll'].includes(overflowXString)
+      hasOverflowY = ['auto', 'overlay', 'scroll'].includes(overflowYString)
+      cache.hasOverflowX = hasOverflowX
+      cache.hasOverflowY = hasOverflowY
+
+      if (!hasOverflowX && !hasOverflowY) return false // if no overflow, it's not scrollable no matter what, early return saves some computations
+      if (gestureOrientation === 'vertical' && !hasOverflowY) return false
+      if (gestureOrientation === 'horizontal' && !hasOverflowX) return false
+
+      scrollWidth = node.scrollWidth
+      scrollHeight = node.scrollHeight
+
+      clientWidth = node.clientWidth
+      clientHeight = node.clientHeight
+
+      isScrollableX = scrollWidth > clientWidth
+      isScrollableY = scrollHeight > clientHeight
+
+      cache.isScrollableX = isScrollableX
+      cache.isScrollableY = isScrollableY
+      cache.scrollWidth = scrollWidth
+      cache.scrollHeight = scrollHeight
+      cache.clientWidth = clientWidth
+      cache.clientHeight = clientHeight
+    } else {
+      isScrollableX = cache.isScrollableX
+      isScrollableY = cache.isScrollableY
+      hasOverflowX = cache.hasOverflowX
+      hasOverflowY = cache.hasOverflowY
+      scrollWidth = cache.scrollWidth
+      scrollHeight = cache.scrollHeight
+      clientWidth = cache.clientWidth
+      clientHeight = cache.clientHeight
+    }
+
+    if (
+      (!hasOverflowX && !hasOverflowY) ||
+      (!isScrollableX && !isScrollableY)
+    ) {
+      return false
+    }
+
+    if (gestureOrientation === 'vertical' && (!hasOverflowY || !isScrollableY))
+      return false
+
+    if (
+      gestureOrientation === 'horizontal' &&
+      (!hasOverflowX || !isScrollableX)
+    )
+      return false
+
+    let orientation: 'x' | 'y' | undefined
+
+    if (gestureOrientation === 'horizontal') {
+      orientation = 'x'
+    } else if (gestureOrientation === 'vertical') {
+      orientation = 'y'
+    } else {
+      const isScrollingX = deltaX !== 0
+      const isScrollingY = deltaY !== 0
+
+      if (isScrollingX && hasOverflowX && isScrollableX) {
+        orientation = 'x'
+      }
+
+      if (isScrollingY && hasOverflowY && isScrollableY) {
+        orientation = 'y'
+      }
+    }
+
+    if (!orientation) return false
+
+    let scroll, maxScroll, delta, hasOverflow, isScrollable
+
+    if (orientation === 'x') {
+      scroll = node.scrollLeft
+      maxScroll = scrollWidth - clientWidth
+      delta = deltaX
+
+      hasOverflow = hasOverflowX
+      isScrollable = isScrollableX
+    } else if (orientation === 'y') {
+      scroll = node.scrollTop
+      maxScroll = scrollHeight - clientHeight
+      delta = deltaY
+
+      hasOverflow = hasOverflowY
+      isScrollable = isScrollableY
+    } else {
+      return false
+    }
+
+    const willScroll = delta > 0 ? scroll < maxScroll : scroll > 0
+
+    return willScroll && hasOverflow && isScrollable
   }
 
   /**
@@ -826,6 +997,7 @@ export class Lenis {
    */
   get className() {
     let className = 'lenis'
+    if (this.options.autoToggle) className += ' lenis-autoToggle'
     if (this.isStopped) className += ' lenis-stopped'
     if (this.isLocked) className += ' lenis-locked'
     if (this.isScrolling) className += ' lenis-scrolling'

@@ -6,15 +6,19 @@ const lenis = useLenis((lenis) => {
   console.log('page callback', lenis)
 })
 
-watch(lenis, (lenis) => {
-  console.log('page', lenis)
-})
+watch(
+  lenis,
+  (lenis) => {
+    console.log('page', lenis)
+  },
+  { immediate: true }
+)
 </script>
 
 <template>
-  <!-- <vue-lenis class="scroller"> -->
-  <div class="content">Home <Inner /></div>
-  <!-- </vue-lenis> -->
+  <vue-lenis class="scroller" test>
+    <div class="content">Home <Inner /></div>
+  </vue-lenis>
 </template>
 
 <style scoped>
@@ -25,7 +29,8 @@ watch(lenis, (lenis) => {
 }
 
 .scroller {
-  height: 100vh;
-  overflow-y: auto;
+  /* height: 100vh;
+  overflow-y: auto; */
+  pointer-events: none;
 }
 </style>

@@ -1,5 +1,5 @@
 import type { ScrollCallback } from 'lenis'
-import { computed, inject, nextTick, onBeforeUnmount, watch } from 'vue'
+import { computed, inject, nextTick, onWatcherCleanup, watch } from 'vue'
 import {
   AddCallbackSymbol,
   LenisSymbol,
@@ -25,16 +25,18 @@ export function useLenis(callback?: ScrollCallback, priority = 0) {
     lenisInjection?.value ? lenisInjection.value : globalLenis.value
   )
 
-  // Wait two ticks to make sure the lenis instance is mounted
-  nextTick(() => {
+  if (typeof window !== 'undefined') {
+    // Wait two ticks to make sure the lenis instance is mounted
     nextTick(() => {
-      if (!lenis.value) {
-        throw new Error(
-          'No lenis instance found, either mount a root lenis instance or wrap your component in a lenis provider'
-        )
-      }
+      nextTick(() => {
+        if (!lenis.value) {
+          console.warn(
+            'No lenis instance found, either mount a root lenis instance or wrap your component in a lenis provider'
+          )
+        }
+      })
     })
-  })
+  }
 
   watch(
     [lenis, addCallback, removeCallback],
@@ -43,16 +45,14 @@ export function useLenis(callback?: ScrollCallback, priority = 0) {
 
       addCallback?.(callback, priority)
       callback?.(lenis as any)
+
+      onWatcherCleanup(() => {
+        removeCallback?.(callback)
+      })
     },
     {
       immediate: true,
     }
   )
-
-  onBeforeUnmount(() => {
-    if (!removeCallback.value || !callback) return
-    removeCallback.value?.(callback)
-  })
-
   return lenis
 }

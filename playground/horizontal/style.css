@@ -1,0 +1,55 @@
+html {
+  overflow-y: clip;
+}
+
+#wrapper {
+  display: flex;
+  height: 100vh !important;
+  align-items: center;
+}
+
+#about,
+#work,
+#work2,
+#contact {
+  width: 80vw;
+  flex-shrink: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+}
+
+#about {
+  background-color: rgb(255, 152, 162);
+}
+
+#work {
+  background-color: rgb(213, 133, 169);
+  overflow-x: auto;
+  justify-content: flex-start;
+  height: 50%;
+  /* background: repeating-radial-gradient(circle, #000, #111 1px, #000 2px); */
+  /* filter: blur(2px) brightness(1.2) contrast(2) saturate(3);
+  mix-blend-mode: difference;
+  animation: insane-rotate 0.1s infinite linear;
+  transform: scale(1.001); */
+}
+
+#work2 {
+  background-color: rgb(255, 152, 162);
+  height: 50%;
+  overflow-y: auto;
+
+  #work2-content {
+  }
+}
+
+#contact {
+  background-color: rgb(163, 120, 164);
+}
+
+#work-content {
+  min-width: 100vw;
+  height: 50%;
+}

@@ -204,6 +204,20 @@ export type LenisOptions = {
    * @default false
    */
   anchors?: boolean | ScrollToOptions
+  /**
+   * If `true`, Lenis will automatically start/stop based on wrapper's overflow property
+   * @default false
+   */
+  autoToggle?: boolean
+  /**
+   * If `true`, Lenis will allow nested scroll
+   * @default false
+   */
+  allowNestedScroll?: boolean
+  /**
+   * If `true`, Lenis will use naive dimensions calculation
+   * @default false
+   */
   __experimental__naiveDimensions?: boolean
 }
 
