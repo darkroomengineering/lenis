@@ -25,6 +25,8 @@ import { VirtualScroll } from './virtual-scroll'
 
 type OptionalPick<T, F extends keyof T> = Omit<T, F> & Partial<Pick<T, F>>
 
+const defaultEasing = (t: number) => Math.min(1, 1.001 - Math.pow(2, -10 * t))
+
 export class Lenis {
   private _isScrolling: Scrolling = false // true when scroll is animating
   private _isStopped = false // true if user should not be able to scroll - enable/disable programmatically
@@ -69,7 +71,7 @@ export class Lenis {
    */
   options: OptionalPick<
     Required<LenisOptions>,
-    'duration' | 'prevent' | 'virtualScroll'
+    'duration' | 'easing' | 'prevent' | 'virtualScroll'
   >
   /**
    * The target scroll value
@@ -96,7 +98,7 @@ export class Lenis {
     syncTouchLerp = 0.075,
     touchInertiaMultiplier = 35,
     duration, // in seconds
-    easing = (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+    easing,
     lerp = 0.1,
     infinite = false,
     orientation = 'vertical', // vertical, horizontal
@@ -119,6 +121,13 @@ export class Lenis {
     // Check if wrapper is <html>, fallback to window
     if (!wrapper || wrapper === document.documentElement) {
       wrapper = window
+    }
+
+    // flip to easing/time based animation if at least one of them is provided
+    if (typeof duration === 'number' && typeof easing !== 'function') {
+      easing = defaultEasing
+    } else if (typeof easing === 'function' && typeof duration !== 'number') {
+      duration = 1
     }
 
     // Setup options
@@ -551,6 +560,8 @@ export class Lenis {
     this.reset()
 
     this.isStopped = false
+
+    this.emit()
   }
 
   /**
@@ -561,6 +572,8 @@ export class Lenis {
     this.reset()
 
     this.isStopped = true
+
+    this.emit()
   }
 
   /**
@@ -699,6 +712,13 @@ export class Lenis {
 
     if (!programmatic) {
       this.targetScroll = target
+    }
+
+    // flip to easing/time based animation if at least one of them is provided
+    if (typeof duration === 'number' && typeof easing !== 'function') {
+      easing = defaultEasing
+    } else if (typeof easing === 'function' && typeof duration !== 'number') {
+      duration = 1
     }
 
     this.animate.fromTo(this.animatedScroll, target, {

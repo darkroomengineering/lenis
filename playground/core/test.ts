@@ -42,6 +42,9 @@ const lenis = new Lenis({
   autoToggle: true,
   allowNestedScroll: true,
   infinite: true,
+  // lerp: 0.5,
+  // duration: 10,
+  // easing: (t) => t,
   // syncTouch: true,
   // lerp: 0.01,
   // wrapper: document.body,
@@ -67,6 +70,10 @@ const lenis = new Lenis({
   //     !node.classList?.contains('lenis-stopped')
   //   )
   // },
+})
+
+lenis.on('scroll', (e) => {
+  // console.log('scroll', e)
 })
 
 // document.querySelectorAll('a[href*="#"]').forEach((node) => {
@@ -146,12 +153,25 @@ declare global {
 
 // requestAnimationFrame(raf)
 
+document.getElementById('stop')?.addEventListener('click', () => {
+  // document.documentElement.style.overflow = 'hidden'
+  lenis.stop()
+})
+
+document.getElementById('start')?.addEventListener('click', () => {
+  // document.documentElement.style.overflow = 'auto'
+  lenis.start()
+})
+
 document.getElementById('scroll-start')?.addEventListener('click', () => {
   lenis.scrollTo(100)
 })
 
 document.getElementById('scroll-center')?.addEventListener('click', () => {
-  lenis.scrollTo(lenis.limit / 2)
+  lenis.scrollTo(lenis.limit / 2, {
+    // duration: 10,
+    // easing: (t) => t,
+  })
 })
 
 document.getElementById('scroll-end')?.addEventListener('click', () => {
