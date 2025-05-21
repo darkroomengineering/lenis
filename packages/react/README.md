@@ -18,31 +18,37 @@ npm i lenis
 import { ReactLenis, useLenis } from 'lenis/react'
 
 function App() {
-  const lenis = useLenis(({ scroll }) => {
+  const lenis = useLenis((lenis) => {
     // called every scroll
+    console.log(lenis)
   })
 
   return (
-    <ReactLenis root>
+    <>
+      <ReactLenis root />
       { /* content */ }
-    </ReactLenis>
+    </>
   )
 }
 ```
 
 ## Props
 - `options`: [Lenis options](https://github.com/darkroomengineering/lenis#instance-settings).
-- `root`: Lenis will be instanciate using `<html>` scroll. Default: `false`.
+- `root`: if `true`, Lenis will be instanciate using `<html>` scroll, then you can use the `useLenis` hook to access the Lenis instance from anywhere in your app. Default: `false`.
 
 ## Hooks
 Once the Lenis context is set (components mounted inside `<ReactLenis>`) you can use these handy hooks:
 
 `useLenis` is a hook that returns the Lenis instance
 
-The hook takes three argument:
+The hook takes three arguments:
 - `callback`: The function to be called whenever a scroll event is emitted
 - `deps`: Trigger callback on change
 - `priority`: Manage callback execution order
+
+
+
+
 
 ## Examples
 
@@ -66,9 +72,7 @@ function App() {
   }, [])
   
   return (
-    <ReactLenis options={{ autoRaf: false }} ref={lenisRef}>
-      { /* content */ }
-    </ReactLenis>
+    <ReactLenis root options={{ autoRaf: false }} ref={lenisRef} />
   )
 }
 ```
@@ -95,9 +99,7 @@ function App() {
   }, [])
   
   return (
-    <ReactLenis options={{ autoRaf: false }} ref={lenisRef}>
-      { /* content */ }
-    </ReactLenis>
+    <ReactLenis root options={{ autoRaf: false }} ref={lenisRef} />
   )
 }
 ```
@@ -125,9 +127,7 @@ function App() {
 
 
   return (
-    <ReactLenis options={{ autoRaf: false }} ref={lenisRef}>
-      { /* content */ }
-    </ReactLenis>
+    <ReactLenis root options={{ autoRaf: false }} ref={lenisRef} />
   )
 }
 ```

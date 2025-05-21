@@ -1,24 +1,21 @@
+//
 <script setup>
-import Inner from '../components/inner.vue'
-import { useLenis } from 'lenis/vue'
+// import Inner from '../components/inner.vue'
+// import { useLenis } from 'lenis/vue'
+// import { watchEffect } from 'vue'
 
-const lenis = useLenis((lenis) => {
-  console.log('page callback', lenis)
-})
+// const lenisRef = ref()
 
-watch(
-  lenis,
-  (lenis) => {
-    console.log('page', lenis)
-  },
-  { immediate: true }
-)
+// watchEffect(() => {
+//   console.log('lenisRef', lenisRef.value?.lenis)
+// })
+//
 </script>
 
 <template>
-  <vue-lenis class="scroller" test>
-    <div class="content">Home <Inner /></div>
-  </vue-lenis>
+  <!-- <vue-lenis class="scroller" ref="lenisRef"> -->
+  <div class="content">Home <Inner /></div>
+  <!-- </vue-lenis> -->
 </template>
 
 <style scoped>

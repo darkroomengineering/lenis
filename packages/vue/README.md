@@ -37,40 +37,48 @@ export default defineNuxtConfig({
 import { VueLenis, useLenis } from 'lenis/vue'
 import { watch } from 'vue'
 
-const lenis = useLenis(({ scroll }) => {
+const lenis = useLenis((lenis) => {
   // called every scroll
+  console.log(lenis)
 })
 
-watch(lenis, (lenis) => {
-  // lenis instance
-})
+watch(
+  lenis,
+  (lenis) => {
+    // lenis instance
+    console.log(lenis)
+  },
+  { immediate: true }
+)
 </script>
 
 <template>
-  <VueLenis root>
-    <!-- content -->
-  </VueLenis>
+  <VueLenis root />
+  <!-- content -->
 </template>
 ```
 
-
-
 ## Props
 - `options`: [Lenis options](https://github.com/darkroomengineering/lenis#instance-settings).
-- `root`: Lenis will be instanciate using `<html>` scroll. Default: `false`.
+- `root`: if `true`, Lenis will be instanciate using `<html>` scroll, then you can use the `useLenis` hook to access the Lenis instance from anywhere in your app. Default: `false`.
 
 ## Hooks
 Once the Lenis context is set (components mounted inside `<VueLenis>` or `<vue-lenis>`) you can use these handy hooks:
 
 `useLenis` is a hook that returns the Lenis instance
 
-The hook takes three argument:
+The hook takes two arguments:
 - `callback`: The function to be called whenever a scroll event is emitted
 - `priority`: Manage callback execution order
 
+
+
+
+
+
 ## Examples
 
-GSAP integration
+### GSAP integration
 
 ```vue
 <script setup>
@@ -93,9 +101,7 @@ watchEffect((onInvalidate) => {
 </script>
 
 <template>
-  <VueLenis ref="lenisRef" :autoRaf="false">
-    <!-- content -->
-  </VueLenis>
+  <VueLenis root ref="lenisRef" :options="{ autoRaf: false }" />
 </template>
 ```
 

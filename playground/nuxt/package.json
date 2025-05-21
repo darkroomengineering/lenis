@@ -11,6 +11,7 @@
     "lenis": "workspace:*",
     "nuxt": "^3.15.3",
     "vue": "latest",
-    "vue-router": "latest"
+    "vue-router": "latest",
+    "gsap": "latest"
   }
 }
