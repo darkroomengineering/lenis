@@ -44,6 +44,8 @@ document.body.appendChild(stats.dom)
 function animate() {
   stats.begin()
 
+  sumPrimes(300000)
+
   // monitored code goes here
 
   stats.end()

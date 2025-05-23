@@ -96,8 +96,7 @@ export class Lenis {
     smoothWheel = true,
     syncTouch = false,
     syncTouchLerp = 0.075,
-    touchInertiaMultiplier = 35,
-    touchInertiaExponent = 1.8,
+    touchInertiaExponent = 1.7,
     duration, // in seconds
     easing,
     lerp = 0.1,
@@ -139,7 +138,6 @@ export class Lenis {
       smoothWheel,
       syncTouch,
       syncTouchLerp,
-      touchInertiaMultiplier,
       touchInertiaExponent,
       duration,
       easing,

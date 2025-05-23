@@ -136,7 +136,6 @@ export type LenisOptions = {
    * Manage the the strength of `syncTouch` inertia
    * @default 35
    */
-  touchInertiaMultiplier?: number
   touchInertiaExponent?: number
   /**
    * Scroll duration in seconds
