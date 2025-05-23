@@ -137,6 +137,7 @@ export type LenisOptions = {
    * @default 35
    */
   touchInertiaMultiplier?: number
+  touchInertiaExponent?: number
   /**
    * Scroll duration in seconds
    */

@@ -97,6 +97,7 @@ export class Lenis {
     syncTouch = false,
     syncTouchLerp = 0.075,
     touchInertiaMultiplier = 35,
+    touchInertiaExponent = 1.8,
     duration, // in seconds
     easing,
     lerp = 0.1,
@@ -139,6 +140,7 @@ export class Lenis {
       syncTouch,
       syncTouchLerp,
       touchInertiaMultiplier,
+      touchInertiaExponent,
       duration,
       easing,
       lerp,
@@ -477,7 +479,9 @@ export class Lenis {
 
     if (hasTouchInertia) {
       // delta = this.velocity * this.options.touchInertiaMultiplier
-      delta = Math.sign(this.velocity) * Math.pow(Math.abs(this.velocity), 2)
+      delta =
+        Math.sign(this.velocity) *
+        Math.pow(Math.abs(this.velocity), this.options.touchInertiaExponent)
     }
 
     this.scrollTo(this.targetScroll + delta, {
