@@ -1,6 +1,6 @@
 {
   "name": "lenis",
-  "version": "1.3.3",
+  "version": "1.3.4-dev.0",
   "description": "How smooth scroll should be",
   "type": "module",
   "sideEffects": false,
