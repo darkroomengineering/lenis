@@ -91,6 +91,9 @@ importers:
       react-dom:
         specifier: ^19.0.0
         version: 19.0.0(react@19.0.0)
+      stats-js:
+        specifier: 1.0.1
+        version: 1.0.1
       typescript:
         specifier: ^5.7.3
         version: 5.7.3
@@ -3496,6 +3499,9 @@ packages:
 
   standard-as-callback@2.1.0:
     resolution: {integrity: sha512-qoRRSyROncaz1z0mvYqIE4lCd9p2R90i6GxW3uZv5ucSu8tU7B5HXUP1gG8pVZsYNVaXjk8ClXHPttLyxAL48A==}
+
+  stats-js@1.0.1:
+    resolution: {integrity: sha512-EAwEFghGNv8mlYC4CZzI5kWghsnP8uBKXw6VLRHtXkOk5xySfUKLTqTkjgJFfDluIkf/O7eZwi5MXP50VeTbUg==}
 
   statuses@2.0.1:
     resolution: {integrity: sha512-RwNA9Z/7PrK06rYLIzFMlaF+l73iwpzsqRIFgbMLbTcLD6cOao82TaWefPXQvB2fOC4AjuYSEndS7N/mTCbkdQ==}
@@ -8478,6 +8484,8 @@ snapshots:
   sprintf-js@1.0.3: {}
 
   standard-as-callback@2.1.0: {}
+
+  stats-js@1.0.1: {}
 
   statuses@2.0.1: {}
 

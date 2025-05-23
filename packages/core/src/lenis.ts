@@ -473,10 +473,11 @@ export class Lenis {
     const isSyncTouch = isTouch && this.options.syncTouch
     const isTouchEnd = isTouch && event.type === 'touchend'
 
-    const hasTouchInertia = isTouchEnd && Math.abs(delta) > 5
+    const hasTouchInertia = isTouchEnd
 
     if (hasTouchInertia) {
-      delta = this.velocity * this.options.touchInertiaMultiplier
+      // delta = this.velocity * this.options.touchInertiaMultiplier
+      delta = Math.sign(this.velocity) * Math.pow(Math.abs(this.velocity), 2)
     }
 
     this.scrollTo(this.targetScroll + delta, {
