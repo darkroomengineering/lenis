@@ -37,6 +37,10 @@ export default defineNuxtConfig({
 import { VueLenis, useLenis } from 'lenis/vue'
 import { watch } from 'vue'
 
+const lenisOptions = {
+  // lenis options (optional)
+}
+
 const lenis = useLenis((lenis) => {
   // called every scroll
   console.log(lenis)
@@ -53,7 +57,7 @@ watch(
 </script>
 
 <template>
-  <VueLenis root />
+  <VueLenis root :options="lenisOptions" />
   <!-- content -->
 </template>
 ```
@@ -71,6 +75,24 @@ The hook takes two arguments:
 - `callback`: The function to be called whenever a scroll event is emitted
 - `priority`: Manage callback execution order
 
+```vue
+<script setup>
+import { VueLenis, useLenis } from 'lenis/vue'
+import { watch } from 'vue'
+
+const scrollCallback = (lenis) => {
+  // called on every scroll
+  // useLenis provides the lenis instance as an argument
+}
+
+const lenis = useLenis(scrollCallback, 0) // where 0 is the default callback priority
+</script>
+
+<template>
+  <VueLenis root />
+  <!-- content -->
+</template>
+```
 
 
 
@@ -85,25 +107,44 @@ The hook takes two arguments:
 import { ref, watchEffect } from 'vue'
 import { VueLenis, useLenis } from 'lenis/vue'
 import gsap from 'gsap'
+import { ScrollTrigger } from 'gsap/ScrollTrigger'
 
 const lenisRef = ref()
 
 watchEffect((onInvalidate) => {
+   if (!lenisRef.value?.lenis) return
+
+  //  if using GSAP ScrollTrigger, update ScrollTrigger on scroll
+  lenisRef.value.lenis.on('scroll', ScrollTrigger.update)
+
+  // add the Lenis requestAnimationFrame (raf) method to GSAP's ticker
+  // this ensures Lenis's smooth scroll animation updates on each GSAP tick
   function update(time) {
-    lenisRef.value?.lenis?.raf(time * 1000)
+    lenisRef.value.lenis.raf(time * 1000)
   }
   gsap.ticker.add(update)
 
+  // disable lag smoothing in GSAP to prevent any delay in scroll animations
+  gsap.ticker.lagSmoothing(0)
+
+  // clean up GSAP's ticker from the previous execution of watchEffect, or when the effect is stopped
   onInvalidate(() => {
     gsap.ticker.remove(update)
   })
+})
+
+// if using GSAP ScrollTrigger, remember to register the plugin
+onMounted(() => {
+  gsap.registerPlugin(ScrollTrigger))
 })
 </script>
 
 <template>
   <VueLenis root ref="lenisRef" :options="{ autoRaf: false }" />
+  <!-- content -->
 </template>
 ```
+
 
 <br/>
 
