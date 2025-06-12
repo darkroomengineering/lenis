@@ -60,6 +60,8 @@ export class Snap {
       easing,
       duration,
       velocityThreshold = 1,
+      scrollThresholdPercentage = 0,
+      scrollThreshold = 0,
       debounce: debounceDelay = 0,
       onSnapStart,
       onSnapComplete,
@@ -71,6 +73,8 @@ export class Snap {
       easing,
       duration,
       velocityThreshold,
+      scrollThresholdPercentage,
+      scrollThreshold,
       debounce: debounceDelay,
       onSnapStart,
       onSnapComplete,
@@ -225,7 +229,33 @@ export class Snap {
     if (nextSnap === undefined) nextSnap = snaps[snaps.length - 1]!
     const distanceToNextSnap = Math.abs(scroll - nextSnap.value)
 
-    const snap = distanceToPrevSnap < distanceToNextSnap ? prevSnap : nextSnap
+    let snap = distanceToPrevSnap < distanceToNextSnap ? prevSnap : nextSnap
+    const hasScrollThresholdPercentage =
+      this.options.scrollThresholdPercentage &&
+      this.options.scrollThresholdPercentage > 0
+    const hasScrollThresholdPixels =
+      this.options.scrollThreshold && this.options.scrollThreshold > 0
+    if (hasScrollThresholdPercentage || hasScrollThresholdPixels) {
+      const snapDifference = nextSnap.value - prevSnap.value
+      const threshold = hasScrollThresholdPercentage
+        ? snapDifference * (this.options.scrollThresholdPercentage as number)
+        : (this.options.scrollThreshold as number)
+      if (this.lenis.direction === 1) {
+        // Down
+        if (scroll - prevSnap.value >= threshold) {
+          snap = nextSnap
+        } else {
+          snap = prevSnap
+        }
+      } else {
+        // Up
+        if (nextSnap.value - scroll >= threshold) {
+          snap = prevSnap
+        } else {
+          snap = nextSnap
+        }
+      }
+    }
 
     const distance = Math.abs(scroll - snap.value)
 
