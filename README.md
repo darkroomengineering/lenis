@@ -40,7 +40,13 @@ Your support helps us smooth out the internet one library at a time—and lets u
 
 <!-- sponsors --><a href="https:&#x2F;&#x2F;www.cachet.studio"><img src="https:&#x2F;&#x2F;github.com&#x2F;cachet-studio.png" width="60px" alt="User avatar: cachet.studio" /></a><a href="https:&#x2F;&#x2F;smsunarto.com"><img src="https:&#x2F;&#x2F;github.com&#x2F;smsunarto.png" width="60px" alt="User avatar: Scott Sunarto" /></a><a href="https:&#x2F;&#x2F;www.non-linear.studio&#x2F;"><img src="https:&#x2F;&#x2F;github.com&#x2F;mariosmaselli.png" width="60px" alt="User avatar: Mario Sanchez Maselli" /></a><a href="www.ark.studio"><img src="https:&#x2F;&#x2F;github.com&#x2F;thearkis.png" width="60px" alt="User avatar: ΛRK" /></a><a href="https:&#x2F;&#x2F;federic.ooo&#x2F;"><img src="https:&#x2F;&#x2F;github.com&#x2F;vallafederico.png" width="60px" alt="User avatar: Federico Valla" /></a><a href="https:&#x2F;&#x2F;ironvelvet.studio"><img src="https:&#x2F;&#x2F;github.com&#x2F;ironvelvet.png" width="60px" alt="User avatar: Iron Velvet" /></a><a href="http:&#x2F;&#x2F;uxby.us"><img src="https:&#x2F;&#x2F;github.com&#x2F;UX-By-Us.png" width="60px" alt="User avatar: UX By Us" /></a><a href="https:&#x2F;&#x2F;github.com&#x2F;MoT1998-star"><img src="https:&#x2F;&#x2F;github.com&#x2F;MoT1998-star.png" width="60px" alt="User avatar: " /></a><a href="https:&#x2F;&#x2F;github.com&#x2F;Alexi5000"><img src="https:&#x2F;&#x2F;github.com&#x2F;Alexi5000.png" width="60px" alt="User avatar: Alex Cinovoj" /></a><a href="æ.com"><img src="https:&#x2F;&#x2F;github.com&#x2F;ae-com.png" width="60px" alt="User avatar: Æ" /></a><!-- sponsors -->
 
-<br>
+<br />
+<br />
+<a href="https://vercel.com/oss">
+  <img alt="Vercel OSS Program" src="https://vercel.com/oss/program-badge.svg" />
+</a>
+
+<br />
 
 ## Packages
 
