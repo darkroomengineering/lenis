@@ -1,4 +1,10 @@
-import { addPlugin, createResolver, defineNuxtModule } from '@nuxt/kit'
+import {
+  addComponent,
+  addImports,
+  addPlugin,
+  createResolver,
+  defineNuxtModule,
+} from '@nuxt/kit'
 
 // Module options TypeScript interface definition
 export interface ModuleOptions {}
@@ -16,6 +22,14 @@ const nuxtModule = defineNuxtModule<ModuleOptions>({
     addPlugin({
       src: resolve('./nuxt/runtime/lenis.mjs'),
       name: 'lenis',
+    })
+
+    addImports({ name: 'useLenis', from: 'lenis/vue' })
+    addComponent({
+      name: 'VueLenis',
+      filePath: 'lenis/vue',
+      global: true,
+      export: 'VueLenis',
     })
   },
 })

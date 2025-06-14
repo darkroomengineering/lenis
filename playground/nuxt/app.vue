@@ -1,7 +1,6 @@
-<script setup>
-import { useLenis } from 'lenis/vue'
-import { watch, watchEffect } from 'vue'
+<script setup lang="ts">
 import gsap from 'gsap'
+import { watch, watchEffect } from 'vue'
 
 const lenis = useLenis((lenis) => {
   console.log('page callback', lenis)
@@ -15,10 +14,10 @@ watch(
   { immediate: true }
 )
 
-const lenisRef = ref()
+const lenisRef = useTemplateRef('lenisRef')
 
 watchEffect((onInvalidate) => {
-  function update(time) {
+  function update(time: number) {
     lenisRef.value?.lenis?.raf(time * 1000)
   }
   gsap.ticker.add(update)
@@ -34,7 +33,7 @@ watchEffect((onInvalidate) => {
     <NuxtLink to="/">Home</NuxtLink>
     <NuxtLink to="/about">About</NuxtLink>
   </nav>
-  <vue-lenis root :options="{ autoRaf: false }" ref="lenisRef" />
+  <VueLenis root :options="{ autoRaf: false }" ref="lenisRef" />
   <NuxtPage />
 </template>
 
