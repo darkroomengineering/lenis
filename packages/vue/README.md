@@ -21,20 +21,20 @@ const app = createApp({})
 app.use(LenisVue)
 ```
 
-### Nuxt 
+### Nuxt
+
 ```js
 // nuxt.config.js
 export default defineNuxtConfig({
   modules: ['lenis/nuxt'],
 })
-
 ```
 
 ## Usage
 
 ```vue
 <script setup>
-import { VueLenis, useLenis } from 'lenis/vue'
+import { VueLenis, useLenis } from 'lenis/vue' // Also available as global imports, no need to import them manually
 import { watch } from 'vue'
 
 const lenisOptions = {

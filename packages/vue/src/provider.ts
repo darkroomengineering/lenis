@@ -6,6 +6,7 @@ import type {
   Plugin,
   PropType,
   ShallowRef,
+  ToRefs,
 } from 'vue'
 import {
   defineComponent,
@@ -27,7 +28,13 @@ export const AddCallbackSymbol: InjectionKey<
 export const RemoveCallbackSymbol: InjectionKey<(callback: any) => void> =
   Symbol('RemoveCallback')
 
-export const VueLenis = defineComponent({
+export type LenisExposed = {
+  wrapper?: HTMLDivElement
+  content?: HTMLDivElement
+  lenis?: Lenis
+}
+
+const VueLenisImpl = defineComponent({
   name: 'VueLenis',
   props: {
     root: {
@@ -53,7 +60,7 @@ export const VueLenis = defineComponent({
     const wrapper = ref<HTMLDivElement>()
     const content = ref<HTMLDivElement>()
     // Setup exposed properties
-    expose({
+    expose<ToRefs<LenisExposed>>({
       lenis: lenisRef,
       wrapper,
       content,
@@ -147,6 +154,10 @@ export const VueLenis = defineComponent({
     }
   },
 })
+
+export const VueLenis = VueLenisImpl as typeof VueLenisImpl & {
+  new (): LenisExposed
+}
 
 export const vueLenisPlugin: Plugin = (app) => {
   app.component('vue-lenis', VueLenis)
