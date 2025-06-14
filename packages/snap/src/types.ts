@@ -30,6 +30,14 @@ export type SnapOptions = {
    */
   velocityThreshold?: number
   /**
+   * The scroll threshold in percentage to trigger a snap between the previous and next snapping points.
+   */
+  scrollThresholdPercentage?: number
+  /**
+   * The scroll threshold in pixels to trigger a snap between the previous and next snapping points.
+   */
+  scrollThreshold?: number
+  /**
    * The debounce delay (in ms) to prevent snapping too often
    */
   debounce?: number
