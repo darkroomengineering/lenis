@@ -1,0 +1,9 @@
+---
+import App from '~/svelte/App.svelte'
+import '~/vue/style.css'
+import Layout from '../layouts/Layout.astro'
+---
+
+<Layout title="Lenis + Svelte">
+	<App client:only="svelte" />
+</Layout>

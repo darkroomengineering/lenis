@@ -5,6 +5,9 @@
   "type": "module",
   "sideEffects": false,
   "author": "darkroom.engineering",
+  "contributors": [
+    "Daniel Nahuel Acuña <danielnahuelacuna98@gmail.com> (https://github.com/DaniAcu)"
+  ],
   "license": "MIT",
   "repository": {
     "type": "git",
@@ -28,7 +31,8 @@
   "scripts": {
     "build": "pnpm build:core && pnpm build:all",
     "build:core": "tsup --config tsup.core.ts",
-    "build:all": "tsup",
+    "build:all": "tsup && pnpm run build:svelte",
+    "build:svelte": "pnpm --filter lenis-svelte run build",
     "dev": "pnpm run -w --parallel /^dev:.*/",
     "dev:build": "tsup --watch",
     "dev:playground": "pnpm --filter playground dev",
@@ -47,11 +51,12 @@
   ],
   "devDependencies": {
     "terser": "^5.37.0",
-    "tsup": "^8.3.5",
-    "typescript": "^5.7.3"
+    "tsup": "^8.4.0",
+    "typescript": "^5.4.5"
   },
   "peerDependencies": {
     "react": ">=17.0.0",
+    "svelte": "^5.19.3",
     "vue": ">=3.0.0",
     "@nuxt/kit": ">=3.0.0"
   },
@@ -60,6 +65,9 @@
       "optional": true
     },
     "vue": {
+      "optional": true
+    },
+    "svelte": {
       "optional": true
     },
     "@nuxt/kit": {
@@ -86,6 +94,10 @@
     "./vue": {
       "types": "./dist/lenis-vue.d.ts",
       "default": "./dist/lenis-vue.mjs"
+    },
+    "./svelte": {
+      "types": "./dist/svelte/index.d.ts",
+      "svelte": "./dist/svelte/index.js"
     },
     "./nuxt": {
       "default": "./dist/lenis-vue-nuxt.mjs"

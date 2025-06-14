@@ -43,6 +43,8 @@ packages/core/dist/
 packages/react/dist/
 packages/snap/dist/
 packages/vue/dist/
+packages/svelte/dist/
 
-dist-new/
 dist/
+
+.svelte-kit
