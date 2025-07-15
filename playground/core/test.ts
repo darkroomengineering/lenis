@@ -40,7 +40,7 @@ const lenis = new Lenis({
   autoRaf: true,
   anchors: true,
   autoToggle: true,
-  // allowNestedScroll: true,
+  allowNestedScroll: true,
   // infinite: true,
   // lerp: 0.5,
   // duration: 10,
@@ -164,7 +164,7 @@ document.getElementById('start')?.addEventListener('click', () => {
 })
 
 document.getElementById('scroll-start')?.addEventListener('click', () => {
-  lenis.scrollTo(100)
+  lenis.scrollTo(100, { lock: true, duration: 10 })
 })
 
 document.getElementById('scroll-center')?.addEventListener('click', () => {

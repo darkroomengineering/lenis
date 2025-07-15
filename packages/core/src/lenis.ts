@@ -432,7 +432,9 @@ export class Lenis {
       return
 
     if (this.isStopped || this.isLocked) {
-      event.preventDefault() // this will stop forwarding the event to the parent, this is problematic
+      if (event.cancelable) {
+        event.preventDefault() // this will stop forwarding the event to the parent, this is problematic
+      }
       return
     }
 
@@ -468,7 +470,9 @@ export class Lenis {
       // event.stopPropagation()
     }
 
-    event.preventDefault()
+    if (event.cancelable) {
+      event.preventDefault()
+    }
 
     const isSyncTouch = isTouch && this.options.syncTouch
     const isTouchEnd = isTouch && event.type === 'touchend'
