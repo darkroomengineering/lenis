@@ -223,11 +223,11 @@ export class Snap {
     ) {
       distanceThreshold =
         (Number(this.options.distanceThreshold.replace('%', '')) / 100) *
-        this.lenis.dimensions[axis]
+        this.viewport[axis]
     } else if (typeof this.options.distanceThreshold === 'number') {
       distanceThreshold = this.options.distanceThreshold
     } else {
-      distanceThreshold = this.lenis.dimensions[axis]
+      distanceThreshold = this.viewport[axis]
     }
 
     if (

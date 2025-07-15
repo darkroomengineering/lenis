@@ -20,7 +20,7 @@ const snap = new Snap(lenis, {
   type: 'proximity', // 'mandatory', 'proximity'
   velocityThreshold: 1,
   distanceThreshold: '100%',
-  debounce: 0,
+  debounce: 100,
   // duration: 2,
   // easing: (t) => t,
   onSnapStart: (snap) => {
