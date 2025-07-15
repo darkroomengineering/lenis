@@ -227,7 +227,7 @@ export class Snap {
     } else if (typeof this.options.distanceThreshold === 'number') {
       distanceThreshold = this.options.distanceThreshold
     } else {
-      return this.lenis.dimensions[axis]
+      distanceThreshold = this.lenis.dimensions[axis]
     }
 
     if (
