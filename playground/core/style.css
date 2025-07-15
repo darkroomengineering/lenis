@@ -54,3 +54,7 @@ main {
   height: 100%;
   overflow-y: auto;
 } */
+
+.lenis-stopped {
+  background-color: red;
+}

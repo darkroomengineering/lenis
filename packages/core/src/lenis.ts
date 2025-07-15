@@ -300,9 +300,9 @@ export class Lenis {
       ] as string
 
       if (['hidden', 'clip'].includes(overflow)) {
-        this.stop()
+        this.internalStop()
       } else {
-        this.start()
+        this.internalStart()
       }
     }
   }
@@ -560,10 +560,20 @@ export class Lenis {
    */
   start() {
     if (!this.isStopped) return
+
+    if (this.options.autoToggle) {
+      this.rootElement.style.removeProperty('overflow')
+      return
+    }
+
+    this.internalStart()
+  }
+
+  private internalStart() {
+    if (!this.isStopped) return
+
     this.reset()
-
     this.isStopped = false
-
     this.emit()
   }
 
@@ -572,10 +582,20 @@ export class Lenis {
    */
   stop() {
     if (this.isStopped) return
+
+    if (this.options.autoToggle) {
+      this.rootElement.style.setProperty('overflow', 'clip')
+      return
+    }
+
+    this.internalStop()
+  }
+
+  private internalStop() {
+    if (this.isStopped) return
+
     this.reset()
-
     this.isStopped = true
-
     this.emit()
   }
 
