@@ -59,6 +59,7 @@ export class Snap {
       lerp,
       easing,
       duration,
+      distanceThreshold = '100%',
       velocityThreshold = 1,
       debounce: debounceDelay = 0,
       onSnapStart,
@@ -70,6 +71,7 @@ export class Snap {
       lerp,
       easing,
       duration,
+      distanceThreshold,
       velocityThreshold,
       debounce: debounceDelay,
       onSnapStart,
@@ -119,16 +121,7 @@ export class Snap {
 
     this.snaps.set(id, { value, userData })
 
-    return () => this.remove(id)
-  }
-
-  /**
-   * Remove a snap from the snap instance
-   *
-   * @param id The snap id of the snap to remove
-   */
-  remove(id: UID) {
-    this.snaps.delete(id)
+    return () => this.snaps.delete(id)
   }
 
   /**
@@ -138,21 +131,12 @@ export class Snap {
    * @param options The options for the element
    * @returns Unsubscribe function
    */
-  addElement(element: HTMLElement, options = {} as SnapElementOptions) {
+  addElement(element: HTMLElement, options: SnapElementOptions = {}) {
     const id = uid()
 
     this.elements.set(id, new SnapElement(element, options))
 
-    return () => this.removeElement(id)
-  }
-
-  /**
-   * Remove an element from the snap instance
-   *
-   * @param id The snap id of the snap element to remove
-   */
-  removeElement(id: UID) {
-    this.elements.delete(id)
+    return () => this.elements.delete(id)
   }
 
   private onWindowResize = () => {
@@ -229,13 +213,26 @@ export class Snap {
 
     const distance = Math.abs(scroll - snap.value)
 
+    let distanceThreshold
+
+    const axis = isHorizontal ? 'width' : 'height'
+
+    if (
+      typeof this.options.distanceThreshold === 'string' &&
+      this.options.distanceThreshold.endsWith('%')
+    ) {
+      distanceThreshold =
+        (Number(this.options.distanceThreshold.replace('%', '')) / 100) *
+        this.lenis.dimensions[axis]
+    } else if (typeof this.options.distanceThreshold === 'number') {
+      distanceThreshold = this.options.distanceThreshold
+    } else {
+      return this.lenis.dimensions[axis]
+    }
+
     if (
       this.options.type === 'mandatory' ||
-      (this.options.type === 'proximity' &&
-        distance <=
-          (isHorizontal
-            ? this.lenis.dimensions.width
-            : this.lenis.dimensions.height))
+      (this.options.type === 'proximity' && distance <= distanceThreshold)
     ) {
       // this.__isScrolling = true
       // this.onSnapStart?.(snap)

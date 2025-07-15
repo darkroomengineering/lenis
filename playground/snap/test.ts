@@ -17,8 +17,9 @@ window.lenis = lenis
 const i = 0
 
 const snap = new Snap(lenis, {
-  type: 'mandatory', // 'mandatory', 'proximity'
+  type: 'proximity', // 'mandatory', 'proximity'
   velocityThreshold: 1,
+  distanceThreshold: '100%',
   debounce: 0,
   // duration: 2,
   // easing: (t) => t,
@@ -69,7 +70,7 @@ snap.addElement(section4, {
   align: ['start', 'end'], // 'start', 'center', 'end'
 })
 
-function raf(time) {
+function raf(time: number) {
   lenis.raf(time)
   requestAnimationFrame(raf)
 }

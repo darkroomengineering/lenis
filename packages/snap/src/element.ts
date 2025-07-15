@@ -57,7 +57,7 @@ function scrollLeft(element: HTMLElement, accumulator = 0) {
 }
 
 export type SnapElementOptions = {
-  align?: string[]
+  align?: string | string[]
   ignoreSticky?: boolean
   ignoreTransform?: boolean
 }
