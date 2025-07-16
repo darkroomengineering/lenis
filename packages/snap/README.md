@@ -35,6 +35,8 @@ npm i lenis
 
 - `type`: `mandatory` (default) or `proximity`. See [scroll-snap-type](https://developer.mozilla.org/en-US/docs/Web/CSS/scroll-snap-type)
 - `velocityThreshold`: `number` (default: 1). Below this scroll velocity, it will snap.
+- `distanceThreshold`: `string | number` (default: '100%'). The distance threshold from the snap point to the scroll position.
+- `debounce`: `number` (default: 50). The debounce time for the snap.
 - `onSnapStart`: `function`. Callback when snap starts.
 - `onSnapComplete`: `function`. Callback when snap completes.
 - `lerp`: `number` (default: 0.1). Lerp value for snapping.
