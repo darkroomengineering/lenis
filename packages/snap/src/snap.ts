@@ -60,8 +60,8 @@ export class Snap {
       easing,
       duration,
       distanceThreshold = '100%',
-      velocityThreshold = 1,
-      debounce: debounceDelay = 0,
+      velocityThreshold = 1.2,
+      debounce: debounceDelay = 50,
       onSnapStart,
       onSnapComplete,
     }: SnapOptions = {}
