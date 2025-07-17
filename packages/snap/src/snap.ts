@@ -42,7 +42,12 @@ type RequiredPick<T, F extends keyof T> = Omit<T, F> & Required<Pick<T, F>>
  * }
  */
 export class Snap {
-  options: RequiredPick<SnapOptions, 'type' | 'velocityThreshold' | 'debounce'>
+  options: RequiredPick<
+    SnapOptions,
+    | 'type'
+    // | 'velocityThreshold'
+    | 'debounce'
+  >
   elements = new Map<UID, SnapElement>()
   snaps = new Map<UID, SnapItem>()
   viewport = {
@@ -60,8 +65,8 @@ export class Snap {
       easing,
       duration,
       distanceThreshold = '100%',
-      velocityThreshold = 1.2,
-      debounce: debounceDelay = 50,
+      // velocityThreshold = 1.2,
+      debounce: debounceDelay = 500,
       onSnapStart,
       onSnapComplete,
     }: SnapOptions = {}
@@ -72,7 +77,7 @@ export class Snap {
       easing,
       duration,
       distanceThreshold,
-      velocityThreshold,
+      // velocityThreshold,
       debounce: debounceDelay,
       onSnapStart,
       onSnapComplete,
@@ -83,14 +88,16 @@ export class Snap {
 
     this.onSnapDebounced = debounce(this.onSnap, this.options.debounce)
 
-    this.lenis.on('scroll', this.onScroll)
+    // this.lenis.on('scroll', this.onScroll)
+    this.lenis.on('virtual-scroll', this.onSnapDebounced)
   }
 
   /**
    * Destroy the snap instance
    */
   destroy() {
-    this.lenis.off('scroll', this.onScroll)
+    // this.lenis.off('scroll', this.onScroll)
+    this.lenis.off('virtual-scroll', this.onSnapDebounced)
     window.removeEventListener('resize', this.onWindowResize, false)
     this.elements.forEach((element) => element.destroy())
   }
@@ -144,32 +151,32 @@ export class Snap {
     this.viewport.height = window.innerHeight
   }
 
-  private onScroll = ({
-    // scroll,
-    // limit,
-    lastVelocity,
-    velocity,
-    // isScrolling,
-    userData,
-  }: // isHorizontal,
-  Lenis) => {
-    if (this.isStopped) return
+  // private onScroll = ({
+  //   // scroll,
+  //   // limit,
+  //   lastVelocity,
+  //   velocity,
+  //   // isScrolling,
+  //   userData,
+  // }: // isHorizontal,
+  // Lenis) => {
+  //   if (this.isStopped) return
 
-    // return
-    const isDecelerating = Math.abs(lastVelocity) > Math.abs(velocity)
-    const isTurningBack =
-      Math.sign(lastVelocity) !== Math.sign(velocity) && velocity !== 0
+  //   // return
+  //   const isDecelerating = Math.abs(lastVelocity) > Math.abs(velocity)
+  //   const isTurningBack =
+  //     Math.sign(lastVelocity) !== Math.sign(velocity) && velocity !== 0
 
-    if (
-      Math.abs(velocity) < this.options.velocityThreshold &&
-      // !isTouching &&
-      isDecelerating &&
-      !isTurningBack &&
-      userData?.initiator !== 'snap'
-    ) {
-      this.onSnapDebounced()
-    }
-  }
+  //   if (
+  //     Math.abs(velocity) < this.options.velocityThreshold &&
+  //     // !isTouching &&
+  //     isDecelerating &&
+  //     !isTurningBack &&
+  //     userData?.initiator !== 'snap'
+  //   ) {
+  //     this.onSnapDebounced()
+  //   }
+  // }
 
   private onSnap = () => {
     let { scroll, isHorizontal } = this.lenis

@@ -29,10 +29,10 @@ export type SnapOptions = {
    * The distance to snap to
    */
   distanceThreshold?: number | `${number}%`
-  /**
-   * The velocity threshold to trigger a snap
-   */
-  velocityThreshold?: number
+  // /**
+  //  * The velocity threshold to trigger a snap
+  //  */
+  // velocityThreshold?: number
   /**
    * The debounce delay (in ms) to prevent snapping too often
    */

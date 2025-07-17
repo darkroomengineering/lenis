@@ -11,6 +11,7 @@ const lenis = new Lenis({
   // wrapper: document.querySelector('#wrapper'),
   // content: document.querySelector('#content'),
   lerp: 0.1,
+  syncTouch: true,
 })
 window.lenis = lenis
 
@@ -18,9 +19,9 @@ const i = 0
 
 const snap = new Snap(lenis, {
   type: 'proximity', // 'mandatory', 'proximity'
-  velocityThreshold: 1.2,
+  // velocityThreshold: 1.2,
   distanceThreshold: '100%',
-  debounce: 50,
+  debounce: 500,
   // duration: 2,
   // easing: (t) => t,
   onSnapStart: (snap) => {
