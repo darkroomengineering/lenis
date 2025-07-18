@@ -20,7 +20,7 @@ const i = 0
 const snap = new Snap(lenis, {
   type: 'proximity', // 'mandatory', 'proximity'
   // velocityThreshold: 1.2,
-  distanceThreshold: '100%',
+  distanceThreshold: '50%',
   debounce: 500,
   // duration: 2,
   // easing: (t) => t,
@@ -43,33 +43,44 @@ const section1 = document.querySelector<HTMLDivElement>('.section-1')!
 const section2 = document.querySelector<HTMLDivElement>('.section-2')!
 const section3 = document.querySelector<HTMLDivElement>('.section-3')!
 const section4 = document.querySelector<HTMLDivElement>('.section-4')!
+const section5 = document.querySelector<HTMLDivElement>('.section-5')!
+const section6 = document.querySelector<HTMLDivElement>('.section-6')!
 
-snap.add(0, {
-  index: 0,
-})
+// snap.add(0, {
+//   index: 0,
+// })
 
 // snap.add(643, {
 //   index: 1,
 // })
 
 snap.addElement(section1, {
-  align: [
-    // 'start',
-    'end',
-  ], // 'start', 'center', 'end'
+  align: ['start', 'end'],
 })
 
 snap.addElement(section2, {
-  align: 'center', // 'start', 'center', 'end'
+  align: 'center',
 })
 
 snap.addElement(section3, {
-  align: 'center', // 'start', 'center', 'end'
+  align: ['start', 'end'],
 })
 
 snap.addElement(section4, {
-  align: ['start', 'end'], // 'start', 'center', 'end'
+  align: ['center'],
 })
+
+snap.addElement(section5, {
+  align: ['center'],
+})
+
+snap.addElement(section6, {
+  align: ['end'],
+})
+
+// snap.addElement(section4, {
+//   align: ['start', 'end'], // 'start', 'center', 'end'
+// })
 
 function raf(time: number) {
   lenis.raf(time)

@@ -60,11 +60,11 @@ export class Snap {
   constructor(
     private lenis: Lenis,
     {
-      type = 'mandatory',
+      type = 'proximity',
       lerp,
       easing,
       duration,
-      distanceThreshold = '100%',
+      distanceThreshold = '50%',
       // velocityThreshold = 1.2,
       debounce: debounceDelay = 500,
       onSnapStart,
@@ -207,6 +207,8 @@ export class Snap {
     })
 
     snaps = snaps.sort((a, b) => Math.abs(a.value) - Math.abs(b.value))
+
+    if (snaps.length === 0) return
 
     let prevSnap = snaps.findLast(({ value }) => value <= scroll)
     if (prevSnap === undefined) prevSnap = snaps[0]!
