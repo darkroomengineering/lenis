@@ -30,7 +30,12 @@ function App() {
   return (
     <>
       {/* <ReactLenis root /> */}
-      <ReactLenis className="wrapper" root="asChild" ref={lenisRef}>
+      <ReactLenis
+        className="wrapper"
+        root="asChild"
+        sfsdfdsf="dssdfs"
+        ref={lenisRef}
+      >
         {lorem}
       </ReactLenis>
     </>

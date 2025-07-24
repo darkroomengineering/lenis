@@ -1,6 +1,6 @@
 {
   "name": "lenis",
-  "version": "1.3.9-dev.0",
+  "version": "1.3.9-dev.1",
   "description": "How smooth scroll should be",
   "type": "module",
   "sideEffects": false,
@@ -39,8 +39,9 @@
     "version:minor": "npm version minor --force --no-git-tag-version",
     "version:major": "npm version major --force --no-git-tag-version",
     "postversion": "pnpm build && pnpm readme",
-    "publish:main": "npm publish",
-    "publish:dev": "npm publish --tag dev"
+     "publish:dev": "npm publish --tag dev",
+    "publish:main": "npm publish"
+   
   },
   "files": [
     "dist"
