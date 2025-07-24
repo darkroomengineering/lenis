@@ -1,4 +1,28 @@
-/* .lenis {
-  height: 100vh;
-  overflow-y: auto;
-} */
+html:not(.lenis) {
+  body,
+  & {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+  }
+  body {
+    position: fixed;
+    overscroll-behavior-y: none;
+    overscroll-behavior-x: none;
+  }
+
+  .lenis {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    overflow-y: scroll;
+    -ms-scroll-chaining: none;
+    overscroll-behavior: contain;
+    background: #0b41cd;
+  }
+}

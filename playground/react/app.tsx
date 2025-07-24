@@ -1,15 +1,19 @@
-import { ReactLenis, useLenis } from 'lenis/react'
+import { ReactLenis, useLenis, type LenisRef } from 'lenis/react'
 import { LoremIpsum } from 'lorem-ipsum'
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
 function App() {
   const [lorem] = useState(() => new LoremIpsum().generateParagraphs(200))
 
   const lenis = useLenis((lenis) => {
-    // console.log('lenis in callback', lenis)
+    console.log('lenis in callback', lenis)
   })
 
-  const lenisRef = useRef()
+  const lenisRef = useRef<LenisRef>(null)
+
+  useEffect(() => {
+    console.log('lenis ref', lenisRef.current)
+  }, [lenisRef])
 
   // useEffect(() => {
   //   console.log('lenis ref', lenisRef.current)
@@ -26,12 +30,7 @@ function App() {
   return (
     <>
       {/* <ReactLenis root /> */}
-      <ReactLenis
-        className="wrapper"
-        // root
-        ref={lenisRef}
-        style={{ height: '100vh', overflowY: 'auto' }}
-      >
+      <ReactLenis className="wrapper" root="asChild" ref={lenisRef}>
         {lorem}
       </ReactLenis>
     </>
