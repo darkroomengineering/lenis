@@ -1,6 +1,6 @@
 import type Lenis from 'lenis'
 import type { LenisOptions, ScrollCallback } from 'lenis'
-import type { ComponentPropsWithoutRef, CSSProperties, ReactNode } from 'react'
+import type { ComponentPropsWithoutRef, ReactNode } from 'react'
 
 export type LenisContextValue = {
   lenis: Lenis
@@ -8,12 +8,13 @@ export type LenisContextValue = {
   removeCallback: (callback: ScrollCallback) => void
 }
 
-export type LenisProps = {
+export type LenisProps = ComponentPropsWithoutRef<'div'> & {
   /**
    * Setup a global instance of Lenis
+   * if `asChild`, the component will render wrapper and content divs
    * @default false
    */
-  root?: boolean
+  root?: boolean | 'asChild'
   /**
    * Lenis options
    */
@@ -28,37 +29,19 @@ export type LenisProps = {
    * Children
    */
   children?: ReactNode
-  /**
-   * Class name for the wrapper div
-   *
-   * When `root` is `false`, this will be applied to the wrapper div
-   */
-  className?: string
-  /**
-   * Style for the wrapper div
-   *
-   * When `root` is `false`, this will be applied to the wrapper div
-   */
-  style?: CSSProperties
-  /**
-   * Additional props for the wrapper div
-   *
-   * When `root` is `false`, this will be applied to the wrapper div
-   */
-  props?: Omit<ComponentPropsWithoutRef<'div'>, 'children' | 'className'>
 }
 
 export type LenisRef = {
   /**
    * The wrapper div element
    *
-   * Will only be defined if `root` is `false`
+   * Will only be defined if `root` is `false` or `root` is `asChild`
    */
   wrapper: HTMLDivElement | null
   /**
    * The content div element
    *
-   * Will only be defined if `root` is `false`
+   * Will only be defined if `root` is `false` or `root` is `asChild`
    */
   content: HTMLDivElement | null
   /**

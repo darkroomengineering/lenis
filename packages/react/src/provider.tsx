@@ -30,15 +30,13 @@ export const ReactLenis = forwardRef<LenisRef, LenisProps>(
       children,
       root = false,
       options = {},
-      className,
       autoRaf = true,
-      style,
-      props,
+      ...props
     }: LenisProps,
     ref
   ) => {
-    const wrapperRef = useRef<HTMLDivElement | null>(null)
-    const contentRef = useRef<HTMLDivElement | null>(null)
+    const wrapperRef = useRef<HTMLDivElement>(null)
+    const contentRef = useRef<HTMLDivElement>(null)
 
     const [lenis, setLenis] = useState<Lenis | undefined>(undefined)
 
@@ -57,10 +55,11 @@ export const ReactLenis = forwardRef<LenisRef, LenisProps>(
     useEffect(() => {
       const lenis = new Lenis({
         ...options,
-        ...(!root && {
-          wrapper: wrapperRef.current!,
-          content: contentRef.current!,
-        }),
+        ...(wrapperRef.current &&
+          contentRef.current && {
+            wrapper: wrapperRef.current!,
+            content: contentRef.current!,
+          }),
         autoRaf: options?.autoRaf ?? autoRaf, // this is to avoid breaking the autoRaf prop if it's still used (require breaking change)
       })
 
@@ -70,7 +69,7 @@ export const ReactLenis = forwardRef<LenisRef, LenisProps>(
         lenis.destroy()
         setLenis(undefined)
       }
-    }, [root, JSON.stringify(options)])
+    }, [root, JSON.stringify({ ...options, wrapper: null, content: null })])
 
     // Handle callbacks
     const callbacksRefs = useRef<
@@ -123,14 +122,16 @@ export const ReactLenis = forwardRef<LenisRef, LenisProps>(
       }
     }, [lenis])
 
+    if (!children) return null
+
     return (
       <LenisContext.Provider
         value={{ lenis: lenis!, addCallback, removeCallback }}
       >
-        {root ? (
+        {root && root !== 'asChild' ? (
           children
         ) : (
-          <div ref={wrapperRef} className={className} style={style} {...props}>
+          <div ref={wrapperRef} {...props}>
             <div ref={contentRef}>{children}</div>
           </div>
         )}
