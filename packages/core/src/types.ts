@@ -167,12 +167,12 @@ export type LenisOptions = {
    */
   gestureOrientation?: GestureOrientation
   /**
-   * The multiplier to use for mouse wheel events
+   * The multiplier to use for touch events
    * @default 1
    */
   touchMultiplier?: number
   /**
-   * The multiplier to use for touch events
+   * The multiplier to use for mouse wheel events
    * @default 1
    */
   wheelMultiplier?: number

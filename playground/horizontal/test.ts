@@ -6,9 +6,18 @@ document.querySelector('#work2-content')!.innerHTML =
 
 window.lenis = new Lenis({
   orientation: 'horizontal',
-  gestureOrientation: 'both',
+  // gestureOrientation: 'vertical',
   autoRaf: true,
   allowNestedScroll: true,
+  // virtualScroll: (data) => {
+  //   data.deltaX = 0
+  //   // data.deltaY =  0.00001
+  //   if (data.deltaY === 0 && data.deltaX === 0) {
+  //     data.deltaY = 0.00001
+  //   }
+  //   console.log(data)
+  //   return true
+  // },
 })
 
 // setInterval(() => {

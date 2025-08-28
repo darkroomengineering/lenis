@@ -102,7 +102,7 @@ export class Lenis {
     lerp = 0.1,
     infinite = false,
     orientation = 'vertical', // vertical, horizontal
-    gestureOrientation = 'vertical', // vertical, horizontal, both
+    gestureOrientation = orientation === 'horizontal' ? 'both' : 'vertical', // vertical, horizontal, both
     touchMultiplier = 1,
     wheelMultiplier = 1,
     autoResize = true,
