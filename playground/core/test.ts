@@ -72,6 +72,16 @@ const lenis = new Lenis({
   // },
 })
 
+const nestedLenis = new Lenis({
+  wrapper: document.querySelector('#nested')!,
+  content: document.querySelector('#nested-content')!,
+  autoRaf: true,
+  // overscroll: false,
+  // orientation: 'horizontal',
+  // gestureOrientation: 'horizontal',
+  // infinite: true,
+})
+
 lenis.on('scroll', (e) => {
   // console.log('scroll', e)
 })

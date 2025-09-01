@@ -461,6 +461,7 @@ export class Lenis {
       !this.options.overscroll ||
       this.options.infinite ||
       (this.options.wrapper !== window &&
+        this.limit > 0 &&
         ((this.animatedScroll > 0 && this.animatedScroll < this.limit) ||
           (this.animatedScroll === 0 && deltaY > 0) ||
           (this.animatedScroll === this.limit && deltaY < 0)))

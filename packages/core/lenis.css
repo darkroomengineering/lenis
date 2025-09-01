@@ -7,7 +7,9 @@ html.lenis body {
   overflow: clip;
 }
 
-.lenis.lenis-smooth [data-lenis-prevent] {
+.lenis [data-lenis-prevent],
+.lenis [data-lenis-prevent-wheel],
+.lenis [data-lenis-prevent-touch] {
   overscroll-behavior: contain;
 }
 
