@@ -18,7 +18,7 @@ window.lenis = lenis
 const i = 0
 
 const snap = new Snap(lenis, {
-  type: 'proximity', // 'mandatory', 'proximity'
+  type: 'slide', // 'mandatory', 'proximity', 'slide'
   // velocityThreshold: 1.2,
   distanceThreshold: '50%',
   debounce: 500,

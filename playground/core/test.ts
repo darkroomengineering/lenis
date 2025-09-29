@@ -38,7 +38,14 @@ window.addEventListener('hashchange', () => {
 const lenis = new Lenis({
   // smoothWheel: false,
   autoRaf: true,
-  anchors: true,
+  anchors: {
+    onStart: () => {
+      console.log('onStart')
+    },
+    onComplete: () => {
+      console.log('onComplete')
+    },
+  },
   autoToggle: true,
   allowNestedScroll: true,
   // infinite: true,
@@ -174,7 +181,13 @@ document.getElementById('start')?.addEventListener('click', () => {
 })
 
 document.getElementById('scroll-start')?.addEventListener('click', () => {
-  lenis.scrollTo(100, { lock: true, duration: 10 })
+  lenis.scrollTo(100, {
+    lock: true,
+    duration: 1,
+    onComplete: () => {
+      console.log('onComplete')
+    },
+  })
 })
 
 document.getElementById('scroll-center')?.addEventListener('click', () => {

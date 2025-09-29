@@ -1,5 +1,4 @@
 import type Lenis from 'lenis'
-import type { UserData } from 'lenis'
 import { debounce } from './debounce'
 import type { SnapElementOptions } from './element'
 import { SnapElement } from './element'
@@ -42,20 +41,16 @@ type RequiredPick<T, F extends keyof T> = Omit<T, F> & Required<Pick<T, F>>
  * }
  */
 export class Snap {
-  options: RequiredPick<
-    SnapOptions,
-    | 'type'
-    // | 'velocityThreshold'
-    | 'debounce'
-  >
+  options: RequiredPick<SnapOptions, 'type' | 'debounce'>
   elements = new Map<UID, SnapElement>()
   snaps = new Map<UID, SnapItem>()
-  viewport = {
+  viewport: { width: number; height: number } = {
     width: window.innerWidth,
     height: window.innerHeight,
   }
   isStopped = false
-  onSnapDebounced: () => void
+  onSnapDebounced?: () => void
+  currentSnapIndex = 0 // used for slide type
 
   constructor(
     private lenis: Lenis,
@@ -65,7 +60,6 @@ export class Snap {
       easing,
       duration,
       distanceThreshold = '50%',
-      // velocityThreshold = 1.2,
       debounce: debounceDelay = 500,
       onSnapStart,
       onSnapComplete,
@@ -77,7 +71,6 @@ export class Snap {
       easing,
       duration,
       distanceThreshold,
-      // velocityThreshold,
       debounce: debounceDelay,
       onSnapStart,
       onSnapComplete,
@@ -86,10 +79,14 @@ export class Snap {
     this.onWindowResize()
     window.addEventListener('resize', this.onWindowResize, false)
 
-    this.onSnapDebounced = debounce(this.onSnap, this.options.debounce)
+    if (this.options.type === 'slide') {
+      this.lenis.on('scroll', this.onSlide)
+    } else {
+      this.onSnapDebounced = debounce(this.onSnap, this.options.debounce)
 
-    // this.lenis.on('scroll', this.onScroll)
-    this.lenis.on('virtual-scroll', this.onSnapDebounced)
+      // this.lenis.on('scroll', this.onScroll)
+      this.lenis.on('virtual-scroll', this.onSnapDebounced)
+    }
   }
 
   /**
@@ -97,7 +94,7 @@ export class Snap {
    */
   destroy() {
     // this.lenis.off('scroll', this.onScroll)
-    this.lenis.off('virtual-scroll', this.onSnapDebounced)
+    this.lenis.off('virtual-scroll', this.onSnapDebounced!)
     window.removeEventListener('resize', this.onWindowResize, false)
     this.elements.forEach((element) => element.destroy())
   }
@@ -123,10 +120,10 @@ export class Snap {
    * @param userData User data that will be forwarded through the snap event
    * @returns Unsubscribe function
    */
-  add(value: number, userData: UserData = {}) {
+  add(value: number) {
     const id = uid()
 
-    this.snaps.set(id, { value, userData })
+    this.snaps.set(id, { value })
 
     return () => this.snaps.delete(id)
   }
@@ -151,36 +148,8 @@ export class Snap {
     this.viewport.height = window.innerHeight
   }
 
-  // private onScroll = ({
-  //   // scroll,
-  //   // limit,
-  //   lastVelocity,
-  //   velocity,
-  //   // isScrolling,
-  //   userData,
-  // }: // isHorizontal,
-  // Lenis) => {
-  //   if (this.isStopped) return
-
-  //   // return
-  //   const isDecelerating = Math.abs(lastVelocity) > Math.abs(velocity)
-  //   const isTurningBack =
-  //     Math.sign(lastVelocity) !== Math.sign(velocity) && velocity !== 0
-
-  //   if (
-  //     Math.abs(velocity) < this.options.velocityThreshold &&
-  //     // !isTouching &&
-  //     isDecelerating &&
-  //     !isTurningBack &&
-  //     userData?.initiator !== 'snap'
-  //   ) {
-  //     this.onSnapDebounced()
-  //   }
-  // }
-
-  private onSnap = () => {
-    let { scroll, isHorizontal } = this.lenis
-    scroll = Math.ceil(this.lenis.scroll)
+  private computeSnaps = () => {
+    const { isHorizontal } = this.lenis
 
     let snaps = [...this.snaps.values()] as SnapItem[]
 
@@ -201,12 +170,60 @@ export class Snap {
         }
 
         if (typeof value === 'number') {
-          snaps.push({ value: Math.ceil(value), userData: {} })
+          snaps.push({ value: Math.ceil(value) })
         }
       })
     })
 
     snaps = snaps.sort((a, b) => Math.abs(a.value) - Math.abs(b.value))
+
+    return snaps
+  }
+
+  private onSlide = () => {
+    const { direction, userData } = this.lenis
+
+    if (userData?.initiator === 'snap') return
+
+    const snaps = this.computeSnaps()
+
+    if (snaps.length === 0) return
+
+    if (direction === 1) {
+      this.currentSnapIndex += 1
+    } else if (direction === -1) {
+      this.currentSnapIndex -= 1
+    }
+
+    this.currentSnapIndex = Math.max(
+      0,
+      Math.min(this.currentSnapIndex, snaps.length - 1)
+    )
+
+    const currentSnap = snaps[this.currentSnapIndex]
+
+    if (currentSnap === undefined) return
+
+    this.lenis.scrollTo(currentSnap.value, {
+      duration: this.options.duration,
+      easing: this.options.easing,
+      lerp: this.options.lerp,
+      lock: true,
+      userData: { initiator: 'snap' },
+      onStart: () => {
+        this.options.onSnapStart?.(currentSnap)
+      },
+      onComplete: () => {
+        this.options.onSnapComplete?.(currentSnap)
+      },
+    })
+  }
+
+  private onSnap = () => {
+    let { scroll, isHorizontal } = this.lenis
+    scroll = Math.ceil(this.lenis.scroll)
+
+    const snaps = this.computeSnaps()
 
     if (snaps.length === 0) return
 

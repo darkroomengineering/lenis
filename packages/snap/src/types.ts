@@ -1,8 +1,7 @@
-import type { EasingFunction, UserData } from 'lenis'
+import type { EasingFunction } from 'lenis'
 
 export type SnapItem = {
   value: number
-  userData: UserData
 }
 
 export type OnSnapCallback = (item: SnapItem) => void
@@ -12,7 +11,7 @@ export type SnapOptions = {
    * Snap type
    * @default mandatory
    */
-  type?: 'mandatory' | 'proximity'
+  type?: 'mandatory' | 'proximity' | 'slide'
   /**
    * Linear interpolation (lerp) intensity (between 0 and 1)
    */
