@@ -7,8 +7,6 @@ import type { UID } from './uid'
 import { uid } from './uid'
 
 // TODO:
-// - horizontal
-// - fix trackpad snapping too soon due to velocity (fuck Apple)
 // - fix wheel scrolling after limits (see console scroll to)
 // - fix touch scroll, do not snap when not released
 // - arrow, spacebar
@@ -50,7 +48,7 @@ export class Snap {
   }
   isStopped = false
   onSnapDebounced?: () => void
-  currentSnapIndex = 0 // used for slide type
+  currentSnapIndex = 0
 
   constructor(
     private lenis: Lenis,
@@ -93,7 +91,7 @@ export class Snap {
    * Destroy the snap instance
    */
   destroy() {
-    // this.lenis.off('scroll', this.onScroll)
+    this.lenis.off('scroll', this.onSlide)
     this.lenis.off('virtual-scroll', this.onSnapDebounced!)
     window.removeEventListener('resize', this.onWindowResize, false)
     this.elements.forEach((element) => element.destroy())
@@ -143,6 +141,10 @@ export class Snap {
     return () => this.elements.delete(id)
   }
 
+  addElements(elements: HTMLElement[], options: SnapElementOptions = {}) {
+    elements.forEach((element) => this.addElement(element, options))
+  }
+
   private onWindowResize = () => {
     this.viewport.width = window.innerWidth
     this.viewport.height = window.innerHeight
@@ -180,35 +182,33 @@ export class Snap {
     return snaps
   }
 
-  private onSlide = () => {
-    const { direction, userData } = this.lenis
+  previous() {
+    this.goTo(this.currentSnapIndex - 1)
+  }
 
-    if (userData?.initiator === 'snap') return
+  next() {
+    this.goTo(this.currentSnapIndex + 1)
+  }
 
+  goTo(index: number) {
     const snaps = this.computeSnaps()
 
     if (snaps.length === 0) return
 
-    if (direction === 1) {
-      this.currentSnapIndex += 1
-    } else if (direction === -1) {
-      this.currentSnapIndex -= 1
-    }
-
+    this.currentSnapIndex = index
     this.currentSnapIndex = Math.max(
       0,
       Math.min(this.currentSnapIndex, snaps.length - 1)
     )
 
     const currentSnap = snaps[this.currentSnapIndex]
-
     if (currentSnap === undefined) return
 
     this.lenis.scrollTo(currentSnap.value, {
       duration: this.options.duration,
       easing: this.options.easing,
       lerp: this.options.lerp,
-      lock: true,
+      lock: this.options.type === 'slide',
       userData: { initiator: 'snap' },
       onStart: () => {
         this.options.onSnapStart?.(currentSnap)
@@ -219,7 +219,23 @@ export class Snap {
     })
   }
 
+  private onSlide = () => {
+    if (this.isStopped) return
+
+    const { direction, userData } = this.lenis
+
+    if (userData?.initiator === 'snap') return
+
+    if (direction === 1) {
+      this.next()
+    } else if (direction === -1) {
+      this.previous()
+    }
+  }
+
   private onSnap = () => {
+    if (this.isStopped) return
+
     let { scroll, isHorizontal } = this.lenis
     scroll = Math.ceil(this.lenis.scroll)
 
