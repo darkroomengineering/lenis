@@ -31,13 +31,18 @@ npm i lenis
     snap.add(1000) // snap at 1000px
     snap.add(1500) // snap at 1500px
 
-    // or add an elements to snap to
+    // or add an element to snap to
     snap.addElement(document.querySelector('.element'), {
       align: ['start', 'end'], // 'start', 'center', 'end'
     })
 
     snap.addElement(document.querySelector('.element1'), {
       align: 'center', // 'start', 'center', 'end'
+    })
+
+    // or add elements at once
+    snap.addElements(document.querySelectorAll('.section'), {
+      align: ['start', 'end'], // 'start', 'center', 'end'
     })
     
     
@@ -53,3 +58,16 @@ npm i lenis
 - `lerp`: `number` Lerp value for snapping. (default: lenis lerp). 
 - `easing`: `function`. Easing function for snapping. (default: lenis easing).
 - `duration`: `number`. Duration for snapping. (default: lenis duration).
+
+
+## Methods
+
+- `add(value: number)`: Add a snap point.
+- `addElement(element: HTMLElement, options: SnapElementOptions = {})`: Add an element to snap to.
+- `addElements(elements: HTMLElement[], options: SnapElementOptions = {})`: Add elements at once.
+- `next()`: Go to the next snap point.
+- `previous()`: Go to the previous snap point.
+- `goTo(index: number)`: Go to a specific snap point.
+- `start()`: Start the snap.
+- `stop()`: Stop the snap.
+- `resize()`: Force recalculate the snap points.

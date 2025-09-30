@@ -243,15 +243,21 @@ export class Snap {
 
     if (snaps.length === 0) return
 
-    let prevSnap = snaps.findLast(({ value }) => value <= scroll)
-    if (prevSnap === undefined) prevSnap = snaps[0]!
+    let prevSnapIndex = snaps.findLastIndex(({ value }) => value <= scroll)
+    if (prevSnapIndex === -1) prevSnapIndex = 0
+    const prevSnap = snaps[prevSnapIndex]!
     const distanceToPrevSnap = Math.abs(scroll - prevSnap.value)
 
-    let nextSnap = snaps.find(({ value }) => value >= scroll)
-    if (nextSnap === undefined) nextSnap = snaps[snaps.length - 1]!
+    let nextSnapIndex = snaps.findIndex(({ value }) => value >= scroll)
+    if (nextSnapIndex === -1) nextSnapIndex = snaps.length - 1
+    const nextSnap = snaps[nextSnapIndex]!
     const distanceToNextSnap = Math.abs(scroll - nextSnap.value)
 
-    const snap = distanceToPrevSnap < distanceToNextSnap ? prevSnap : nextSnap
+    const snapIndex =
+      distanceToPrevSnap < distanceToNextSnap ? prevSnapIndex : nextSnapIndex
+    const snap = snaps[snapIndex]!
+
+    this.currentSnapIndex = snapIndex
 
     const distance = Math.abs(scroll - snap.value)
 
@@ -296,5 +302,9 @@ export class Snap {
     }
 
     // console.timeEnd('scroll')
+  }
+
+  resize() {
+    this.elements.forEach((element) => element.onWrapperResize())
   }
 }
