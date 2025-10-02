@@ -18,7 +18,7 @@ window.lenis = lenis
 const i = 0
 
 const snap = new Snap(lenis, {
-  type: 'slide', // 'mandatory', 'proximity', 'slide'
+  type: 'lock', // 'mandatory', 'proximity', 'lock'
   // velocityThreshold: 1.2,
   distanceThreshold: '50%',
   debounce: 500,
@@ -54,9 +54,9 @@ const section6 = document.querySelector<HTMLDivElement>('.section-6')!
 //   index: 1,
 // })
 
-snap.addElement(section1, {
-  align: ['start', 'end'],
-})
+// snap.addElement(section1, {
+//   align: ['start', 'end'],
+// })
 
 snap.addElement(section2, {
   align: 'center',
@@ -74,9 +74,9 @@ snap.addElement(section5, {
   align: ['center'],
 })
 
-snap.addElement(section6, {
-  align: ['end'],
-})
+// snap.addElement(section6, {
+//   align: ['end'],
+// })
 
 // snap.addElement(section4, {
 //   align: ['start', 'end'], // 'start', 'center', 'end'

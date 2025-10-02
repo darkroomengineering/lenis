@@ -4,14 +4,14 @@ export type SnapItem = {
   value: number
 }
 
-export type OnSnapCallback = (item: SnapItem) => void
+export type OnSnapCallback = (item: SnapItem & { index?: number }) => void
 
 export type SnapOptions = {
   /**
    * Snap type
    * @default mandatory
    */
-  type?: 'mandatory' | 'proximity' | 'slide'
+  type?: 'mandatory' | 'proximity' | 'lock'
   /**
    * Linear interpolation (lerp) intensity (between 0 and 1)
    */
