@@ -9,7 +9,6 @@ import { uid } from './uid'
 
 // TODO:
 // - fix wheel scrolling after limits (see console scroll to)
-// - fix touch scroll, do not snap when not released
 // - arrow, spacebar
 
 type RequiredPick<T, F extends keyof T> = Omit<T, F> & Required<Pick<T, F>>
@@ -19,10 +18,7 @@ type RequiredPick<T, F extends keyof T> = Omit<T, F> & Required<Pick<T, F>>
  *
  * @example
  * const snap = new Snap(lenis, {
- *   type: 'mandatory', // 'mandatory', 'proximity'
- *   lerp: 0.1,
- *   duration: 1,
- *   easing: (t) => t,
+ *   type: 'mandatory', // 'mandatory', 'proximity' or 'lock'
  *   onSnapStart: (snap) => {
  *     console.log('onSnapStart', snap)
  *   },
@@ -78,12 +74,12 @@ export class Snap {
     this.onWindowResize()
     window.addEventListener('resize', this.onWindowResize, false)
 
-    this.onSnapDebounced = debounce(
-      this.onSnap,
-      this.options.type === 'lock' ? 0 : this.options.debounce
-    )
+    this.onSnapDebounced = debounce(this.onSnap, this.options.debounce)
 
-    this.lenis.on('virtual-scroll', this.onSnapDebounced)
+    this.lenis.on(
+      'virtual-scroll',
+      this.options.type === 'lock' ? this.onSnap : this.onSnapDebounced
+    )
   }
 
   /**
@@ -219,22 +215,6 @@ export class Snap {
     })
   }
 
-  // private onSlide = (e: VirtualScrollData) => {
-  //   if (this.isStopped) return
-
-  //   const { userData, isHorizontal } = this.lenis
-
-  //   if (userData?.initiator === 'snap') return
-
-  //   const delta = isHorizontal ? e.deltaX : e.deltaY
-
-  //   if (delta > 0) {
-  //     this.next()
-  //   } else if (delta < 0) {
-  //     this.previous()
-  //   }
-  // }
-
   get distanceThreshold() {
     let distanceThreshold = Infinity
     if (this.options.type === 'mandatory') return Infinity
@@ -262,6 +242,8 @@ export class Snap {
   private onSnap = (e: VirtualScrollData) => {
     if (this.isStopped) return
 
+    if (e.event.type === 'touchmove') return
+
     if (
       this.options.type === 'lock' &&
       this.lenis.userData?.initiator === 'snap'
@@ -270,7 +252,7 @@ export class Snap {
 
     let { scroll, isHorizontal } = this.lenis
     const delta = isHorizontal ? e.deltaX : e.deltaY
-    scroll = Math.ceil(this.lenis.scroll)
+    scroll = Math.ceil(this.lenis.scroll + delta)
 
     const snaps = this.computeSnaps()
 
@@ -278,26 +260,25 @@ export class Snap {
 
     let snapIndex
 
+    const prevSnapIndex = snaps.findLastIndex(({ value }) => value < scroll)
+    const nextSnapIndex = snaps.findIndex(({ value }) => value > scroll)
+
     if (this.options.type === 'lock') {
       if (delta > 0) {
-        const currentSnapIndex = snaps.findIndex(({ value }) => value > scroll)
-        snapIndex = currentSnapIndex
+        snapIndex = nextSnapIndex
       } else if (delta < 0) {
-        const currentSnapIndex = snaps.findLastIndex(
-          ({ value }) => value < scroll
-        )
-        snapIndex = currentSnapIndex
+        snapIndex = prevSnapIndex
       }
     } else {
-      let prevSnapIndex = snaps.findLastIndex(({ value }) => value < scroll)
-      // if (prevSnapIndex === -1) prevSnapIndex = 0
       const prevSnap = snaps[prevSnapIndex]!
-      const distanceToPrevSnap = Math.abs(scroll - prevSnap.value)
+      const distanceToPrevSnap = prevSnap
+        ? Math.abs(scroll - prevSnap.value)
+        : Infinity
 
-      let nextSnapIndex = snaps.findIndex(({ value }) => value > scroll)
-      // if (nextSnapIndex === -1) nextSnapIndex = snaps.length - 1
       const nextSnap = snaps[nextSnapIndex]!
-      const distanceToNextSnap = Math.abs(scroll - nextSnap.value)
+      const distanceToNextSnap = nextSnap
+        ? Math.abs(scroll - nextSnap.value)
+        : Infinity
       snapIndex =
         distanceToPrevSnap < distanceToNextSnap ? prevSnapIndex : nextSnapIndex
     }

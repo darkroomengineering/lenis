@@ -20,16 +20,17 @@ const i = 0
 const snap = new Snap(lenis, {
   type: 'lock', // 'mandatory', 'proximity', 'lock'
   // velocityThreshold: 1.2,
+  duration: 1,
   distanceThreshold: '50%',
   debounce: 500,
   // duration: 2,
   // easing: (t) => t,
-  onSnapStart: (snap) => {
-    console.log('onSnapStart', snap)
-  },
-  onSnapComplete: (snap) => {
-    console.log('onSnapComplete', snap)
-  },
+  // onSnapStart: (snap) => {
+  //   console.log('onSnapStart', snap)
+  // },
+  // onSnapComplete: (snap) => {
+  //   console.log('onSnapComplete', snap)
+  // },
 })
 declare global {
   interface Window {

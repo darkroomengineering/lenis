@@ -71,6 +71,12 @@
   }
 }
 
+.inner {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
 /* #wrapper {
   height: 80vh;
   overflow-y: auto;
