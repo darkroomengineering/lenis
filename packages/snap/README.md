@@ -11,11 +11,13 @@ npm i lenis
 
 ## Usage
 
+### Basic
+
 ```jsx
     import Lenis from 'lenis'
     import Snap from 'lenis/snap'
 
-    const lenis = new Lenis({})
+    const lenis = new Lenis()
 
     function raf(time) {
         lenis.raf(time)
@@ -24,7 +26,7 @@ npm i lenis
 
     requestAnimationFrame(raf)
 
-    const snap = new Snap(lenis, {})
+    const snap = new Snap(lenis)
 
     // add snaps points
     snap.add(500) // snap at 500px
@@ -48,11 +50,21 @@ npm i lenis
     
 ```
 
+### Slideshow
+
+```jsx
+    const snap = new Snap(lenis, {
+      type: 'lock',
+      distanceThreshold: '100%',
+      debounce: 0,
+    })
+```
+
 ## Options
 
-- `type`: `mandatory` (default) or `proximity` see [scroll-snap-type](https://developer.mozilla.org/en-US/docs/Web/CSS/scroll-snap-type) or `lock`.
-- `distanceThreshold`: `string | number` (default: '100%'). The distance threshold from the snap point to the scroll position. 
-- `debounce`: `number` (default: 500). The debounce time for the snap. Ignored when `type` is `lock`.
+- `type`: `proximity` (default), `mandatory` see [scroll-snap-type](https://developer.mozilla.org/en-US/docs/Web/CSS/scroll-snap-type) or `lock`.
+- `distanceThreshold`: `string | number` (default: '100%'). The distance threshold from the snap point to the scroll position. Ignored when `type` is `mandatory`. If a percentage, it is relative to the viewport size. If a number, it is absolute.
+- `debounce`: `number` (default: 500). The debounce time for the snap.
 - `onSnapStart`: `function`. Callback when snap starts.
 - `onSnapComplete`: `function`. Callback when snap completes.
 - `lerp`: `number` Lerp value for snapping. (default: lenis lerp). 

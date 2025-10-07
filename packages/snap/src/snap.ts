@@ -76,10 +76,7 @@ export class Snap {
 
     this.onSnapDebounced = debounce(this.onSnap, this.options.debounce)
 
-    this.lenis.on(
-      'virtual-scroll',
-      this.options.type === 'lock' ? this.onSnap : this.onSnapDebounced
-    )
+    this.lenis.on('virtual-scroll', this.onSnapDebounced)
   }
 
   /**

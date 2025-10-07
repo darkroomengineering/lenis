@@ -31,7 +31,7 @@ export type SnapOptions = {
   distanceThreshold?: number | `${number}%`
   /**
    * @default 500
-   * @description The debounce delay (in ms) to prevent snapping too often
+   * @description The debounce delay (in ms) to prevent snapping too often.
    */
   debounce?: number
   /**
