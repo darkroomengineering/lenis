@@ -59,21 +59,31 @@ const section6 = document.querySelector<HTMLDivElement>('.section-6')!
 //   align: ['start', 'end'],
 // })
 
-snap.addElement(section2, {
+const unsub1 = snap.addElement(section2, {
   align: 'center',
 })
+
+// console.log('unsub1', unsub1)
+// unsub1()
 
 snap.addElement(section3, {
   align: ['start', 'end'],
 })
 
-snap.addElement(section4, {
+// snap.addElement(section4, {
+//   align: ['center'],
+// })
+
+// snap.addElement(section5, {
+//   align: ['center'],
+// })
+
+const unsubs = snap.addElements([section4, section5], {
   align: ['center'],
 })
 
-snap.addElement(section5, {
-  align: ['center'],
-})
+// console.log('unsubs', unsubs)
+// unsubs()
 
 // snap.addElement(section6, {
 //   align: ['end'],

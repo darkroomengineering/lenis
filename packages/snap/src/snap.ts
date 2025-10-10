@@ -109,7 +109,7 @@ export class Snap {
    * @param userData User data that will be forwarded through the snap event
    * @returns Unsubscribe function
    */
-  add(value: number) {
+  add(value: number): () => void {
     const id = uid()
 
     this.snaps.set(id, { value })
@@ -124,7 +124,10 @@ export class Snap {
    * @param options The options for the element
    * @returns Unsubscribe function
    */
-  addElement(element: HTMLElement, options: SnapElementOptions = {}) {
+  addElement(
+    element: HTMLElement,
+    options: SnapElementOptions = {}
+  ): () => void {
     const id = uid()
 
     this.elements.set(id, new SnapElement(element, options))
@@ -132,8 +135,16 @@ export class Snap {
     return () => this.elements.delete(id)
   }
 
-  addElements(elements: HTMLElement[], options: SnapElementOptions = {}) {
-    elements.forEach((element) => this.addElement(element, options))
+  addElements(
+    elements: HTMLElement[],
+    options: SnapElementOptions = {}
+  ): () => void {
+    const map = elements.map((element) => this.addElement(element, options))
+    return () => {
+      map.forEach((remove) => {
+        remove()
+      })
+    }
   }
 
   private onWindowResize = () => {
