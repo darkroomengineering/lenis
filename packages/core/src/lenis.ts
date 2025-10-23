@@ -325,16 +325,15 @@ export class Lenis {
         node.getAttribute('href')?.includes('#')
     ) as HTMLAnchorElement | undefined
     if (anchor) {
-      const id = anchor.getAttribute('href')
+      const href = anchor.getAttribute('href')
 
-      if (id) {
+      if (href) {
         const options =
           typeof this.options.anchors === 'object' && this.options.anchors
             ? this.options.anchors
             : undefined
 
-        let target: number | string =
-          id.endsWith('#') || id.endsWith('#top') ? 0 : `#${id.split('#')[1]}`
+        const target = `#${href.split('#')[1]}`
 
         this.scrollTo(target, options)
       }
@@ -657,7 +656,7 @@ export class Lenis {
     // keywords
     if (
       typeof target === 'string' &&
-      ['top', 'left', 'start'].includes(target)
+      ['top', 'left', 'start', '#'].includes(target)
     ) {
       target = 0
     } else if (
@@ -671,6 +670,14 @@ export class Lenis {
       if (typeof target === 'string') {
         // CSS selector
         node = document.querySelector(target)
+
+        if (!node) {
+          if (target === '#top') {
+            target = 0
+          } else {
+            console.warn('Lenis: Target not found', target)
+          }
+        }
       } else if (target instanceof HTMLElement && target?.nodeType) {
         // Node element
         node = target
