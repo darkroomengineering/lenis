@@ -87,7 +87,11 @@ const nuxtOptionsRuntime = makeBuildOptions(
   'nuxt/runtime/lenis',
   'packages/vue/nuxt/runtime/lenis.ts',
   'esm',
-  { external: ['#imports', 'lenis'], dts: false, sourcemap: false }
+  {
+    external: ['#imports', '#app', 'lenis'],
+    sourcemap: false,
+    tsconfig: './packages/vue/nuxt/tsconfig.json',
+  }
 )
 
 export default defineConfig(() => {
