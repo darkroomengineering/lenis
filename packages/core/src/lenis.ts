@@ -333,16 +333,8 @@ export class Lenis {
             ? this.options.anchors
             : undefined
 
-        let target: number | string = [
-          '#',
-          '/#',
-          './#',
-          '#top',
-          '/#top',
-          './#top',
-        ].includes(id)
-          ? 0
-          : `#${id.split('#')[1]}`
+        let target: number | string =
+          id.endsWith('#') || id.endsWith('#top') ? 0 : `#${id.split('#')[1]}`
 
         this.scrollTo(target, options)
       }
