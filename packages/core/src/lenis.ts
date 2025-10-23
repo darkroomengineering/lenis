@@ -322,9 +322,7 @@ export class Lenis {
     const anchor = path.find(
       (node) =>
         node instanceof HTMLAnchorElement &&
-        (node.getAttribute('href')?.startsWith('#') ||
-          node.getAttribute('href')?.startsWith('/#') ||
-          node.getAttribute('href')?.startsWith('./#'))
+        node.getAttribute('href')?.includes('#')
     ) as HTMLAnchorElement | undefined
     if (anchor) {
       const id = anchor.getAttribute('href')
@@ -335,10 +333,16 @@ export class Lenis {
             ? this.options.anchors
             : undefined
 
-        let target: number | string = `#${id.split('#')[1]}`
-        if (['#', '/#', './#', '#top', '/#top', './#top'].includes(id)) {
-          target = 0
-        }
+        let target: number | string = [
+          '#',
+          '/#',
+          './#',
+          '#top',
+          '/#top',
+          './#top',
+        ].includes(id)
+          ? 0
+          : `#${id.split('#')[1]}`
 
         this.scrollTo(target, options)
       }
