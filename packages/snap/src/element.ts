@@ -1,3 +1,5 @@
+import { debounce } from './debounce'
+
 function removeParentSticky(element: HTMLElement) {
   const position = getComputedStyle(element).position
 
@@ -82,6 +84,7 @@ export class SnapElement {
   rect: Rect = {}
   wrapperResizeObserver: ResizeObserver
   resizeObserver: ResizeObserver
+  debouncedWrapperResize: () => void
 
   constructor(
     element: HTMLElement,
@@ -95,14 +98,11 @@ export class SnapElement {
 
     this.options = { align, ignoreSticky, ignoreTransform }
 
-    // this.ignoreSticky = ignoreSticky
-    // this.ignoreTransform = ignoreTransform
-
     this.align = [align].flat()
 
-    // TODO: assing rect immediately
+    this.debouncedWrapperResize = debounce(this.onWrapperResize, 500)
 
-    this.wrapperResizeObserver = new ResizeObserver(this.onWrapperResize)
+    this.wrapperResizeObserver = new ResizeObserver(this.debouncedWrapperResize)
     this.wrapperResizeObserver.observe(document.body)
     this.onWrapperResize()
 

@@ -18,18 +18,19 @@ window.lenis = lenis
 const i = 0
 
 const snap = new Snap(lenis, {
-  type: 'proximity', // 'mandatory', 'proximity'
+  type: 'lock', // 'mandatory', 'proximity', 'lock'
   // velocityThreshold: 1.2,
+  duration: 1,
   distanceThreshold: '50%',
   debounce: 500,
   // duration: 2,
   // easing: (t) => t,
-  onSnapStart: (snap) => {
-    console.log('onSnapStart', snap)
-  },
-  onSnapComplete: (snap) => {
-    console.log('onSnapComplete', snap)
-  },
+  // onSnapStart: (snap) => {
+  //   console.log('onSnapStart', snap)
+  // },
+  // onSnapComplete: (snap) => {
+  //   console.log('onSnapComplete', snap)
+  // },
 })
 declare global {
   interface Window {
@@ -54,29 +55,39 @@ const section6 = document.querySelector<HTMLDivElement>('.section-6')!
 //   index: 1,
 // })
 
-snap.addElement(section1, {
-  align: ['start', 'end'],
-})
+// snap.addElement(section1, {
+//   align: ['start', 'end'],
+// })
 
-snap.addElement(section2, {
+const unsub1 = snap.addElement(section2, {
   align: 'center',
 })
+
+// console.log('unsub1', unsub1)
+// unsub1()
 
 snap.addElement(section3, {
   align: ['start', 'end'],
 })
 
-snap.addElement(section4, {
+// snap.addElement(section4, {
+//   align: ['center'],
+// })
+
+// snap.addElement(section5, {
+//   align: ['center'],
+// })
+
+const unsubs = snap.addElements([section4, section5], {
   align: ['center'],
 })
 
-snap.addElement(section5, {
-  align: ['center'],
-})
+// console.log('unsubs', unsubs)
+// unsubs()
 
-snap.addElement(section6, {
-  align: ['end'],
-})
+// snap.addElement(section6, {
+//   align: ['end'],
+// })
 
 // snap.addElement(section4, {
 //   align: ['start', 'end'], // 'start', 'center', 'end'

@@ -1,5 +1,5 @@
 import type Lenis from 'lenis'
-import type { UserData } from 'lenis'
+import type { VirtualScrollData } from 'lenis'
 import { debounce } from './debounce'
 import type { SnapElementOptions } from './element'
 import { SnapElement } from './element'
@@ -8,10 +8,7 @@ import type { UID } from './uid'
 import { uid } from './uid'
 
 // TODO:
-// - horizontal
-// - fix trackpad snapping too soon due to velocity (fuck Apple)
 // - fix wheel scrolling after limits (see console scroll to)
-// - fix touch scroll, do not snap when not released
 // - arrow, spacebar
 
 type RequiredPick<T, F extends keyof T> = Omit<T, F> & Required<Pick<T, F>>
@@ -21,10 +18,7 @@ type RequiredPick<T, F extends keyof T> = Omit<T, F> & Required<Pick<T, F>>
  *
  * @example
  * const snap = new Snap(lenis, {
- *   type: 'mandatory', // 'mandatory', 'proximity'
- *   lerp: 0.1,
- *   duration: 1,
- *   easing: (t) => t,
+ *   type: 'mandatory', // 'mandatory', 'proximity' or 'lock'
  *   onSnapStart: (snap) => {
  *     console.log('onSnapStart', snap)
  *   },
@@ -42,20 +36,16 @@ type RequiredPick<T, F extends keyof T> = Omit<T, F> & Required<Pick<T, F>>
  * }
  */
 export class Snap {
-  options: RequiredPick<
-    SnapOptions,
-    | 'type'
-    // | 'velocityThreshold'
-    | 'debounce'
-  >
+  options: RequiredPick<SnapOptions, 'type' | 'debounce'>
   elements = new Map<UID, SnapElement>()
   snaps = new Map<UID, SnapItem>()
-  viewport = {
+  viewport: { width: number; height: number } = {
     width: window.innerWidth,
     height: window.innerHeight,
   }
   isStopped = false
-  onSnapDebounced: () => void
+  onSnapDebounced: (e: VirtualScrollData) => void
+  currentSnapIndex?: number
 
   constructor(
     private lenis: Lenis,
@@ -64,8 +54,7 @@ export class Snap {
       lerp,
       easing,
       duration,
-      distanceThreshold = '50%',
-      // velocityThreshold = 1.2,
+      distanceThreshold = '50%', // useless when type is "mandatory"
       debounce: debounceDelay = 500,
       onSnapStart,
       onSnapComplete,
@@ -77,7 +66,6 @@ export class Snap {
       easing,
       duration,
       distanceThreshold,
-      // velocityThreshold,
       debounce: debounceDelay,
       onSnapStart,
       onSnapComplete,
@@ -88,7 +76,6 @@ export class Snap {
 
     this.onSnapDebounced = debounce(this.onSnap, this.options.debounce)
 
-    // this.lenis.on('scroll', this.onScroll)
     this.lenis.on('virtual-scroll', this.onSnapDebounced)
   }
 
@@ -96,7 +83,6 @@ export class Snap {
    * Destroy the snap instance
    */
   destroy() {
-    // this.lenis.off('scroll', this.onScroll)
     this.lenis.off('virtual-scroll', this.onSnapDebounced)
     window.removeEventListener('resize', this.onWindowResize, false)
     this.elements.forEach((element) => element.destroy())
@@ -123,10 +109,10 @@ export class Snap {
    * @param userData User data that will be forwarded through the snap event
    * @returns Unsubscribe function
    */
-  add(value: number, userData: UserData = {}) {
+  add(value: number): () => void {
     const id = uid()
 
-    this.snaps.set(id, { value, userData })
+    this.snaps.set(id, { value })
 
     return () => this.snaps.delete(id)
   }
@@ -138,7 +124,10 @@ export class Snap {
    * @param options The options for the element
    * @returns Unsubscribe function
    */
-  addElement(element: HTMLElement, options: SnapElementOptions = {}) {
+  addElement(
+    element: HTMLElement,
+    options: SnapElementOptions = {}
+  ): () => void {
     const id = uid()
 
     this.elements.set(id, new SnapElement(element, options))
@@ -146,41 +135,25 @@ export class Snap {
     return () => this.elements.delete(id)
   }
 
+  addElements(
+    elements: HTMLElement[],
+    options: SnapElementOptions = {}
+  ): () => void {
+    const map = elements.map((element) => this.addElement(element, options))
+    return () => {
+      map.forEach((remove) => {
+        remove()
+      })
+    }
+  }
+
   private onWindowResize = () => {
     this.viewport.width = window.innerWidth
     this.viewport.height = window.innerHeight
   }
 
-  // private onScroll = ({
-  //   // scroll,
-  //   // limit,
-  //   lastVelocity,
-  //   velocity,
-  //   // isScrolling,
-  //   userData,
-  // }: // isHorizontal,
-  // Lenis) => {
-  //   if (this.isStopped) return
-
-  //   // return
-  //   const isDecelerating = Math.abs(lastVelocity) > Math.abs(velocity)
-  //   const isTurningBack =
-  //     Math.sign(lastVelocity) !== Math.sign(velocity) && velocity !== 0
-
-  //   if (
-  //     Math.abs(velocity) < this.options.velocityThreshold &&
-  //     // !isTouching &&
-  //     isDecelerating &&
-  //     !isTurningBack &&
-  //     userData?.initiator !== 'snap'
-  //   ) {
-  //     this.onSnapDebounced()
-  //   }
-  // }
-
-  private onSnap = () => {
-    let { scroll, isHorizontal } = this.lenis
-    scroll = Math.ceil(this.lenis.scroll)
+  private computeSnaps = () => {
+    const { isHorizontal } = this.lenis
 
     let snaps = [...this.snaps.values()] as SnapItem[]
 
@@ -201,28 +174,60 @@ export class Snap {
         }
 
         if (typeof value === 'number') {
-          snaps.push({ value: Math.ceil(value), userData: {} })
+          snaps.push({ value: Math.ceil(value) })
         }
       })
     })
 
     snaps = snaps.sort((a, b) => Math.abs(a.value) - Math.abs(b.value))
 
+    return snaps
+  }
+
+  previous() {
+    this.goTo((this.currentSnapIndex ?? 0) - 1)
+  }
+
+  next() {
+    this.goTo((this.currentSnapIndex ?? 0) + 1)
+  }
+
+  goTo(index: number) {
+    const snaps = this.computeSnaps()
+
     if (snaps.length === 0) return
 
-    let prevSnap = snaps.findLast(({ value }) => value <= scroll)
-    if (prevSnap === undefined) prevSnap = snaps[0]!
-    const distanceToPrevSnap = Math.abs(scroll - prevSnap.value)
+    this.currentSnapIndex = Math.max(0, Math.min(index, snaps.length - 1))
 
-    let nextSnap = snaps.find(({ value }) => value >= scroll)
-    if (nextSnap === undefined) nextSnap = snaps[snaps.length - 1]!
-    const distanceToNextSnap = Math.abs(scroll - nextSnap.value)
+    const currentSnap = snaps[this.currentSnapIndex]
+    if (currentSnap === undefined) return
 
-    const snap = distanceToPrevSnap < distanceToNextSnap ? prevSnap : nextSnap
+    this.lenis.scrollTo(currentSnap.value, {
+      duration: this.options.duration,
+      easing: this.options.easing,
+      lerp: this.options.lerp,
+      lock: this.options.type === 'lock',
+      userData: { initiator: 'snap' },
+      onStart: () => {
+        this.options.onSnapStart?.({
+          index: this.currentSnapIndex,
+          ...currentSnap,
+        })
+      },
+      onComplete: () => {
+        this.options.onSnapComplete?.({
+          index: this.currentSnapIndex,
+          ...currentSnap,
+        })
+      },
+    })
+  }
 
-    const distance = Math.abs(scroll - snap.value)
+  get distanceThreshold() {
+    let distanceThreshold = Infinity
+    if (this.options.type === 'mandatory') return Infinity
 
-    let distanceThreshold
+    const { isHorizontal } = this.lenis
 
     const axis = isHorizontal ? 'width' : 'height'
 
@@ -239,29 +244,68 @@ export class Snap {
       distanceThreshold = this.viewport[axis]
     }
 
+    return distanceThreshold
+  }
+
+  private onSnap = (e: VirtualScrollData) => {
+    if (this.isStopped) return
+
+    if (e.event.type === 'touchmove') return
+
     if (
-      this.options.type === 'mandatory' ||
-      (this.options.type === 'proximity' && distance <= distanceThreshold)
-    ) {
-      // this.__isScrolling = true
-      // this.onSnapStart?.(snap)
+      this.options.type === 'lock' &&
+      this.lenis.userData?.initiator === 'snap'
+    )
+      return
 
-      // console.log('scroll to')
+    let { scroll, isHorizontal } = this.lenis
+    const delta = isHorizontal ? e.deltaX : e.deltaY
+    scroll = Math.ceil(this.lenis.scroll + delta)
 
-      this.lenis.scrollTo(snap.value, {
-        lerp: this.options.lerp,
-        easing: this.options.easing,
-        duration: this.options.duration,
-        userData: { initiator: 'snap' },
-        onStart: () => {
-          this.options.onSnapStart?.(snap)
-        },
-        onComplete: () => {
-          this.options.onSnapComplete?.(snap)
-        },
-      })
+    const snaps = this.computeSnaps()
+
+    if (snaps.length === 0) return
+
+    let snapIndex
+
+    const prevSnapIndex = snaps.findLastIndex(({ value }) => value < scroll)
+    const nextSnapIndex = snaps.findIndex(({ value }) => value > scroll)
+
+    if (this.options.type === 'lock') {
+      if (delta > 0) {
+        snapIndex = nextSnapIndex
+      } else if (delta < 0) {
+        snapIndex = prevSnapIndex
+      }
+    } else {
+      const prevSnap = snaps[prevSnapIndex]!
+      const distanceToPrevSnap = prevSnap
+        ? Math.abs(scroll - prevSnap.value)
+        : Infinity
+
+      const nextSnap = snaps[nextSnapIndex]!
+      const distanceToNextSnap = nextSnap
+        ? Math.abs(scroll - nextSnap.value)
+        : Infinity
+      snapIndex =
+        distanceToPrevSnap < distanceToNextSnap ? prevSnapIndex : nextSnapIndex
     }
 
-    // console.timeEnd('scroll')
+    if (snapIndex === undefined) return
+    if (snapIndex === -1) return
+
+    snapIndex = Math.max(0, Math.min(snapIndex, snaps.length - 1))
+
+    const snap = snaps[snapIndex]!
+
+    const distance = Math.abs(scroll - snap.value)
+
+    if (distance <= this.distanceThreshold) {
+      this.goTo(snapIndex)
+    }
+  }
+
+  resize() {
+    this.elements.forEach((element) => element.onWrapperResize())
   }
 }

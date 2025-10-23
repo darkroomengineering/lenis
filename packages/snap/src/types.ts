@@ -1,48 +1,45 @@
-import type { EasingFunction, UserData } from 'lenis'
+import type { EasingFunction } from 'lenis'
 
 export type SnapItem = {
   value: number
-  userData: UserData
 }
 
-export type OnSnapCallback = (item: SnapItem) => void
+export type OnSnapCallback = (item: SnapItem & { index?: number }) => void
 
 export type SnapOptions = {
   /**
    * Snap type
-   * @default mandatory
+   * @default 'proximity'
    */
-  type?: 'mandatory' | 'proximity'
+  type?: 'mandatory' | 'proximity' | 'lock'
   /**
-   * Linear interpolation (lerp) intensity (between 0 and 1)
+   * @description Linear interpolation (lerp) intensity (between 0 and 1)
    */
   lerp?: number
   /**
-   * The easing function to use for the snap animation
+   * @description The easing function to use for the snap animation
    */
   easing?: EasingFunction
   /**
-   * The duration of the snap animation (in s)
+   * @description The duration of the snap animation (in s)
    */
   duration?: number
   /**
-   * The distance to snap to
+   * @default '50%'
+   * @description The distance threshold from the snap point to the scroll position. Ignored when `type` is `mandatory`. If a percentage, it is relative to the viewport size. If a number, it is absolute.
    */
   distanceThreshold?: number | `${number}%`
-  // /**
-  //  * The velocity threshold to trigger a snap
-  //  */
-  // velocityThreshold?: number
   /**
-   * The debounce delay (in ms) to prevent snapping too often
+   * @default 500
+   * @description The debounce delay (in ms) to prevent snapping too often.
    */
   debounce?: number
   /**
-   * Called when the snap starts
+   * @description Called when the snap starts
    */
   onSnapStart?: OnSnapCallback
   /**
-   * Called when the snap completes
+   * @description Called when the snap completes
    */
   onSnapComplete?: OnSnapCallback
 }
