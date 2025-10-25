@@ -1,0 +1,10 @@
+{
+  "extends": "../../../tsconfig.json",
+  "compilerOptions": {
+    "baseUrl": "./",
+    "paths": {
+      "#imports": ["types/imports.d.ts"],
+      "#app": ["types/app.d.ts"]
+    }
+  }
+}
