@@ -2,7 +2,7 @@
   "name": "lenis-vue",
   "type": "module",
   "dependencies": {
-    "lenis": "workspace:lenis*"
+    "lenis": "file:../../"
   },
   "devDependencies": {
     "vue": "^3.5.13"
