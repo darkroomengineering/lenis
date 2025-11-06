@@ -135,7 +135,7 @@ watchEffect((onInvalidate) => {
 
 // if using GSAP ScrollTrigger, remember to register the plugin
 onMounted(() => {
-  gsap.registerPlugin(ScrollTrigger))
+  gsap.registerPlugin(ScrollTrigger)
 })
 </script>
 
