@@ -85,7 +85,9 @@ export class Snap {
   destroy() {
     this.lenis.off('virtual-scroll', this.onSnapDebounced)
     window.removeEventListener('resize', this.onWindowResize, false)
-    this.elements.forEach((element) => element.destroy())
+    this.elements.forEach((element) => {
+      element.destroy()
+    })
   }
 
   /**
@@ -139,7 +141,9 @@ export class Snap {
     elements: HTMLElement[],
     options: SnapElementOptions = {}
   ): () => void {
-    const map = elements.map((element) => this.addElement(element, options))
+    const map = [...elements].map((element) =>
+      this.addElement(element, options)
+    )
     return () => {
       map.forEach((remove) => {
         remove()
