@@ -39,18 +39,7 @@ If you’ve used Lenis and it made your site feel just a little more alive, cons
 Your support helps us smooth out the internet one library at a time—and lets us keep building tools that care about the details most folks overlook.
 
 <!-- sponsors -->
-<a href="https://syntax.fm"><img src="https://github.com/syntaxfm.png" width="60px" alt="User avatar: Syntax" /></a>
-<a href="https://github.com/glauber-sampaio"><img src="https://github.com/glauber-sampaio.png" width="60px" alt="User avatar: Glauber" /></a>
-<a href="https://itsoffbrand.com"><img src="https://github.com/itsoffbrand.png" width="60px" alt="User avatar: OFF+BRAND." /></a>
-<a href="https://bizar.ro"><img src="https://github.com/bizarro.png" width="60px" alt="User avatar: Luis Bizarro" /></a>
-<a href="https://github.com/OHO-Design"><img src="https://github.com/OHO-Design.png" width="60px" alt="User avatar: OHO Design" /></a>
-<a href="https://github.com/ae-com"><img src="https://github.com/ae-com.png" width="60px" alt="User avatar: Æ" /></a>
-<a href="https://ironvelvet.studio"><img src="https://github.com/ironvelvet.png" width="60px" alt="User avatar: Iron Velvet" /></a>
-<a href="https://federic.ooo/"><img src="https://github.com/vallafederico.png" width="60px" alt="User avatar: Federico Valla" /></a>
-<a href="https://www.non-linear.studio"><img src="https://github.com/mariosmaselli.png" width="60px" alt="User avatar: Mario Sanchez Maselli" /></a>
-<a href="https://github.com/thearkis"><img src="https://github.com/thearkis.png" width="60px" alt="User avatar: ΛRK®" /></a>
-<a href="https://github.com/smsunarto"><img src="https://github.com/smsunarto.png" width="60px" alt="User avatar: Scott" /></a>
-<a href="https://www.cachet.studio"><img src="https://github.com/cachet-studio.png" width="60px" alt="User avatar: cachet.studio" /></a>
+[![syntaxfm](https://github.com/syntaxfm.png?size=64)](https://github.com/syntaxfm) [![smsunarto](https://github.com/smsunarto.png?size=64)](https://github.com/smsunarto) [![ae-com](https://github.com/ae-com.png?size=64)](https://github.com/ae-com) [![thearkis](https://github.com/thearkis.png?size=64)](https://github.com/thearkis) [![cachet-studio](https://github.com/cachet-studio.png?size=64)](https://github.com/cachet-studio) [![ironvelvet](https://github.com/ironvelvet.png?size=64)](https://github.com/ironvelvet) [![mariosmaselli](https://github.com/mariosmaselli.png?size=64)](https://github.com/mariosmaselli) [![bizarro](https://github.com/bizarro.png?size=64)](https://github.com/bizarro) [![mielucristian](https://github.com/mielucristian.png?size=64)](https://github.com/mielucristian) [![vallafederico](https://github.com/vallafederico.png?size=64)](https://github.com/vallafederico) [![itsoffbrand](https://github.com/itsoffbrand.png?size=64)](https://github.com/itsoffbrand) [![velox-themes](https://github.com/velox-themes.png?size=64)](https://github.com/velox-themes) [![glauber-sampaio](https://github.com/glauber-sampaio.png?size=64)](https://github.com/glauber-sampaio)
 <!-- sponsors -->
 
 <br />
