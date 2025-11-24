@@ -365,11 +365,12 @@ new Lenis({
 
 ## Lenis in use
 
-- [DeSo](https://deso.com) by [Studio Freight](https://www.studiofreight.com/)
-- [Sculpting Harmony](https://gehry.getty.edu/) by [Resn](https://resn.co.nz/)
-- [Superpower](https://superpower.com/)
-- [Daylight Computer](https://daylightcomputer.com/) by [Basement Studio](https://basement.studio/)
-- [Lifeworld by Olafur Eliasson](https://lifeworld.wetransfer.com/) by Nicolas Garnier, Simon Riisnæs Dagfinrud, Lumír Španihel, Everton Guilherme, Diana Alcausin, Cristiana Sousa
+- [Ibicash](https://ibi.cash/) by [darkroom.engineering](https://darkroom.engineering/)
+- [Grand Theft Auto VI](https://www.rockstargames.com/VI)
+- [Getty - Sculpting Harmony](https://gehry.getty.edu/) by [Resn](https://resn.co.nz/)
+- [Microsoft Design](https://microsoft.design/)
+- [Shopify Supply](https://shopify.supply/)
+- [Metamask](https://metamask.io/) by [Antinomy](https://www.antinomy.studio/)
 
 <br/>
 
