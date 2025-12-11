@@ -196,6 +196,7 @@ export class Lenis {
     this.virtualScroll.on('scroll', this.onVirtualScroll)
 
     if (this.options.autoToggle) {
+      this.checkOverflow()
       this.rootElement.addEventListener('transitionend', this.onTransitionEnd, {
         passive: true,
       })
@@ -291,19 +292,24 @@ export class Lenis {
     )
   }
 
+  get overflow() {
+    const property = this.isHorizontal ? 'overflow-x' : 'overflow-y'
+    return getComputedStyle(this.rootElement)[
+      property as keyof CSSStyleDeclaration
+    ] as string
+  }
+
+  private checkOverflow() {
+    if (['hidden', 'clip'].includes(this.overflow)) {
+      this.internalStop()
+    } else {
+      this.internalStart()
+    }
+  }
+
   private onTransitionEnd = (event: TransitionEvent) => {
     if (event.propertyName.includes('overflow')) {
-      const property = this.isHorizontal ? 'overflow-x' : 'overflow-y'
-
-      const overflow = getComputedStyle(this.rootElement)[
-        property as keyof CSSStyleDeclaration
-      ] as string
-
-      if (['hidden', 'clip'].includes(overflow)) {
-        this.internalStop()
-      } else {
-        this.internalStart()
-      }
+      this.checkOverflow()
     }
   }
 
