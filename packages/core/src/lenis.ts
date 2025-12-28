@@ -33,7 +33,7 @@ export class Lenis {
   private _isLocked = false // same as isStopped but enabled/disabled when scroll reaches target
   private _preventNextNativeScrollEvent = false
   private _resetVelocityTimeout: ReturnType<typeof setTimeout> | null = null
-  private __rafID: number | null = null
+  private _rafId: number | null = null
 
   /**
    * Whether or not the user is touching the screen
@@ -113,7 +113,10 @@ export class Lenis {
     anchors = false,
     autoToggle = false, // https://caniuse.com/?search=transition-behavior
     allowNestedScroll = false,
+    // @ts-ignore: this will be deprecated in the future
     __experimental__naiveDimensions = false,
+    naiveDimensions = __experimental__naiveDimensions,
+    stopInertiaOnNavigate = false,
   }: LenisOptions = {}) {
     // Set version
     window.lenisVersion = version
@@ -155,7 +158,8 @@ export class Lenis {
       anchors,
       autoToggle,
       allowNestedScroll,
-      __experimental__naiveDimensions,
+      naiveDimensions,
+      stopInertiaOnNavigate,
     }
 
     // Setup dimensions instance
@@ -174,7 +178,7 @@ export class Lenis {
       capture: true,
     })
 
-    if (this.options.anchors && this.options.wrapper === window) {
+    if (this.options.anchors || this.options.stopInertiaOnNavigate) {
       this.options.wrapper.addEventListener(
         'click',
         this.onClick as EventListener,
@@ -203,7 +207,7 @@ export class Lenis {
     }
 
     if (this.options.autoRaf) {
-      this.__rafID = requestAnimationFrame(this.raf)
+      this._rafId = requestAnimationFrame(this.raf)
     }
   }
 
@@ -229,7 +233,7 @@ export class Lenis {
       false
     )
 
-    if (this.options.anchors && this.options.wrapper === window) {
+    if (this.options.anchors || this.options.stopInertiaOnNavigate) {
       this.options.wrapper.removeEventListener(
         'click',
         this.onClick as EventListener,
@@ -242,8 +246,8 @@ export class Lenis {
 
     this.cleanUpClassName()
 
-    if (this.__rafID) {
-      cancelAnimationFrame(this.__rafID)
+    if (this._rafId) {
+      cancelAnimationFrame(this._rafId)
     }
   }
 
@@ -325,23 +329,39 @@ export class Lenis {
 
   private onClick = (event: PointerEvent | MouseEvent) => {
     const path = event.composedPath()
-    const anchor = path.find(
-      (node) =>
-        node instanceof HTMLAnchorElement &&
+
+    // filter anchor elements (elements with a valid href attribute)
+    const anchorElements = path.filter(
+      (node) => node instanceof HTMLAnchorElement && node.getAttribute('href')
+    ) as HTMLAnchorElement[]
+
+    if (this.options.anchors) {
+      const anchor = anchorElements.find((node) =>
         node.getAttribute('href')?.includes('#')
-    ) as HTMLAnchorElement | undefined
-    if (anchor) {
-      const href = anchor.getAttribute('href')
+      )
+      if (anchor) {
+        const href = anchor.getAttribute('href')
 
-      if (href) {
-        const options =
-          typeof this.options.anchors === 'object' && this.options.anchors
-            ? this.options.anchors
-            : undefined
+        if (href) {
+          const options =
+            typeof this.options.anchors === 'object' && this.options.anchors
+              ? this.options.anchors
+              : undefined
 
-        const target = `#${href.split('#')[1]}`
+          const target = `#${href.split('#')[1]}`
 
-        this.scrollTo(target, options)
+          this.scrollTo(target, options)
+        }
+      }
+    }
+
+    if (this.options.stopInertiaOnNavigate) {
+      const internalLink = anchorElements.find(
+        (node) => node.host === window.location.host
+      )
+
+      if (internalLink) {
+        this.reset()
       }
     }
   }
@@ -617,7 +637,7 @@ export class Lenis {
     this.animate.advance(deltaTime * 0.001)
 
     if (this.options.autoRaf) {
-      this.__rafID = requestAnimationFrame(this.raf)
+      this._rafId = requestAnimationFrame(this.raf)
     }
   }
 
@@ -952,7 +972,7 @@ export class Lenis {
    * The limit which is the maximum scroll value
    */
   get limit() {
-    if (this.options.__experimental__naiveDimensions) {
+    if (this.options.naiveDimensions) {
       if (this.isHorizontal) {
         return this.rootElement.scrollWidth - this.rootElement.clientWidth
       } else {

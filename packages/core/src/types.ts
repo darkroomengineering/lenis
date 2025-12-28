@@ -215,10 +215,15 @@ export type LenisOptions = {
    */
   allowNestedScroll?: boolean
   /**
-   * If `true`, Lenis will use naive dimensions calculation
+   * If `true`, Lenis will use naive dimensions calculation, be careful this has a performance impact
    * @default false
    */
-  __experimental__naiveDimensions?: boolean
+  naiveDimensions?: boolean
+  /**
+   * If `true`, Lenis will stop inertia when an internal link is clicked
+   * @default false
+   */
+  stopInertiaOnNavigate?: boolean
 }
 
 declare global {
