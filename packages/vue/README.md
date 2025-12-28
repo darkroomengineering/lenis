@@ -145,6 +145,33 @@ onMounted(() => {
 </template>
 ```
 
+### Motion Integration
+```vue
+<script setup>
+import { VueLenis } from 'lenis/vue'
+import { cancelFrame, frame } from 'motion-v'
+import { onMounted, onUnmounted, ref } from 'vue'
+
+const lenisRef = ref()
+
+function update({ timestamp }) {
+  lenisRef.value?.lenis?.raf(timestamp)
+}
+
+onMounted(() => {
+  frame.update(update, true)
+})
+
+onUnmounted(() => {
+  cancelFrame(update)
+})
+</script>
+
+<template>
+  <VueLenis ref="lenisRef" root :options="{ autoRaf: false }">
+  <!-- content -->
+</template>
+```
 
 <br/>
 
