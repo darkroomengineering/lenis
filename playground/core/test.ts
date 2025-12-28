@@ -55,6 +55,7 @@ const lenis = new Lenis({
 
   //   return true
   // },
+  duration: 10,
   // infinite: true,
   // lerp: 0.5,
   // duration: 10,

@@ -513,7 +513,6 @@ export class Lenis {
       ...(isSyncTouch
         ? {
             lerp: hasTouchInertia ? this.options.syncTouchLerp : 1,
-            // immediate: !hasTouchInertia,
           }
         : {
             lerp: this.options.lerp,
@@ -667,13 +666,13 @@ export class Lenis {
       offset = 0,
       immediate = false,
       lock = false,
-      duration = this.options.duration,
-      easing = this.options.easing,
-      lerp = this.options.lerp,
+      programmatic = true, // called from outside of the class
+      lerp = programmatic ? this.options.lerp : undefined,
+      duration = programmatic ? this.options.duration : undefined,
+      easing = programmatic ? this.options.easing : undefined,
       onStart,
       onComplete,
       force = false, // scroll even if stopped
-      programmatic = true, // called from outside of the class
       userData,
     }: ScrollToOptions = {}
   ) {
