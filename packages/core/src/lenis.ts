@@ -33,7 +33,7 @@ export class Lenis {
   private _isLocked = false // same as isStopped but enabled/disabled when scroll reaches target
   private _preventNextNativeScrollEvent = false
   private _resetVelocityTimeout: ReturnType<typeof setTimeout> | null = null
-  private __rafID: number | null = null
+  private _rafId: number | null = null
 
   /**
    * Whether or not the user is touching the screen
@@ -207,7 +207,7 @@ export class Lenis {
     }
 
     if (this.options.autoRaf) {
-      this.__rafID = requestAnimationFrame(this.raf)
+      this._rafId = requestAnimationFrame(this.raf)
     }
   }
 
@@ -246,8 +246,8 @@ export class Lenis {
 
     this.cleanUpClassName()
 
-    if (this.__rafID) {
-      cancelAnimationFrame(this.__rafID)
+    if (this._rafId) {
+      cancelAnimationFrame(this._rafId)
     }
   }
 
@@ -637,7 +637,7 @@ export class Lenis {
     this.animate.advance(deltaTime * 0.001)
 
     if (this.options.autoRaf) {
-      this.__rafID = requestAnimationFrame(this.raf)
+      this._rafId = requestAnimationFrame(this.raf)
     }
   }
 

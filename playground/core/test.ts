@@ -36,7 +36,7 @@ window.addEventListener('hashchange', () => {
 })
 
 const lenis = new Lenis({
-  // smoothWheel: false,
+  smoothWheel: true,
   autoRaf: true,
   anchors: {
     onStart: () => {
@@ -48,6 +48,13 @@ const lenis = new Lenis({
   },
   autoToggle: true,
   allowNestedScroll: true,
+  syncTouch: true,
+  infinite: true,
+  // virtualScroll: ({ event }) => {
+  //   console.log(lenis.options.syncTouch)
+
+  //   return true
+  // },
   // infinite: true,
   // lerp: 0.5,
   // duration: 10,
