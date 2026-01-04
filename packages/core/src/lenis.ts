@@ -71,11 +71,7 @@ export class Lenis {
    */
   options: OptionalPick<
     Required<LenisOptions>,
-    | 'duration'
-    | 'easing'
-    | 'prevent'
-    | 'virtualScroll'
-    | '__experimental__naiveDimensions'
+    'duration' | 'easing' | 'prevent' | 'virtualScroll' | '__experimental__naiveDimensions'
   >
   /**
    * The target scroll value
