@@ -215,6 +215,11 @@ export type LenisOptions = {
    */
   allowNestedScroll?: boolean
   /**
+   * @deprecated Use `naiveDimensions` instead. This will be removed in a future version.
+   * @default false
+   */
+  __experimental__naiveDimensions?: boolean
+  /**
    * If `true`, Lenis will use naive dimensions calculation, be careful this has a performance impact
    * @default false
    */
