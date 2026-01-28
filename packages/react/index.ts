@@ -6,4 +6,10 @@ export {
   ReactLenis,
 } from './src/provider'
 export * from './src/types'
-export { useLenis } from './src/use-lenis'
+export {
+  useLenis,
+  useLenisScroll,
+  useLenisProgress,
+  useLenisVelocity,
+  useLenisDirection,
+} from './src/use-lenis'

@@ -1,9 +1,10 @@
+// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Required for generic callback support
 export function debounce<CB extends (...args: any[]) => void>(
   callback: CB,
   delay: number
 ) {
-  let timer: number | undefined
-  return function <T>(this: T, ...args: Parameters<typeof callback>) {
+  let timer: ReturnType<typeof setTimeout> | undefined
+  return function <T>(this: T, ...args: Parameters<typeof callback>): void {
     let context = this
     clearTimeout(timer)
     timer = setTimeout(() => {

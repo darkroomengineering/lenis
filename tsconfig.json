@@ -13,6 +13,10 @@
     "lib": ["ESNext", "DOM"],
     "rootDir": ".",
     "jsx": "react-jsx",
+    "baseUrl": ".",
+    "paths": {
+      "lenis": ["./packages/core/index.ts"]
+    },
 
     /* Strictness */
     "strict": true,

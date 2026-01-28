@@ -11,17 +11,6 @@ export function clamp(min: number, input: number, max: number) {
 }
 
 /**
- * Truncate a floating-point number to a specified number of decimal places
- *
- * @param value Value to truncate
- * @param decimals Number of decimal places to truncate to
- * @returns Truncated value
- */
-export function truncate(value: number, decimals = 0) {
-  return parseFloat(value.toFixed(decimals))
-}
-
-/**
  *  Linearly interpolate between two values using an amount (0 <= t <= 1)
  *
  * @param x First value

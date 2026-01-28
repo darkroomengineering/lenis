@@ -29,9 +29,11 @@ export type FromToOptions = {
   onUpdate?: OnUpdateCallback
 }
 
-export type UserData = Record<string, any>
+export type UserData = Record<string, unknown>
 
-export type Scrolling = boolean | 'native' | 'smooth'
+export type ScrollingState = boolean | 'native' | 'smooth'
+/** @deprecated Use ScrollingState instead */
+export type Scrolling = ScrollingState
 
 export type LenisEvent = 'scroll' | 'virtual-scroll'
 export type ScrollCallback = (lenis: Lenis) => void
@@ -195,12 +197,12 @@ export type LenisOptions = {
    */
   overscroll?: boolean
   /**
-   * If `true`, Lenis will not try to detect the size of the content and wrapper
+   * If `true`, Lenis will automatically run `requestAnimationFrame` loop
    * @default false
    */
   autoRaf?: boolean
   /**
-   * If `true`, Lenis will automatically run `requestAnimationFrame` loop
+   * If `true`, Lenis will handle anchor links automatically
    * @default false
    */
   anchors?: boolean | ScrollToOptions
@@ -224,10 +226,20 @@ export type LenisOptions = {
    * @default false
    */
   stopInertiaOnNavigate?: boolean
+  /**
+   * If `true`, Lenis will ignore the user's prefers-reduced-motion preference
+   * @default false
+   */
+  ignoreReducedMotion?: boolean
+  /**
+   * If `true`, Lenis will automatically pause when the scroll container is not visible
+   * @default false
+   */
+  pauseWhenHidden?: boolean
 }
 
 declare global {
   interface Window {
-    lenisVersion: string
+    lenisVersion?: string
   }
 }

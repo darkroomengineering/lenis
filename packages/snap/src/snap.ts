@@ -9,9 +9,9 @@ import { uid } from './uid'
 
 // TODO:
 // - fix wheel scrolling after limits (see console scroll to)
-// - arrow, spacebar
 
 type RequiredPick<T, F extends keyof T> = Omit<T, F> & Required<Pick<T, F>>
+type SnapOptionsRequired = RequiredPick<SnapOptions, 'type' | 'debounce' | 'keyboard'>
 
 /**
  * Snap class to handle the snap functionality
@@ -36,7 +36,7 @@ type RequiredPick<T, F extends keyof T> = Omit<T, F> & Required<Pick<T, F>>
  * }
  */
 export class Snap {
-  options: RequiredPick<SnapOptions, 'type' | 'debounce'>
+  options: SnapOptionsRequired
   elements = new Map<UID, SnapElement>()
   snaps = new Map<UID, SnapItem>()
   viewport: { width: number; height: number } = {
@@ -58,6 +58,7 @@ export class Snap {
       debounce: debounceDelay = 500,
       onSnapStart,
       onSnapComplete,
+      keyboard = true,
     }: SnapOptions = {}
   ) {
     this.options = {
@@ -69,14 +70,19 @@ export class Snap {
       debounce: debounceDelay,
       onSnapStart,
       onSnapComplete,
+      keyboard,
     }
 
     this.onWindowResize()
-    window.addEventListener('resize', this.onWindowResize, false)
+    window.addEventListener('resize', this.onWindowResize, { passive: true })
 
     this.onSnapDebounced = debounce(this.onSnap, this.options.debounce)
 
     this.lenis.on('virtual-scroll', this.onSnapDebounced)
+
+    if (keyboard !== false) {
+      window.addEventListener('keydown', this.onKeyDown, { passive: false })
+    }
   }
 
   /**
@@ -84,7 +90,8 @@ export class Snap {
    */
   destroy() {
     this.lenis.off('virtual-scroll', this.onSnapDebounced)
-    window.removeEventListener('resize', this.onWindowResize, false)
+    window.removeEventListener('resize', this.onWindowResize)
+    window.removeEventListener('keydown', this.onKeyDown)
     this.elements.forEach((element) => {
       element.destroy()
     })
@@ -148,6 +155,57 @@ export class Snap {
       map.forEach((remove) => {
         remove()
       })
+    }
+  }
+
+  private onKeyDown = (event: KeyboardEvent) => {
+    if (this.isStopped) return
+
+    // Don't handle if user is typing in an input
+    if (
+      event.target instanceof HTMLInputElement ||
+      event.target instanceof HTMLTextAreaElement ||
+      (event.target as HTMLElement)?.isContentEditable
+    ) {
+      return
+    }
+
+    const isVertical = this.lenis.options.orientation !== 'horizontal'
+
+    switch (event.key) {
+      case 'ArrowDown':
+        if (isVertical) {
+          event.preventDefault()
+          this.next()
+        }
+        break
+      case 'ArrowUp':
+        if (isVertical) {
+          event.preventDefault()
+          this.previous()
+        }
+        break
+      case 'ArrowRight':
+        if (!isVertical) {
+          event.preventDefault()
+          this.next()
+        }
+        break
+      case 'ArrowLeft':
+        if (!isVertical) {
+          event.preventDefault()
+          this.previous()
+        }
+        break
+      case ' ': // spacebar
+        if (!event.shiftKey) {
+          event.preventDefault()
+          this.next()
+        } else {
+          event.preventDefault()
+          this.previous()
+        }
+        break
     }
   }
 

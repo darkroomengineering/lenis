@@ -1,9 +1,9 @@
 import Lenis from 'lenis'
 import { LoremIpsum } from 'lorem-ipsum'
 
-document.querySelector('#nested-content')!.innerHTML =
+document.querySelector('#nested-content')!.textContent =
   new LoremIpsum().generateParagraphs(60)
-document.querySelector('#nested-horizontal-content')!.innerHTML =
+document.querySelector('#nested-horizontal-content')!.textContent =
   new LoremIpsum().generateParagraphs(3)
 document
   .querySelector('#app')!
