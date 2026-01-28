@@ -220,6 +220,10 @@ export type LenisOptions = {
    */
   naiveDimensions?: boolean
   /**
+   * @deprecated Use `naiveDimensions` instead
+   */
+  __experimental__naiveDimensions?: boolean
+  /**
    * If `true`, Lenis will stop inertia when an internal link is clicked
    * @default false
    */

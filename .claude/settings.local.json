@@ -1,0 +1,20 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npx tsc:*)",
+      "Bash(node --version)",
+      "Bash(pnpm --version:*)",
+      "Bash(pnpm build:all:*)",
+      "Bash(pnpm add:*)",
+      "Bash(pnpm dev:build:*)",
+      "Bash(exit 0)",
+      "Bash(pnpm --filter playground-nuxt dev:*)",
+      "Bash(timeout 15 pnpm dev:*)",
+      "Bash(timeout 20 pnpm dev:*)",
+      "Bash(dir:*)",
+      "Bash(pnpm build:core:*)",
+      "Bash(pnpm build:*)",
+      "Bash(timeout 12 pnpm dev:*)"
+    ]
+  }
+}

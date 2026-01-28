@@ -16,7 +16,7 @@
     "@types/react": "^19.0.7",
     "@types/react-dom": "^19.0.3",
     "astro": "^5.1.8",
-    "lenis": "file:../",
+    "lenis": "workspace:*",
     "lorem-ipsum": "^2.0.8",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",

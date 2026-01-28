@@ -71,7 +71,11 @@ export class Lenis {
    */
   options: OptionalPick<
     Required<LenisOptions>,
-    'duration' | 'easing' | 'prevent' | 'virtualScroll'
+    | 'duration'
+    | 'easing'
+    | 'prevent'
+    | 'virtualScroll'
+    | '__experimental__naiveDimensions'
   >
   /**
    * The target scroll value
@@ -113,7 +117,6 @@ export class Lenis {
     anchors = false,
     autoToggle = false, // https://caniuse.com/?search=transition-behavior
     allowNestedScroll = false,
-    // @ts-ignore: this will be deprecated in the future
     __experimental__naiveDimensions = false,
     naiveDimensions = __experimental__naiveDimensions,
     stopInertiaOnNavigate = false,
@@ -162,6 +165,8 @@ export class Lenis {
       stopInertiaOnNavigate,
     }
 
+    console.log(this.options, '4')
+
     // Setup dimensions instance
     this.dimensions = new Dimensions(wrapper, content, { autoResize })
 
@@ -182,14 +187,14 @@ export class Lenis {
       this.options.wrapper.addEventListener(
         'click',
         this.onClick as EventListener,
-        false
+        false,
       )
     }
 
     this.options.wrapper.addEventListener(
       'pointerdown',
       this.onPointerDown as EventListener,
-      false
+      false,
     )
 
     // Setup virtual scroll instance
@@ -220,7 +225,7 @@ export class Lenis {
     this.options.wrapper.removeEventListener(
       'scroll',
       this.onNativeScroll,
-      false
+      false,
     )
 
     this.options.wrapper.removeEventListener('scrollend', this.onScrollEnd, {
@@ -230,14 +235,14 @@ export class Lenis {
     this.options.wrapper.removeEventListener(
       'pointerdown',
       this.onPointerDown as EventListener,
-      false
+      false,
     )
 
     if (this.options.anchors || this.options.stopInertiaOnNavigate) {
       this.options.wrapper.removeEventListener(
         'click',
         this.onClick as EventListener,
-        false
+        false,
       )
     }
 
@@ -292,7 +297,7 @@ export class Lenis {
         detail: {
           lenisScrollEnd: true,
         },
-      })
+      }),
     )
   }
 
@@ -332,12 +337,12 @@ export class Lenis {
 
     // filter anchor elements (elements with a valid href attribute)
     const anchorElements = path.filter(
-      (node) => node instanceof HTMLAnchorElement && node.getAttribute('href')
+      (node) => node instanceof HTMLAnchorElement && node.getAttribute('href'),
     ) as HTMLAnchorElement[]
 
     if (this.options.anchors) {
       const anchor = anchorElements.find((node) =>
-        node.getAttribute('href')?.includes('#')
+        node.getAttribute('href')?.includes('#'),
       )
       if (anchor) {
         const href = anchor.getAttribute('href')
@@ -357,7 +362,7 @@ export class Lenis {
 
     if (this.options.stopInertiaOnNavigate) {
       const internalLink = anchorElements.find(
-        (node) => node.host === window.location.host
+        (node) => node.host === window.location.host,
       )
 
       if (internalLink) {
@@ -447,7 +452,7 @@ export class Lenis {
             (isTouch && node.hasAttribute?.('data-lenis-prevent-touch')) ||
             (isWheel && node.hasAttribute?.('data-lenis-prevent-wheel')) ||
             (this.options.allowNestedScroll &&
-              this.checkNestedScroll(node, { deltaX, deltaY })))
+              this.checkNestedScroll(node, { deltaX, deltaY }))),
       )
     )
       return
@@ -552,7 +557,7 @@ export class Lenis {
       this.lastVelocity = this.velocity
       this.velocity = this.animatedScroll - lastScroll
       this.direction = Math.sign(
-        this.animatedScroll - lastScroll
+        this.animatedScroll - lastScroll,
       ) as Lenis['direction']
 
       if (!this.isStopped) {
@@ -674,7 +679,7 @@ export class Lenis {
       onComplete,
       force = false, // scroll even if stopped
       userData,
-    }: ScrollToOptions = {}
+    }: ScrollToOptions = {},
   ) {
     if ((this.isStopped || this.isLocked) && !force) return
 
@@ -832,7 +837,7 @@ export class Lenis {
 
   private checkNestedScroll(
     node: HTMLElement,
-    { deltaX, deltaY }: { deltaX: number; deltaY: number }
+    { deltaX, deltaY }: { deltaX: number; deltaY: number },
   ) {
     const time = Date.now()
 
@@ -998,8 +1003,8 @@ export class Lenis {
     const wrapper = this.options.wrapper as Window | HTMLElement
 
     return this.isHorizontal
-      ? (wrapper as Window).scrollX ?? (wrapper as HTMLElement).scrollLeft
-      : (wrapper as Window).scrollY ?? (wrapper as HTMLElement).scrollTop
+      ? ((wrapper as Window).scrollX ?? (wrapper as HTMLElement).scrollLeft)
+      : ((wrapper as Window).scrollY ?? (wrapper as HTMLElement).scrollTop)
   }
 
   /**
