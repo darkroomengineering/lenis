@@ -7,7 +7,18 @@ import {
 } from '@nuxt/kit'
 
 // Module options TypeScript interface definition
-export interface ModuleOptions {}
+export interface ModuleOptions {
+  /**
+   * Whether to globally register the VueLenis component
+   * @default true
+   */
+  globalComponent?: boolean
+  /**
+   * Whether to auto-import the useLenis composable and related composables
+   * @default true
+   */
+  autoImports?: boolean
+}
 
 const nuxtModule = defineNuxtModule<ModuleOptions>({
   meta: {
@@ -15,8 +26,11 @@ const nuxtModule = defineNuxtModule<ModuleOptions>({
     configKey: 'lenis',
   },
   // Default configuration options of the Nuxt module
-  defaults: {},
-  setup(_options, _nuxt) {
+  defaults: {
+    globalComponent: true,
+    autoImports: true,
+  },
+  setup(options, _nuxt) {
     const { resolve } = createResolver(import.meta.url)
 
     addPlugin({
@@ -24,13 +38,24 @@ const nuxtModule = defineNuxtModule<ModuleOptions>({
       name: 'lenis',
     })
 
-    addImports({ name: 'useLenis', from: 'lenis/vue' })
-    addComponent({
-      name: 'VueLenis',
-      filePath: 'lenis/vue',
-      global: true,
-      export: 'VueLenis',
-    })
+    if (options.autoImports !== false) {
+      addImports([
+        { name: 'useLenis', from: 'lenis/vue' },
+        { name: 'useLenisScroll', from: 'lenis/vue' },
+        { name: 'useLenisProgress', from: 'lenis/vue' },
+        { name: 'useLenisVelocity', from: 'lenis/vue' },
+        { name: 'useLenisDirection', from: 'lenis/vue' },
+      ])
+    }
+
+    if (options.globalComponent !== false) {
+      addComponent({
+        name: 'VueLenis',
+        filePath: 'lenis/vue',
+        global: true,
+        export: 'VueLenis',
+      })
+    }
   },
 })
 

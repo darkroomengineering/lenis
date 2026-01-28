@@ -18,12 +18,13 @@ export class VirtualScroll {
     height: 0,
   }
   private emitter = new Emitter()
+  private _stopped = false
 
   constructor(
     private element: HTMLElement,
     private options = { wheelMultiplier: 1, touchMultiplier: 1 }
   ) {
-    window.addEventListener('resize', this.onWindowResize, false)
+    window.addEventListener('resize', this.onWindowResize, { passive: true })
     this.onWindowResize()
 
     this.element.addEventListener('wheel', this.onWheel, listenerOptions)
@@ -50,11 +51,25 @@ export class VirtualScroll {
     return this.emitter.on(event, callback)
   }
 
+  /**
+   * Stop virtual scroll event handling
+   */
+  stop() {
+    this._stopped = true
+  }
+
+  /**
+   * Start virtual scroll event handling
+   */
+  start() {
+    this._stopped = false
+  }
+
   /** Remove all event listeners and clean up */
   destroy() {
     this.emitter.destroy()
 
-    window.removeEventListener('resize', this.onWindowResize, false)
+    window.removeEventListener('resize', this.onWindowResize)
 
     this.element.removeEventListener('wheel', this.onWheel, listenerOptions)
     this.element.removeEventListener(
@@ -80,18 +95,18 @@ export class VirtualScroll {
    * @param event Touch event
    */
   onTouchStart = (event: TouchEvent) => {
-    // @ts-expect-error - event.targetTouches is not defined
-    const { clientX, clientY } = event.targetTouches
-      ? event.targetTouches[0]
-      : event
+    if (this._stopped) return
+
+    const touch = event.targetTouches?.[0]
+    const clientX = touch?.clientX ?? 0
+    const clientY = touch?.clientY ?? 0
 
     this.touchStart.x = clientX
     this.touchStart.y = clientY
 
-    this.lastDelta = {
-      x: 0,
-      y: 0,
-    }
+    // Mutate instead of allocating new object
+    this.lastDelta.x = 0
+    this.lastDelta.y = 0
 
     this.emitter.emit('scroll', {
       deltaX: 0,
@@ -102,10 +117,11 @@ export class VirtualScroll {
 
   /** Event handler for 'touchmove' event */
   onTouchMove = (event: TouchEvent) => {
-    // @ts-expect-error - event.targetTouches is not defined
-    const { clientX, clientY } = event.targetTouches
-      ? event.targetTouches[0]
-      : event
+    if (this._stopped) return
+
+    const touch = event.targetTouches?.[0]
+    const clientX = touch?.clientX ?? 0
+    const clientY = touch?.clientY ?? 0
 
     const deltaX = -(clientX - this.touchStart.x) * this.options.touchMultiplier
     const deltaY = -(clientY - this.touchStart.y) * this.options.touchMultiplier
@@ -113,10 +129,9 @@ export class VirtualScroll {
     this.touchStart.x = clientX
     this.touchStart.y = clientY
 
-    this.lastDelta = {
-      x: deltaX,
-      y: deltaY,
-    }
+    // Mutate instead of allocating new object
+    this.lastDelta.x = deltaX
+    this.lastDelta.y = deltaY
 
     this.emitter.emit('scroll', {
       deltaX,
@@ -126,6 +141,8 @@ export class VirtualScroll {
   }
 
   onTouchEnd = (event: TouchEvent) => {
+    if (this._stopped) return
+
     this.emitter.emit('scroll', {
       deltaX: this.lastDelta.x,
       deltaY: this.lastDelta.y,
@@ -135,6 +152,8 @@ export class VirtualScroll {
 
   /** Event handler for 'wheel' event */
   onWheel = (event: WheelEvent) => {
+    if (this._stopped) return
+
     let { deltaX, deltaY, deltaMode } = event
 
     const multiplierX =
@@ -152,9 +171,8 @@ export class VirtualScroll {
   }
 
   onWindowResize = () => {
-    this.window = {
-      width: window.innerWidth,
-      height: window.innerHeight,
-    }
+    // Mutate instead of allocating new object
+    this.window.width = window.innerWidth
+    this.window.height = window.innerHeight
   }
 }

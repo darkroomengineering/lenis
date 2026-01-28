@@ -1,5 +1,5 @@
 import type { ScrollCallback } from 'lenis'
-import { useContext, useEffect } from 'react'
+import { useContext, useEffect, useSyncExternalStore } from 'react'
 import { LenisContext, rootLenisContextStore } from './provider'
 import { useStore } from './store'
 import type { LenisContextValue } from './types'
@@ -73,4 +73,96 @@ export function useLenis(
   }, [lenis, addCallback, removeCallback, priority, ...deps])
 
   return lenis
+}
+
+/**
+ * Hook to get the current scroll position with React 18 concurrent mode support
+ * Uses useSyncExternalStore for tear-free reads
+ *
+ * @example
+ * const scroll = useLenisScroll()
+ * console.log('Current scroll:', scroll)
+ */
+export function useLenisScroll() {
+  const localContext = useContext(LenisContext)
+  const rootContext = useStore(rootLenisContextStore)
+  const lenis = localContext?.lenis ?? rootContext?.lenis
+
+  return useSyncExternalStore(
+    (callback) => {
+      if (!lenis) return () => {}
+      return lenis.on('scroll', callback)
+    },
+    () => lenis?.scroll ?? 0,
+    () => 0 // server snapshot
+  )
+}
+
+/**
+ * Hook to get the current scroll progress with React 18 concurrent mode support
+ * Uses useSyncExternalStore for tear-free reads
+ *
+ * @example
+ * const progress = useLenisProgress()
+ * console.log('Scroll progress:', progress)
+ */
+export function useLenisProgress() {
+  const localContext = useContext(LenisContext)
+  const rootContext = useStore(rootLenisContextStore)
+  const lenis = localContext?.lenis ?? rootContext?.lenis
+
+  return useSyncExternalStore(
+    (callback) => {
+      if (!lenis) return () => {}
+      return lenis.on('scroll', callback)
+    },
+    () => lenis?.progress ?? 0,
+    () => 0 // server snapshot
+  )
+}
+
+/**
+ * Hook to get the current scroll velocity with React 18 concurrent mode support
+ * Uses useSyncExternalStore for tear-free reads
+ *
+ * @example
+ * const velocity = useLenisVelocity()
+ * console.log('Scroll velocity:', velocity)
+ */
+export function useLenisVelocity() {
+  const localContext = useContext(LenisContext)
+  const rootContext = useStore(rootLenisContextStore)
+  const lenis = localContext?.lenis ?? rootContext?.lenis
+
+  return useSyncExternalStore(
+    (callback) => {
+      if (!lenis) return () => {}
+      return lenis.on('scroll', callback)
+    },
+    () => lenis?.velocity ?? 0,
+    () => 0 // server snapshot
+  )
+}
+
+/**
+ * Hook to get the current scroll direction with React 18 concurrent mode support
+ * Uses useSyncExternalStore for tear-free reads
+ *
+ * @example
+ * const direction = useLenisDirection()
+ * // direction is 1 (down/right), -1 (up/left), or 0 (not scrolling)
+ */
+export function useLenisDirection() {
+  const localContext = useContext(LenisContext)
+  const rootContext = useStore(rootLenisContextStore)
+  const lenis = localContext?.lenis ?? rootContext?.lenis
+
+  return useSyncExternalStore(
+    (callback) => {
+      if (!lenis) return () => {}
+      return lenis.on('scroll', callback)
+    },
+    () => lenis?.direction ?? 0,
+    () => 0 // server snapshot
+  )
 }

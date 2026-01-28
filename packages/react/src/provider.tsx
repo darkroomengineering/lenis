@@ -52,6 +52,38 @@ export const ReactLenis = forwardRef<LenisRef, LenisProps>(
     )
 
     // Setup lenis instance
+    // Extract primitive values for stable useEffect dependencies.
+    // Note: If new options are added to LenisOptions, they should be added here.
+    // Using JSON.stringify caused infinite re-renders with object/function values.
+    const {
+      smoothWheel,
+      syncTouch,
+      syncTouchLerp,
+      touchInertiaExponent,
+      duration,
+      lerp,
+      infinite,
+      orientation,
+      gestureOrientation,
+      touchMultiplier,
+      wheelMultiplier,
+      autoResize,
+      overscroll,
+      autoRaf: optionsAutoRaf,
+      anchors,
+      autoToggle,
+      allowNestedScroll,
+      naiveDimensions,
+      stopInertiaOnNavigate,
+      pauseWhenHidden,
+      ignoreReducedMotion,
+    } = options
+
+    // Deprecation warning for autoRaf prop
+    if (autoRaf !== undefined && autoRaf !== true) {
+      console.warn('[Lenis] autoRaf prop is deprecated, use options.autoRaf instead')
+    }
+
     useEffect(() => {
       const lenis = new Lenis({
         ...options,
@@ -69,7 +101,32 @@ export const ReactLenis = forwardRef<LenisRef, LenisProps>(
         lenis.destroy()
         setLenis(undefined)
       }
-    }, [root, JSON.stringify({ ...options, wrapper: null, content: null })])
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [
+      root,
+      smoothWheel,
+      syncTouch,
+      syncTouchLerp,
+      touchInertiaExponent,
+      duration,
+      lerp,
+      infinite,
+      orientation,
+      gestureOrientation,
+      touchMultiplier,
+      wheelMultiplier,
+      autoResize,
+      overscroll,
+      optionsAutoRaf,
+      autoRaf,
+      anchors,
+      autoToggle,
+      allowNestedScroll,
+      naiveDimensions,
+      stopInertiaOnNavigate,
+      pauseWhenHidden,
+      ignoreReducedMotion,
+    ])
 
     // Handle callbacks
     const callbacksRefs = useRef<

@@ -4,4 +4,17 @@ export {
   VueLenis as Lenis,
   VueLenis,
 } from './src/provider'
-export { useLenis } from './src/use-lenis'
+export {
+  useLenis,
+  useLenisScroll,
+  useLenisProgress,
+  useLenisVelocity,
+  useLenisDirection,
+} from './src/use-lenis'
+
+// Re-export types from lenis core for convenience
+export type {
+  LenisOptions,
+  ScrollCallback,
+  VirtualScrollCallback,
+} from 'lenis'

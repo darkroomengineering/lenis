@@ -7,13 +7,28 @@ import type {
   LenisEvent,
   LenisOptions,
   ScrollCallback,
-  Scrolling,
+  ScrollingState,
   ScrollToOptions,
   UserData,
   VirtualScrollCallback,
   VirtualScrollData,
 } from './types'
 import { VirtualScroll } from './virtual-scroll'
+
+// WeakMap for DOM node caching to avoid polluting DOM nodes with custom properties
+type LenisNodeCache = {
+  time?: number
+  computedStyle?: CSSStyleDeclaration
+  hasOverflowX?: boolean
+  hasOverflowY?: boolean
+  isScrollableX?: boolean
+  isScrollableY?: boolean
+  scrollWidth?: number
+  scrollHeight?: number
+  clientWidth?: number
+  clientHeight?: number
+}
+const lenisNodeCache = new WeakMap<HTMLElement, LenisNodeCache>()
 
 // Technical explanation
 // - listen to 'wheel' events
@@ -28,12 +43,22 @@ type OptionalPick<T, F extends keyof T> = Omit<T, F> & Partial<Pick<T, F>>
 const defaultEasing = (t: number) => Math.min(1, 1.001 - Math.pow(2, -10 * t))
 
 export class Lenis {
-  private _isScrolling: Scrolling = false // true when scroll is animating
+  private _isScrolling: ScrollingState = false // true when scroll is animating
   private _isStopped = false // true if user should not be able to scroll - enable/disable programmatically
   private _isLocked = false // same as isStopped but enabled/disabled when scroll reaches target
+  private _isDestroyed = false // true after destroy() is called
+  private _lockedRegions = new Set<string>() // regions that are locked
   private _preventNextNativeScrollEvent = false
   private _resetVelocityTimeout: ReturnType<typeof setTimeout> | null = null
   private _rafId: number | null = null
+  // WeakSet to track processed events instead of polluting event objects with custom properties
+  private processedEvents = new WeakSet<Event>()
+  private reducedMotionMediaQuery?: MediaQueryList
+  private originalLerp?: number
+  private visibilityObserver?: IntersectionObserver
+  // Cache for naiveDimensions limit calculation
+  private _cachedLimit: number | null = null
+  private _limitCacheTime = 0
 
   /**
    * Whether or not the user is touching the screen
@@ -55,7 +80,8 @@ export class Lenis {
    */
   userData: UserData = {}
   /**
-   * The last velocity of the scroll
+   * The last velocity of the scroll (before the current frame)
+   * Useful for detecting velocity changes and implementing inertia-based effects
    */
   lastVelocity = 0
   /**
@@ -117,7 +143,14 @@ export class Lenis {
     __experimental__naiveDimensions = false,
     naiveDimensions = __experimental__naiveDimensions,
     stopInertiaOnNavigate = false,
+    ignoreReducedMotion = false,
+    pauseWhenHidden = false,
   }: LenisOptions = {}) {
+    // Deprecation warnings
+    if (__experimental__naiveDimensions !== false) {
+      console.warn('[Lenis] __experimental__naiveDimensions is deprecated, use naiveDimensions instead')
+    }
+
     // Set version
     window.lenisVersion = version
 
@@ -160,6 +193,29 @@ export class Lenis {
       allowNestedScroll,
       naiveDimensions,
       stopInertiaOnNavigate,
+      ignoreReducedMotion,
+      pauseWhenHidden,
+    }
+
+    // Respect reduced motion preference
+    if (typeof window !== 'undefined' && window.matchMedia) {
+      this.reducedMotionMediaQuery = window.matchMedia(
+        '(prefers-reduced-motion: reduce)'
+      )
+
+      // Store original lerp for potential restoration
+      this.originalLerp = lerp
+
+      if (this.reducedMotionMediaQuery.matches && !ignoreReducedMotion) {
+        this.options.lerp = 1
+        this.options.duration = undefined
+      }
+
+      this.reducedMotionMediaQuery.addEventListener(
+        'change',
+        this.onReducedMotionChange,
+        { passive: true }
+      )
     }
 
     // Setup dimensions instance
@@ -172,7 +228,9 @@ export class Lenis {
     this.targetScroll = this.animatedScroll = this.actualScroll
 
     // Add event listeners
-    this.options.wrapper.addEventListener('scroll', this.onNativeScroll, false)
+    this.options.wrapper.addEventListener('scroll', this.onNativeScroll, {
+      passive: true,
+    })
 
     this.options.wrapper.addEventListener('scrollend', this.onScrollEnd, {
       capture: true,
@@ -189,7 +247,7 @@ export class Lenis {
     this.options.wrapper.addEventListener(
       'pointerdown',
       this.onPointerDown as EventListener,
-      false
+      { passive: true }
     )
 
     // Setup virtual scroll instance
@@ -209,19 +267,37 @@ export class Lenis {
     if (this.options.autoRaf) {
       this._rafId = requestAnimationFrame(this.raf)
     }
+
+    // Setup visibility observer for pauseWhenHidden
+    if (this.options.pauseWhenHidden) {
+      this.visibilityObserver = new IntersectionObserver(
+        ([entry]) => {
+          if (entry?.isIntersecting) {
+            this.internalStart()
+          } else {
+            this.internalStop()
+          }
+        },
+        { threshold: 0 }
+      )
+      this.visibilityObserver.observe(
+        this.options.wrapper === window
+          ? document.documentElement
+          : (this.rootElement as Element)
+      )
+    }
   }
 
   /**
    * Destroy the lenis instance, remove all event listeners and clean up the class name
    */
   destroy() {
+    if (this._isDestroyed) return
+    this._isDestroyed = true
+
     this.emitter.destroy()
 
-    this.options.wrapper.removeEventListener(
-      'scroll',
-      this.onNativeScroll,
-      false
-    )
+    this.options.wrapper.removeEventListener('scroll', this.onNativeScroll)
 
     this.options.wrapper.removeEventListener('scrollend', this.onScrollEnd, {
       capture: true,
@@ -229,8 +305,7 @@ export class Lenis {
 
     this.options.wrapper.removeEventListener(
       'pointerdown',
-      this.onPointerDown as EventListener,
-      false
+      this.onPointerDown as EventListener
     )
 
     if (this.options.anchors || this.options.stopInertiaOnNavigate) {
@@ -249,6 +324,13 @@ export class Lenis {
     if (this._rafId) {
       cancelAnimationFrame(this._rafId)
     }
+
+    this.reducedMotionMediaQuery?.removeEventListener(
+      'change',
+      this.onReducedMotionChange
+    )
+
+    this.visibilityObserver?.disconnect()
   }
 
   /**
@@ -260,7 +342,7 @@ export class Lenis {
    */
   on(event: 'scroll', callback: ScrollCallback): () => void
   on(event: 'virtual-scroll', callback: VirtualScrollCallback): () => void
-  on(event: LenisEvent, callback: any) {
+  on(event: LenisEvent, callback: ScrollCallback | VirtualScrollCallback) {
     return this.emitter.on(event, callback)
   }
 
@@ -272,8 +354,20 @@ export class Lenis {
    */
   off(event: 'scroll', callback: ScrollCallback): void
   off(event: 'virtual-scroll', callback: VirtualScrollCallback): void
-  off(event: LenisEvent, callback: any) {
+  off(event: LenisEvent, callback: ScrollCallback | VirtualScrollCallback) {
     return this.emitter.off(event, callback)
+  }
+
+  private onReducedMotionChange = (event: MediaQueryListEvent) => {
+    if (!this.options.ignoreReducedMotion) {
+      if (event.matches) {
+        this.options.lerp = 1
+        this.options.duration = undefined
+      } else {
+        // Restore original lerp or use sensible default
+        this.options.lerp = this.originalLerp ?? 0.1
+      }
+    }
   }
 
   private onScrollEnd = (e: Event | CustomEvent) => {
@@ -385,8 +479,8 @@ export class Lenis {
 
     // keep zoom feature
     if (event.ctrlKey) return
-    // @ts-ignore
-    if (event.lenisStopPropagation) return
+    // Check if event was already processed (using WeakSet instead of polluting event object)
+    if (this.processedEvents.has(event)) return
 
     const isTouch = event.type.includes('touch')
     const isWheel = event.type.includes('wheel')
@@ -466,8 +560,7 @@ export class Lenis {
     if (!isSmooth) {
       this.isScrolling = 'native'
       this.animate.stop()
-      // @ts-ignore
-      event.lenisStopPropagation = true
+      this.processedEvents.add(event)
       return
     }
 
@@ -487,8 +580,7 @@ export class Lenis {
           (this.animatedScroll === 0 && deltaY > 0) ||
           (this.animatedScroll === this.limit && deltaY < 0)))
     ) {
-      // @ts-ignore
-      event.lenisStopPropagation = true
+      this.processedEvents.add(event)
       // event.stopPropagation()
     }
 
@@ -524,9 +616,14 @@ export class Lenis {
 
   /**
    * Force lenis to recalculate the dimensions
+   *
+   * Call this method when the content size changes (e.g., after dynamically loading content)
+   * or when the wrapper size changes (e.g., after a window resize if autoResize is disabled).
+   * This will invalidate the cached limit and synchronize the scroll position.
    */
   resize() {
     this.dimensions.resize()
+    this.invalidateLimitCache()
     this.animatedScroll = this.targetScroll = this.actualScroll
     this.emit()
   }
@@ -584,6 +681,10 @@ export class Lenis {
    * Start lenis scroll after it has been stopped
    */
   start() {
+    if (this._isDestroyed) {
+      console.warn('[Lenis] Cannot call start() on a destroyed instance')
+      return
+    }
     if (!this.isStopped) return
 
     if (this.options.autoToggle) {
@@ -599,6 +700,7 @@ export class Lenis {
 
     this.reset()
     this.isStopped = false
+    this.virtualScroll.start()
     this.emit()
   }
 
@@ -606,6 +708,10 @@ export class Lenis {
    * Stop lenis scroll
    */
   stop() {
+    if (this._isDestroyed) {
+      console.warn('[Lenis] Cannot call stop() on a destroyed instance')
+      return
+    }
     if (this.isStopped) return
 
     if (this.options.autoToggle) {
@@ -621,6 +727,7 @@ export class Lenis {
 
     this.reset()
     this.isStopped = true
+    this.virtualScroll.stop()
     this.emit()
   }
 
@@ -630,6 +737,11 @@ export class Lenis {
    * @param time The time in ms from an external clock like `requestAnimationFrame` or Tempus
    */
   raf = (time: number) => {
+    if (this._isDestroyed) {
+      console.warn('[Lenis] Cannot call raf() on a destroyed instance')
+      return
+    }
+
     const deltaTime = time - (this.time || time)
     this.time = time
 
@@ -676,6 +788,10 @@ export class Lenis {
       userData,
     }: ScrollToOptions = {}
   ) {
+    if (this._isDestroyed) {
+      console.warn('[Lenis] Cannot call scrollTo() on a destroyed instance')
+      return
+    }
     if ((this.isStopped || this.isLocked) && !force) return
 
     // keywords
@@ -694,6 +810,12 @@ export class Lenis {
 
       if (typeof target === 'string') {
         // CSS selector
+        // Only warn for selectors that could be injection vectors (contain special chars beyond # . and alphanumeric)
+        if (/[[\]()=*^$|~]/.test(target)) {
+          console.warn(
+            'Lenis: CSS selector contains special characters. Ensure this is not user-controlled input to avoid potential security issues.'
+          )
+        }
         node = document.querySelector(target)
 
         if (!node) {
@@ -822,6 +944,73 @@ export class Lenis {
     })
   }
 
+  /**
+   * Scroll by a relative amount
+   * @param delta - The amount to scroll by (positive = down/right, negative = up/left)
+   * @param options - The options for the scroll
+   */
+  scrollBy(delta: number, options?: ScrollToOptions) {
+    if (this._isDestroyed) {
+      console.warn('[Lenis] Cannot call scrollBy() on a destroyed instance')
+      return
+    }
+    return this.scrollTo(this.targetScroll + delta, options)
+  }
+
+  /**
+   * Scroll to a percentage of the total scroll distance
+   * @param progress - Value between 0 and 1
+   * @param options - The options for the scroll
+   */
+  scrollToProgress(progress: number, options?: ScrollToOptions) {
+    if (this._isDestroyed) {
+      console.warn('[Lenis] Cannot call scrollToProgress() on a destroyed instance')
+      return
+    }
+    const target = clamp(0, progress, 1) * this.limit
+    return this.scrollTo(target, options)
+  }
+
+  /**
+   * Scroll to the top (or left for horizontal)
+   * @param options - The options for the scroll
+   */
+  scrollToTop(options?: ScrollToOptions) {
+    if (this._isDestroyed) {
+      console.warn('[Lenis] Cannot call scrollToTop() on a destroyed instance')
+      return
+    }
+    return this.scrollTo(0, options)
+  }
+
+  /**
+   * Scroll to the bottom (or right for horizontal)
+   * @param options - The options for the scroll
+   */
+  scrollToBottom(options?: ScrollToOptions) {
+    if (this._isDestroyed) {
+      console.warn('[Lenis] Cannot call scrollToBottom() on a destroyed instance')
+      return
+    }
+    return this.scrollTo(this.limit, options)
+  }
+
+  /**
+   * Check if scrolled to top (within threshold)
+   * @param threshold - The threshold in pixels (default: 0)
+   */
+  isAtTop(threshold = 0): boolean {
+    return this.scroll <= threshold
+  }
+
+  /**
+   * Check if scrolled to bottom (within threshold)
+   * @param threshold - The threshold in pixels (default: 0)
+   */
+  isAtBottom(threshold = 0): boolean {
+    return this.scroll >= this.limit - threshold
+  }
+
   private preventNextNativeScrollEvent() {
     this._preventNextNativeScrollEvent = true
 
@@ -836,17 +1025,20 @@ export class Lenis {
   ) {
     const time = Date.now()
 
-    // @ts-ignore
-    const cache = (node._lenis ??= {})
+    let cache = lenisNodeCache.get(node)
+    if (!cache) {
+      cache = {}
+      lenisNodeCache.set(node, cache)
+    }
 
-    let hasOverflowX,
-      hasOverflowY,
-      isScrollableX,
-      isScrollableY,
-      scrollWidth,
-      scrollHeight,
-      clientWidth,
-      clientHeight
+    let hasOverflowX: boolean | undefined,
+      hasOverflowY: boolean | undefined,
+      isScrollableX: boolean | undefined,
+      isScrollableY: boolean | undefined,
+      scrollWidth: number = 0,
+      scrollHeight: number = 0,
+      clientWidth: number = 0,
+      clientHeight: number = 0
 
     const gestureOrientation = this.options.gestureOrientation
 
@@ -888,10 +1080,10 @@ export class Lenis {
       isScrollableY = cache.isScrollableY
       hasOverflowX = cache.hasOverflowX
       hasOverflowY = cache.hasOverflowY
-      scrollWidth = cache.scrollWidth
-      scrollHeight = cache.scrollHeight
-      clientWidth = cache.clientWidth
-      clientHeight = cache.clientHeight
+      scrollWidth = cache.scrollWidth ?? 0
+      scrollHeight = cache.scrollHeight ?? 0
+      clientWidth = cache.clientWidth ?? 0
+      clientHeight = cache.clientHeight ?? 0
     }
 
     if (
@@ -972,14 +1164,25 @@ export class Lenis {
    */
   get limit() {
     if (this.options.naiveDimensions) {
-      if (this.isHorizontal) {
-        return this.rootElement.scrollWidth - this.rootElement.clientWidth
-      } else {
-        return this.rootElement.scrollHeight - this.rootElement.clientHeight
+      const now = performance.now()
+      // Cache limit for 100ms to avoid repeated DOM reads
+      if (this._cachedLimit === null || now - this._limitCacheTime > 100) {
+        this._cachedLimit = this.isHorizontal
+          ? this.rootElement.scrollWidth - this.rootElement.clientWidth
+          : this.rootElement.scrollHeight - this.rootElement.clientHeight
+        this._limitCacheTime = now
       }
+      return this._cachedLimit
     } else {
       return this.dimensions.limit[this.isHorizontal ? 'x' : 'y']
     }
+  }
+
+  /**
+   * Invalidate the cached limit (call after resize)
+   */
+  private invalidateLimitCache() {
+    this._cachedLimit = null
   }
 
   /**
@@ -1026,7 +1229,7 @@ export class Lenis {
     return this._isScrolling
   }
 
-  private set isScrolling(value: Scrolling) {
+  private set isScrolling(value: ScrollingState) {
     if (this._isScrolling !== value) {
       this._isScrolling = value
       this.updateClassName()
@@ -1069,28 +1272,68 @@ export class Lenis {
   }
 
   /**
-   * The class name applied to the wrapper element
+   * Check if lenis instance has been destroyed
    */
-  get className() {
-    let className = 'lenis'
-    if (this.options.autoToggle) className += ' lenis-autoToggle'
-    if (this.isStopped) className += ' lenis-stopped'
-    if (this.isLocked) className += ' lenis-locked'
-    if (this.isScrolling) className += ' lenis-scrolling'
-    if (this.isScrolling === 'smooth') className += ' lenis-smooth'
-    return className
+  get isDestroyed() {
+    return this._isDestroyed
+  }
+
+  /**
+   * Lock scrolling for a specific region
+   * Multiple regions can be locked simultaneously
+   * @param region - The region identifier (default: 'default')
+   */
+  lock(region = 'default') {
+    if (this._isDestroyed) {
+      console.warn('[Lenis] Cannot call lock() on a destroyed instance')
+      return
+    }
+    this._lockedRegions.add(region)
+    this._isLocked = true
+  }
+
+  /**
+   * Unlock scrolling for a specific region
+   * Only fully unlocks when all regions are unlocked
+   * @param region - The region identifier (default: 'default')
+   */
+  unlock(region = 'default') {
+    if (this._isDestroyed) {
+      console.warn('[Lenis] Cannot call unlock() on a destroyed instance')
+      return
+    }
+    this._lockedRegions.delete(region)
+    if (this._lockedRegions.size === 0) {
+      this._isLocked = false
+    }
+  }
+
+  /**
+   * Check if a specific region is locked
+   * @param region - The region identifier (default: 'default')
+   */
+  isRegionLocked(region = 'default'): boolean {
+    return this._lockedRegions.has(region)
   }
 
   private updateClassName() {
-    this.cleanUpClassName()
-
-    this.rootElement.className =
-      `${this.rootElement.className} ${this.className}`.trim()
+    const cl = this.rootElement.classList
+    cl.add('lenis')
+    cl.toggle('lenis-autoToggle', !!this.options.autoToggle)
+    cl.toggle('lenis-stopped', this.isStopped)
+    cl.toggle('lenis-locked', this.isLocked)
+    cl.toggle('lenis-scrolling', !!this.isScrolling)
+    cl.toggle('lenis-smooth', this.isScrolling === 'smooth')
   }
 
   private cleanUpClassName() {
-    this.rootElement.className = this.rootElement.className
-      .replace(/lenis(-\w+)?/g, '')
-      .trim()
+    this.rootElement.classList.remove(
+      'lenis',
+      'lenis-autoToggle',
+      'lenis-stopped',
+      'lenis-locked',
+      'lenis-scrolling',
+      'lenis-smooth'
+    )
   }
 }

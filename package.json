@@ -3,7 +3,7 @@
   "version": "1.3.17",
   "description": "How smooth scroll should be",
   "type": "module",
-  "sideEffects": false,
+  "sideEffects": ["*.css"],
   "author": "darkroom.engineering",
   "license": "MIT",
   "repository": {
@@ -25,21 +25,27 @@
     "react",
     "vue"
   ],
+  "packageManager": "bun@1.2.4",
+  "workspaces": [
+    "packages/*",
+    "playground",
+    "playground/nuxt"
+  ],
   "scripts": {
-    "build": "pnpm build:core && pnpm build:all",
+    "build": "bun run build:core && bun run build:all",
     "build:core": "tsup --config tsup.core.ts",
     "build:all": "tsup",
-    "dev": "pnpm run -w --parallel /^dev:.*/",
+    "dev": "bun run --parallel /^dev:.*/",
     "dev:build": "tsup --watch",
-    "dev:playground": "pnpm --filter playground dev",
-    "dev:nuxt": "pnpm --filter playground-nuxt dev",
+    "dev:playground": "bun --filter playground dev",
+    "dev:nuxt": "bun --filter playground-nuxt dev",
     "readme": "node ./scripts/update-readme.js",
     "version:framer": "npm version prerelease --preid framer --force --no-git-tag-version",
     "version:dev": "npm version prerelease --preid dev --force --no-git-tag-version",
     "version:patch": "npm version patch --force --no-git-tag-version",
     "version:minor": "npm version minor --force --no-git-tag-version",
     "version:major": "npm version major --force --no-git-tag-version",
-    "postversion": "pnpm build && pnpm readme",
+    "postversion": "bun run build && bun run readme",
     "publish:dev": "npm publish --tag dev",
     "publish:framer": "npm publish --tag framer",
     "publish:main": "npm publish"
@@ -48,9 +54,9 @@
     "dist"
   ],
   "devDependencies": {
-    "terser": "^5.37.0",
-    "tsup": "^8.3.5",
-    "typescript": "^5.7.3"
+    "terser": "^5.46.0",
+    "tsup": "^8.5.1",
+    "typescript": "^5.9.3"
   },
   "peerDependencies": {
     "react": ">=17.0.0",

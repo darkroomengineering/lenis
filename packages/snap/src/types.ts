@@ -42,4 +42,9 @@ export type SnapOptions = {
    * @description Called when the snap completes
    */
   onSnapComplete?: OnSnapCallback
+  /**
+   * Enable keyboard navigation (arrow keys + spacebar)
+   * @default true
+   */
+  keyboard?: boolean
 }

@@ -1,28 +1,63 @@
 import { debounce } from './debounce'
 
-function removeParentSticky(element: HTMLElement) {
-  const position = getComputedStyle(element).position
+// Cache for computed styles to avoid repeated getComputedStyle calls
+const stickyStyleCache = new WeakMap<
+  Element,
+  { position: string; originalPosition?: string }
+>()
 
-  const isSticky = position === 'sticky'
+// Shared ResizeObserver for document.body to avoid creating multiple observers
+let sharedBodyResizeObserver: ResizeObserver | null = null
+const bodyResizeCallbacks = new Set<() => void>()
 
-  if (isSticky) {
-    element.style.setProperty('position', 'static')
-    element.dataset.sticky = 'true'
+function getSharedBodyResizeObserver() {
+  if (!sharedBodyResizeObserver) {
+    sharedBodyResizeObserver = new ResizeObserver(() => {
+      bodyResizeCallbacks.forEach((cb) => cb())
+    })
+    sharedBodyResizeObserver.observe(document.body)
   }
-
-  if (element.offsetParent) {
-    removeParentSticky(element.offsetParent as HTMLElement)
+  return {
+    subscribe: (cb: () => void) => {
+      bodyResizeCallbacks.add(cb)
+      return () => {
+        bodyResizeCallbacks.delete(cb)
+        // Clean up observer if no more callbacks
+        if (bodyResizeCallbacks.size === 0 && sharedBodyResizeObserver) {
+          sharedBodyResizeObserver.disconnect()
+          sharedBodyResizeObserver = null
+        }
+      }
+    },
   }
 }
 
-function addParentSticky(element: HTMLElement) {
-  if (element?.dataset?.sticky === 'true') {
-    element.style.removeProperty('position')
-    delete element.dataset.sticky
+function removeParentSticky(element: HTMLElement | null) {
+  while (element && element !== document.body) {
+    let cached = stickyStyleCache.get(element)
+    if (!cached) {
+      cached = { position: getComputedStyle(element).position }
+      stickyStyleCache.set(element, cached)
+    }
+    if (cached.position === 'sticky') {
+      cached.originalPosition = element.style.position
+      element.style.position = 'static'
+    }
+    element = element.offsetParent as HTMLElement | null
   }
+}
 
-  if (element.offsetParent) {
-    addParentSticky(element.offsetParent as HTMLElement)
+function addParentSticky(element: HTMLElement | null) {
+  while (element && element !== document.body) {
+    const cached = stickyStyleCache.get(element)
+    if (cached?.position === 'sticky') {
+      if (cached.originalPosition) {
+        element.style.position = cached.originalPosition
+      } else {
+        element.style.removeProperty('position')
+      }
+    }
+    element = element.offsetParent as HTMLElement | null
   }
 }
 
@@ -80,11 +115,10 @@ export class SnapElement {
   element: HTMLElement
   options: SnapElementOptions
   align: string[]
-  // @ts-ignore
-  rect: Rect = {}
-  wrapperResizeObserver: ResizeObserver
+  rect: Rect
   resizeObserver: ResizeObserver
   debouncedWrapperResize: () => void
+  private unsubscribeBodyResize: () => void
 
   constructor(
     element: HTMLElement,
@@ -100,10 +134,25 @@ export class SnapElement {
 
     this.align = [align].flat()
 
+    // Initialize rect with default values before any resize calculations
+    this.rect = {
+      top: 0,
+      left: 0,
+      width: 0,
+      height: 0,
+      x: 0,
+      y: 0,
+      bottom: 0,
+      right: 0,
+      element: this.element,
+    }
+
     this.debouncedWrapperResize = debounce(this.onWrapperResize, 500)
 
-    this.wrapperResizeObserver = new ResizeObserver(this.debouncedWrapperResize)
-    this.wrapperResizeObserver.observe(document.body)
+    // Use shared ResizeObserver for document.body
+    this.unsubscribeBodyResize = getSharedBodyResizeObserver().subscribe(
+      this.debouncedWrapperResize
+    )
     this.onWrapperResize()
 
     this.resizeObserver = new ResizeObserver(this.onResize)
@@ -115,7 +164,7 @@ export class SnapElement {
   }
 
   destroy() {
-    this.wrapperResizeObserver.disconnect()
+    this.unsubscribeBodyResize()
     this.resizeObserver.disconnect()
   }
 
@@ -158,19 +207,30 @@ export class SnapElement {
   }
 
   onWrapperResize = () => {
-    let top, left
+    // Batch reads before writes to avoid layout thrashing
+    const needsStickyFix = this.options.ignoreSticky
 
-    if (this.options.ignoreSticky) removeParentSticky(this.element)
+    // Remove sticky (write)
+    if (needsStickyFix) removeParentSticky(this.element)
+
+    // Batch all reads together
+    let top: number
+    let left: number
     if (this.options.ignoreTransform) {
       top = offsetTop(this.element)
       left = offsetLeft(this.element)
     } else {
       const rect = this.element.getBoundingClientRect()
-      top = rect.top + scrollTop(this.element)
-      left = rect.left + scrollLeft(this.element)
+      const scrollTopVal = scrollTop(this.element)
+      const scrollLeftVal = scrollLeft(this.element)
+      top = rect.top + scrollTopVal
+      left = rect.left + scrollLeftVal
     }
-    if (this.options.ignoreSticky) addParentSticky(this.element)
 
+    // Restore sticky (write)
+    if (needsStickyFix) addParentSticky(this.element)
+
+    // Update rect (write)
     this.setRect({ top, left })
   }
 

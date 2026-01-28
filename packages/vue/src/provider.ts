@@ -1,4 +1,3 @@
-// import Tempus from '@darkroom.engineering/tempus'
 import Lenis, { type ScrollCallback } from 'lenis'
 import type {
   HTMLAttributes,
@@ -56,7 +55,6 @@ const VueLenisImpl = defineComponent({
   },
   setup(props, { slots, expose }) {
     const lenisRef = shallowRef<Lenis>()
-    // const tempusCleanupRef = shallowRef<() => void>()
     const wrapper = ref<HTMLDivElement>()
     const content = ref<HTMLDivElement>()
     // Setup exposed properties
