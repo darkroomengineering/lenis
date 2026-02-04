@@ -2,7 +2,7 @@
   "name": "lenis-react",
   "type": "module",
   "dependencies": {
-    "lenis": "file:../../"
+    "lenis": "workspace:lenis*"
   },
   "devDependencies": {
     "@types/react": "^19.0.7",
