@@ -16,6 +16,7 @@ Read our [Manifesto](https://github.com/darkroomengineering/lenis/blob/main/MANI
 
 - [Sponsors](#sponsors)
 - [Packages](#packages)
+- [Showcase](https://www.lenis.dev/showcase)
 - [Installation](#installation)
 - [Setup](#setup)
 - [Settings](#settings)
@@ -27,7 +28,6 @@ Read our [Manifesto](https://github.com/darkroomengineering/lenis/blob/main/MANI
 - [Troubleshooting](#troubleshooting)
 - [Tutorials](#tutorials)
 - [Plugins](#plugins)
-- [Lenis in Use](#lenis-in-use)
 - [License](#license)
 
 <br/>
@@ -357,17 +357,6 @@ new Lenis({
 
 - [r3f-scroll-rig](https://github.com/14islands/r3f-scroll-rig) by [14islands](https://14islands.com/)
 - [locomotive-scroll](https://github.com/locomotivemtl/locomotive-scroll) by [Locomotive](https://locomotive.ca/)
-
-<br/>
-
-## Lenis in use
-
-- [Ibicash](https://ibi.cash/) by [darkroom.engineering](https://darkroom.engineering/)
-- [Grand Theft Auto VI](https://www.rockstargames.com/VI)
-- [Getty - Sculpting Harmony](https://gehry.getty.edu/) by [Resn](https://resn.co.nz/)
-- [Microsoft Design](https://microsoft.design/)
-- [Shopify Supply](https://shopify.supply/)
-- [Metamask](https://metamask.io/) by [Antinomy](https://www.antinomy.studio/)
 
 <br/>
 
