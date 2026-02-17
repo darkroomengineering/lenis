@@ -1,4 +1,9 @@
 packages:
-  - 'packages/*'
-  - 'playground'
-  - 'playground/*'
+  - packages/*
+  - playground
+  - playground/*
+
+onlyBuiltDependencies:
+  - '@parcel/watcher'
+  - esbuild
+  - sharp
