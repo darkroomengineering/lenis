@@ -80,8 +80,8 @@ importers:
         specifier: ^5.1.8
         version: 5.17.1(terser@5.46.0)(typescript@5.9.3)
       lenis:
-        specifier: file:../
-        version: file:(@nuxt/kit@4.3.0)(react@19.2.4)(vue@3.5.27)
+        specifier: workspace:*
+        version: link:..
       lorem-ipsum:
         specifier: ^2.0.8
         version: 2.0.8
@@ -2539,6 +2539,7 @@ packages:
     engines: {node: '>= 10.0.0'}
     dependencies:
       is-glob: 4.0.3
+      napi-wasm: 1.1.3
       picomatch: 4.0.3
     dev: false
     bundledDependencies:
@@ -6163,6 +6164,10 @@ packages:
     resolution: {integrity: sha512-9ca1h0Xjvo9bEkE4UOxgAzLV0jHKe6LMaxo37ND2DAhhAtd0j8pR1Wxz+/goMrZO8AEZTWCmyaOsFI/W5AdpCQ==}
     dev: false
 
+  /napi-wasm@1.1.3:
+    resolution: {integrity: sha512-h/4nMGsHjZDCYmQVNODIrYACVJ+I9KItbG+0si6W/jSjdA9JbWDoU4LLeMXVcEQGHjttI2tuXqDrbGF7qkUHHg==}
+    dev: false
+
   /neotraverse@0.6.18:
     resolution: {integrity: sha512-Z4SmBUweYa09+o6pG+eASabEpP6QkQ70yHj351pQoEXIs8uHbaU2DWVmzBANKgflPa47A50PtB2+NgRpQvr7vA==}
     engines: {node: '>= 10'}
@@ -9289,25 +9294,4 @@ packages:
 
   /zwitch@2.0.4:
     resolution: {integrity: sha512-bXE4cR/kVZhKZX/RjPEflHaKVhUVl85noU3v6b8apfQEc1x4A+zBxjZ4lN8LqGd6WZ3dl98pY4o717VFmoPp+A==}
-    dev: false
-
-  file:(@nuxt/kit@4.3.0)(react@19.2.4)(vue@3.5.27):
-    resolution: {directory: '', type: directory}
-    id: 'file:'
-    name: lenis
-    peerDependencies:
-      '@nuxt/kit': '>=3.0.0'
-      react: '>=17.0.0'
-      vue: '>=3.0.0'
-    peerDependenciesMeta:
-      '@nuxt/kit':
-        optional: true
-      react:
-        optional: true
-      vue:
-        optional: true
-    dependencies:
-      '@nuxt/kit': 4.3.0(magicast@0.5.1)
-      react: 19.2.4
-      vue: 3.5.27(typescript@5.9.3)
     dev: false

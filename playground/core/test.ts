@@ -50,12 +50,13 @@ const lenis = new Lenis({
   allowNestedScroll: true,
   syncTouch: true,
   infinite: true,
+  stopInertiaOnNavigate: true,
   // virtualScroll: ({ event }) => {
   //   console.log(lenis.options.syncTouch)
 
   //   return true
   // },
-  duration: 10,
+  // duration: 1,
   // infinite: true,
   // lerp: 0.5,
   // duration: 10,

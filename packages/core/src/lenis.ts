@@ -71,7 +71,11 @@ export class Lenis {
    */
   options: OptionalPick<
     Required<LenisOptions>,
-    'duration' | 'easing' | 'prevent' | 'virtualScroll'
+    | 'duration'
+    | 'easing'
+    | 'prevent'
+    | 'virtualScroll'
+    | '__experimental__naiveDimensions'
   >
   /**
    * The target scroll value
@@ -113,7 +117,6 @@ export class Lenis {
     anchors = false,
     autoToggle = false, // https://caniuse.com/?search=transition-behavior
     allowNestedScroll = false,
-    // @ts-ignore: this will be deprecated in the future
     __experimental__naiveDimensions = false,
     naiveDimensions = __experimental__naiveDimensions,
     stopInertiaOnNavigate = false,
@@ -998,8 +1001,8 @@ export class Lenis {
     const wrapper = this.options.wrapper as Window | HTMLElement
 
     return this.isHorizontal
-      ? (wrapper as Window).scrollX ?? (wrapper as HTMLElement).scrollLeft
-      : (wrapper as Window).scrollY ?? (wrapper as HTMLElement).scrollTop
+      ? ((wrapper as Window).scrollX ?? (wrapper as HTMLElement).scrollLeft)
+      : ((wrapper as Window).scrollY ?? (wrapper as HTMLElement).scrollTop)
   }
 
   /**
