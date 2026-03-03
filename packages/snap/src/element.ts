@@ -1,4 +1,4 @@
-import { debounce } from './debounce'
+import { debounce } from 'lenis'
 
 function removeParentSticky(element: HTMLElement) {
   const position = getComputedStyle(element).position
@@ -69,11 +69,6 @@ type Rect = {
   left: number
   width: number
   height: number
-  x: number
-  y: number
-  bottom: number
-  right: number
-  element: HTMLElement
 }
 
 export class SnapElement {
@@ -124,37 +119,29 @@ export class SnapElement {
     left,
     width,
     height,
-    element,
   }: {
     top?: number
     left?: number
     width?: number
     height?: number
-    element?: HTMLElement
   } = {}) {
     top = top ?? this.rect.top
     left = left ?? this.rect.left
     width = width ?? this.rect.width
     height = height ?? this.rect.height
-    element = element ?? this.rect.element
 
     if (
       top === this.rect.top &&
       left === this.rect.left &&
       width === this.rect.width &&
-      height === this.rect.height &&
-      element === this.rect.element
+      height === this.rect.height
     )
       return
 
     this.rect.top = top
-    this.rect.y = top
     this.rect.width = width
     this.rect.height = height
     this.rect.left = left
-    this.rect.x = left
-    this.rect.bottom = top + height
-    this.rect.right = left + width
   }
 
   onWrapperResize = () => {

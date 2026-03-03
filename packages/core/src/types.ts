@@ -134,7 +134,7 @@ export type LenisOptions = {
   syncTouchLerp?: number
   /**
    * Manage the the strength of `syncTouch` inertia
-   * @default 35
+   * @default 1.7
    */
   touchInertiaExponent?: number
   /**

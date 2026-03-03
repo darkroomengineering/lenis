@@ -395,15 +395,6 @@ export class Lenis {
     const isWheel = event.type.includes('wheel')
 
     this.isTouching = event.type === 'touchstart' || event.type === 'touchmove'
-    // if (event.type === 'touchend') {
-    //   console.log('touchend', this.scroll)
-    //   // this.lastVelocity = this.velocity
-    //   // this.velocity = 0
-    //   // this.isScrolling = false
-    //   this.emit({ type: 'touchend' })
-    //   // alert('touchend')
-    //   return
-    // }
 
     const isClickOrTap = deltaX === 0 && deltaY === 0
 
@@ -419,12 +410,6 @@ export class Lenis {
       this.reset()
       return
     }
-
-    // const isPullToRefresh =
-    //   this.options.gestureOrientation === 'vertical' &&
-    //   this.scroll === 0 &&
-    //   !this.options.infinite &&
-    //   deltaY <= 5 // touch pull to refresh, not reliable yet
 
     // most likely a touchpad gesture, this keep prev/next page navigation working
     const isUnknownGesture =
@@ -502,7 +487,6 @@ export class Lenis {
     ) {
       // @ts-expect-error
       event.lenisStopPropagation = true
-      // event.stopPropagation()
     }
 
     if (event.cancelable) {
@@ -515,7 +499,6 @@ export class Lenis {
     const hasTouchInertia = isTouchEnd
 
     if (hasTouchInertia) {
-      // delta = this.velocity * this.options.touchInertiaMultiplier
       delta =
         Math.sign(this.velocity) *
         Math.abs(this.velocity) ** this.options.touchInertiaExponent

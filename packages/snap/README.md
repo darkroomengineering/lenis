@@ -63,7 +63,7 @@ npm i lenis
 ## Options
 
 - `type`: `proximity` (default), `mandatory` see [scroll-snap-type](https://developer.mozilla.org/en-US/docs/Web/CSS/scroll-snap-type) or `lock`.
-- `distanceThreshold`: `string | number` (default: '100%'). The distance threshold from the snap point to the scroll position. Ignored when `type` is `mandatory`. If a percentage, it is relative to the viewport size. If a number, it is absolute.
+- `distanceThreshold`: `string | number` (default: '50%'). The distance threshold from the snap point to the scroll position. Ignored when `type` is `mandatory`. If a percentage, it is relative to the viewport size. If a number, it is absolute.
 - `debounce`: `number` (default: 500). The debounce time for the snap.
 - `onSnapStart`: `function`. Callback when snap starts.
 - `onSnapComplete`: `function`. Callback when snap completes.
