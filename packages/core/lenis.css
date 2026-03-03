@@ -9,7 +9,9 @@ html.lenis body {
 
 .lenis [data-lenis-prevent],
 .lenis [data-lenis-prevent-wheel],
-.lenis [data-lenis-prevent-touch] {
+.lenis [data-lenis-prevent-touch],
+.lenis [data-lenis-prevent-vertical],
+.lenis [data-lenis-prevent-horizontal] {
   overscroll-behavior: contain;
 }
 

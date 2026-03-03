@@ -192,7 +192,7 @@ gsap.ticker.lagSmoothing(0);
 | `autoRaf`               | `boolean`                  | `false`                                            | Whether or not to automatically run `requestAnimationFrame` loop.                                                                                                                                                                                                                    |
 | `anchors`               | `boolean, ScrollToOptions` | `false`                                            | Scroll to anchor links when clicked. If `true` is passed, it will enable anchor links with default options. If `ScrollToOptions` is passed, it will enable anchor links with the given options.                                                                                      |
 | `autoToggle`            | `boolean`                  | `false`                                            | Automatically start or stop the lenis instance based on the wrapper's overflow property, ⚠️ this requires Lenis recommended CSS. Safari > 17.3, Chrome > 116 and Firefox > 128 ([https://caniuse.com/?search=transition-behavior](https://caniuse.com/?search=transition-behavior)). |
-| `allowNestedScroll`     | `boolean`                  | `false`                                            | Allow nested scrolls. If `true` is passed, it will allow nested scrolls. If `false` is passed, it will not allow nested scrolls. ⚠️ To be used with caution since this can lead to performance issues, prefer using `prevent` or `data-lenis-prevent` instead.                       |
+| `allowNestedScroll`     | `boolean`                  | `false`                                            | Automatically allow nested scrollable elements to scroll natively. This is the simplest way to handle nested scroll. ⚠️ Can create performance issues since it checks the DOM tree on every scroll event. If that's a concern, use `data-lenis-prevent` attributes instead.          |
 | `naiveDimensions`       | `boolean`                  | `false`                                            | If `true`, Lenis will use naive dimensions calculation. ⚠️ Be careful, this has a performance impact.                                                                                                                                                                                |
 | `stopInertiaOnNavigate` | `boolean`                  | `false`                                            | If `true`, Lenis will stop inertia when an internal link is clicked.                                                                                                                                                                                                                 |
 <br/>
@@ -266,6 +266,32 @@ gsap.ticker.lagSmoothing(0);
 
 ### Nested scroll
 
+The simplest and most reliable way to handle nested scrollable elements is to use the `allowNestedScroll` option:
+
+```js
+const lenis = new Lenis({
+  allowNestedScroll: true,
+})
+```
+
+This automatically detects nested scrollable elements and lets them scroll natively. However, this can create performance issues since Lenis needs to check the DOM tree on every scroll event. If you experience performance problems, use `data-lenis-prevent` instead.
+
+#### Using HTML attributes
+
+```html
+<div data-lenis-prevent>scrollable content</div>
+```
+
+[See example](https://codepen.io/ClementRoche/pen/PoLdjpw)
+
+| Attribute                       | Description                          |
+|---------------------------------|--------------------------------------|
+| `data-lenis-prevent`            | Prevent all smooth scroll events     |
+| `data-lenis-prevent-wheel`      | Prevent wheel events only            |
+| `data-lenis-prevent-touch`      | Prevent touch events only            |
+| `data-lenis-prevent-vertical`   | Prevent vertical scroll events only  |
+| `data-lenis-prevent-horizontal` | Prevent horizontal scroll events only|
+
 #### Using Javascript
 
 ```html
@@ -279,26 +305,6 @@ const lenis = new Lenis({
 ```
 
 [See example](https://codepen.io/ClementRoche/pen/emONGYN)
-
-#### Using HTML
-
-```html
-<div data-lenis-prevent>scrollable content</div>
-```
-
-[See example](https://codepen.io/ClementRoche/pen/PoLdjpw)
-
-**Prevent wheel events only:**
-
-```html
-<div data-lenis-prevent-wheel>scrollable content</div>
-```
-
-**Prevent touch events only:**
-
-```html
-<div data-lenis-prevent-touch>scrollable content</div>
-```
 
 
 

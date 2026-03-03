@@ -29,6 +29,12 @@ export type LenisProps = ComponentPropsWithoutRef<'div'> & {
    * Children
    */
   children?: ReactNode
+
+  /**
+   * Class name to be applied to the wrapper div
+   * @default ''
+   */
+  className?: string | undefined
 }
 
 export type LenisRef = {

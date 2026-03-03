@@ -24,7 +24,7 @@ window.addEventListener('scroll', (_e) => {
 })
 
 window.addEventListener('scrollend', (e) => {
-  console.log('window scrollend', e)
+  // console.log('window scrollend', e)
 })
 
 document.querySelector('#nested')?.addEventListener('scrollend', (_e) => {
@@ -88,15 +88,15 @@ const lenis = new Lenis({
   // },
 })
 
-const _nestedLenis = new Lenis({
-  wrapper: document.querySelector('#nested')!,
-  content: document.querySelector('#nested-content')!,
-  autoRaf: true,
-  // overscroll: false,
-  // orientation: 'horizontal',
-  // gestureOrientation: 'horizontal',
-  // infinite: true,
-})
+// const _nestedLenis = new Lenis({
+//   wrapper: document.querySelector('#nested')!,
+//   content: document.querySelector('#nested-content')!,
+//   autoRaf: true,
+//   // overscroll: false,
+//   // orientation: 'horizontal',
+//   // gestureOrientation: 'horizontal',
+//   // infinite: true,
+// })
 
 lenis.on('scroll', (_e) => {
   // console.log('scroll', e)

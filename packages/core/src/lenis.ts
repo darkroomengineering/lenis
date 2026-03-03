@@ -426,12 +426,12 @@ export class Lenis {
     //   !this.options.infinite &&
     //   deltaY <= 5 // touch pull to refresh, not reliable yet
 
+    // most likely a touchpad gesture, this keep prev/next page navigation working
     const isUnknownGesture =
       (this.options.gestureOrientation === 'vertical' && deltaY === 0) ||
       (this.options.gestureOrientation === 'horizontal' && deltaX === 0)
 
     if (isClickOrTap || isUnknownGesture) {
-      // console.log('prevent')
       return
     }
 
@@ -441,16 +441,26 @@ export class Lenis {
 
     const prevent = this.options.prevent
 
+    const gestureOrientation =
+      Math.abs(deltaX) >= Math.abs(deltaY) ? 'horizontal' : 'vertical'
+
     if (
       composedPath.find(
         (node) =>
           node instanceof HTMLElement &&
           ((typeof prevent === 'function' && prevent?.(node)) ||
             node.hasAttribute?.('data-lenis-prevent') ||
+            (gestureOrientation === 'vertical' &&
+              node.hasAttribute?.('data-lenis-prevent-vertical')) ||
+            (gestureOrientation === 'horizontal' &&
+              node.hasAttribute?.('data-lenis-prevent-horizontal')) ||
             (isTouch && node.hasAttribute?.('data-lenis-prevent-touch')) ||
             (isWheel && node.hasAttribute?.('data-lenis-prevent-wheel')) ||
             (this.options.allowNestedScroll &&
-              this.checkNestedScroll(node, { deltaX, deltaY })))
+              this.hasNestedScroll(node, {
+                deltaX,
+                deltaY,
+              })))
       )
     )
       return
@@ -838,7 +848,7 @@ export class Lenis {
     })
   }
 
-  private checkNestedScroll(
+  private hasNestedScroll(
     node: HTMLElement,
     { deltaX, deltaY }: { deltaX: number; deltaY: number }
   ) {
@@ -853,12 +863,12 @@ export class Lenis {
     let hasOverflowY: boolean | undefined
     let isScrollableX: boolean | undefined
     let isScrollableY: boolean | undefined
+    let hasOverscrollBehaviorX: boolean | undefined
+    let hasOverscrollBehaviorY: boolean | undefined
     let scrollWidth: number
     let scrollHeight: number
     let clientWidth: number
     let clientHeight: number
-
-    const gestureOrientation = this.options.gestureOrientation
 
     if (time - (cache.time ?? 0) > 2000) {
       cache.time = Date.now()
@@ -866,17 +876,24 @@ export class Lenis {
       const computedStyle = window.getComputedStyle(node)
       cache.computedStyle = computedStyle
 
-      const overflowXString = computedStyle.overflowX
-      const overflowYString = computedStyle.overflowY
+      hasOverflowX = ['auto', 'overlay', 'scroll'].includes(
+        computedStyle.overflowX
+      )
+      hasOverflowY = ['auto', 'overlay', 'scroll'].includes(
+        computedStyle.overflowY
+      )
 
-      hasOverflowX = ['auto', 'overlay', 'scroll'].includes(overflowXString)
-      hasOverflowY = ['auto', 'overlay', 'scroll'].includes(overflowYString)
+      hasOverscrollBehaviorX = ['auto'].includes(
+        computedStyle.overscrollBehaviorX
+      )
+      hasOverscrollBehaviorY = ['auto'].includes(
+        computedStyle.overscrollBehaviorY
+      )
+
       cache.hasOverflowX = hasOverflowX
       cache.hasOverflowY = hasOverflowY
 
       if (!(hasOverflowX || hasOverflowY)) return false // if no overflow, it's not scrollable no matter what, early return saves some computations
-      if (gestureOrientation === 'vertical' && !hasOverflowY) return false
-      if (gestureOrientation === 'horizontal' && !hasOverflowX) return false
 
       scrollWidth = node.scrollWidth
       scrollHeight = node.scrollHeight
@@ -893,6 +910,8 @@ export class Lenis {
       cache.scrollHeight = scrollHeight
       cache.clientWidth = clientWidth
       cache.clientHeight = clientHeight
+      cache.hasOverscrollBehaviorX = hasOverscrollBehaviorX
+      cache.hasOverscrollBehaviorY = hasOverscrollBehaviorY
     } else {
       isScrollableX = cache.isScrollableX
       isScrollableY = cache.isScrollableY
@@ -902,61 +921,46 @@ export class Lenis {
       scrollHeight = cache.scrollHeight
       clientWidth = cache.clientWidth
       clientHeight = cache.clientHeight
+      hasOverscrollBehaviorX = cache.hasOverscrollBehaviorX
+      hasOverscrollBehaviorY = cache.hasOverscrollBehaviorY
     }
 
-    if (!((hasOverflowX || hasOverflowY) && (isScrollableX || isScrollableY))) {
+    if (!((hasOverflowX && isScrollableX) || (hasOverflowY && isScrollableY))) {
       return false
     }
 
-    if (gestureOrientation === 'vertical' && !(hasOverflowY && isScrollableY))
-      return false
-
-    if (gestureOrientation === 'horizontal' && !(hasOverflowX && isScrollableX))
-      return false
-
-    let orientation: 'x' | 'y' | undefined
-
-    if (gestureOrientation === 'horizontal') {
-      orientation = 'x'
-    } else if (gestureOrientation === 'vertical') {
-      orientation = 'y'
-    } else {
-      const isScrollingX = deltaX !== 0
-      const isScrollingY = deltaY !== 0
-
-      if (isScrollingX && hasOverflowX && isScrollableX) {
-        orientation = 'x'
-      }
-
-      if (isScrollingY && hasOverflowY && isScrollableY) {
-        orientation = 'y'
-      }
-    }
-
-    if (!orientation) return false
+    const orientation =
+      Math.abs(deltaX) >= Math.abs(deltaY) ? 'horizontal' : 'vertical'
 
     let scroll: number | undefined
     let maxScroll: number | undefined
     let delta: number | undefined
     let hasOverflow: boolean | undefined
     let isScrollable: boolean | undefined
+    let hasOverscrollBehavior: boolean | undefined
 
-    if (orientation === 'x') {
-      scroll = node.scrollLeft
+    if (orientation === 'horizontal') {
+      scroll = Math.round(node.scrollLeft)
       maxScroll = scrollWidth - clientWidth
       delta = deltaX
 
       hasOverflow = hasOverflowX
       isScrollable = isScrollableX
-    } else if (orientation === 'y') {
-      scroll = node.scrollTop
+      hasOverscrollBehavior = hasOverscrollBehaviorX
+    } else if (orientation === 'vertical') {
+      scroll = Math.round(node.scrollTop)
       maxScroll = scrollHeight - clientHeight
       delta = deltaY
 
       hasOverflow = hasOverflowY
       isScrollable = isScrollableY
+      hasOverscrollBehavior = hasOverscrollBehaviorY
     } else {
       return false
+    }
+
+    if (!hasOverscrollBehavior && (scroll === maxScroll || scroll === 0)) {
+      return true
     }
 
     const willScroll = delta > 0 ? scroll < maxScroll : scroll > 0

@@ -31,6 +31,7 @@ export const ReactLenis = forwardRef<LenisRef, LenisProps>(
       root = false,
       options = {},
       autoRaf = true,
+      className = '',
       ...props
     }: LenisProps,
     ref
@@ -131,7 +132,11 @@ export const ReactLenis = forwardRef<LenisRef, LenisProps>(
         {root && root !== 'asChild' ? (
           children
         ) : (
-          <div ref={wrapperRef} {...props}>
+          <div
+            ref={wrapperRef}
+            className={`${className} ${lenis?.className ?? ''}`.trim()}
+            {...props}
+          >
             <div ref={contentRef}>{children}</div>
           </div>
         )}

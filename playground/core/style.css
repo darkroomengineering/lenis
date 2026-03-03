@@ -13,6 +13,7 @@
   margin: 0 auto;
   /* height: 200px; */
   overflow-x: auto;
+  overscroll-behavior: contain;
 
   #nested-horizontal-content {
     width: 1000px;
@@ -25,6 +26,7 @@
   margin: 0 auto;
   height: 200px;
   overflow-y: auto;
+  overscroll-behavior: contain;
   /* overflow-x: auto; */
 }
 
