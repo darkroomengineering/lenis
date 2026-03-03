@@ -220,8 +220,7 @@ gsap.ticker.lagSmoothing(0);
 | `animatedScroll`        | `number`          | Current scroll value                                                       |
 | `dimensions`            | `object`          | Dimensions instance                                                        |
 | `direction`             | `number`          | `1`: scrolling up, `-1`: scrolling down                                    |
-| `emitter`               | `object`          | Emitter instance                                                           |
-| `options`               | `object`          | Instance options                                                           |
+ `options`               | `object`          | Instance options                                                           |
 | `targetScroll`          | `number`          | Target scroll value                                                        |
 | `time`                  | `number`          | Time elapsed since instance creation                                       |
 | `actualScroll`          | `number`          | Current scroll value registered by the browser                             |

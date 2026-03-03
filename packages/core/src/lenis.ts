@@ -385,15 +385,6 @@ export class Lenis {
     const isWheel = event.type.includes('wheel')
 
     this.isTouching = event.type === 'touchstart' || event.type === 'touchmove'
-    // if (event.type === 'touchend') {
-    //   console.log('touchend', this.scroll)
-    //   // this.lastVelocity = this.velocity
-    //   // this.velocity = 0
-    //   // this.isScrolling = false
-    //   this.emit({ type: 'touchend' })
-    //   // alert('touchend')
-    //   return
-    // }
 
     const isClickOrTap = deltaX === 0 && deltaY === 0
 
@@ -505,7 +496,6 @@ export class Lenis {
     const hasTouchInertia = isTouchEnd
 
     if (hasTouchInertia) {
-      // delta = this.velocity * this.options.touchInertiaMultiplier
       delta =
         Math.sign(this.velocity) *
         Math.abs(this.velocity) ** this.options.touchInertiaExponent
