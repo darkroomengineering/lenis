@@ -29,7 +29,7 @@ export class VirtualScroll {
     private element: HTMLElement,
     private options = { wheelMultiplier: 1, touchMultiplier: 1 }
   ) {
-    window.addEventListener('resize', this.onWindowResize, false)
+    window.addEventListener('resize', this.onWindowResize)
     this.onWindowResize()
 
     this.element.addEventListener('wheel', this.onWheel, listenerOptions)
@@ -60,7 +60,7 @@ export class VirtualScroll {
   destroy() {
     this.emitter.destroy()
 
-    window.removeEventListener('resize', this.onWindowResize, false)
+    window.removeEventListener('resize', this.onWindowResize)
 
     this.element.removeEventListener('wheel', this.onWheel, listenerOptions)
     this.element.removeEventListener(

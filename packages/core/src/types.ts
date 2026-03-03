@@ -195,12 +195,12 @@ export type LenisOptions = {
    */
   overscroll?: boolean
   /**
-   * If `true`, Lenis will not try to detect the size of the content and wrapper
+   * If `true`, Lenis will automatically run `requestAnimationFrame` loop
    * @default false
    */
   autoRaf?: boolean
   /**
-   * If `true`, Lenis will automatically run `requestAnimationFrame` loop
+   * If `true`, Lenis will handle anchor links automatically
    * @default false
    */
   anchors?: boolean | ScrollToOptions

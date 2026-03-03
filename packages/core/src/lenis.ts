@@ -175,7 +175,7 @@ export class Lenis {
     this.targetScroll = this.animatedScroll = this.actualScroll
 
     // Add event listeners
-    this.options.wrapper.addEventListener('scroll', this.onNativeScroll, false)
+    this.options.wrapper.addEventListener('scroll', this.onNativeScroll)
 
     this.options.wrapper.addEventListener('scrollend', this.onScrollEnd, {
       capture: true,
@@ -184,15 +184,13 @@ export class Lenis {
     if (this.options.anchors || this.options.stopInertiaOnNavigate) {
       this.options.wrapper.addEventListener(
         'click',
-        this.onClick as EventListener,
-        false
+        this.onClick as EventListener
       )
     }
 
     this.options.wrapper.addEventListener(
       'pointerdown',
-      this.onPointerDown as EventListener,
-      false
+      this.onPointerDown as EventListener
     )
 
     // Setup virtual scroll instance
@@ -204,9 +202,7 @@ export class Lenis {
 
     if (this.options.autoToggle) {
       this.checkOverflow()
-      this.rootElement.addEventListener('transitionend', this.onTransitionEnd, {
-        passive: true,
-      })
+      this.rootElement.addEventListener('transitionend', this.onTransitionEnd)
     }
 
     if (this.options.autoRaf) {
@@ -220,11 +216,7 @@ export class Lenis {
   destroy() {
     this.emitter.destroy()
 
-    this.options.wrapper.removeEventListener(
-      'scroll',
-      this.onNativeScroll,
-      false
-    )
+    this.options.wrapper.removeEventListener('scroll', this.onNativeScroll)
 
     this.options.wrapper.removeEventListener('scrollend', this.onScrollEnd, {
       capture: true,
@@ -232,15 +224,13 @@ export class Lenis {
 
     this.options.wrapper.removeEventListener(
       'pointerdown',
-      this.onPointerDown as EventListener,
-      false
+      this.onPointerDown as EventListener
     )
 
     if (this.options.anchors || this.options.stopInertiaOnNavigate) {
       this.options.wrapper.removeEventListener(
         'click',
-        this.onClick as EventListener,
-        false
+        this.onClick as EventListener
       )
     }
 
@@ -959,7 +949,7 @@ export class Lenis {
       return false
     }
 
-    if (!hasOverscrollBehavior && (scroll === maxScroll || scroll === 0)) {
+    if (!hasOverscrollBehavior && (scroll >= maxScroll || scroll <= 0)) {
       return true
     }
 

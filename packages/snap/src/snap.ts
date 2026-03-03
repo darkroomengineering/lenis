@@ -72,7 +72,7 @@ export class Snap {
     }
 
     this.onWindowResize()
-    window.addEventListener('resize', this.onWindowResize, false)
+    window.addEventListener('resize', this.onWindowResize)
 
     this.onSnapDebounced = debounce(
       this.onSnap as (...args: unknown[]) => void,
@@ -87,7 +87,7 @@ export class Snap {
    */
   destroy() {
     this.lenis.off('virtual-scroll', this.onSnapDebounced)
-    window.removeEventListener('resize', this.onWindowResize, false)
+    window.removeEventListener('resize', this.onWindowResize)
     this.elements.forEach((element) => {
       element.destroy()
     })

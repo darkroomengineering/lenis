@@ -29,7 +29,7 @@ export class Dimensions {
       this.debouncedResize = debounce(this.resize, debounceValue)
 
       if (this.wrapper instanceof Window) {
-        window.addEventListener('resize', this.debouncedResize, false)
+        window.addEventListener('resize', this.debouncedResize)
       } else {
         this.wrapperResizeObserver = new ResizeObserver(this.debouncedResize)
         this.wrapperResizeObserver.observe(this.wrapper)
@@ -47,7 +47,7 @@ export class Dimensions {
     this.contentResizeObserver?.disconnect()
 
     if (this.wrapper === window && this.debouncedResize) {
-      window.removeEventListener('resize', this.debouncedResize, false)
+      window.removeEventListener('resize', this.debouncedResize)
     }
   }
 

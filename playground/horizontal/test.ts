@@ -9,6 +9,7 @@ window.lenis = new Lenis({
   // gestureOrientation: 'vertical',
   autoRaf: true,
   allowNestedScroll: true,
+  syncTouch: true,
   // virtualScroll: (data) => {
   //   data.deltaX = 0
   //   // data.deltaY =  0.00001
