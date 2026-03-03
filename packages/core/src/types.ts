@@ -233,5 +233,10 @@ export type LenisOptions = {
 declare global {
   interface Window {
     lenisVersion: string
+    lenis: {
+      version?: string
+      horizontal?: boolean
+      snap?: boolean
+    }
   }
 }

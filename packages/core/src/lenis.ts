@@ -124,6 +124,16 @@ export class Lenis {
     // Set version
     window.lenisVersion = version
 
+    if (!window.lenis) {
+      window.lenis = {}
+    }
+
+    window.lenis.version = version
+
+    if (orientation === 'horizontal') {
+      window.lenis.horizontal = true
+    }
+
     // Check if wrapper is <html>, fallback to window
     if (!wrapper || wrapper === document.documentElement) {
       wrapper = window

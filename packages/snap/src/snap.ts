@@ -60,6 +60,12 @@ export class Snap {
       onSnapComplete,
     }: SnapOptions = {}
   ) {
+    if (!window.lenis) {
+      window.lenis = {}
+    }
+
+    window.lenis.snap = true
+
     this.options = {
       type,
       lerp,

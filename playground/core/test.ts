@@ -139,7 +139,7 @@ lenis.on('scroll', (_e) => {
 //   // e.deltaY *= 10
 //   // e.cancel = true
 // })
-window.lenis = lenis
+// window.lenis = lenis
 
 declare global {
   interface Window {

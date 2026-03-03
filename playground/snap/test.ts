@@ -14,7 +14,6 @@ const lenis = new Lenis({
   lerp: 0.1,
   syncTouch: true,
 })
-window.lenis = lenis
 
 const _i = 0
 

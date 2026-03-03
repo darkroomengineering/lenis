@@ -1,7 +1,7 @@
 import Lenis from 'lenis'
 import Stats from 'stats-js'
 
-window.lenis = new Lenis({
+new Lenis({
   infinite: true,
   autoRaf: true,
   syncTouch: true,
