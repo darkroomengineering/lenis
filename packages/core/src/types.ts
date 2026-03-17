@@ -237,6 +237,7 @@ declare global {
       version?: string
       horizontal?: boolean
       snap?: boolean
+      touch?: boolean
     }
   }
 }

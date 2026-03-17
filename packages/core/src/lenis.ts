@@ -121,7 +121,7 @@ export class Lenis {
     naiveDimensions = __experimental__naiveDimensions,
     stopInertiaOnNavigate = false,
   }: LenisOptions = {}) {
-    // Set version
+    // Set version (deprecated)
     window.lenisVersion = version
 
     if (!window.lenis) {
@@ -132,6 +132,10 @@ export class Lenis {
 
     if (orientation === 'horizontal') {
       window.lenis.horizontal = true
+    }
+
+    if (syncTouch === true) {
+      window.lenis.touch = true
     }
 
     // Check if wrapper is <html>, fallback to window
@@ -334,37 +338,46 @@ export class Lenis {
     const path = event.composedPath()
 
     // filter anchor elements (elements with a valid href attribute)
-    const anchorElements = path.filter(
-      (node) => node instanceof HTMLAnchorElement && node.getAttribute('href')
+    const linkElements = path.filter(
+      (node) => node instanceof HTMLAnchorElement && node.href
     ) as HTMLAnchorElement[]
+    const linkElementsUrls = linkElements.map(
+      (element) => new URL(element.href)
+    )
+
+    const currentUrl = new URL(window.location.href)
 
     if (this.options.anchors) {
-      const anchor = anchorElements.find((node) =>
-        node.getAttribute('href')?.includes('#')
+      const anchorElementUrl = linkElementsUrls.find(
+        (targetUrl) =>
+          currentUrl.host === targetUrl.host &&
+          currentUrl.pathname === targetUrl.pathname &&
+          targetUrl.hash
       )
-      if (anchor) {
-        const href = anchor.getAttribute('href')
 
-        if (href) {
-          const options =
-            typeof this.options.anchors === 'object' && this.options.anchors
-              ? this.options.anchors
-              : undefined
+      if (anchorElementUrl) {
+        const options =
+          typeof this.options.anchors === 'object' && this.options.anchors
+            ? this.options.anchors
+            : undefined
 
-          const target = `#${href.split('#')[1]}`
+        const target = `#${anchorElementUrl.hash.split('#')[1]}`
 
-          this.scrollTo(target, options)
-        }
+        this.scrollTo(target, options)
+        return
       }
     }
 
     if (this.options.stopInertiaOnNavigate) {
-      const internalLink = anchorElements.find(
-        (node) => node.host === window.location.host
+      const hasPageLinkElementUrl = linkElementsUrls.some(
+        (targetUrl) =>
+          currentUrl.host === targetUrl.host &&
+          currentUrl.pathname !== targetUrl.pathname
       )
 
-      if (internalLink) {
+      if (hasPageLinkElementUrl) {
         this.reset()
+        return
       }
     }
   }
