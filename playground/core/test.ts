@@ -39,12 +39,12 @@ const lenis = new Lenis({
   smoothWheel: true,
   autoRaf: true,
   anchors: {
-    onStart: () => {
-      console.log('onStart')
-    },
-    onComplete: () => {
-      console.log('onComplete')
-    },
+    // onStart: () => {
+    //   console.log('onStart')
+    // },
+    // onComplete: () => {
+    //   console.log('onComplete')
+    // },
   },
   autoToggle: true,
   allowNestedScroll: true,
