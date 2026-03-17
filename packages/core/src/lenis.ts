@@ -121,7 +121,7 @@ export class Lenis {
     naiveDimensions = __experimental__naiveDimensions,
     stopInertiaOnNavigate = false,
   }: LenisOptions = {}) {
-    // Set version
+    // Set version (deprecated)
     window.lenisVersion = version
 
     if (!window.lenis) {
@@ -132,6 +132,10 @@ export class Lenis {
 
     if (orientation === 'horizontal') {
       window.lenis.horizontal = true
+    }
+
+    if (syncTouch === true) {
+      window.lenis.touch = true
     }
 
     // Check if wrapper is <html>, fallback to window
