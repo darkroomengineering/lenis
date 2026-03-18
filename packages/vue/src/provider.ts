@@ -1,4 +1,4 @@
-import Lenis, { type ScrollCallback } from 'lenis'
+import Lenis, { type LenisOptions, type ScrollCallback } from 'lenis'
 import type {
   HTMLAttributes,
   InjectionKey,
@@ -46,7 +46,7 @@ const VueLenisImpl = defineComponent({
       default: true,
     },
     options: {
-      type: Object as PropType<ConstructorParameters<typeof Lenis>[0]>,
+      type: Object as PropType<LenisOptions>,
       default: () => ({}),
     },
     props: {

@@ -1,5 +1,7 @@
 import Lenis, { type ScrollCallback } from 'lenis'
 import {
+  type ForwardRefExoticComponent,
+  type RefAttributes,
   createContext,
   forwardRef,
   useCallback,
@@ -24,7 +26,9 @@ export const rootLenisContextStore = new Store<LenisContextValue | null>(null)
 /**
  * React component to setup a Lenis instance
  */
-export const ReactLenis = forwardRef<LenisRef, LenisProps>(
+export const ReactLenis: ForwardRefExoticComponent<
+  LenisProps & RefAttributes<LenisRef>
+> = forwardRef<LenisRef, LenisProps>(
   (
     {
       children,

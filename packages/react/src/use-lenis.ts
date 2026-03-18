@@ -1,3 +1,4 @@
+import type Lenis from 'lenis'
 import type { ScrollCallback } from 'lenis'
 import { useContext, useEffect } from 'react'
 import { LenisContext, rootLenisContextStore } from './provider'
@@ -51,7 +52,7 @@ export function useLenis(
   callback?: ScrollCallback,
   deps: unknown[] = [],
   priority = 0
-) {
+): Lenis | undefined {
   // Try to get the lenis instance from the context first
   const localContext = useContext(LenisContext)
   // Fall back to the root store if the context is not available

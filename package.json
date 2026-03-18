@@ -25,20 +25,23 @@
     "react",
     "vue"
   ],
+  "workspaces": [
+    "packages/*",
+    "playground",
+    "playground/*"
+  ],
   "scripts": {
-    "build": "pnpm build:core && pnpm build:all",
-    "build:core": "tsup --config tsup.core.ts",
-    "build:all": "tsup",
-    "dev": "pnpm run -w --parallel /^dev:.*/",
-    "dev:build": "tsup --watch",
-    "dev:playground": "pnpm --filter playground dev",
-    "dev:nuxt": "pnpm --filter playground-nuxt dev",
+    "build": "tsdown",
+    "dev": "bun run --parallel dev:build dev:playground",
+    "dev:build": "tsdown --watch",
+    "dev:playground": "bun --filter playground dev",
+    "dev:nuxt": "bun --filter playground-nuxt dev",
     "readme": "node ./scripts/update-readme.js",
     "version:dev": "npm version prerelease --preid dev --force --no-git-tag-version",
     "version:patch": "npm version patch --force --no-git-tag-version",
     "version:minor": "npm version minor --force --no-git-tag-version",
     "version:major": "npm version major --force --no-git-tag-version",
-    "postversion": "pnpm build && pnpm readme",
+    "postversion": "bun run build && bun run readme",
     "publish:dev": "npm publish --tag dev",
     "publish:main": "npm publish"
   },
@@ -47,8 +50,7 @@
   ],
   "devDependencies": {
     "@biomejs/biome": "^2.4.2",
-    "terser": "^5.37.0",
-    "tsup": "^8.5.1",
+    "tsdown": "^0.21.4",
     "typescript": "^5.7.3"
   },
   "peerDependencies": {
