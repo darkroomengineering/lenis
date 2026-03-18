@@ -112,6 +112,12 @@ import Layout from '../layouts/Layout.astro'
       autoRaf: true,
       anchors: {
         offset: -20,
+        onStart: () => {
+          console.log('onStart')
+        },
+        onComplete: () => {
+          console.log('onComplete')
+        },
       },
     })
 
