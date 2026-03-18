@@ -744,14 +744,11 @@ export class Lenis {
           ? Number.parseFloat(targetStyle.scrollMarginLeft)
           : Number.parseFloat(targetStyle.scrollMarginTop)
 
-        console.log(targetStyle.scrollMarginTop, scrollMargin)
-
         // Account for scroll-padding CSS property on the scroll container
         const containerStyle = getComputedStyle(this.rootElement)
         const scrollPadding = this.isHorizontal
           ? Number.parseFloat(containerStyle.scrollPaddingLeft)
           : Number.parseFloat(containerStyle.scrollPaddingTop)
-        console.log(containerStyle.scrollPaddingTop, scrollPadding)
 
         target =
           (this.isHorizontal ? rect.left : rect.top) +
