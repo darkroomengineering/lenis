@@ -1,0 +1,120 @@
+---
+import Layout from '../layouts/Layout.astro'
+---
+
+<Layout title="Lenis - scroll-margin / scroll-padding test">
+  <style>
+    html {
+      scroll-padding-top: 10vh;
+    }
+
+    header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 10vh;
+      background: rgba(0, 0, 0, 0.9);
+      color: white;
+      display: flex;
+      align-items: center;
+      padding: 0 20px;
+      gap: 16px;
+      z-index: 10;
+    }
+
+    header a {
+      color: white;
+    }
+
+    .spacer {
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2rem;
+      color: #999;
+    }
+
+    section {
+      min-height: 100vh;
+      padding: 40px 20px;
+      border-top: 2px solid #333;
+    }
+
+    section h2 {
+      font-size: 2rem;
+      margin-bottom: 1rem;
+    }
+
+    #with-margin {
+      scroll-margin-top: 5vw;
+    }
+
+    #info {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: rgba(0, 0, 0, 0.8);
+      color: white;
+      padding: 16px;
+      border-radius: 8px;
+      font-size: 14px;
+      max-width: 300px;
+      line-height: 1.5;
+    }
+  </style>
+
+  <header>
+    <strong>Fixed Header (80px)</strong>
+    <a href="#default">Default</a>
+    <a href="#with-margin">With scroll-margin</a>
+    <a href="#with-offset">With offset</a>
+  </header>
+
+  <div class="spacer">Scroll down or click nav links</div>
+
+  <section id="default">
+    <h2>#default</h2>
+    <p>This section has no scroll-margin. It relies on <code>scroll-padding-top: 10vh</code> on the html element to clear the fixed header.</p>
+    <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Dolorum, amet illum repellendus vitae nulla provident eveniet totam laborum neque odio veritatis accusantium, hic quam et qui ipsum eos excepturi molestiae?</p>
+  </section>
+
+  <div class="spacer">...</div>
+
+  <section id="with-margin">
+    <h2>#with-margin</h2>
+    <p>This section has <code>scroll-margin-top: 5vw</code> in addition to the container's <code>scroll-padding-top: 10vh</code>.</p>
+    <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Dolorum, amet illum repellendus vitae nulla provident eveniet totam laborum neque odio veritatis accusantium, hic quam et qui ipsum eos excepturi molestiae?</p>
+  </section>
+
+  <div class="spacer">...</div>
+
+  <section id="with-offset">
+    <h2>#with-offset</h2>
+    <p>This section has no scroll-margin. It tests that the Lenis <code>anchors.offset</code> option stacks with scroll-padding.</p>
+    <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Dolorum, amet illum repellendus vitae nulla provident eveniet totam laborum neque odio veritatis accusantium, hic quam et qui ipsum eos excepturi molestiae?</p>
+  </section>
+
+  <div class="spacer">...</div>
+
+  <div id="info">
+    <strong>Test cases:</strong><br>
+    <b>#default</b> — should clear the header (10vh scroll-padding)<br>
+    <b>#with-margin</b> — should clear header + extra gap (10vh padding + 5vw margin)<br>
+    <b>#with-offset</b> — should clear header + Lenis offset (10vh padding + 20px offset)
+  </div>
+
+  <script>
+    import Lenis from 'lenis'
+
+    const lenis = new Lenis({
+      autoRaf: true,
+      anchors: {
+        offset: -20,
+      },
+    })
+
+    lenis.on('scroll', () => {})
+  </script>
+</Layout>
