@@ -738,8 +738,23 @@ export class Lenis {
 
         const rect = node.getBoundingClientRect()
 
+        // Account for scroll-margin CSS property on the target element
+        const targetStyle = getComputedStyle(node)
+        const scrollMargin = this.isHorizontal
+          ? Number.parseFloat(targetStyle.scrollMarginLeft)
+          : Number.parseFloat(targetStyle.scrollMarginTop)
+
+        // Account for scroll-padding CSS property on the scroll container
+        const containerStyle = getComputedStyle(this.rootElement)
+        const scrollPadding = this.isHorizontal
+          ? Number.parseFloat(containerStyle.scrollPaddingLeft)
+          : Number.parseFloat(containerStyle.scrollPaddingTop)
+
         target =
-          (this.isHorizontal ? rect.left : rect.top) + this.animatedScroll
+          (this.isHorizontal ? rect.left : rect.top) +
+          this.animatedScroll -
+          (Number.isNaN(scrollMargin) ? 0 : scrollMargin) -
+          (Number.isNaN(scrollPadding) ? 0 : scrollPadding)
       }
     }
 
