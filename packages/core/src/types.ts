@@ -228,6 +228,13 @@ export type LenisOptions = {
    * @default false
    */
   stopInertiaOnNavigate?: boolean
+  /**
+   * If `true`, Lenis will set `history.scrollRestoration = 'manual'` to prevent
+   * browser scroll restoration from interfering with `scrollTo({ immediate: true })`
+   * on page load.
+   * @default false
+   */
+  preventScrollRestoration?: boolean
 }
 
 declare global {

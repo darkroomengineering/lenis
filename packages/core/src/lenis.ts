@@ -34,6 +34,7 @@ export class Lenis {
   private _preventNextNativeScrollEvent = false
   private _resetVelocityTimeout: ReturnType<typeof setTimeout> | null = null
   private _rafId: number | null = null
+  private _savedScrollRestoration: ScrollRestoration | null = null
 
   /**
    * Whether or not the user is touching the screen
@@ -120,6 +121,7 @@ export class Lenis {
     __experimental__naiveDimensions = false,
     naiveDimensions = __experimental__naiveDimensions,
     stopInertiaOnNavigate = false,
+    preventScrollRestoration = false,
   }: LenisOptions = {}) {
     // Set version (deprecated)
     window.lenisVersion = version
@@ -177,6 +179,12 @@ export class Lenis {
       allowNestedScroll,
       naiveDimensions,
       stopInertiaOnNavigate,
+      preventScrollRestoration,
+    }
+
+    if (preventScrollRestoration && this.options.wrapper === window) {
+      this._savedScrollRestoration = history.scrollRestoration
+      history.scrollRestoration = 'manual'
     }
 
     // Setup dimensions instance
@@ -252,6 +260,10 @@ export class Lenis {
     this.dimensions.destroy()
 
     this.cleanUpClassName()
+
+    if (this._savedScrollRestoration !== null) {
+      history.scrollRestoration = this._savedScrollRestoration
+    }
 
     if (this._rafId) {
       cancelAnimationFrame(this._rafId)
@@ -796,7 +808,17 @@ export class Lenis {
       onComplete?.(this)
       this.userData = {}
 
+      // Re-apply scroll position after browser scroll restoration which may
+      // fire asynchronously after page load and override the position we set.
+      const scrollTarget = this.scroll
       requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          if (this.actualScroll !== scrollTarget) {
+            this.animatedScroll = this.targetScroll = scrollTarget
+            this.setScroll(scrollTarget)
+            this.preventNextNativeScrollEvent()
+          }
+        })
         this.dispatchScrollendEvent()
       })
       return
