@@ -319,7 +319,10 @@ export class Lenis {
   }
 
   private onTransitionEnd = (event: TransitionEvent) => {
-    if (event.propertyName.includes('overflow')) {
+    if (
+      event.propertyName?.includes('overflow') &&
+      event.target === this.rootElement
+    ) {
       this.checkOverflow()
     }
   }
