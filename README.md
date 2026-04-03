@@ -160,7 +160,8 @@ gsap.ticker.lagSmoothing(0);
 ### React:
 [See documentation for lenis/react](https://github.com/darkroomengineering/lenis/blob/main/packages/react/README.md).
 
-
+### Vue:
+[See documentation for lenis/vue](https://github.com/darkroomengineering/lenis/blob/main/packages/vue/README.md).
 
 
 <br/>
