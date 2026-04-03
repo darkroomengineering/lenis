@@ -30,6 +30,14 @@ export default defineNuxtConfig({
 })
 ```
 
+## Recommended CSS
+
+Import the Lenis CSS to ensure proper behavior:
+
+```js
+import 'lenis/dist/lenis.css'
+```
+
 ## Usage
 
 ```vue

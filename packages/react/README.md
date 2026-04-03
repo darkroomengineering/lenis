@@ -10,6 +10,14 @@ lenis/react provides a `<ReactLenis>` component that creates a [Lenis](https://g
 npm i lenis
 ```
 
+## Recommended CSS
+
+Import the Lenis CSS to ensure proper behavior:
+
+```js
+import 'lenis/dist/lenis.css'
+```
+
 ## Usage
 
 ### Basic
