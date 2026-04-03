@@ -4,13 +4,13 @@ Yooo! We're really excited that you're interested in contributing to Lenis! Befo
 
 ## Repo Setup
 
-To develop locally, fork the Lenis repository and clone it in your local machine. The Lenis repo is a monorepo using pnpm workspaces. The package manager used to install and link dependencies must be [pnpm](https://pnpm.io/).
+To develop locally, fork the Lenis repository and clone it in your local machine. The Lenis repo is a monorepo using bun workspaces. The package manager used to install and link dependencies must be [bun](https://bun.sh/).
 
 To start developing Lenis, run the following commands in the root of the repository:
 
-1. Run `pnpm i` in Lenis's root folder.
+1. Run `bun i` in Lenis's root folder.
 
-2. Run `pnpm dev` in Lenis's root folder.
+2. Run `bun run dev` in Lenis's root folder.
 
 3. Open http://localhost:4321 in your browser, which has a playground for Lenis.
 
@@ -30,4 +30,4 @@ At the same time the playground will automatically reload when you change the co
 
   - Provide a detailed description of the bug in the PR. Codepen demo preferred.
 
-- Make sure to enable prettier in your editor to format the code.
+- Make sure to enable biome in your editor to format the code.
