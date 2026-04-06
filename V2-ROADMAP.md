@@ -68,14 +68,14 @@ new Lenis({
 | `smoothWheel` | `wheel.smooth` | Grouped under `wheel` |
 | `wheelMultiplier` | `wheel.multiplier` | Grouped under `wheel` |
 | `lerp` | `wheel.lerp` | Grouped under `wheel` |
-| `virtualScroll` | `onGesture` or TBD | Current name is misleading, should return the modified values |
+| `virtualScroll`, `prevent` | `onGesture` or TBD | Current names are misleading, should return the modified values |
 | `naiveDimensions` | `dimensions`: `read`, `observe` (`content` is needed) | "Naive" is a CS term, not user-friendly, this makes `content` optional (less issues) |
 
 ### Properties rename
 
 | v1 | v2 | Reason |
 |----|-----|--------|
-| `isScrolling` | `isWheelScrolling` / `isTouchScrolling` / `isNativeScrolling` | More explicit |
+| `isScrolling` | `isWheelScrolling` / `isTouchScrolling` / `isProgrammaticScrolling` | More explicit |
 
 ### lenis/react
 
