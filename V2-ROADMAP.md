@@ -69,7 +69,7 @@ new Lenis({
 | `wheelMultiplier` | `wheel.multiplier` | Grouped under `wheel` |
 | `lerp` | `wheel.lerp` | Grouped under `wheel` |
 | `virtualScroll`, `prevent` | `onGesture` or TBD | Current names are misleading, should return the modified values |
-| `naiveDimensions` | `dimensions`: `read`, `observe` (`content` is needed) | "Naive" is a CS term, not user-friendly, this makes `content` optional (less issues) |
+| `naiveDimensions` | `dimensions`: `read` (default if `content` is undefined), `observe` (default if `content` is defined) | "Naive" is a CS term, not user-friendly, this makes `content` optional (less issues) |
 
 ### Properties rename
 
