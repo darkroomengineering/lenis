@@ -95,9 +95,13 @@ Support native pull-to-refresh and browser UI collapse when `touch.smooth` is en
 ### Warnings
 Warns on development mode when `infinite` is called on `html`/`body`. This will causes flicker because of iOS.
 
+### Multi-axis scrolling
+Support simultaneous x and y scrolling. Lenis should be able to handle both axes at the same time, enabling use cases like 2D canvas navigation, maps, spreadsheets, and layouts that scroll both horizontally and vertically.
+
 ### Examples
 - Nested scroll
 - Horizontal scroll
+- Multi-axis scroll
 - Framework integrations
 - Common patterns (modals, drawers, etc.)
 
