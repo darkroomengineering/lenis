@@ -1,5 +1,5 @@
 import { Emitter } from './emitter'
-import type { VirtualScrollCallback } from './types'
+import type { GestureCallback } from './types'
 
 const LINE_HEIGHT = 100 / 6
 const listenerOptions: AddEventListenerOptions = { passive: false }
@@ -10,7 +10,7 @@ function getDeltaMultiplier(deltaMode: number, size: number): number {
   return 1
 }
 
-export class VirtualScroll {
+export class GesturesHandler {
   touchStart = {
     x: 0,
     y: 0,
@@ -25,10 +25,7 @@ export class VirtualScroll {
   }
   private emitter = new Emitter()
 
-  constructor(
-    private element: HTMLElement,
-    private options = { wheelMultiplier: 1, touchMultiplier: 1 }
-  ) {
+  constructor(private element: HTMLElement) {
     window.addEventListener('resize', this.onWindowResize)
     this.onWindowResize()
 
@@ -52,7 +49,7 @@ export class VirtualScroll {
    * @param event Event name
    * @param callback Callback function
    */
-  on(event: string, callback: VirtualScrollCallback) {
+  on(event: string, callback: GestureCallback) {
     return this.emitter.on(event, callback as (...args: unknown[]) => void)
   }
 
@@ -99,9 +96,10 @@ export class VirtualScroll {
       y: 0,
     }
 
-    this.emitter.emit('scroll', {
+    this.emitter.emit('gesture', {
       deltaX: 0,
       deltaY: 0,
+      type: 'touch',
       event,
     })
   }
@@ -113,8 +111,8 @@ export class VirtualScroll {
       ? event.targetTouches[0]
       : event
 
-    const deltaX = -(clientX - this.touchStart.x) * this.options.touchMultiplier
-    const deltaY = -(clientY - this.touchStart.y) * this.options.touchMultiplier
+    const deltaX = -(clientX - this.touchStart.x)
+    const deltaY = -(clientY - this.touchStart.y)
 
     this.touchStart.x = clientX
     this.touchStart.y = clientY
@@ -124,17 +122,19 @@ export class VirtualScroll {
       y: deltaY,
     }
 
-    this.emitter.emit('scroll', {
+    this.emitter.emit('gesture', {
       deltaX,
       deltaY,
+      type: 'touch',
       event,
     })
   }
 
   onTouchEnd = (event: TouchEvent) => {
-    this.emitter.emit('scroll', {
+    this.emitter.emit('gesture', {
       deltaX: this.lastDelta.x,
       deltaY: this.lastDelta.y,
+      type: 'touch',
       event,
     })
   }
@@ -149,10 +149,12 @@ export class VirtualScroll {
     deltaX *= multiplierX
     deltaY *= multiplierY
 
-    deltaX *= this.options.wheelMultiplier
-    deltaY *= this.options.wheelMultiplier
-
-    this.emitter.emit('scroll', { deltaX, deltaY, event })
+    this.emitter.emit('gesture', {
+      deltaX,
+      deltaY,
+      type: 'wheel',
+      event,
+    })
   }
 
   onWindowResize = () => {

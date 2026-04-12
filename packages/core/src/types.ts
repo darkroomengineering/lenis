@@ -33,14 +33,15 @@ export type UserData = Record<string, unknown>
 
 export type Scrolling = boolean | 'native' | 'smooth'
 
-export type LenisEvent = 'scroll' | 'virtual-scroll'
+export type LenisEvent = 'scroll' | 'gesture'
 export type ScrollCallback = (lenis: Lenis) => void
-export type VirtualScrollCallback = (data: VirtualScrollData) => void
+export type GestureCallback = (data: GestureData) => void
 
-export type VirtualScrollData = {
+export type GestureData = {
   deltaX: number
   deltaY: number
   event: WheelEvent | TouchEvent
+  type: 'wheel' | 'touch'
 }
 
 export type Orientation = 'vertical' | 'horizontal'
@@ -101,6 +102,36 @@ export type ScrollToOptions = {
   userData?: UserData
 }
 
+export interface WheelOptions {
+  /** Smooth the scroll initiated by wheel events @default true */
+  smooth?: boolean
+  /** Linear interpolation intensity (0-1) @default 0.1 */
+  lerp?: number
+  /** Multiplier for mouse wheel events @default 1 */
+  multiplier?: number
+  duration?: number
+  easing?: EasingFunction
+}
+
+export interface TouchOptions {
+  /** Mimic touch device scroll while allowing scroll sync @default false */
+  smooth?: boolean
+  /** Linear interpolation intensity (0-1) @default 0.075 */
+  lerp?: number
+  /** Multiplier for touch events @default 1 */
+  multiplier?: number
+  /** Strength of touch inertia @default 1.7 */
+  inertia?: number
+  duration?: number
+  easing?: EasingFunction
+}
+
+export type DimensionsOptions = {
+  mode?: 'observe' | 'read'
+  autoResize?: boolean
+  debounce?: number
+}
+
 export type LenisOptions = {
   /**
    * The element that will be used as the scroll container
@@ -109,34 +140,21 @@ export type LenisOptions = {
   wrapper?: Window | HTMLElement | Element
   /**
    * The element that contains the content that will be scrolled, usually `wrapper`'s direct child
-   * @default document.documentElement
    */
-  content?: HTMLElement | Element
+  content?: HTMLElement | Element | undefined
   /**
    * The element that will listen to `wheel` and `touch` events
    * @default window
    */
   eventsTarget?: Window | HTMLElement | Element
   /**
-   * Smooth the scroll initiated by `wheel` events
-   * @default true
+   * Wheel scroll options
    */
-  smoothWheel?: boolean
+  wheel?: WheelOptions
   /**
-   * Mimic touch device scroll while allowing scroll sync
-   * @default false
+   * Touch scroll options
    */
-  syncTouch?: boolean
-  /**
-   * Linear interpolation (lerp) intensity (between 0 and 1)
-   * @default 0.075
-   */
-  syncTouchLerp?: number
-  /**
-   * Manage the the strength of `syncTouch` inertia
-   * @default 1.7
-   */
-  touchInertiaExponent?: number
+  touch?: TouchOptions
   /**
    * Scroll duration in seconds
    */
@@ -146,11 +164,6 @@ export type LenisOptions = {
    * @default (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t))
    */
   easing?: EasingFunction
-  /**
-   * Linear interpolation (lerp) intensity (between 0 and 1)
-   * @default 0.1
-   */
-  lerp?: number
   /**
    * Enable infinite scrolling
    * @default false
@@ -167,28 +180,9 @@ export type LenisOptions = {
    */
   gestureOrientation?: GestureOrientation
   /**
-   * The multiplier to use for touch events
-   * @default 1
+   * Called on every gesture event (wheel or touch)
    */
-  touchMultiplier?: number
-  /**
-   * The multiplier to use for mouse wheel events
-   * @default 1
-   */
-  wheelMultiplier?: number
-  /**
-   * Resize instance automatically
-   * @default true
-   */
-  autoResize?: boolean
-  /**
-   * Manually prevent scroll to be smoothed based on elements traversed by events
-   */
-  prevent?: (node: HTMLElement) => boolean
-  /**
-   * Manually modify the events before they get consumed
-   */
-  virtualScroll?: (data: VirtualScrollData) => boolean
+  onGesture?: (data: GestureData, lenis: Lenis) => GestureData | false
   /**
    * Wether or not to enable overscroll on a nested Lenis instance, similar to CSS overscroll-behavior (https://developer.mozilla.org/en-US/docs/Web/CSS/overscroll-behavior)
    * @default true
@@ -196,36 +190,32 @@ export type LenisOptions = {
   overscroll?: boolean
   /**
    * If `true`, Lenis will automatically run `requestAnimationFrame` loop
-   * @default false
+   * @default true
    */
   autoRaf?: boolean
   /**
    * If `true`, Lenis will handle anchor links automatically
-   * @default false
+   * @default true
    */
   anchors?: boolean | ScrollToOptions
   /**
    * If `true`, Lenis will automatically start/stop based on wrapper's overflow property
-   * @default false
+   * @default true
    */
   autoToggle?: boolean
   /**
    * If `true`, Lenis will allow nested scroll
-   * @default false
+   * @default true
    */
   allowNestedScroll?: boolean
   /**
-   * @deprecated use `naiveDimensions` instead
+   * Dimensions calculation mode. 'read' uses naive dimensions (scrollHeight/clientHeight),
+   * 'observe' uses ResizeObserver. Default: { autoResize: true, debounce: 500 } if content is undefined, { autoResize: true, debounce: 500 } if content is defined
    */
-  __experimental__naiveDimensions?: boolean
-  /**
-   * If `true`, Lenis will use naive dimensions calculation, be careful this has a performance impact
-   * @default false
-   */
-  naiveDimensions?: boolean
+  dimensions?: DimensionsOptions
   /**
    * If `true`, Lenis will stop inertia when an internal link is clicked
-   * @default false
+   * @default true
    */
   stopInertiaOnNavigate?: boolean
 }

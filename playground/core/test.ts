@@ -36,56 +36,23 @@ window.addEventListener('hashchange', () => {
 })
 
 const lenis = new Lenis({
-  smoothWheel: true,
-  autoRaf: true,
-  anchors: {
-    // onStart: () => {
-    //   console.log('onStart')
-    // },
-    // onComplete: () => {
-    //   console.log('onComplete')
-    // },
+  wheel: {
+    smooth: true,
   },
-  autoToggle: true,
-  allowNestedScroll: true,
-  syncTouch: true,
-  infinite: true,
-  stopInertiaOnNavigate: true,
-  // virtualScroll: ({ event }) => {
-  //   console.log(lenis.options.syncTouch)
-
-  //   return true
-  // },
-  // duration: 1,
-  // infinite: true,
-  // lerp: 0.5,
-  // duration: 10,
-  // easing: (t) => t,
-  // syncTouch: true,
-  // lerp: 0.01,
-  // wrapper: document.body,
-  // content: document.querySelector('main'),
-  // wrapper: document.querySelector('main')!,
-  // content: document.querySelector('main')?.children[0],
-  // autoResize: false,
-  // lerp: 0.9,
-  // virtualScroll: (e) => {
-  //   // e.deltaY *= 10
-  //   return !e.event.shiftKey
-  //   // return true
-  // },
-  // duration: 2,
-  // easing: (t) => t,
-  // prevent: () => {
-  //   return true
-  // },
-  // prevent: (node) => {
-  //   return (
-  //     node.classList?.contains('lenis-scrolling') &&
-  //     node.classList?.contains('lenis-smooth') &&
-  //     !node.classList?.contains('lenis-stopped')
-  //   )
-  // },
+  touch: {
+    smooth: true,
+  },
+  dimensions: {
+    mode: 'read',
+  },
+  onGesture: (data, lenis) => {
+    // console.log(data)
+    // return {
+    //   ...data,
+    //   deltaX: data.deltaX * 2,
+    //   deltaY: data.deltaY * 2,
+    // }
+  },
 })
 
 // const _nestedLenis = new Lenis({
@@ -98,7 +65,8 @@ const lenis = new Lenis({
 //   // infinite: true,
 // })
 
-lenis.on('scroll', (_e) => {
+lenis.on('scroll', (lenis) => {
+  console.log(lenis.limit)
   // console.log('scroll', e)
 })
 
