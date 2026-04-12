@@ -49,3 +49,5 @@ dist/
 
 .tldr/
 .tldrignore
+
+./claude
