@@ -10,11 +10,19 @@ Lenis was originally built for developers syncing WebGL and DOM through smooth s
 
 ---
 
+## Status legend
+
+- ✅ Shipped on the `v2` branch
+- 🚧 Partial / in progress
+- ⏳ Planned, not started
+
+---
+
 ## Breaking changes
 
-### Default values flip
+### ✅ Default values flip
 
-Options that are currently opt-in become the default behavior:
+Options that were opt-in in v1 are now default-on:
 
 | Option | v1 default | v2 default | Rationale |
 |--------|-----------|-----------|-----------|
@@ -23,11 +31,11 @@ Options that are currently opt-in become the default behavior:
 | `anchors` | `false` | `true` | Anchor links should just work |
 | `allowNestedScroll` | `false` | `true` | Modals and nested containers should just work |
 | `stopInertiaOnNavigate` | `false` | `true` | Prevents scroll bleed on navigation |
-| `naiveDimensions` | `false` | `true` | More reliable for most setups |
+| `dimensions.mode` | (was `naiveDimensions: false`) | `'observe'` when `content` is defined, `'read'` otherwise | More reliable for most setups, no manual `naiveDimensions` toggle |
 
-### Options restructure
+### ✅ Options restructure
 
-Flat options → nested objects for related config:
+Flat options → nested `wheel` and `touch` groups for related config:
 
 ```js
 // v1
@@ -39,6 +47,7 @@ new Lenis({
   touchMultiplier: 1,
   touchInertiaExponent: 1.7,
   lerp: 0.1,
+  naiveDimensions: false,
 })
 
 // v2
@@ -50,14 +59,22 @@ new Lenis({
   },
   touch: {
     smooth: true,
-    lerp: 0.075,
+    lerp: 0.1,
     multiplier: 1,
-    inertia: 1.7,
+    inertia: 2,
+    // optional fine-tuning overrides that only apply on iOS
+    ios: {
+      lerp: 0.05,
+      inertia: 1.7,
+    },
+  },
+  dimensions: {
+    mode: 'observe',
   },
 })
 ```
 
-### Options rename
+### ✅ Options rename
 
 | v1 | v2 | Reason |
 |----|-----|--------|
@@ -68,10 +85,11 @@ new Lenis({
 | `smoothWheel` | `wheel.smooth` | Grouped under `wheel` |
 | `wheelMultiplier` | `wheel.multiplier` | Grouped under `wheel` |
 | `lerp` | `wheel.lerp` | Grouped under `wheel` |
-| `virtualScroll`, `prevent` | `onGesture` or TBD | Current names are misleading, should return the modified values |
-| `naiveDimensions` | `dimensions`: `read` (default if `content` is undefined), `observe` (default if `content` is defined) | "Naive" is a CS term, not user-friendly, this makes `content` optional (less issues) |
+| `virtualScroll`, `prevent` | `onGesture` | Unified into a single transform/cancel callback |
+| `naiveDimensions` | `dimensions` | "Naive" was a CS term; the new option is a richer config object with a smart default |
+| `autoResize` | `dimensions.autoResize` | Co-located with the dimensions concern it belongs to |
 
-### Properties rename
+### ⏳ Properties rename
 
 | v1 | v2 | Reason |
 |----|-----|--------|
@@ -84,26 +102,82 @@ new Lenis({
 
 ---
 
+## Internal refactors
+
+### ✅ `GesturesHandler` replaces `VirtualScroll`
+
+The old `virtual-scroll` abstraction was a general-purpose gesture library — Lenis only used a slice of it. It has been replaced by a focused `GesturesHandler` class that does exactly what Lenis needs (wheel + touch → normalized deltas with a `type` discriminator) and nothing more. The old `virtual-scroll.ts` is gone; the new `gestures-handler.ts` is ~160 lines and easier to maintain.
+
+### ✅ `isScrollableElement` extracted to `utils.ts`
+
+The private `hasNestedScroll` method that detected whether a composed-path element could handle the gesture itself was extracted as a pure function in `utils.ts`, decoupled from the `Lenis` class and reusable from other packages.
+
+### ✅ `Dimensions` owns its own config
+
+`Dimensions` now accepts a `DimensionsOptions` bag (`{ mode, autoResize, debounce }`) and applies its own defaults, including the smart `mode = content ? 'observe' : 'read'` default. `lenis.ts` just forwards the user's config without pre-baking values.
+
+---
+
 ## New features
 
-### Auto CSS injection
+### ✅ `onGesture` callback
+
+Replaces `virtualScroll` + `prevent`. Single transform/cancel callback called once per gesture, before Lenis consumes the deltas:
+
+```ts
+new Lenis({
+  onGesture: (data, lenis) => {
+    // return false to cancel the gesture
+    if (someCondition) return false
+    // return modified data to change what Lenis sees
+    return { ...data, deltaY: data.deltaY * 2 }
+    // or return nothing (void) to observe without modifying — treated as pass-through
+  },
+})
+```
+
+The `GestureData` payload includes `deltaX`, `deltaY`, the original `event`, and a `type: 'wheel' | 'touch'` discriminator so callers don't need to sniff `event.type`.
+
+### ✅ iOS-specific touch tuning
+
+iOS devices have subtly different touch physics than Android. `touch.ios` provides a fine-tuning escape hatch for `lerp`, `inertia`, `duration`, and `easing` on iOS only:
+
+```ts
+new Lenis({
+  touch: {
+    smooth: true,
+    inertia: 2,            // applies everywhere
+    ios: { inertia: 1.7 }, // iOS-only override on top
+  },
+})
+```
+
+iOS detection handles the iPadOS 13+ desktop-UA case via `navigator.maxTouchPoints`.
+
+### 🚧 Multi-axis scrolling
+
+Initial multi-axis support landed in commit `f3c203e`. Allows simultaneous horizontal and vertical scrolling for use cases like 2D canvas navigation, maps, spreadsheets, and layouts that scroll in both directions. Examples and polish still pending.
+
+### ⏳ Auto CSS injection
+
 Inject critical styles at runtime so users never have to import `lenis.css` manually. This is the most common setup mistake.
 
-### Pull to refresh & UI collapse
+### ⏳ Pull to refresh & UI collapse
+
 Support native pull-to-refresh and browser UI collapse when `touch.smooth` is enabled.
 
-### Warnings
-Warns on development mode when `infinite` is called on `html`/`body`. This will causes flicker because of iOS.
+### ⏳ Development warnings
 
-### Multi-axis scrolling
-Support simultaneous x and y scrolling. Lenis should be able to handle both axes at the same time, enabling use cases like 2D canvas navigation, maps, spreadsheets, and layouts that scroll both horizontally and vertically.
+Warn in development mode when `infinite` is used on `html`/`body` (causes flicker on iOS).
 
 ### Examples
-- Nested scroll
-- Horizontal scroll
-- Multi-axis scroll
-- Framework integrations
-- Common patterns (modals, drawers, etc.)
+
+- ✅ `playground/touch` — native vs Lenis side-by-side for debugging `touch.smooth` on real devices
+- ⏳ Nested scroll
+- ⏳ Horizontal scroll
+- ⏳ Multi-axis scroll
+- ⏳ Framework integrations
+- ⏳ Common patterns (modals, drawers, etc.)
 
 ---
 
@@ -111,6 +185,18 @@ Support simultaneous x and y scrolling. Lenis should be able to handle both axes
 
 - [ ] Check if GSAP ScrollTrigger integration is still necessary
 - [ ] Deprecate `lenis/snap` `type` option (legacy)
+
+---
+
+## Open design questions
+
+### Top-level `duration` and `easing`
+
+With per-axis `wheel.duration`, `wheel.easing`, `touch.duration`, `touch.easing`, the top-level `LenisOptions.duration` / `LenisOptions.easing` now only serve as defaults for programmatic `lenis.scrollTo()` calls. Should they:
+
+- **Stay** — they act as the "programmatic default" layer (current behavior)
+- **Move** — rename to make their scope explicit, e.g. `scrollTo: { duration, easing }`
+- **Remove** — programmatic `scrollTo` falls back to `wheel.duration` / `wheel.easing`
 
 ---
 
@@ -132,6 +218,9 @@ Invert the docs to match the new philosophy:
 
 TBD — will provide a v1 → v2 migration guide covering:
 - Changed default values
-- Renamed/restructured options
-- Renamed properties
+- Renamed/restructured options (`smoothWheel` → `wheel.smooth`, etc.)
+- `virtualScroll` / `prevent` → `onGesture`
+- `naiveDimensions` → `dimensions` object with `mode` / `autoResize` / `debounce`
+- `autoResize` moved into `dimensions`
+- Renamed properties (`isScrolling` → split properties, if shipped)
 - React package changes
