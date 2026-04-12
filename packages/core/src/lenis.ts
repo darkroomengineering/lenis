@@ -89,6 +89,7 @@ export class Lenis {
   // These are instanciated in the constructor as they need information from the options
   readonly dimensions: Dimensions // This is not private because it's used in the Snap class
   private readonly gesturesHandler: GesturesHandler
+  private readonly isIOS: boolean
 
   constructor({
     wrapper = window,
@@ -136,15 +137,9 @@ export class Lenis {
 
     eventsTarget ??= wrapper
 
-    if (wheel?.duration !== undefined || wheel?.easing !== undefined) {
-      wheel.duration ??= 1
-      wheel.easing ??= defaultEasing
-    }
-
-    if (touch?.duration !== undefined || touch?.easing !== undefined) {
-      touch.duration ??= 1
-      touch.easing ??= defaultEasing
-    }
+    this.isIOS =
+      /iPad|iPhone|iPod/.test(navigator.userAgent) ||
+      (navigator.userAgent.includes('Mac') && navigator.maxTouchPoints > 1)
 
     // Setup options
     this.options = {
@@ -159,10 +154,15 @@ export class Lenis {
       },
       touch: {
         smooth: false,
-        lerp: 0.075,
+        lerp: 0.1,
         multiplier: 1,
-        inertia: 1.7,
-        ...touch, // overwrite default values
+        inertia: 2,
+        ...(this.isIOS
+          ? (touch?.ios ?? {
+              inertia: 1.7,
+              lerp: 0.05,
+            })
+          : touch), // overwrite default values if iOS
       },
       infinite,
       gestureOrientation,
@@ -175,6 +175,24 @@ export class Lenis {
       allowNestedScroll,
       dimensions,
       stopInertiaOnNavigate,
+    }
+
+    // set default duration and easing if not provided
+    if (
+      this.options.wheel?.duration !== undefined ||
+      this.options.wheel?.easing !== undefined
+    ) {
+      this.options.wheel.duration ??= 1
+      this.options.wheel.easing ??= defaultEasing
+    }
+
+    // set default duration and easing if not provided
+    if (
+      this.options.touch?.duration !== undefined ||
+      this.options.touch?.easing !== undefined
+    ) {
+      this.options.touch.duration ??= 1
+      this.options.touch.easing ??= defaultEasing
     }
 
     this.dimensions = new Dimensions(
@@ -330,9 +348,15 @@ export class Lenis {
     // behavior: 'instant' bypasses the scroll-behavior CSS property
 
     if (this.isHorizontal) {
-      this.options.wrapper.scrollTo({ left: scroll, behavior: 'instant' })
+      this.options.wrapper.scrollTo({
+        left: scroll,
+        behavior: 'instant',
+      })
     } else {
-      this.options.wrapper.scrollTo({ top: scroll, behavior: 'instant' })
+      this.options.wrapper.scrollTo({
+        top: scroll,
+        behavior: 'instant',
+      })
     }
   }
 
@@ -520,28 +544,33 @@ export class Lenis {
       event.preventDefault()
     }
 
-    const isSyncTouch = isTouch && this.options.touch.smooth
     const isTouchEnd = isTouch && event.type === 'touchend'
 
-    const hasTouchInertia = isTouchEnd
-
-    if (hasTouchInertia) {
+    if (isTouchEnd) {
       delta =
-        Math.sign(this.velocity) *
+        Math.sign(delta) *
         Math.abs(this.velocity) ** this.options.touch.inertia!
+    }
+
+    const touchConfig = isTouchEnd
+      ? {
+          lerp: this.options.touch.lerp,
+          duration: this.options.touch.duration,
+          easing: this.options.touch.easing,
+        }
+      : {
+          lerp: 1,
+        }
+
+    const wheelConfig = {
+      lerp: this.options.wheel.lerp,
+      duration: this.options.wheel.duration,
+      easing: this.options.wheel.easing,
     }
 
     this.scrollTo(this.targetScroll + delta, {
       programmatic: false,
-      ...(isSyncTouch
-        ? {
-            lerp: hasTouchInertia ? this.options.touch.lerp : 1,
-          }
-        : {
-            lerp: this.options.wheel.lerp,
-            duration: this.options.duration,
-            easing: this.options.easing,
-          }),
+      ...(isTouch ? touchConfig : wheelConfig),
     })
   }
 
@@ -598,6 +627,7 @@ export class Lenis {
   private reset() {
     this.isLocked = false
     this.isScrolling = false
+    this.setScroll(Math.round(this.scroll))
     this.animatedScroll = this.targetScroll = this.actualScroll
     this.lastVelocity = this.velocity = 0
     this.animate.stop()
@@ -768,7 +798,7 @@ export class Lenis {
     if (typeof target !== 'number') return
 
     target += adjustedOffset
-    target = Math.round(target)
+    // target = Math.round(target)
 
     if (this.options.infinite) {
       if (programmatic) {

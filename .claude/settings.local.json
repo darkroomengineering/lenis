@@ -1,7 +1,9 @@
 {
   "permissions": {
     "allow": [
-      "Bash(npx tsc:*)"
+      "Bash(npx tsc:*)",
+      "Bash(mv playground/side-by-side playground/touch)",
+      "Bash(mv playground/www/pages/side-by-side.astro playground/www/pages/touch.astro)"
     ]
   }
 }

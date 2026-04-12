@@ -1,0 +1,41 @@
+---
+import '~/touch/style.css'
+import Layout from '../layouts/Layout.astro'
+---
+
+<Layout title="Lenis — Touch">
+  <div class="split">
+    <div class="column column--native">
+      <div id="native-scroll" class="column-scroll">
+        <div class="column-label">
+          <span>native</span>
+          <span id="readout-native">0</span>
+        </div>
+        <div id="native-content" class="column-content"></div>
+      </div>
+    </div>
+
+    <div class="column column--lenis">
+      <div id="lenis-scroll" class="column-scroll">
+        <div class="column-label">
+          <span>lenis</span>
+          <span id="readout-lenis">0</span>
+        </div>
+        <div id="lenis-content" class="column-content"></div>
+      </div>
+    </div>
+  </div>
+
+  <div id="controls">
+    <label>
+      <input type="checkbox" id="touch-smooth" />
+      touch.smooth
+    </label>
+    <div class="readout">
+      <span>velocity</span><span id="readout-velocity">0</span>
+      <span>state</span><span id="readout-state">idle</span>
+    </div>
+  </div>
+
+  <script src="../../touch/test.ts"></script>
+</Layout>

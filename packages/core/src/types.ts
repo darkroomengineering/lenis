@@ -116,14 +116,22 @@ export interface WheelOptions {
 export interface TouchOptions {
   /** Mimic touch device scroll while allowing scroll sync @default false */
   smooth?: boolean
-  /** Linear interpolation intensity (0-1) @default 0.075 */
+  /** Linear interpolation intensity (0-1) @default 0.1 */
   lerp?: number
   /** Multiplier for touch events @default 1 */
   multiplier?: number
-  /** Strength of touch inertia @default 1.7 */
+  /** Strength of touch inertia @default 2 */
   inertia?: number
   duration?: number
   easing?: EasingFunction
+  ios?: {
+    /** Strength of touch inertia @default 1.7 */
+    inertia?: number
+    /** Linear interpolation intensity (0-1) @default 0.05 */
+    lerp?: number
+    duration?: number
+    easing?: EasingFunction
+  }
 }
 
 export type DimensionsOptions = {

@@ -1,0 +1,131 @@
+html,
+body {
+  margin: 0;
+  padding: 0;
+  height: 100dvh;
+  overflow: hidden;
+  overscroll-behavior: none;
+  font-family: system-ui, sans-serif;
+  -webkit-text-size-adjust: 100%;
+}
+
+/* hide global nav on this page, it overlaps the split */
+body > nav {
+  display: none !important;
+}
+
+.split {
+  display: flex;
+  width: 100vw;
+  height: 100dvh;
+}
+
+.column {
+  flex: 1 1 50%;
+  min-width: 0;
+  height: 100%;
+  position: relative;
+  border-right: 2px solid #0e0e0e;
+}
+
+.column:last-child {
+  border-right: none;
+}
+
+.column-scroll {
+  height: 100%;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+}
+
+.column-content {
+  padding: 3rem 1rem 1rem;
+}
+
+.column-label {
+  position: sticky;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 10;
+  padding: 0.35rem 0.5rem;
+  background: #0e0e0e;
+  color: #fff;
+  font-family: monospace;
+  font-size: 0.75rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  display: flex;
+  justify-content: space-between;
+  gap: 0.5rem;
+  pointer-events: none;
+}
+
+.column--native .column-label {
+  background: #0e0e0e;
+}
+.column--lenis .column-label {
+  background: #e30613;
+}
+
+.column-content h2 {
+  font-size: 1rem;
+  margin: 1rem 0 0.25rem;
+  font-family: monospace;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.column-content p {
+  font-size: 0.85rem;
+  line-height: 1.5;
+  margin: 0 0 0.75rem;
+}
+
+.block {
+  margin: 1rem 0;
+  padding: 0.75rem;
+  border: 1px dashed #888;
+  font-family: monospace;
+  font-size: 0.75rem;
+}
+
+/* on-screen debug readout */
+#controls {
+  position: fixed;
+  left: 50%;
+  bottom: 0.5rem;
+  transform: translateX(-50%);
+  z-index: 100;
+  background: rgba(14, 14, 14, 0.9);
+  color: #fff;
+  font-family: monospace;
+  font-size: 0.7rem;
+  padding: 0.5rem 0.75rem;
+  border-radius: 0.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  pointer-events: auto;
+  user-select: none;
+  max-width: calc(100vw - 1rem);
+}
+
+#controls label {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  cursor: pointer;
+}
+
+#controls .readout {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0 0.5rem;
+  font-variant-numeric: tabular-nums;
+}
+
+#controls .readout span:nth-child(odd) {
+  opacity: 0.6;
+}

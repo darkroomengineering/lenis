@@ -16,7 +16,7 @@ const { title } = Astro.props
     <title>{title}</title>
   </head>
   <body>
-    <nav>
+    <nav style="overflow-x: auto; width: 100%;">
       <a href="/">
         <svg
           width="15"
@@ -36,6 +36,7 @@ const { title } = Astro.props
       <a href="/vue">Vue</a>
       <a href="/horizontal">Horizontal</a>
       <a href="/infinite">Infinite</a>
+      <a href="/touch">Touch</a>
     </nav>
     <slot />
   </body>

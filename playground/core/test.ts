@@ -41,6 +41,7 @@ const lenis = new Lenis({
   },
   touch: {
     smooth: true,
+    // duration: 5,
   },
   dimensions: {
     mode: 'read',
