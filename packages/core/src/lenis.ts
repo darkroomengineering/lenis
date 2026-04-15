@@ -627,7 +627,6 @@ export class Lenis {
   private reset() {
     this.isLocked = false
     this.isScrolling = false
-    this.setScroll(Math.round(this.scroll))
     this.animatedScroll = this.targetScroll = this.actualScroll
     this.lastVelocity = this.velocity = 0
     this.animate.stop()
@@ -798,7 +797,6 @@ export class Lenis {
     if (typeof target !== 'number') return
 
     target += adjustedOffset
-    // target = Math.round(target)
 
     if (this.options.infinite) {
       if (programmatic) {
@@ -1029,10 +1027,10 @@ export class Lenis {
   }
 
   private cleanUpClassName() {
-    this.rootElement.classList.forEach((className) => {
-      if (className.startsWith('lenis')) {
+    for (const className of Array.from(this.rootElement.classList)) {
+      if (className === 'lenis' || className.startsWith('lenis-')) {
         this.rootElement.classList.remove(className)
       }
-    })
+    }
   }
 }
