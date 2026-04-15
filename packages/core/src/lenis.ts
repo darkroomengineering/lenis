@@ -523,7 +523,7 @@ export class Lenis {
 
     if (hasTouchInertia) {
       delta =
-        Math.sign(this.velocity) *
+        Math.sign(delta) *
         Math.abs(this.velocity) ** this.options.touchInertiaExponent
     }
 
@@ -1115,13 +1115,16 @@ export class Lenis {
   private updateClassName() {
     this.cleanUpClassName()
 
-    this.rootElement.className =
-      `${this.rootElement.className} ${this.className}`.trim()
+    this.className.split(' ').forEach((className) => {
+      this.rootElement.classList.add(className)
+    })
   }
 
   private cleanUpClassName() {
-    this.rootElement.className = this.rootElement.className
-      .replace(/lenis(-\w+)?/g, '')
-      .trim()
+    for (const className of Array.from(this.rootElement.classList)) {
+      if (className === 'lenis' || className.startsWith('lenis-')) {
+        this.rootElement.classList.remove(className)
+      }
+    }
   }
 }
