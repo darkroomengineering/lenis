@@ -15,7 +15,7 @@ function App() {
       className={`wrapper a-${count}`}
       root="asChild"
       ref={lenisRef}
-      options={{ autoToggle: true }}
+      options={{ autoToggle: true, syncTouch: true }}
     >
       <div className="debug-panel">
         <button type="button" onClick={() => setCount((c) => c + 1)}>

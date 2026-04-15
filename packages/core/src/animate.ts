@@ -41,7 +41,7 @@ export class Animate {
       this.value = this.from + (this.to - this.from) * easedProgress
     } else if (this.lerp) {
       this.value = damp(this.value, this.to, this.lerp * 60, deltaTime)
-      if (Math.round(this.value) === this.to) {
+      if (Math.round(this.value) === Math.round(this.to)) {
         this.value = this.to
         completed = true
       }

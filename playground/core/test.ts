@@ -98,9 +98,37 @@ const lenis = new Lenis({
 //   // infinite: true,
 // })
 
-lenis.on('scroll', (_e) => {
-  // console.log('scroll', e)
-})
+const debugEl = document.createElement('div')
+debugEl.style.cssText = `
+  position: fixed;
+  top: env(safe-area-inset-top, 8px);
+  left: 8px;
+  z-index: 9999;
+  padding: 8px 10px;
+  font: 12px/1.3 ui-monospace, Menlo, monospace;
+  color: #0f0;
+  background: rgba(0, 0, 0, 0.75);
+  border-radius: 6px;
+  pointer-events: none;
+  white-space: pre;
+  backdrop-filter: blur(4px);
+`
+document.body.appendChild(debugEl)
+
+const renderDebug = (e: Lenis) => {
+  debugEl.textContent = [
+    `scroll      ${e.animatedScroll}`,
+    `target      ${e.targetScroll}`,
+    `window.scrollY ${window.scrollY}`,
+    `velocity    ${e.velocity.toFixed(2)}`,
+    `progress    ${(e.progress * 100).toFixed(1)}%`,
+    `direction   ${e.direction}`,
+    `isScrolling ${e.isScrolling}`,
+  ].join('\n')
+}
+
+lenis.on('scroll', renderDebug)
+window.addEventListener('scroll', () => renderDebug(lenis), { passive: true })
 
 // document.querySelectorAll('a[href*="#"]').forEach((node) => {
 //   node.addEventListener('click', (e) => {
