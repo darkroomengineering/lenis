@@ -15,7 +15,7 @@
     "@astrojs/vue": "^5.0.6",
     "@types/react": "^19.0.7",
     "@types/react-dom": "^19.0.3",
-    "astro": "^5.1.8",
+    "astro": "^6.1.8",
     "lenis": "*",
     "lorem-ipsum": "^2.0.8",
     "react": "^19.0.0",
