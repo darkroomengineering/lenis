@@ -31,6 +31,7 @@ export class Lenis {
   private _isScrolling: Scrolling = false // true when scroll is animating
   private _isStopped = false // true if user should not be able to scroll - enable/disable programmatically
   private _isLocked = false // same as isStopped but enabled/disabled when scroll reaches target
+  private _forceLocked = false // manual override for lock()/unlock()
   private _preventNextNativeScrollEvent = false
   private _resetVelocityTimeout: ReturnType<typeof setTimeout> | null = null
   private _rafId: number | null = null
@@ -565,6 +566,12 @@ export class Lenis {
       return
     }
 
+    if (this.isLocked && this.actualScroll !== this.scroll) {
+      this.preventNextNativeScrollEvent()
+      this.setScroll(this.scroll)
+      return
+    }
+
     if (this.isScrolling === false || this.isScrolling === 'native') {
       const lastScroll = this.animatedScroll
       this.animatedScroll = this.targetScroll = this.actualScroll
@@ -641,6 +648,20 @@ export class Lenis {
     this.reset()
     this.isStopped = true
     this.emit()
+  }
+
+  /**
+   * Lock lenis scroll
+   */
+  lock() {
+    this.forceLocked = true
+  }
+
+  /**
+   * Unlock lenis scroll
+   */
+  unlock() {
+    this.forceLocked = false
   }
 
   /**
@@ -1082,13 +1103,30 @@ export class Lenis {
    * Check if lenis is locked
    */
   get isLocked() {
-    return this._isLocked
+    return this._forceLocked || this._isLocked
   }
 
   private set isLocked(value: boolean) {
+    const isLocked = this.isLocked
+
     if (this._isLocked !== value) {
       this._isLocked = value
-      this.updateClassName()
+
+      if (isLocked !== this.isLocked) {
+        this.updateClassName()
+      }
+    }
+  }
+
+  private set forceLocked(value: boolean) {
+    const isLocked = this.isLocked
+
+    if (this._forceLocked !== value) {
+      this._forceLocked = value
+
+      if (isLocked !== this.isLocked) {
+        this.updateClassName()
+      }
     }
   }
 
