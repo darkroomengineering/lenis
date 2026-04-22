@@ -102,7 +102,7 @@ const debugEl = document.createElement('div')
 debugEl.style.cssText = `
   position: fixed;
   top: env(safe-area-inset-top, 8px);
-  left: 8px;
+  right: 8px;
   z-index: 9999;
   padding: 8px 10px;
   font: 12px/1.3 ui-monospace, Menlo, monospace;
@@ -124,6 +124,7 @@ const renderDebug = (e: Lenis) => {
     `progress    ${(e.progress * 100).toFixed(1)}%`,
     `direction   ${e.direction}`,
     `isScrolling ${e.isScrolling}`,
+    `isLocked ${e.isLocked}`,
   ].join('\n')
 }
 
@@ -215,6 +216,14 @@ document.getElementById('stop')?.addEventListener('click', () => {
 document.getElementById('start')?.addEventListener('click', () => {
   // document.documentElement.style.overflow = 'auto'
   lenis.start()
+})
+document.getElementById('lock')?.addEventListener('click', () => {
+  // document.documentElement.style.overflow = 'auto'
+  lenis.lock()
+})
+document.getElementById('unlock')?.addEventListener('click', () => {
+  // document.documentElement.style.overflow = 'auto'
+  lenis.unlock()
 })
 
 document.getElementById('scroll-start')?.addEventListener('click', () => {
