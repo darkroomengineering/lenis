@@ -27,7 +27,7 @@ Options that were opt-in in v1 are now default-on:
 | Option | v1 default | v2 default | Rationale |
 |--------|-----------|-----------|-----------|
 | `autoRaf` | `false` | `true` | Most users forget to set up the raf loop |
-| `autoToggle` | `false` | `true` | Handles overflow changes automatically |
+| `autoToggle` | `false` | `true` (planned removal — see below) | Handles overflow changes automatically |
 | `anchors` | `false` | `true` | Anchor links should just work |
 | `allowNestedScroll` | `false` | `true` | Modals and nested containers should just work |
 | `stopInertiaOnNavigate` | `false` | `true` | Prevents scroll bleed on navigation |
@@ -94,6 +94,16 @@ new Lenis({
 | v1 | v2 | Reason |
 |----|-----|--------|
 | `isScrolling` | `isWheelScrolling` / `isTouchScrolling` / `isProgrammaticScrolling` | More explicit |
+
+### ⏳ Remove `start()` / `stop()` and the `autoToggle` option
+
+`autoToggle` becomes the only behavior — there is no opt-out, and the option itself is removed. The CSS is the source of truth: Lenis observes the root's overflow and reacts. Users should set `overflow` themselves (or via a class) to pause/resume.
+
+- Remove `lenis.start()` / `lenis.stop()` from the public API
+- Remove the `autoToggle` option (always on, no longer configurable)
+- Remove the `isStopped` property (derive from observed overflow if needed)
+- Document the pattern: `document.documentElement.style.overflow = 'clip'` to pause, remove the property to resume
+- Migration: anyone still calling `start()` / `stop()` flips a CSS property instead
 
 ### lenis/react
 
@@ -162,9 +172,29 @@ Initial multi-axis support landed in commit `f3c203e`. Allows simultaneous horiz
 
 Inject critical styles at runtime so users never have to import `lenis.css` manually. This is the most common setup mistake.
 
+### ⏳ Scrollbar plugin
+
+Optional overlay scrollbar plugin (similar to [OverlayScrollbars](https://github.com/KingSora/OverlayScrollbars)) that hides the native scrollbar and renders a fully styleable overlay one driven by Lenis state. Goals:
+
+- Opt-in plugin (`lenis/scrollbar`) — does not affect core bundle size
+- Works on `window` and on any scroll container
+- Respects Lenis virtual scroll position (not the native one)
+- Drag-to-scroll, click-on-track, auto-hide, and hover states
+- Themeable via CSS variables / data attributes, no hardcoded styles
+- Accessibility: keyboard focus, ARIA roles, `prefers-reduced-motion`
+
 ### ⏳ Pull to refresh & UI collapse
 
 Support native pull-to-refresh and browser UI collapse when `touch.smooth` is enabled.
+
+### ⏳ Prevent mobile UI collapse (built-in)
+
+Built-in opt-in to keep the mobile browser chrome (address bar, bottom toolbar) from collapsing/expanding while scrolling. Today this requires manual CSS hacks (`height: 100dvh` containers, `overflow: hidden` on `html`, `position: fixed` wrappers) that are easy to get wrong and fight Lenis. Lenis should handle it natively:
+
+- Toggle via `touch.preventUICollapse: true` (or similar)
+- Locks the viewport height so layout doesn't jump as the URL bar shows/hides
+- Works alongside `touch.smooth` without extra setup
+- No-op on desktop and on browsers where chrome doesn't collapse
 
 ### ⏳ Development warnings
 
