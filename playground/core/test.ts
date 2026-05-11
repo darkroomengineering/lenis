@@ -67,7 +67,7 @@ const lenis = new Lenis({
 // })
 
 lenis.on('scroll', (lenis) => {
-  console.log(lenis.limit)
+  console.log(lenis.isSmooth)
   // console.log('scroll', e)
 })
 

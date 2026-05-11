@@ -1,6 +1,6 @@
 import { type LenisRef, ReactLenis, useLenis } from 'lenis/react'
 import { LoremIpsum } from 'lorem-ipsum'
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
 function App() {
   const [lorem] = useState(() => new LoremIpsum().generateParagraphs(200))
@@ -10,13 +10,12 @@ function App() {
 
   const lenisRef = useRef<LenisRef>(null)
 
+  useEffect(() => {
+    console.log('lenisRef', lenisRef.current)
+  }, [])
+
   return (
-    <ReactLenis
-      className={`wrapper a-${count}`}
-      root="asChild"
-      ref={lenisRef}
-      options={{ autoToggle: true }}
-    >
+    <ReactLenis className={`wrapper a-${count}`} root="asChild" ref={lenisRef}>
       <div className="debug-panel">
         <button type="button" onClick={() => setCount((c) => c + 1)}>
           Re-render ({count})

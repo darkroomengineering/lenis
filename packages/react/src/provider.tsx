@@ -1,9 +1,9 @@
 import Lenis, { type ScrollCallback } from 'lenis'
 import {
-  type ForwardRefExoticComponent,
-  type RefAttributes,
   createContext,
+  type ForwardRefExoticComponent,
   forwardRef,
+  type RefAttributes,
   useCallback,
   useEffect,
   useImperativeHandle,

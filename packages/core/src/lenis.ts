@@ -104,7 +104,6 @@ export class Lenis {
     overscroll = true,
     autoRaf = true,
     anchors = true,
-    autoToggle = true, // https://caniuse.com/?search=transition-behavior
     allowNestedScroll = true,
     dimensions,
     stopInertiaOnNavigate = true,
@@ -171,7 +170,6 @@ export class Lenis {
       overscroll,
       autoRaf,
       anchors,
-      autoToggle,
       allowNestedScroll,
       dimensions,
       stopInertiaOnNavigate,
@@ -230,10 +228,8 @@ export class Lenis {
     this.gesturesHandler = new GesturesHandler(eventsTarget as HTMLElement)
     this.gesturesHandler.on('gesture', this.onGesture)
 
-    if (this.options.autoToggle) {
-      this.checkOverflow()
-      this.rootElement.addEventListener('transitionend', this.onTransitionEnd)
-    }
+    this.checkOverflow()
+    this.rootElement.addEventListener('transitionend', this.onTransitionEnd)
 
     if (this.options.autoRaf) {
       this._rafId = requestAnimationFrame(this.raf)
@@ -329,9 +325,9 @@ export class Lenis {
 
   private checkOverflow() {
     if (['hidden', 'clip'].includes(this.overflow)) {
-      this.internalStop()
+      this.stop()
     } else {
-      this.internalStart()
+      this.start()
     }
   }
 
@@ -632,21 +628,7 @@ export class Lenis {
     this.animate.stop()
   }
 
-  /**
-   * Start lenis scroll after it has been stopped
-   */
-  start() {
-    if (!this.isStopped) return
-
-    if (this.options.autoToggle) {
-      this.rootElement.style.removeProperty('overflow')
-      return
-    }
-
-    this.internalStart()
-  }
-
-  private internalStart() {
+  private start() {
     if (!this.isStopped) return
 
     this.reset()
@@ -654,26 +636,20 @@ export class Lenis {
     this.emit()
   }
 
-  /**
-   * Stop lenis scroll
-   */
-  stop() {
-    if (this.isStopped) return
-
-    if (this.options.autoToggle) {
-      this.rootElement.style.setProperty('overflow', 'clip')
-      return
-    }
-
-    this.internalStop()
-  }
-
-  private internalStop() {
+  private stop() {
     if (this.isStopped) return
 
     this.reset()
     this.isStopped = true
     this.emit()
+  }
+
+  lock() {
+    this.isLocked = true
+  }
+
+  unlock() {
+    this.isLocked = false
   }
 
   /**
@@ -1010,7 +986,6 @@ export class Lenis {
    */
   get className() {
     let className = 'lenis'
-    if (this.options.autoToggle) className += ' lenis-autoToggle'
     if (this.isStopped) className += ' lenis-stopped'
     if (this.isLocked) className += ' lenis-locked'
     if (this.isScrolling) className += ' lenis-scrolling'

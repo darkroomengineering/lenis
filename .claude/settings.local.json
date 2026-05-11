@@ -3,7 +3,9 @@
     "allow": [
       "Bash(npx tsc:*)",
       "Bash(mv playground/side-by-side playground/touch)",
-      "Bash(mv playground/www/pages/side-by-side.astro playground/www/pages/touch.astro)"
+      "Bash(mv playground/www/pages/side-by-side.astro playground/www/pages/touch.astro)",
+      "Bash(Select-String -Pattern \"lock|isLocked\" -CaseSensitive)",
+      "Bash(Select-Object -First 20)"
     ]
   }
 }

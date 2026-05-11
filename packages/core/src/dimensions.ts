@@ -44,16 +44,20 @@ export class Dimensions {
       mode = content ? 'observe' : 'read',
     }: DimensionsOptions = {}
   ) {
-    if (!content && wrapper !== document.documentElement) {
+    if (
+      !content &&
+      wrapper !== document.documentElement &&
+      mode === 'observe'
+    ) {
       console.warn(
-        'dimensions.mode "observe" is useless if "content" is undefined, automatically fallback to "read" mode'
+        'dimensions.mode "observe" is ignored if "content" is undefined, automatically fallback to "read" mode'
       )
       mode = 'read'
     }
 
     this.autoResize = autoResize ?? true
     this.debounceValue = debounceValue ?? 500
-    this.mode = mode ?? 'read'
+    this.mode = mode
     this.wrapper = wrapper
     this.content = content
 
