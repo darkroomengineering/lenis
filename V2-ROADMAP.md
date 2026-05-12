@@ -27,7 +27,7 @@ Options that were opt-in in v1 are now default-on:
 | Option | v1 default | v2 default | Rationale |
 |--------|-----------|-----------|-----------|
 | `autoRaf` | `false` | `true` | Most users forget to set up the raf loop |
-| `autoToggle` | `false` | `true` (planned removal — see below) | Handles overflow changes automatically |
+| `autoToggle` | `false` | **removed** — always on (see below) | Overflow changes are handled automatically; no opt-out |
 | `anchors` | `false` | `true` | Anchor links should just work |
 | `allowNestedScroll` | `false` | `true` | Modals and nested containers should just work |
 | `stopInertiaOnNavigate` | `false` | `true` | Prevents scroll bleed on navigation |
@@ -89,21 +89,30 @@ new Lenis({
 | `naiveDimensions` | `dimensions` | "Naive" was a CS term; the new option is a richer config object with a smart default |
 | `autoResize` | `dimensions.autoResize` | Co-located with the dimensions concern it belongs to |
 
-### ⏳ Properties rename
+### 🚧 Properties rename
 
-| v1 | v2 | Reason |
-|----|-----|--------|
-| `isScrolling` | `isWheelScrolling` / `isTouchScrolling` / `isProgrammaticScrolling` | More explicit |
+| v1 | v2 | Status | Reason |
+|----|-----|--------|--------|
+| `isStopped` | `isScrollable` | ✅ | Reflects observed CSS overflow; **polarity inverted** (`true` when overflow is not `hidden`/`clip`) |
+| `isTouching` | `isTouch` | ✅ | Mirrors the gesture `type`; companion `isWheel` added — both are `undefined` when not actively gesture-scrolling |
+| `isScrolling` | `isWheelScrolling` / `isTouchScrolling` / `isProgrammaticScrolling` | ⏳ | More explicit — would be derived from `isScrolling` + `isTouch` / `isWheel` |
 
-### ✅ Remove `start()` / `stop()` and the `autoToggle` option
+### ✅ Remove `start()` / `stop()`, `autoToggle`, and `scrollTo`'s `lock` / `force`
 
-`autoToggle` becomes the only behavior — there is no opt-out, and the option itself is removed. The CSS is the source of truth: Lenis observes the root's overflow and reacts. Users should set `overflow` themselves (or via a class) to pause/resume.
+The CSS is the source of truth: Lenis observes the root's overflow and reacts. Users set `overflow` themselves (or via a class) to pause/resume. `scrollTo` is now unconditional — it always runs, matching native `Element.scrollTo()`.
 
-- Remove `lenis.start()` / `lenis.stop()` from the public API
-- Remove the `autoToggle` option (always on, no longer configurable)
-- Remove the `isStopped` property (derive from observed overflow if needed)
-- Document the pattern: `document.documentElement.style.overflow = 'clip'` to pause, remove the property to resume
-- Migration: anyone still calling `start()` / `stop()` flips a CSS property instead
+- ✅ Removed `lenis.start()` / `lenis.stop()` from the public API
+- ✅ Removed the `autoToggle` option (always on, no longer configurable)
+- ✅ `isStopped` → `isScrollable` — derived from observed overflow, set via `checkOverflow()` on init and on `transitionend`; flipping it runs `reset()` + `emit()` and toggles the `lenis-stopped` class
+- ✅ Removed `scrollTo`'s `force` option — `scrollTo` always executes now, so there's nothing to force past
+- ✅ Removed `scrollTo`'s `lock` option — compose `lenis.lock()` / `lenis.unlock()` via `onStart` / `onComplete` instead
+- ✅ `isLocked` narrowed — now only suppresses user wheel/touch input (and tap-to-stop); programmatic `scrollTo` is unaffected. Toggled solely via `lock()` / `unlock()` (no longer cleared by `reset()`)
+- ⏳ Document the pattern: set `overflow: hidden` / `clip` on the root to pause, remove it to resume
+- Migration:
+  - `start()` / `stop()` → flip a CSS overflow property
+  - `scrollTo(t, { force: true })` → `scrollTo(t)`
+  - `scrollTo(t, { lock: true })` → `scrollTo(t, { onStart: () => lenis.lock(), onComplete: () => lenis.unlock() })`
+  - `lenis.isStopped` → `!lenis.isScrollable`; `lenis.isTouching` → `lenis.isTouch`
 
 ### lenis/react
 
@@ -166,7 +175,12 @@ iOS detection handles the iPadOS 13+ desktop-UA case via `navigator.maxTouchPoin
 
 ### 🚧 Multi-axis scrolling
 
-Initial multi-axis support landed in commit `f3c203e`. Allows simultaneous horizontal and vertical scrolling for use cases like 2D canvas navigation, maps, spreadsheets, and layouts that scroll in both directions. Examples and polish still pending.
+Allows simultaneous horizontal and vertical scrolling for use cases like 2D canvas navigation, maps, spreadsheets, and layouts that scroll in both directions. In progress:
+
+- 🚧 `Axis` class (`packages/core/src/axis.ts`) — per-axis `animatedScroll` / `targetScroll`, `Animate` instance, `cssOverflow` + `overflow` (content vs. viewport) getters, `scrollTo`, `advance`. Still scaffolding — `isStopped` / `isLocked` getters are stubs, `Lenis` doesn't yet delegate to it, and `console.log`s remain.
+- 🚧 `playground/two-axis` — 5×5 viewport grid (`500vw × 500vh`) for eyeballing 2D scroll behavior
+- ⏳ Wire `Lenis` to drive two `Axis` instances; expose `lenis.axes` / per-axis state
+- ⏳ Decide the public API surface (per-axis `scrollTo`, events, dimensions)
 
 ### ⏳ Auto CSS injection
 
@@ -203,9 +217,9 @@ Warn in development mode when `infinite` is used on `html`/`body` (causes flicke
 ### Examples
 
 - ✅ `playground/touch` — native vs Lenis side-by-side for debugging `touch.smooth` on real devices
+- 🚧 `playground/two-axis` — 5×5 viewport-sized grid for 2D scroll testing (corner cells colour-coded)
 - ⏳ Nested scroll
 - ⏳ Horizontal scroll
-- ⏳ Multi-axis scroll
 - ⏳ Framework integrations
 - ⏳ Common patterns (modals, drawers, etc.)
 
@@ -252,5 +266,7 @@ TBD — will provide a v1 → v2 migration guide covering:
 - `virtualScroll` / `prevent` → `onGesture`
 - `naiveDimensions` → `dimensions` object with `mode` / `autoResize` / `debounce`
 - `autoResize` moved into `dimensions`
-- Renamed properties (`isScrolling` → split properties, if shipped)
+- Removed `start()` / `stop()` (→ CSS overflow) and `autoToggle` (always on)
+- Removed `scrollTo` options `force` (→ no longer needed) and `lock` (→ `onStart`/`onComplete` + `lock()`/`unlock()`)
+- Renamed properties: `isStopped` → `isScrollable` (inverted), `isTouching` → `isTouch` (+ new `isWheel`); `isScrolling` → split properties, if shipped
 - React package changes
