@@ -1,0 +1,52 @@
+html,
+body {
+  margin: 0;
+}
+
+#grid {
+  display: grid;
+  grid-template-columns: repeat(5, 100vw);
+  grid-template-rows: repeat(5, 100vh);
+  width: 500vw;
+  height: 500vh;
+}
+
+.cell {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: monospace;
+  font-size: 4rem;
+  color: white;
+  user-select: none;
+}
+
+/* checkerboard so axes are easy to read while scrolling */
+.cell:nth-child(odd) {
+  background-color: #1e1e1e;
+}
+
+.cell:nth-child(even) {
+  background-color: #2a2a2a;
+}
+
+.cell[data-edge='top-left'] {
+  background-color: #e30613;
+}
+
+.cell[data-edge='top-right'] {
+  background-color: #d58da9;
+}
+
+.cell[data-edge='bottom-left'] {
+  background-color: #a378a4;
+}
+
+.cell[data-edge='bottom-right'] {
+  background-color: #ff98a2;
+}
+
+
+/* html {
+  overflow-y: hidden;
+} */

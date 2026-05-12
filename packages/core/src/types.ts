@@ -60,11 +60,6 @@ export type ScrollToOptions = {
    */
   immediate?: boolean
   /**
-   * Lock the scroll to the target value
-   * @default false
-   */
-  lock?: boolean
-  /**
    * The duration of the scroll animation (in s)
    */
   duration?: number
@@ -86,11 +81,6 @@ export type ScrollToOptions = {
    * Called when the scroll completes
    */
   onComplete?: (lenis: Lenis) => void
-  /**
-   * Scroll even if stopped
-   * @default false
-   */
-  force?: boolean
   /**
    * Scroll initiated from outside of the lenis instance
    * @default false

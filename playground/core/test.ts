@@ -67,7 +67,7 @@ const lenis = new Lenis({
 // })
 
 lenis.on('scroll', (lenis) => {
-  console.log(lenis.isSmooth)
+  console.log(lenis.isScrolling, lenis.isTouch, lenis.isWheel)
   // console.log('scroll', e)
 })
 

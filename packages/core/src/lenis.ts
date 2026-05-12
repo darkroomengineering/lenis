@@ -30,8 +30,8 @@ const defaultEasing = (t: number) => Math.min(1, 1.001 - 2 ** (-10 * t))
 
 export class Lenis {
   private _isScrolling: Scrolling = false // true when scroll is animating
-  private _isStopped = false // true if user should not be able to scroll - enable/disable programmatically
-  private _isLocked = false // same as isStopped but enabled/disabled when scroll reaches target
+  private _isScrollable = true // true if element is scrollable (computed from css overflow property)
+  private _isLocked = false // // true when user-initiated scroll (wheel/touch) is suppressed — toggled via lock()/unlock()
   private _preventNextNativeScrollEvent = false
   private _resetVelocityTimeout: ReturnType<typeof setTimeout> | null = null
   private _rafId: number | null = null
@@ -39,7 +39,11 @@ export class Lenis {
   /**
    * Whether or not the user is touching the screen
    */
-  isTouching?: boolean
+  isTouch?: boolean
+  /**
+   * Whether the root this user is wheel scrolling
+   */
+  isWheel?: boolean
   /**
    * The time in ms since the lenis instance was created
    */
@@ -316,19 +320,13 @@ export class Lenis {
     )
   }
 
-  get overflow() {
+  private checkOverflow() {
     const property = this.isHorizontal ? 'overflow-x' : 'overflow-y'
-    return getComputedStyle(this.rootElement)[
+    const overflow = getComputedStyle(this.rootElement)[
       property as keyof CSSStyleDeclaration
     ] as string
-  }
 
-  private checkOverflow() {
-    if (['hidden', 'clip'].includes(this.overflow)) {
-      this.stop()
-    } else {
-      this.start()
-    }
+    this.isScrollable = !['hidden', 'clip'].includes(overflow)
   }
 
   private onTransitionEnd = (event: TransitionEvent) => {
@@ -426,27 +424,25 @@ export class Lenis {
     // @ts-expect-error
     if (event.lenisStopPropagation) return
 
-    const isTouch = type === 'touch'
-    const isWheel = type === 'wheel'
+    this.isTouch = type === 'touch'
+    this.isWheel = type === 'wheel'
 
-    if (isTouch) {
+    if (this.isTouch) {
       deltaX *= this.options.touch.multiplier!
       deltaY *= this.options.touch.multiplier!
-    } else if (isWheel) {
+    } else if (this.isWheel) {
       deltaX *= this.options.wheel.multiplier!
       deltaY *= this.options.wheel.multiplier!
     }
-
-    this.isTouching = event.type === 'touchstart' || event.type === 'touchmove'
 
     const isClickOrTap = deltaX === 0 && deltaY === 0
 
     const isTapToStop =
       this.options.touch.smooth &&
-      isTouch &&
+      this.isTouch &&
       event.type === 'touchstart' &&
       isClickOrTap &&
-      !this.isStopped &&
+      this.isScrollable &&
       !this.isLocked
 
     if (isTapToStop) {
@@ -485,8 +481,8 @@ export class Lenis {
               node.hasAttribute?.('data-lenis-prevent-vertical')) ||
             (gestureOrientation === 'horizontal' &&
               node.hasAttribute?.('data-lenis-prevent-horizontal')) ||
-            (isTouch && node.hasAttribute?.('data-lenis-prevent-touch')) ||
-            (isWheel && node.hasAttribute?.('data-lenis-prevent-wheel')) ||
+            (this.isTouch && node.hasAttribute?.('data-lenis-prevent-touch')) ||
+            (this.isWheel && node.hasAttribute?.('data-lenis-prevent-wheel')) ||
             (this.options.allowNestedScroll &&
               isScrollableElement(node, {
                 deltaX,
@@ -496,7 +492,7 @@ export class Lenis {
     )
       return
 
-    if (this.isStopped || this.isLocked) {
+    if (!this.isScrollable || this.isLocked) {
       if (event.cancelable) {
         event.preventDefault() // this will stop forwarding the event to the parent, this is problematic
       }
@@ -504,8 +500,8 @@ export class Lenis {
     }
 
     const isSmooth =
-      (this.options.touch.smooth && isTouch) ||
-      (this.options.wheel.smooth && isWheel)
+      (this.options.touch.smooth && this.isTouch) ||
+      (this.options.wheel.smooth && this.isWheel)
 
     if (!isSmooth) {
       this.isScrolling = 'native'
@@ -540,7 +536,7 @@ export class Lenis {
       event.preventDefault()
     }
 
-    const isTouchEnd = isTouch && event.type === 'touchend'
+    const isTouchEnd = event.type === 'touchend'
 
     if (isTouchEnd) {
       delta =
@@ -566,7 +562,7 @@ export class Lenis {
 
     this.scrollTo(this.targetScroll + delta, {
       programmatic: false,
-      ...(isTouch ? touchConfig : wheelConfig),
+      ...(this.isTouch ? touchConfig : wheelConfig),
     })
   }
 
@@ -575,7 +571,7 @@ export class Lenis {
    */
   resize() {
     this.dimensions.resize()
-    this.animatedScroll = this.targetScroll = this.actualScroll
+    this.reset()
     this.emit()
   }
 
@@ -603,7 +599,7 @@ export class Lenis {
         this.animatedScroll - lastScroll
       ) as Lenis['direction']
 
-      if (!this.isStopped) {
+      if (this.isScrollable) {
         this.isScrolling = 'native'
       }
 
@@ -611,37 +607,20 @@ export class Lenis {
 
       if (this.velocity !== 0) {
         this._resetVelocityTimeout = setTimeout(() => {
-          this.lastVelocity = this.velocity
-          this.velocity = 0
-          this.isScrolling = false
+          this.reset()
           this.emit()
-        }, 400)
+        }, 400) // arbitrary timeout to reset the velocity
       }
     }
   }
 
   private reset() {
-    this.isLocked = false
     this.isScrolling = false
+    this.isTouch = undefined
+    this.isWheel = undefined
     this.animatedScroll = this.targetScroll = this.actualScroll
     this.lastVelocity = this.velocity = 0
     this.animate.stop()
-  }
-
-  private start() {
-    if (!this.isStopped) return
-
-    this.reset()
-    this.isStopped = false
-    this.emit()
-  }
-
-  private stop() {
-    if (this.isStopped) return
-
-    this.reset()
-    this.isStopped = true
-    this.emit()
   }
 
   lock() {
@@ -693,19 +672,15 @@ export class Lenis {
     {
       offset = 0,
       immediate = false,
-      lock = false,
       programmatic = true, // called from outside of the class
       lerp = programmatic ? this.options.wheel.lerp : undefined,
       duration = programmatic ? this.options.duration : undefined,
       easing = programmatic ? this.options.easing : undefined,
       onStart,
       onComplete,
-      force = false, // scroll even if stopped
       userData,
     }: ScrollToOptions = {}
   ) {
-    if ((this.isStopped || this.isLocked) && !force) return
-
     let target: number | string | HTMLElement = _target
     let adjustedOffset = offset
 
@@ -829,8 +804,6 @@ export class Lenis {
       easing,
       lerp,
       onStart: () => {
-        // started
-        if (lock) this.isLocked = true
         this.isScrolling = 'smooth'
         onStart?.(this)
       },
@@ -947,15 +920,17 @@ export class Lenis {
   }
 
   /**
-   * Check if lenis is stopped
+   * Whether the root element's CSS overflow currently permits scrolling
    */
-  get isStopped() {
-    return this._isStopped
+  get isScrollable() {
+    return this._isScrollable
   }
 
-  private set isStopped(value: boolean) {
-    if (this._isStopped !== value) {
-      this._isStopped = value
+  private set isScrollable(value: boolean) {
+    if (this._isScrollable !== value) {
+      this._isScrollable = value
+      this.reset()
+      this.emit()
       this.updateClassName()
     }
   }
@@ -986,7 +961,7 @@ export class Lenis {
    */
   get className() {
     let className = 'lenis'
-    if (this.isStopped) className += ' lenis-stopped'
+    if (!this.isScrollable) className += ' lenis-stopped'
     if (this.isLocked) className += ' lenis-locked'
     if (this.isScrolling) className += ' lenis-scrolling'
     if (this.isScrolling === 'smooth') className += ' lenis-smooth'

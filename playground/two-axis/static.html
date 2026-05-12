@@ -1,0 +1,31 @@
+<html lang="en">
+  <head>
+    <link rel="stylesheet" href="./style.css" />
+  </head>
+  <body>
+    <div id="grid">
+      <script>
+        const grid = document.currentScript.parentElement
+        const cols = 5
+        const rows = 5
+        const edgeFor = (x, y) => {
+          if (x === 0 && y === 0) return 'top-left'
+          if (x === cols - 1 && y === 0) return 'top-right'
+          if (x === 0 && y === rows - 1) return 'bottom-left'
+          if (x === cols - 1 && y === rows - 1) return 'bottom-right'
+          return ''
+        }
+        for (let y = 0; y < rows; y++) {
+          for (let x = 0; x < cols; x++) {
+            const cell = document.createElement('div')
+            cell.className = 'cell'
+            const edge = edgeFor(x, y)
+            if (edge) cell.dataset.edge = edge
+            cell.textContent = `${x},${y}`
+            grid.appendChild(cell)
+          }
+        }
+      </script>
+    </div>
+  </body>
+</html>

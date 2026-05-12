@@ -74,9 +74,9 @@ export class Dimensions {
           this.contentResizeObserver.observe(this.content)
         }
       }
-
-      this.resize()
     }
+
+    this.resize()
   }
 
   destroy() {
@@ -109,8 +109,10 @@ export class Dimensions {
     }
 
     if (Date.now() > this.cache.timestamp + this.debounceValue) {
-      this.cache.x = this.wrapper.scrollWidth - this.wrapper.clientWidth
-      this.cache.y = this.wrapper.scrollHeight - this.wrapper.clientHeight
+      this.onWrapperResize()
+      this.onContentResize()
+      this.cache.x = this.scrollWidth! - this.width!
+      this.cache.y = this.scrollHeight! - this.height!
       this.cache.timestamp = Date.now()
     }
 

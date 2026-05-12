@@ -1,0 +1,32 @@
+---
+import '~/two-axis/style.css'
+import Layout from '../layouts/Layout.astro'
+
+const cols = 5
+const rows = 5
+
+const edgeFor = (x: number, y: number) => {
+  if (x === 0 && y === 0) return 'top-left'
+  if (x === cols - 1 && y === 0) return 'top-right'
+  if (x === 0 && y === rows - 1) return 'bottom-left'
+  if (x === cols - 1 && y === rows - 1) return 'bottom-right'
+  return undefined
+}
+
+const cells = Array.from({ length: rows }, (_, y) =>
+  Array.from({ length: cols }, (_, x) => ({ x, y, edge: edgeFor(x, y) }))
+).flat()
+---
+
+<Layout title="Two-axis scroll">
+  <div id="grid">
+    {
+      cells.map(({ x, y, edge }) => (
+        <div class="cell" data-edge={edge}>
+          {x},{y}
+        </div>
+      ))
+    }
+  </div>
+  <script src="../../two-axis/test.ts"></script>
+</Layout>

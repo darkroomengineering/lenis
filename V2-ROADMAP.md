@@ -95,7 +95,7 @@ new Lenis({
 |----|-----|--------|
 | `isScrolling` | `isWheelScrolling` / `isTouchScrolling` / `isProgrammaticScrolling` | More explicit |
 
-### ⏳ Remove `start()` / `stop()` and the `autoToggle` option
+### ✅ Remove `start()` / `stop()` and the `autoToggle` option
 
 `autoToggle` becomes the only behavior — there is no opt-out, and the option itself is removed. The CSS is the source of truth: Lenis observes the root's overflow and reacts. Users should set `overflow` themselves (or via a class) to pause/resume.
 
