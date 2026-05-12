@@ -89,13 +89,14 @@ new Lenis({
 | `naiveDimensions` | `dimensions` | "Naive" was a CS term; the new option is a richer config object with a smart default |
 | `autoResize` | `dimensions.autoResize` | Co-located with the dimensions concern it belongs to |
 
-### 🚧 Properties rename
+### ✅ Properties rename
 
-| v1 | v2 | Status | Reason |
-|----|-----|--------|--------|
-| `isStopped` | `isScrollable` | ✅ | Reflects observed CSS overflow; **polarity inverted** (`true` when overflow is not `hidden`/`clip`) |
-| `isTouching` | `isTouch` | ✅ | Mirrors the gesture `type`; companion `isWheel` added — both are `undefined` when not actively gesture-scrolling |
-| `isScrolling` | `isWheelScrolling` / `isTouchScrolling` / `isProgrammaticScrolling` | ⏳ | More explicit — would be derived from `isScrolling` + `isTouch` / `isWheel` |
+| v1 | v2 | Reason |
+|----|-----|--------|
+| `isStopped` | `isScrollable` | Reflects observed CSS overflow; **polarity inverted** (`true` when overflow is not `hidden`/`clip`) |
+| `isTouching` | `isTouch` | Mirrors the gesture `type`; companion `isWheel` added — both reflect the last gesture (`undefined` after `reset()`) |
+
+`isScrolling` (`'native' \| 'smooth' \| false`) stays as-is — no three-way `isWheelScrolling` / `isTouchScrolling` / `isProgrammaticScrolling` split. Callers compose: `isScrolling && isTouch`, `isScrolling && isWheel`, programmatic ≈ `isScrolling === 'smooth' && !isTouch && !isWheel`.
 
 ### ✅ Remove `start()` / `stop()`, `autoToggle`, and `scrollTo`'s `lock` / `force`
 
@@ -268,5 +269,5 @@ TBD — will provide a v1 → v2 migration guide covering:
 - `autoResize` moved into `dimensions`
 - Removed `start()` / `stop()` (→ CSS overflow) and `autoToggle` (always on)
 - Removed `scrollTo` options `force` (→ no longer needed) and `lock` (→ `onStart`/`onComplete` + `lock()`/`unlock()`)
-- Renamed properties: `isStopped` → `isScrollable` (inverted), `isTouching` → `isTouch` (+ new `isWheel`); `isScrolling` → split properties, if shipped
+- Renamed properties: `isStopped` → `isScrollable` (inverted), `isTouching` → `isTouch` (+ new `isWheel`); `isScrolling` unchanged
 - React package changes
