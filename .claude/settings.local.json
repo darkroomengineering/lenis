@@ -6,7 +6,13 @@
       "Bash(mv playground/www/pages/side-by-side.astro playground/www/pages/touch.astro)",
       "Bash(Select-String -Pattern \"lock|isLocked\" -CaseSensitive)",
       "Bash(Select-Object -First 20)",
-      "Read(//c/Users/clement/AppData/Local/Temp/claude/C--Users-clement-Desktop-darkroom-lenis/6e2f0498-3445-4568-b59c-65b9efda1d7c/tasks/**)"
+      "Read(//c/Users/clement/AppData/Local/Temp/claude/C--Users-clement-Desktop-darkroom-lenis/6e2f0498-3445-4568-b59c-65b9efda1d7c/tasks/**)",
+      "Bash(npx biome *)",
+      "Bash(npx @biomejs/biome check packages/core/src/axis.ts packages/core/src/lenis.ts)",
+      "Bash(npx tsdown *)",
+      "Bash(npx @biomejs/biome check packages/core/src)",
+      "Bash(npx @biomejs/biome check --write packages/core/src/lenis.ts packages/core/src/axis.ts)",
+      "Bash(npx @biomejs/biome check --write packages/core/src)"
     ]
   }
 }

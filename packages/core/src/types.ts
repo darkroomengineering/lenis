@@ -33,7 +33,7 @@ export type UserData = Record<string, unknown>
 
 export type Scrolling = boolean | 'native' | 'smooth'
 
-export type LenisEvent = 'scroll' | 'gesture'
+export type LenisEvent = 'scroll'
 export type ScrollCallback = (lenis: Lenis) => void
 export type GestureCallback = (data: GestureData) => void
 
@@ -44,7 +44,7 @@ export type GestureData = {
   type: 'wheel' | 'touch'
 }
 
-export type Orientation = 'vertical' | 'horizontal'
+export type Orientation = 'vertical' | 'horizontal' | 'both'
 export type GestureOrientation = 'vertical' | 'horizontal' | 'both'
 export type EasingFunction = (time: number) => number
 
@@ -168,7 +168,12 @@ export type LenisOptions = {
    */
   infinite?: boolean
   /**
-   * The orientation of the scrolling. Can be `vertical` or `horizontal`
+   * The orientation of the scrolling. Can be `vertical`, `horizontal`, or `both` (2D).
+   *
+   * When `both`, `lenis.x` and `lenis.y` each handle one axis and `gestureOrientation`
+   * has no effect (horizontal gestures drive `x`, vertical gestures drive `y`). The
+   * single-axis getters on `lenis` (`scroll`, `progress`, `scrollTo(n)`, …) alias the
+   * vertical axis.
    * @default vertical
    */
   orientation?: Orientation

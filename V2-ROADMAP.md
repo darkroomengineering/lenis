@@ -176,12 +176,11 @@ iOS detection handles the iPadOS 13+ desktop-UA case via `navigator.maxTouchPoin
 
 ### 🚧 Multi-axis scrolling
 
-Allows simultaneous horizontal and vertical scrolling for use cases like 2D canvas navigation, maps, spreadsheets, and layouts that scroll in both directions. In progress:
+Simultaneous horizontal + vertical scrolling (2D canvas, maps, spreadsheets, layouts that scroll both ways), opt-in via `new Lenis({ orientation: 'both' })`. Single-axis API stays unchanged; you gain `lenis.x` / `lenis.y`.
 
-- 🚧 `Axis` class (`packages/core/src/axis.ts`) — per-axis `animatedScroll` / `targetScroll`, `Animate` instance, `cssOverflow` + `overflow` (content vs. viewport) getters, `scrollTo`, `advance`. Still scaffolding — `isStopped` / `isLocked` getters are stubs, `Lenis` doesn't yet delegate to it, and `console.log`s remain.
-- 🚧 `playground/two-axis` — 5×5 viewport grid (`500vw × 500vh`) for eyeballing 2D scroll behavior
-- ⏳ Wire `Lenis` to drive two `Axis` instances; expose `lenis.axes` / per-axis state
-- ⏳ Decide the public API surface (per-axis `scrollTo`, events, dimensions)
+**Full design + step-by-step plan: [`MULTI-AXIS-PLAN.md`](./MULTI-AXIS-PLAN.md).**
+
+Current state: `Axis` class exists (`packages/core/src/axis.ts`) but is rough scaffolding — getter-only `isStopped` / `isLocked` stubs, references members that don't exist yet, leftover `console.log`; `Lenis` doesn't delegate to it; `playground/two-axis` (5×5 viewport grid) is in place as a test bed. Next: clean-sheet the `Axis` class, then refactor `Lenis` to delegate to it (single-axis, no API change) before adding `orientation: 'both'`.
 
 ### ⏳ Auto CSS injection
 
