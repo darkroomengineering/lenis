@@ -37,6 +37,23 @@ export class Axis {
   }
 
   /**
+   * Cached "is this axis scrollable per its CSS overflow" — read on every gesture, so
+   * we don't hit `getComputedStyle` per frame. Refreshed by {@link checkOverflow},
+   * which `Lenis` invokes at construction and on `overflow` `transitionend`.
+   */
+  isScrollable = true
+
+  /**
+   * Re-read the live CSS `overflow` for this axis into {@link isScrollable}. Resets
+   * the axis if it just flipped to non-scrollable (so an in-flight animation halts).
+   *
+   * Returns `true` when {@link isScrollable} changed.
+   */
+  checkOverflow() {
+    this.isScrollable = this.cssOverflow
+  }
+
+  /**
    * Reset all scroll state to the browser's current scroll position and stop the animation.
    */
   reset() {
@@ -87,7 +104,11 @@ export class Axis {
       : ((wrapper as Window).scrollY ?? (wrapper as HTMLElement).scrollTop)
   }
 
-  /** The current scroll value (wrapped to `limit` when `infinite`). */
+  /**
+   * The current scroll value (wrapped to `limit` when `infinite`). Stays full-float —
+   * the browser quantizes the DOM write per device pixel ratio at `scrollTo` time, so
+   * downstream consumers (transforms, WebGL, etc.) get the full-precision value.
+   */
   get scroll() {
     return this.lenis.options.infinite
       ? modulo(this.animatedScroll, this.limit)
@@ -105,7 +126,10 @@ export class Axis {
     return this.limit === 0 ? 1 : this.scroll / this.limit
   }
 
-  /** Whether this axis's CSS `overflow` permits scrolling (not `hidden`/`clip`). */
+  /**
+   * Live read of this axis's CSS `overflow` (not `hidden` / `clip`). Touches
+   * `getComputedStyle` — prefer the cached {@link isScrollable} on hot paths.
+   */
   get cssOverflow() {
     const property = this.axis === 'x' ? 'overflow-x' : 'overflow-y'
     const value = getComputedStyle(this.lenis.rootElement)[

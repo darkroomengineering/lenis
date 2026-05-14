@@ -47,7 +47,7 @@ const lenis = new Lenis({
     mode: 'read',
   },
   onGesture: (data, lenis) => {
-    // console.log(data)
+    console.log(data)
     // return {
     //   ...data,
     //   deltaX: data.deltaX * 2,
@@ -67,7 +67,11 @@ const lenis = new Lenis({
 // })
 
 lenis.on('scroll', (lenis) => {
-  console.log(lenis.isScrolling, lenis.isTouch, lenis.isWheel)
+  console.log({
+    scroll: lenis.scroll,
+    actualScroll: lenis.actualScroll,
+    targetScroll: lenis.targetScroll,
+  })
   // console.log('scroll', e)
 })
 

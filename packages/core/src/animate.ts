@@ -1,6 +1,8 @@
 import { clamp, damp } from './maths'
 import type { EasingFunction, FromToOptions, OnUpdateCallback } from './types'
 
+const QUANTIZE = 10
+
 /**
  * Animate class to handle value animations with lerping or easing
  *
@@ -41,7 +43,10 @@ export class Animate {
       this.value = this.from + (this.to - this.from) * easedProgress
     } else if (this.lerp) {
       this.value = damp(this.value, this.to, this.lerp * 60, deltaTime)
-      if (Math.round(this.value) === Math.round(this.to)) {
+      if (
+        Math.round(this.value * QUANTIZE) / QUANTIZE ===
+        Math.round(this.to * QUANTIZE) / QUANTIZE
+      ) {
         this.value = this.to
         completed = true
       }

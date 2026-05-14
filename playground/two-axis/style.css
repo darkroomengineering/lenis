@@ -5,10 +5,10 @@ body {
 
 #grid {
   display: grid;
-  grid-template-columns: repeat(5, 100vw);
-  grid-template-rows: repeat(5, 100vh);
-  width: 500vw;
-  height: 500vh;
+  grid-template-columns: repeat(var(--cols), 100vw);
+  grid-template-rows: repeat(var(--rows), 100svh);
+  /* width: 500vw;
+  height: 500vh; */
 }
 
 .cell {
