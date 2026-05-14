@@ -32,6 +32,35 @@ const cells = Array.from({ length: rows }, (_, y) =>
       ))
     }
   </div>
+
+  <aside id="tweak" data-open="true" aria-label="Lenis tweak panel">
+    <button id="tweak-toggle" type="button" aria-controls="tweak-body" aria-expanded="true">
+      <span class="tweak-handle"></span>
+      <span class="tweak-title">tweak</span>
+    </button>
+    <div id="tweak-body">
+      <label class="tweak-row">
+        <span class="tweak-label">lerp</span>
+        <input type="range" data-key="lerp" min="0.01" max="0.5" step="0.01" />
+        <output data-out="lerp"></output>
+      </label>
+      <label class="tweak-row">
+        <span class="tweak-label">inertia</span>
+        <input type="range" data-key="inertia" min="1" max="4" step="0.05" />
+        <output data-out="inertia"></output>
+      </label>
+      <label class="tweak-row">
+        <span class="tweak-label">multiplier</span>
+        <input type="range" data-key="multiplier" min="0.25" max="3" step="0.05" />
+        <output data-out="multiplier"></output>
+      </label>
+      <div class="tweak-actions">
+        <button id="tweak-reset" type="button">reset</button>
+        <button id="tweak-copy" type="button">copy</button>
+      </div>
+    </div>
+  </aside>
+
   <script src="../../two-axis/test.ts"></script>
 </Layout>
 

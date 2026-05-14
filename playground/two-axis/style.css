@@ -64,3 +64,115 @@ html, body {
   width: 100%;
   overscroll-behavior: none;
 }
+
+#tweak {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 10;
+  font-family: monospace;
+  color: white;
+  background: rgba(20, 20, 20, 0.85);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
+  padding-bottom: env(safe-area-inset-bottom);
+  touch-action: manipulation;
+  transition: transform 0.25s ease;
+  transform: translateY(0);
+}
+
+#tweak[data-open='false'] {
+  transform: translateY(calc(100% - 22px));
+}
+
+#tweak-toggle {
+  appearance: none;
+  background: transparent;
+  border: 0;
+  color: inherit;
+  font: inherit;
+  width: 100%;
+  height: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  cursor: pointer;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: 9px;
+  opacity: 0.7;
+}
+
+.tweak-handle {
+  display: inline-block;
+  width: 24px;
+  height: 3px;
+  border-radius: 2px;
+  background: rgba(255, 255, 255, 0.35);
+}
+
+#tweak-body {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 2px 10px 8px;
+}
+
+.tweak-row {
+  display: grid;
+  grid-template-columns: 56px 1fr 36px;
+  align-items: center;
+  gap: 8px;
+  font-size: 11px;
+  height: 22px;
+}
+
+.tweak-label {
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  opacity: 0.65;
+  font-size: 10px;
+}
+
+.tweak-row input[type='range'] {
+  width: 100%;
+  accent-color: #e30613;
+  height: 18px;
+  margin: 0;
+}
+
+.tweak-row output {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  font-size: 11px;
+  opacity: 0.9;
+}
+
+.tweak-actions {
+  display: flex;
+  gap: 6px;
+  margin-top: 2px;
+}
+
+.tweak-actions button {
+  flex: 1;
+  appearance: none;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: white;
+  font: inherit;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  padding: 4px 8px;
+  border-radius: 4px;
+  min-height: 24px;
+  cursor: pointer;
+}
+
+.tweak-actions button:active {
+  background: rgba(255, 255, 255, 0.14);
+}

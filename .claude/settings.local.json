@@ -12,7 +12,8 @@
       "Bash(npx tsdown *)",
       "Bash(npx @biomejs/biome check packages/core/src)",
       "Bash(npx @biomejs/biome check --write packages/core/src/lenis.ts packages/core/src/axis.ts)",
-      "Bash(npx @biomejs/biome check --write packages/core/src)"
+      "Bash(npx @biomejs/biome check --write packages/core/src)",
+      "Bash(Select-Object -ExpandProperty FullName)"
     ]
   }
 }
