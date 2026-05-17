@@ -19,6 +19,10 @@
         for (let y = 0; y < rows; y++) {
           for (let x = 0; x < cols; x++) {
             const cell = document.createElement('div')
+            const innerCell = document.createElement('div')
+            innerCell.className = 'inner-cell'
+            innerCell.textContent = `${x},${y}`
+            cell.appendChild(innerCell)
             cell.className = 'cell'
             const edge = edgeFor(x, y)
             if (edge) cell.dataset.edge = edge

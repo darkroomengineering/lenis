@@ -13,7 +13,12 @@
       "Bash(npx @biomejs/biome check packages/core/src)",
       "Bash(npx @biomejs/biome check --write packages/core/src/lenis.ts packages/core/src/axis.ts)",
       "Bash(npx @biomejs/biome check --write packages/core/src)",
-      "Bash(Select-Object -ExpandProperty FullName)"
+      "Bash(Select-Object -ExpandProperty FullName)",
+      "mcp__chrome-devtools__new_page",
+      "mcp__chrome-devtools__list_console_messages",
+      "mcp__chrome-devtools__evaluate_script",
+      "mcp__chrome-devtools__navigate_page",
+      "mcp__chrome-devtools__take_screenshot"
     ]
   }
 }

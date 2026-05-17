@@ -33,9 +33,10 @@ export type UserData = Record<string, unknown>
 
 export type Scrolling = boolean | 'native' | 'smooth'
 
-export type LenisEvent = 'scroll'
+export type LenisEvent = 'scroll' | 'gesture'
 export type ScrollCallback = (lenis: Lenis) => void
 export type GestureCallback = (data: GestureData) => void
+export type EventCallback = ScrollCallback | GestureCallback
 
 export type GestureData = {
   deltaX: number
@@ -90,6 +91,11 @@ export type ScrollToOptions = {
    * User data that will be forwarded through the scroll event
    */
   userData?: UserData
+  /**
+   * Lock the scroll to the target value
+   * @default false
+   */
+  lock?: boolean
 }
 
 export interface WheelOptions {

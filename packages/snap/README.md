@@ -54,7 +54,7 @@ npm i lenis
 
 ```jsx
     const snap = new Snap(lenis, {
-      type: 'lock',
+      lock: 'true',
       distanceThreshold: '100%',
       debounce: 0,
     })
@@ -62,8 +62,10 @@ npm i lenis
 
 ## Options
 
-- `type`: `proximity` (default), `mandatory` see [scroll-snap-type](https://developer.mozilla.org/en-US/docs/Web/CSS/scroll-snap-type) or `lock`.
-- `distanceThreshold`: `string | number` (default: '50%'). The distance threshold from the snap point to the scroll position. Ignored when `type` is `mandatory`. If a percentage, it is relative to the viewport size. If a number, it is absolute.
+- `mode`: `'closest' | 'directional'` (default: `'closest'`). How a gesture maps to a snap target.
+  - `'closest'`: predict the post-gesture scroll position and snap to the nearest target within `distanceThreshold` (velocity-aware).
+  - `'directional'`: gesture *direction* picks the halfspace; the snap closest to the current scroll position whose offset is within `distanceThreshold` wins (gesture *magnitude* is ignored). For viewport-sized cards, raise `distanceThreshold` to `'100%'` or higher so the adjacent snap is reachable. Pair with `lock: true` and `debounce: 0` for the tightest one-card-per-flick feel.
+- `distanceThreshold`: `string | number | [x, y]` (default: `'50%'`). Per-axis "max reach" — applied to the *predicted* position in `'closest'` mode, to the *current* position in `'directional'` mode. Percentages resolve against the viewport (per axis). Pass `Infinity` to disable the gate entirely (in `'closest'` mode this is the former `type: 'mandatory'` behavior).
 - `debounce`: `number` (default: 500). The debounce time for the snap.
 - `onSnapStart`: `function`. Callback when snap starts.
 - `onSnapComplete`: `function`. Callback when snap completes.

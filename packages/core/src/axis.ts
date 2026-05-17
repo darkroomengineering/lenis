@@ -1,7 +1,7 @@
 import { Animate } from './animate'
 import type { Lenis } from './lenis'
 import { modulo } from './maths'
-import type { ScrollToOptions } from './types'
+import type { ScrollToOptions, UserData } from './types'
 
 /**
  * A single scroll axis (`x` or `y`). `Lenis` owns one per direction; in single-axis
@@ -42,6 +42,24 @@ export class Axis {
    * which `Lenis` invokes at construction and on `overflow` `transitionend`.
    */
   isScrollable = true
+
+  /**
+   * Per-axis lock. When `true`, user-initiated gestures (wheel/touch) targeted at
+   * this axis are suppressed; the other axis stays interactive. Flipped on by
+   * `Lenis.scrollAxisTo` when invoked with `{ lock: true }` and cleared on
+   * animation completion. Independent from `Lenis.isLocked` (the global,
+   * user-driven `lock()` / `unlock()` flag).
+   */
+  isLocked = false
+
+  /**
+   * Per-axis user data. Set by `Lenis.scrollAxisTo` from the caller's
+   * `userData` option and cleared when this axis's animation completes.
+   * Carried through scroll callbacks via the {@link Lenis.userData} getter,
+   * which prefers `x.userData` when non-empty so a 2D `scrollTo` keeps the
+   * tag visible until *both* axes have finished animating.
+   */
+  userData: UserData = {}
 
   /**
    * Re-read the live CSS `overflow` for this axis into {@link isScrollable}. Resets

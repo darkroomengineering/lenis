@@ -27,7 +27,8 @@ const cells = Array.from({ length: rows }, (_, y) =>
     {
       cells.map(({ x, y, edge }) => (
         <div class="cell" data-edge={edge}>
-          {x},{y}
+          <div class="inner-cell">{x},{y}</div>
+          
         </div>
       ))
     }

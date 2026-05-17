@@ -1,4 +1,5 @@
 import Lenis from 'lenis'
+import Snap from 'lenis/snap'
 
 const lenis = new Lenis({
   wrapper: document.querySelector('#grid')!,
@@ -18,8 +19,22 @@ const lenis = new Lenis({
   // },
 })
 
+const snap = new Snap(lenis, {
+  // distanceThreshold: Infinity, // former `type: 'mandatory'`
+  mode: 'directional', // one snap per flick (former `type: 'lock'`)
+  lock: true,
+  debounce: 0,
+})
+
+// Each cell of the 5×5 grid is one viewport (100vw × 100svh). Each cell
+// becomes a single 2D snap target at its top-left corner — `align: 'start'`
+// applies to both axes.
+const cells = document.querySelectorAll<HTMLElement>('#grid .inner-cell')
+snap.addElements(cells, { align: ['center', 'center'] })
+
 const tweak = document.querySelector<HTMLElement>('#tweak')
-if (!tweak) throw new Error('#tweak not found — is the panel markup in the page?')
+if (!tweak)
+  throw new Error('#tweak not found — is the panel markup in the page?')
 
 const toggle = tweak.querySelector<HTMLButtonElement>('#tweak-toggle')!
 const reset = tweak.querySelector<HTMLButtonElement>('#tweak-reset')!
@@ -39,12 +54,16 @@ const format = (key: TouchKey, value: number) =>
 
 const sync = (key: TouchKey, value: number) => {
   ;(lenis.options.touch as Record<string, unknown>)[key] = value
-  const out = tweak.querySelector<HTMLOutputElement>(`output[data-out="${key}"]`)
+  const out = tweak.querySelector<HTMLOutputElement>(
+    `output[data-out="${key}"]`
+  )
   if (out) out.value = format(key, value)
 }
 
 const setInput = (key: TouchKey, value: number) => {
-  const input = tweak.querySelector<HTMLInputElement>(`input[data-key="${key}"]`)
+  const input = tweak.querySelector<HTMLInputElement>(
+    `input[data-key="${key}"]`
+  )
   if (!input) return
   input.value = String(value)
   sync(key, value)
@@ -57,7 +76,7 @@ const setInput = (key: TouchKey, value: number) => {
 inputs.forEach((input) => {
   input.addEventListener('input', () => {
     const key = input.dataset.key as TouchKey
-    sync(key, parseFloat(input.value))
+    sync(key, Number.parseFloat(input.value))
   })
 })
 
@@ -94,18 +113,10 @@ lenis.on('scroll', (lenis) => {
     // rounded: Math.round(lenis.x.scroll),
     actuallScroll: lenis.y.actualScroll,
   })
-  // console.log({
-  //   scroll: lenis.y.scroll,
-  //   rounded: Math.round(lenis.y.scroll),
-  //   actualScroll: lenis.y.actualScroll,
-  // })
-
-  if (lenis.x.scroll !== lenis.x.actualScroll) {
-    console.log('x is not actualScroll')
-  }
 })
 
 window.lenis = lenis
+;(window as unknown as { snap: Snap }).snap = snap
 
 // const wrapper = document.querySelector('#grid')!
 

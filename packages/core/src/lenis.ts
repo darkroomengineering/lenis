@@ -5,6 +5,8 @@ import { Emitter } from './emitter'
 import { GesturesHandler } from './gestures-handler'
 import { clamp } from './maths'
 import type {
+  EventCallback,
+  GestureCallback,
   GestureData,
   LenisEvent,
   LenisOptions,
@@ -29,7 +31,6 @@ const defaultEasing = (t: number) => Math.min(1, 1.001 - 2 ** (-10 * t))
 
 export class Lenis {
   private _isScrolling: Scrolling = false // true when scroll is animating
-  private _isLocked = false // true when user-initiated scroll (wheel/touch) is suppressed — toggled via lock()/unlock()
   private _preventNextNativeScrollEvent = false
   private _resetVelocityTimeout: ReturnType<typeof setTimeout> | null = null
   private _rafId: number | null = null
@@ -47,7 +48,12 @@ export class Lenis {
    */
   time = 0
   /**
-   * User data that will be forwarded through the scroll event
+   * User data carried by the in-flight scroll-to animation, forwarded
+   * through scroll callbacks. Reads through to the active axis's tag
+   * ({@link Axis.userData}) — `x` when `orientation` is `'horizontal'`,
+   * `y` otherwise. In `'both'` mode this is `y`, so consumers needing
+   * per-axis precision should read `lenis.x.userData` and
+   * `lenis.y.userData` directly.
    *
    * @example
    * lenis.scrollTo(100, {
@@ -56,7 +62,9 @@ export class Lenis {
    *   }
    * })
    */
-  userData: UserData = {}
+  get userData(): UserData {
+    return this.activeAxis.userData
+  }
   /**
    * The options passed to the lenis instance
    */
@@ -159,8 +167,6 @@ export class Lenis {
       dimensions,
       stopInertiaOnNavigate,
     }
-
-    console.log(touch, this.options.touch)
 
     // set default duration and easing if not provided
     if (
@@ -270,7 +276,8 @@ export class Lenis {
    * @returns Unsubscribe function
    */
   on(event: 'scroll', callback: ScrollCallback): () => void
-  on(event: LenisEvent, callback: ScrollCallback) {
+  on(event: 'gesture', callback: GestureCallback): () => void
+  on(event: LenisEvent, callback: EventCallback) {
     return this.emitter.on(event, callback as (...args: unknown[]) => void)
   }
 
@@ -281,7 +288,8 @@ export class Lenis {
    * @param callback Callback function
    */
   off(event: 'scroll', callback: ScrollCallback): void
-  off(event: LenisEvent, callback: ScrollCallback) {
+  off(event: 'gesture', callback: GestureCallback): void
+  off(event: LenisEvent, callback: EventCallback) {
     return this.emitter.off(event, callback as (...args: unknown[]) => void)
   }
 
@@ -381,6 +389,7 @@ export class Lenis {
     // return = false -> stop execution
     // return modified data -> modify the data and continue execution
     const data = this.options.onGesture?.(_data, this) ?? _data
+    this.emitter.emit('gesture', data)
 
     if (data === false) return
 
@@ -526,21 +535,30 @@ export class Lenis {
       }
       const config = this.isTouch ? touchConfig : wheelConfig
 
-      // Drive each axis independently, but only if it's scrollable.
-      // Programmatic `scrollTo` still works on a non-scrollable axis (matches the
-      // "scrollTo always runs" policy), only user-initiated gestures are gated.
-      if (dx !== 0 && this.x.isScrollable) {
+      // Drive each axis independently, but only if it's scrollable and not
+      // currently locked. Programmatic `scrollTo` still works on a locked /
+      // non-scrollable axis (matches the "scrollTo always runs" policy);
+      // only user-initiated gestures are gated.
+      if (dx !== 0 && this.x.isScrollable && !this.x.isLocked) {
         this.scrollAxisTo(this.x, this.x.targetScroll + dx, {
           programmatic: false,
           ...config,
         })
       }
-      if (dy !== 0 && this.y.isScrollable) {
+      if (dy !== 0 && this.y.isScrollable && !this.y.isLocked) {
         this.scrollAxisTo(this.y, this.y.targetScroll + dy, {
           programmatic: false,
           ...config,
         })
       }
+      return
+    }
+
+    // Per-axis lock for 1D mode: if the active axis is mid-snap/programmatic
+    // lock, swallow the gesture. The blanket `this.isLocked` check above
+    // handles the user-driven global lock; this handles the per-axis one.
+    if (this.activeAxis.isLocked) {
+      if (event.cancelable) event.preventDefault()
       return
     }
 
@@ -671,12 +689,22 @@ export class Lenis {
     return this.x.animate.isRunning || this.y.animate.isRunning
   }
 
+  /**
+   * Lock both scroll axes — user-initiated wheel/touch gestures are suppressed
+   * on both `x` and `y`. Programmatic `scrollTo` still runs (matches the
+   * "scrollTo always runs" policy). Pair with {@link unlock}.
+   */
   lock() {
-    this.isLocked = true
+    this.x.isLocked = true
+    this.y.isLocked = true
+    this.updateClassName()
   }
 
+  /** Release the lock on both axes. */
   unlock() {
-    this.isLocked = false
+    this.x.isLocked = false
+    this.y.isLocked = false
+    this.updateClassName()
   }
 
   /**
@@ -862,8 +890,8 @@ export class Lenis {
   /**
    * Drive the given `axis` to a numeric `target`. The animation state machine —
    * infinite-wrap, clamp, `immediate` vs animated branches, `onStart` / `onUpdate` /
-   * `onComplete` — all per-axis. Lenis-level state (`isScrolling`, `userData`,
-   * `emit`, scrollend dispatch) lives on `this` and is shared.
+   * `onComplete`, plus the `userData` tag — all per-axis. Lenis-level state
+   * (`isScrolling`, `emit`, scrollend dispatch) lives on `this` and is shared.
    *
    * @internal exposed for `Axis.scrollTo` to delegate.
    */
@@ -876,6 +904,7 @@ export class Lenis {
       lerp = programmatic ? this.options.wheel.lerp : undefined,
       duration = programmatic ? this.options.duration : undefined,
       easing = programmatic ? this.options.easing : undefined,
+      lock = false,
       onStart,
       onComplete,
       userData,
@@ -899,13 +928,19 @@ export class Lenis {
       target = clamp(0, target, axis.limit)
     }
 
+    // Tag this axis with the caller's userData up front so it's visible on
+    // the early-return path too. The `Lenis.userData` getter aggregates
+    // across both axes, so 2D scrollTo keeps the tag readable until both
+    // axes have finished animating — without us having to gate clears on
+    // `isAnyAxisAnimating`.
+    axis.userData = userData ?? {}
+
     if (target === axis.targetScroll) {
       onStart?.(this)
       onComplete?.(this)
+      axis.userData = {}
       return
     }
-
-    this.userData = userData ?? {}
 
     if (immediate) {
       axis.animatedScroll = axis.targetScroll = target
@@ -915,7 +950,7 @@ export class Lenis {
       this.preventNextNativeScrollEvent()
       this.emit()
       onComplete?.(this)
-      this.userData = {}
+      axis.userData = {}
 
       requestAnimationFrame(() => {
         this.dispatchScrollendEvent()
@@ -940,6 +975,13 @@ export class Lenis {
       lerp,
       onStart: () => {
         this.isScrolling = 'smooth'
+        // Per-axis lock: suppresses wheel/touch on this axis only. The other
+        // axis stays interactive even when both are animating (each lock
+        // releases independently on its own animation's completion).
+        if (lock) {
+          axis.isLocked = true
+          this.updateClassName()
+        }
         onStart?.(this)
       },
       onUpdate: (value: number, completed: boolean) => {
@@ -963,9 +1005,15 @@ export class Lenis {
         if (completed) {
           axis.reset()
           if (!this.isAnyAxisAnimating) this.isScrolling = false
+          // Release the per-axis lock as soon as this axis finishes; the
+          // other axis keeps its own lock until its own animation completes.
+          if (lock) {
+            axis.isLocked = false
+            this.updateClassName()
+          }
           this.emit()
           onComplete?.(this)
-          this.userData = {}
+          axis.userData = {}
 
           requestAnimationFrame(() => {
             this.dispatchScrollendEvent()
@@ -1130,17 +1178,20 @@ export class Lenis {
   }
 
   /**
-   * Check if lenis is locked
+   * Whether user-initiated scrolling is suppressed.
+   *
+   * Composed from the per-axis locks (`lenis.x.isLocked`, `lenis.y.isLocked`):
+   * - `orientation: 'vertical'` → mirrors `y.isLocked`
+   * - `orientation: 'horizontal'` → mirrors `x.isLocked`
+   * - `orientation: 'both'` → true only when **both** axes are locked
+   *   (a partial lock from `scrollTo({ x }, { lock: true })` doesn't report
+   *   the whole instance as locked, since the other axis is still interactive).
    */
   get isLocked() {
-    return this._isLocked
-  }
-
-  private set isLocked(value: boolean) {
-    if (this._isLocked !== value) {
-      this._isLocked = value
-      this.updateClassName()
-    }
+    const orientation = this.options.orientation
+    if (orientation === 'horizontal') return this.x.isLocked
+    if (orientation === 'both') return this.x.isLocked || this.y.isLocked
+    return this.y.isLocked
   }
 
   /**
