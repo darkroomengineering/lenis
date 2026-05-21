@@ -43,11 +43,11 @@ const lenis = new Lenis({
     smooth: true,
     // duration: 5,
   },
-  dimensions: {
-    mode: 'read',
-  },
+  // dimensions: {
+  //   mode: 'read',
+  // },
   onGesture: (data, lenis) => {
-    console.log(data)
+    // console.log(data)
     // return {
     //   ...data,
     //   deltaX: data.deltaX * 2,

@@ -1,5 +1,5 @@
 import Lenis from 'lenis'
-import Snap from 'lenis/snap'
+import type Snap from 'lenis/snap'
 
 const lenis = new Lenis({
   wrapper: document.querySelector('#grid')!,
@@ -19,18 +19,18 @@ const lenis = new Lenis({
   // },
 })
 
-const snap = new Snap(lenis, {
-  // distanceThreshold: Infinity, // former `type: 'mandatory'`
-  mode: 'directional', // one snap per flick (former `type: 'lock'`)
-  lock: true,
-  debounce: 0,
-})
+// const snap = new Snap(lenis, {
+//   distanceThreshold: Number.POSITIVE_INFINITY, // former `type: 'mandatory'`
+//   mode: 'directional', // one snap per flick (former `type: 'lock'`)
+//   lock: true,
+//   debounce: 0,
+// })
 
-// Each cell of the 5×5 grid is one viewport (100vw × 100svh). Each cell
-// becomes a single 2D snap target at its top-left corner — `align: 'start'`
-// applies to both axes.
-const cells = document.querySelectorAll<HTMLElement>('#grid .inner-cell')
-snap.addElements(cells, { align: ['center', 'center'] })
+// // Each cell of the 5×5 grid is one viewport (100vw × 100svh). Each cell
+// // becomes a single 2D snap target at its top-left corner — `align: 'start'`
+// // applies to both axes.
+// const cells = document.querySelectorAll<HTMLElement>('#grid .inner-cell')
+// snap.addElements(cells, { align: ['center', 'center'] })
 
 const tweak = document.querySelector<HTMLElement>('#tweak')
 if (!tweak)
@@ -116,7 +116,7 @@ lenis.on('scroll', (lenis) => {
 })
 
 window.lenis = lenis
-;(window as unknown as { snap: Snap }).snap = snap
+// ;(window as unknown as { snap: Snap }).snap = snap
 
 // const wrapper = document.querySelector('#grid')!
 

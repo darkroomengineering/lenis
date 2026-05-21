@@ -176,3 +176,9 @@ html, body {
 .tweak-actions button:active {
   background: rgba(255, 255, 255, 0.14);
 }
+
+@media (min-width: 768px) {
+  #tweak {
+    display: none;
+  }
+}

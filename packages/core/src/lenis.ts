@@ -123,9 +123,9 @@ export class Lenis {
       wrapper = window
     }
 
-    // if (wrapper === window) {
-    //   content = document.documentElement
-    // }
+    if (wrapper === window) {
+      content = document.documentElement
+    }
 
     eventsTarget ??= wrapper
 
