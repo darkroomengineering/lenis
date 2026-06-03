@@ -18,7 +18,16 @@
       "mcp__chrome-devtools__list_console_messages",
       "mcp__chrome-devtools__evaluate_script",
       "mcp__chrome-devtools__navigate_page",
-      "mcp__chrome-devtools__take_screenshot"
+      "mcp__chrome-devtools__take_screenshot",
+      "Bash(bun --version)",
+      "Bash(curl -fsSL https://bun.sh/install)",
+      "Bash(bash)",
+      "Bash(~/.bun/bin/bun --version)",
+      "Bash(timeout 8 bun run --parallel dev:build dev:playground)",
+      "Bash(git add *)",
+      "Bash(git reset *)",
+      "Bash(git commit -m ' *)",
+      "Bash(git push *)"
     ]
   }
 }
