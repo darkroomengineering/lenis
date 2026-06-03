@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useSyncExternalStore } from 'react'
 
 type Listener<S> = (state: S) => void
 
@@ -15,24 +15,18 @@ export class Store<S> {
     }
   }
 
-  subscribe(listener: Listener<S>) {
+  subscribe = (listener: Listener<S>) => {
     this.listeners = [...this.listeners, listener]
     return () => {
       this.listeners = this.listeners.filter((l) => l !== listener)
     }
   }
 
-  get() {
+  get = () => {
     return this.state
   }
 }
 
 export function useStore<S>(store: Store<S>) {
-  const [state, setState] = useState(store.get())
-
-  useEffect(() => {
-    return store.subscribe((state) => setState(state))
-  }, [store])
-
-  return state
+  return useSyncExternalStore(store.subscribe, store.get, store.get)
 }
