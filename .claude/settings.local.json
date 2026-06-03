@@ -27,7 +27,15 @@
       "Bash(git add *)",
       "Bash(git reset *)",
       "Bash(git commit -m ' *)",
-      "Bash(git push *)"
+      "Bash(git push *)",
+      "Bash(git fetch *)",
+      "Bash(gh repo *)",
+      "Bash(gh pr create --base v2 --head v2-multi-axis --title 'v2 multi-axis' --body ' *)",
+      "Bash(git *)",
+      "Bash(awk '/scrollAxisTo\\\\\\(/{f=1} f{print NR\": \"$0} /^  \\\\}$/{if\\(f\\)c++; if\\(c>=1 && f && /^  \\\\}$/\\){exit}}' /Users/clement/Desktop/darkroom/lenis/packages/core/src/lenis.ts)",
+      "Bash(awk 'NR>=840 && NR<=950 {print NR\": \"$0}' /Users/clement/Desktop/darkroom/lenis/packages/core/src/lenis.ts)",
+      "Bash(grep -nA3 -B3 \"emit\\('gesture'\")",
+      "Bash(cd *)"
     ]
   }
 }

@@ -389,9 +389,9 @@ export class Lenis {
     // return = false -> stop execution
     // return modified data -> modify the data and continue execution
     const data = this.options.onGesture?.(_data, this) ?? _data
-    this.emitter.emit('gesture', data)
 
     if (data === false) return
+    this.emitter.emit('gesture', data)
 
     let { deltaX, deltaY, event, type } = data
 
