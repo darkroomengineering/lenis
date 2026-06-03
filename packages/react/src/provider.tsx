@@ -34,7 +34,6 @@ export const ReactLenis: ForwardRefExoticComponent<
       children,
       root = false,
       options = {},
-      autoRaf = true,
       className = '',
       ...props
     }: LenisProps,
@@ -65,7 +64,7 @@ export const ReactLenis: ForwardRefExoticComponent<
             wrapper: wrapperRef.current!,
             content: contentRef.current!,
           }),
-        autoRaf: options?.autoRaf ?? autoRaf, // this is to avoid breaking the autoRaf prop if it's still used (require breaking change)
+        autoRaf: options?.autoRaf,
       })
 
       setLenis(lenis)
@@ -74,7 +73,7 @@ export const ReactLenis: ForwardRefExoticComponent<
         lenis.destroy()
         setLenis(undefined)
       }
-    }, [autoRaf, JSON.stringify({ ...options, wrapper: null, content: null })])
+    }, [JSON.stringify({ ...options, wrapper: null, content: null })])
 
     // Handle callbacks
     const callbacksRefs = useRef<
