@@ -20,12 +20,6 @@ export type LenisProps = ComponentPropsWithoutRef<'div'> & {
    */
   options?: LenisOptions
   /**
-   * Auto-setup requestAnimationFrame
-   * @default true
-   * @deprecated use options.autoRaf instead
-   */
-  autoRaf?: boolean
-  /**
    * Children
    */
   children?: ReactNode
