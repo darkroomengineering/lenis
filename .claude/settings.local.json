@@ -35,7 +35,14 @@
       "Bash(awk '/scrollAxisTo\\\\\\(/{f=1} f{print NR\": \"$0} /^  \\\\}$/{if\\(f\\)c++; if\\(c>=1 && f && /^  \\\\}$/\\){exit}}' /Users/clement/Desktop/darkroom/lenis/packages/core/src/lenis.ts)",
       "Bash(awk 'NR>=840 && NR<=950 {print NR\": \"$0}' /Users/clement/Desktop/darkroom/lenis/packages/core/src/lenis.ts)",
       "Bash(grep -nA3 -B3 \"emit\\('gesture'\")",
-      "Bash(cd *)"
+      "Bash(cd *)",
+      "Bash(node -e \"console.log\\(require\\('./node_modules/lenis/package.json'\\).types || require\\('./node_modules/lenis/package.json'\\).exports\\)\")",
+      "Bash(node -e \"const p=require\\('./package.json'\\); console.log\\(JSON.stringify\\(p.workspaces,null,2\\)\\)\")",
+      "Bash(node -e \"const p=require\\('./playground/package.json'\\); console.log\\(JSON.stringify\\({name:p.name,deps:p.dependencies},null,2\\)\\)\")",
+      "Bash(node -e \"const p=require\\('./package.json'\\); console.log\\(JSON.stringify\\({main:p.main,module:p.module,types:p.types,exportsDot:p.exports&&p.exports['.']},null,2\\)\\)\")",
+      "Bash(pnpm --filter lenis typecheck)",
+      "Bash(bun run *)",
+      "Bash(gh pr *)"
     ]
   }
 }

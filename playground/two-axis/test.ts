@@ -1,5 +1,5 @@
 import Lenis from 'lenis'
-import type Snap from 'lenis/snap'
+import Snap from 'lenis/snap'
 
 const lenis = new Lenis({
   wrapper: document.querySelector('#grid')!,
@@ -19,18 +19,24 @@ const lenis = new Lenis({
   // },
 })
 
-// const snap = new Snap(lenis, {
-//   distanceThreshold: Number.POSITIVE_INFINITY, // former `type: 'mandatory'`
-//   mode: 'directional', // one snap per flick (former `type: 'lock'`)
-//   lock: true,
-//   debounce: 0,
-// })
+const snap = new Snap(lenis, {
+  distanceThreshold: Number.POSITIVE_INFINITY, // former `type: 'mandatory'`
+  mode: 'directional', // one snap per flick (former `type: 'lock'`)
+  // lock: true,
+  debounce: 500,
+  onSnapComplete: (data) => {
+    console.log('complete', data)
+  },
+  onSnapStart: (data) => {
+    console.log('start', data)
+  },
+})
 
 // // Each cell of the 5×5 grid is one viewport (100vw × 100svh). Each cell
 // // becomes a single 2D snap target at its top-left corner — `align: 'start'`
 // // applies to both axes.
-// const cells = document.querySelectorAll<HTMLElement>('#grid .inner-cell')
-// snap.addElements(cells, { align: ['center', 'center'] })
+const cells = document.querySelectorAll<HTMLElement>('#grid .inner-cell')
+snap.addElements(cells, { align: ['center', 'center'] })
 
 const tweak = document.querySelector<HTMLElement>('#tweak')
 if (!tweak)
@@ -108,7 +114,7 @@ copy.addEventListener('click', async () => {
 
 lenis.on('scroll', (lenis) => {
   // console.log(lenis.isScrolling, lenis.isTouch, lenis.isWheel)
-  console.log({
+  console.log(lenis, {
     scroll: lenis.y.scroll,
     // rounded: Math.round(lenis.x.scroll),
     actuallScroll: lenis.y.actualScroll,

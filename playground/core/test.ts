@@ -68,6 +68,7 @@ const lenis = new Lenis({
 
 lenis.on('scroll', (lenis) => {
   console.log({
+    userData: lenis.userData,
     scroll: lenis.scroll,
     actualScroll: lenis.actualScroll,
     targetScroll: lenis.targetScroll,
@@ -164,6 +165,9 @@ document.getElementById('start')?.addEventListener('click', () => {
 
 document.getElementById('scroll-start')?.addEventListener('click', () => {
   lenis.scrollTo(100, {
+    userData: {
+      test: 'test',
+    },
     lock: true,
     duration: 1,
     onComplete: () => {
