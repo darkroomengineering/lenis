@@ -36,12 +36,12 @@ Read our [Manifesto](https://github.com/darkroomengineering/lenis/blob/main/MANI
 
 ## Features
 
-- Lightweight, robust, and dependency-free smooth scroll
-- Runs on top of native scroll, so `position: sticky`, anchor links, and accessibility keep working
-- Smooth vertical, horizontal, and nested scrolling
-- Built for syncing scroll with WebGL, GSAP, and parallax effects
-- First-class packages for React, Vue, and Framer
-- Snap plugin for scroll-snapping sections
+- **Lightweight & dependency-free** — the whole library is a few KB with zero runtime dependencies
+- **Runs on native scroll** — wraps the browser's own scroll, so position: sticky, anchor links, and accessibility keep working
+- **Any axis** — smooth vertical, horizontal, and nested scrolling from a single instance
+- **Built for sync** — drives WebGL scroll scenes, GSAP ScrollTrigger, and parallax off one loop
+- **Framework adapters** — first-class packages for React, Vue, and Framer
+- **Scroll snapping** — the snap plugin aligns sections without fighting the smooth scroll
 
 ## Sponsors
 
