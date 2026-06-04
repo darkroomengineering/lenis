@@ -1,7 +1,7 @@
 import { Animate } from './animate'
 import type { Lenis } from './lenis'
 import { modulo } from './maths'
-import type { ScrollToOptions, UserData } from './types'
+import type { ScrollToOptions } from './types'
 
 /**
  * A single scroll axis (`x` or `y`). `Lenis` owns one per direction; in single-axis
@@ -44,24 +44,6 @@ export class Axis {
   isScrollable = true
 
   /**
-   * Per-axis lock. When `true`, user-initiated gestures (wheel/touch) targeted at
-   * this axis are suppressed; the other axis stays interactive. Flipped on by
-   * `Lenis.scrollAxisTo` when invoked with `{ lock: true }` and cleared on
-   * animation completion. Independent from `Lenis.isLocked` (the global,
-   * user-driven `lock()` / `unlock()` flag).
-   */
-  isLocked = false
-
-  /**
-   * Per-axis user data. Set by `Lenis.scrollAxisTo` from the caller's
-   * `userData` option and cleared when this axis's animation completes.
-   * Carried through scroll callbacks via the {@link Lenis.userData} getter,
-   * which prefers `x.userData` when non-empty so a 2D `scrollTo` keeps the
-   * tag visible until *both* axes have finished animating.
-   */
-  userData: UserData = {}
-
-  /**
    * Re-read the live CSS `overflow` for this axis into {@link isScrollable}. Resets
    * the axis if it just flipped to non-scrollable (so an in-flight animation halts).
    *
@@ -92,11 +74,15 @@ export class Axis {
   }
 
   /**
-   * Scroll this axis to a numeric target. Thin wrapper around `lenis.scrollAxisTo`
-   * so this axis is the one driven.
+   * Scroll this axis to a numeric target. Routes through `lenis.scrollTo` so
+   * the call gets the same single-fire orchestration (`onStart` / `onComplete`,
+   * `userData`, `lock`) as any other `scrollTo`.
    */
   scrollTo(target: number, options?: ScrollToOptions) {
-    this.lenis.scrollAxisTo(this, target, options)
+    this.lenis.scrollTo(
+      this.axis === 'x' ? { x: target } : { y: target },
+      options
+    )
   }
 
   /** Write a scroll value to the wrapper for this axis (bypasses `scroll-behavior`). */

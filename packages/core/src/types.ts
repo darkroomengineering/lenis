@@ -51,10 +51,11 @@ export type EasingFunction = (time: number) => number
 
 export type ScrollToOptions = {
   /**
-   * The offset to apply to the target value
+   * The offset to apply to the target value. A single number applies to every
+   * driven axis; pass `{ x?, y? }` to offset each axis independently.
    * @default 0
    */
-  offset?: number
+  offset?: number | { x?: number; y?: number }
   /**
    * Skip the animation and jump to the target value immediately
    * @default false
@@ -191,7 +192,7 @@ export type LenisOptions = {
   /**
    * Called on every gesture event (wheel or touch)
    */
-  onGesture?: (data: GestureData, lenis: Lenis) => GestureData | false
+  onGesture?: (data: GestureData, lenis: Lenis) => GestureData | false | void
   /**
    * Wether or not to enable overscroll on a nested Lenis instance, similar to CSS overscroll-behavior (https://developer.mozilla.org/en-US/docs/Web/CSS/overscroll-behavior)
    * @default true

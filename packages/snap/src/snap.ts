@@ -42,9 +42,9 @@ export class Snap {
   onSnapDebounced: (e: GestureData) => void
   currentSnapIndex?: number
   /**
-   * Per-axis count of snap animations currently in flight. We track our own
-   * because `lenis.userData` is wiped when the first axis of a 2D snap
-   * completes, so it can't be used as an "is snapping" gate.
+   * Count of snap operations currently in flight. `scrollTo` fires `onStart` /
+   * `onComplete` once per call (even for a 2D `{ x, y }` snap), so this is a
+   * clean "is snapping" gate: incremented on start, decremented on complete.
    */
   private inFlight = 0
 
@@ -258,9 +258,8 @@ export class Snap {
     if (currentSnap.x !== undefined) target.x = currentSnap.x
     if (currentSnap.y !== undefined) target.y = currentSnap.y
 
-    // `scrollTo` with a 2D target dispatches per axis, so onStart/onComplete
-    // fire once per animating axis. Counting both lets us know when *any*
-    // snap animation is still running.
+    // `scrollTo` runs the 2D target as one operation, firing onStart/onComplete
+    // once for the whole snap — so onSnapStart/onSnapComplete fire once each.
     this.lenis.scrollTo(target, {
       duration: this.options.duration,
       easing: this.options.easing,
@@ -405,10 +404,8 @@ export class Snap {
 
       // Direction gate: each gesture-active axis with a defined snap coord
       // must lie in the gesture's halfspace.
-      if (dirX !== 0 && snap.x !== undefined && Math.sign(dx) !== dirX)
-        continue
-      if (dirY !== 0 && snap.y !== undefined && Math.sign(dy) !== dirY)
-        continue
+      if (dirX !== 0 && snap.x !== undefined && Math.sign(dx) !== dirX) continue
+      if (dirY !== 0 && snap.y !== undefined && Math.sign(dy) !== dirY) continue
 
       // Reach gate: snap must sit within `distanceThreshold` of the current
       // scroll on each axis with a defined coord. Acts as a "max jump" so
