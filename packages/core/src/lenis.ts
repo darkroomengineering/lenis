@@ -1211,6 +1211,14 @@ export class Lenis {
   }
 
   /**
+   * Whether Lenis is currently smooth-scrolling (a Lenis animation is driving a
+   * scroll, on any axis) — i.e. {@link isScrolling} is `'smooth'`.
+   */
+  get isSmooth() {
+    return this.isScrolling === 'smooth'
+  }
+
+  /**
    * Whether the user can scroll: `true` when at least one live axis is scrollable
    * (cached per-axis on `lenis.x.isScrollable` / `lenis.y.isScrollable`, refreshed
    * at construction and on `overflow` `transitionend`). The `lenis-stopped` class is

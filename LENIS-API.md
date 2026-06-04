@@ -168,6 +168,10 @@ lenis.isLocked = false
 - `'native'` — consuming a non-smooth native scroll.
 - `false` — idle. In 2D, becomes `false` only once **no** axis is animating.
 
+### `isSmooth` — get `boolean`
+
+**Rule:** `true` when Lenis is smooth-scrolling — shorthand for `isScrolling === 'smooth'`.
+
 ### `isScrollable` — get `boolean`
 
 **Rule:** whether the user can scroll, derived from the wrapper's CSS `overflow`. `true`
