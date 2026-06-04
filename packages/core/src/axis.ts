@@ -46,11 +46,11 @@ export class Axis {
   /**
    * Re-read the live CSS `overflow` for this axis into {@link isScrollable}. Resets
    * the axis if it just flipped to non-scrollable (so an in-flight animation halts).
-   *
-   * Returns `true` when {@link isScrollable} changed.
    */
   checkOverflow() {
+    if (this.isScrollable === this.cssOverflow) return
     this.isScrollable = this.cssOverflow
+    this.reset()
   }
 
   /**

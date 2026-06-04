@@ -322,6 +322,8 @@ export class Lenis {
   private checkOverflow() {
     this.x.checkOverflow()
     this.y.checkOverflow()
+    // Reflect a live overflow flip in the class names (e.g. `lenis-stopped`).
+    this.updateClassName()
   }
 
   private onTransitionEnd = (event: TransitionEvent) => {
