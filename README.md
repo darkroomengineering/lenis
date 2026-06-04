@@ -14,6 +14,7 @@ Read our [Manifesto](https://github.com/darkroomengineering/lenis/blob/main/MANI
 
 <br/>
 
+- [Features](#features)
 - [Sponsors](#sponsors)
 - [Packages](#packages)
 - [Showcase](https://www.lenis.dev/showcase)
@@ -32,6 +33,15 @@ Read our [Manifesto](https://github.com/darkroomengineering/lenis/blob/main/MANI
 - [License](#license)
 
 <br/>
+
+## Features
+
+- Lightweight, robust, and dependency-free smooth scroll
+- Runs on top of native scroll, so `position: sticky`, anchor links, and accessibility keep working
+- Smooth vertical, horizontal, and nested scrolling
+- Built for syncing scroll with WebGL, GSAP, and parallax effects
+- First-class packages for React, Vue, and Framer
+- Snap plugin for scroll-snapping sections
 
 ## Sponsors
 
