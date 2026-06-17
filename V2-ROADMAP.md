@@ -119,6 +119,7 @@ The CSS is the source of truth: Lenis observes the root's overflow and reacts. U
 
 - [x] Split `root` into two orthogonal props: `root` (target window, render no wrapper divs) and `rootContext` (register in the global store so `useLenis` reaches it anywhere). `rootContext` defaults to `root`. Removes the overloaded `root="asChild"` string.
 - [x] Use `useSyncExternalStore` for state management (`store.ts`)
+- [x] Named instances: `<ReactLenis name="sidebar">` → `useLenis('sidebar')`. The single-slot global store became a keyed registry; the global root is just the entry under `ROOT_KEY`, so `rootContext` and `name` share one mechanism.
 
 ---
 

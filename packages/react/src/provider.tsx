@@ -10,18 +10,10 @@ import {
   useRef,
   useState,
 } from 'react'
-import { Store } from './store'
+import { getRegistryStore, ROOT_KEY } from './store'
 import type { LenisContextValue, LenisProps, LenisRef } from './types'
 
 export const LenisContext = createContext<LenisContextValue | null>(null)
-
-/**
- * The root store for the lenis context
- *
- * This store serves as a fallback for the context if it is not available
- * and allows us to use the global lenis instance above a provider
- */
-export const rootLenisContextStore = new Store<LenisContextValue | null>(null)
 
 /**
  * React component to setup a Lenis instance
@@ -34,6 +26,7 @@ export const ReactLenis: ForwardRefExoticComponent<
       children,
       root = false,
       rootContext = root,
+      name,
       options = {},
       className = '',
       ...props
@@ -101,14 +94,28 @@ export const ReactLenis: ForwardRefExoticComponent<
       []
     )
 
-    // Publish to the global store so useLenis() works outside this subtree
+    // Publish to the named registry so useLenis() / useLenis(name) can reach
+    // this instance from outside its subtree. `rootContext` -> the global
+    // ROOT_KEY entry, `name` -> its own key; both are entries in one registry.
     useEffect(() => {
-      if (rootContext && lenis) {
-        rootLenisContextStore.set({ lenis, addCallback, removeCallback })
+      if (!lenis) return
 
-        return () => rootLenisContextStore.set(null)
+      const keys: string[] = []
+      if (rootContext) keys.push(ROOT_KEY)
+      if (name && name !== ROOT_KEY) keys.push(name)
+      if (keys.length === 0) return
+
+      const value = { lenis, addCallback, removeCallback }
+      for (const key of keys) {
+        getRegistryStore(key).set(value)
       }
-    }, [rootContext, lenis, addCallback, removeCallback])
+
+      return () => {
+        for (const key of keys) {
+          getRegistryStore(key).set(null)
+        }
+      }
+    }, [rootContext, name, lenis, addCallback, removeCallback])
 
     // Setup callback listeners
     useEffect(() => {

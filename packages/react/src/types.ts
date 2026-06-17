@@ -24,6 +24,12 @@ export type LenisProps = ComponentPropsWithoutRef<'div'> & {
    */
   rootContext?: boolean
   /**
+   * Register this instance under a name so it can be reached from anywhere via
+   * `useLenis(name)`, independent of the provider subtree. Use it to expose
+   * secondary scrollers (e.g. a sidebar) alongside the global root.
+   */
+  name?: string
+  /**
    * Lenis options
    */
   options?: LenisOptions
