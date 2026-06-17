@@ -42,7 +42,17 @@
       "Bash(node -e \"const p=require\\('./package.json'\\); console.log\\(JSON.stringify\\({main:p.main,module:p.module,types:p.types,exportsDot:p.exports&&p.exports['.']},null,2\\)\\)\")",
       "Bash(pnpm --filter lenis typecheck)",
       "Bash(bun run *)",
-      "Bash(gh pr *)"
+      "Bash(gh pr *)",
+      "Bash(node --input-type=module -e ' *)",
+      "Bash(node -e \"const p=require\\('./package.json'\\); console.log\\('react:', JSON.stringify\\(p.exports['./react']\\)\\); console.log\\('css:', JSON.stringify\\(p.exports['./dist/lenis.css'] ?? 'via ./dist/* or files'\\)\\)\")",
+      "Bash(node -e \"const p=require\\('./package.json'\\); console.log\\(Object.keys\\(p.exports\\)\\)\")",
+      "Read(//tmp/**)",
+      "Bash(pkill -f \"astro dev\")",
+      "Bash(pkill -f \"astro/dist/cli\")",
+      "mcp__plugin_chrome-devtools-mcp_chrome-devtools__new_page",
+      "mcp__plugin_chrome-devtools-mcp_chrome-devtools__evaluate_script",
+      "mcp__plugin_chrome-devtools-mcp_chrome-devtools__take_screenshot",
+      "mcp__plugin_chrome-devtools-mcp_chrome-devtools__list_console_messages"
     ]
   }
 }

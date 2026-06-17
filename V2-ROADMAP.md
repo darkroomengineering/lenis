@@ -181,7 +181,13 @@ Simultaneous horizontal + vertical scrolling (2D canvas, maps, spreadsheets, lay
 
 **Full design + step-by-step plan: [`MULTI-AXIS-PLAN.md`](./MULTI-AXIS-PLAN.md).**
 
-Current state: `Axis` class exists (`packages/core/src/axis.ts`) but is rough scaffolding — getter-only `isStopped` / `isLocked` stubs, references members that don't exist yet, leftover `console.log`; `Lenis` doesn't delegate to it; `playground/two-axis` (5×5 viewport grid) is in place as a test bed. Next: clean-sheet the `Axis` class, then refactor `Lenis` to delegate to it (single-axis, no API change) before adding `orientation: 'both'`.
+Current state: **core mechanics are implemented and verified working.** The `Axis` class (`packages/core/src/axis.ts`) is clean — per-axis state, `checkOverflow`, `reset`, `advance`, `scrollTo`, `scroll`/`limit`/`progress`. `Lenis` delegates to `this.x` / `this.y`, and `orientation: 'both'` is wired through gesture routing, scroll emission, the single per-frame DOM write, `scrollTo`, and `isScrollable`. `lenis/snap` is 2D-aware (per-axis `align`, 2D candidate selection). Verified in a browser on `playground/two-axis`: diagonal `scrollTo`, combined-delta wheel (both axes), DOM sync, and 2D snap to cell centers all behave.
+
+Remaining before stable:
+
+- ⏳ Real touch / trackpad-inertia testing on devices (only wheel + programmatic verified so far)
+- ⏳ Resolve the top-level `duration` / `easing` scope question (see [Open design questions](#open-design-questions))
+- ⏳ Polished examples (the two-axis playground is still a raw test bed)
 
 ### ⏳ Auto CSS injection
 
@@ -218,7 +224,7 @@ Warn in development mode when `infinite` is used on `html`/`body` (causes flicke
 ### Examples
 
 - ✅ `playground/touch` — native vs Lenis side-by-side for debugging `touch.smooth` on real devices
-- 🚧 `playground/two-axis` — 5×5 viewport-sized grid for 2D scroll testing (corner cells colour-coded)
+- 🚧 `playground/two-axis` — 5×5 viewport-sized grid for 2D scroll testing (corner cells colour-coded); functional test bed, not yet a polished example
 - ⏳ Nested scroll
 - ⏳ Horizontal scroll
 - ⏳ Framework integrations
