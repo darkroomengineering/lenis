@@ -10,11 +10,19 @@ export type LenisContextValue = {
 
 export type LenisProps = ComponentPropsWithoutRef<'div'> & {
   /**
-   * Setup a global instance of Lenis
-   * if `asChild`, the component will render wrapper and content divs
+   * Target the window: render no wrapper divs and let Lenis drive the page
+   * scroll. When `false`, Lenis scrolls the wrapper/content divs it renders.
    * @default false
    */
-  root?: boolean | 'asChild'
+  root?: boolean
+  /**
+   * Register this instance in the global store so `useLenis` can reach it from
+   * anywhere in the app (outside this provider's subtree). Independent of
+   * `root` — set it to expose a scoped container globally, or to keep a window
+   * scroller local. Defaults to `root`.
+   * @default root
+   */
+  rootContext?: boolean
   /**
    * Lenis options
    */
@@ -35,13 +43,13 @@ export type LenisRef = {
   /**
    * The wrapper div element
    *
-   * Will only be defined if `root` is `false` or `root` is `asChild`
+   * Will only be defined if `root` is `false`
    */
   wrapper: HTMLDivElement | null
   /**
    * The content div element
    *
-   * Will only be defined if `root` is `false` or `root` is `asChild`
+   * Will only be defined if `root` is `false`
    */
   content: HTMLDivElement | null
   /**

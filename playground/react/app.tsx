@@ -15,7 +15,7 @@ function App() {
   }, [])
 
   return (
-    <ReactLenis className={`wrapper a-${count}`} root="asChild" ref={lenisRef}>
+    <ReactLenis className={`wrapper a-${count}`} rootContext ref={lenisRef}>
       <div className="debug-panel">
         <button type="button" onClick={() => setCount((c) => c + 1)}>
           Re-render ({count})

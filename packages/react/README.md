@@ -42,7 +42,8 @@ function App() {
 
 ## Props
 - `options`: [Lenis options](https://github.com/darkroomengineering/lenis#instance-settings).
-- `root`: When `true`, makes the Lenis instance globally accessible via `useLenis` from anywhere in your app (even outside the provider tree). Lenis will use the default `<html>` scroll container. When `'asChild'`, renders wrapper elements for custom scroll containers while still making the instance globally accessible. Default: `false`.
+- `root`: When `true`, Lenis drives the window/page scroll and renders no wrapper elements. When `false`, Lenis scrolls the wrapper/content divs it renders for you. Default: `false`.
+- `rootContext`: Registers the instance in the global store so `useLenis` can reach it from anywhere in your app (even outside the provider tree). Independent of `root` — set it on a scoped container (`root={false}`) to expose it globally. Default: same as `root`.
 
 ## Hooks
 Once the Lenis context is set (components mounted inside `<ReactLenis>`) you can use these handy hooks:

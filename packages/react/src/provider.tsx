@@ -33,6 +33,7 @@ export const ReactLenis: ForwardRefExoticComponent<
     {
       children,
       root = false,
+      rootContext = root,
       options = {},
       className = '',
       ...props
@@ -100,14 +101,14 @@ export const ReactLenis: ForwardRefExoticComponent<
       []
     )
 
-    // This makes sure to set the global context if the root is true
+    // Publish to the global store so useLenis() works outside this subtree
     useEffect(() => {
-      if (root && lenis) {
+      if (rootContext && lenis) {
         rootLenisContextStore.set({ lenis, addCallback, removeCallback })
 
         return () => rootLenisContextStore.set(null)
       }
-    }, [root, lenis, addCallback, removeCallback])
+    }, [rootContext, lenis, addCallback, removeCallback])
 
     // Setup callback listeners
     useEffect(() => {
@@ -132,7 +133,7 @@ export const ReactLenis: ForwardRefExoticComponent<
       <LenisContext.Provider
         value={{ lenis: lenis!, addCallback, removeCallback }}
       >
-        {root && root !== 'asChild' ? (
+        {root ? (
           children
         ) : (
           <div

@@ -117,8 +117,8 @@ The CSS is the source of truth: Lenis observes the root's overflow and reacts. U
 
 ### lenis/react
 
-- [ ] Deprecate `root` option — don't target window, just forward instance. Maybe `children` detection can help
-- [ ] Use `useSyncExternalStore` for state management
+- [x] Split `root` into two orthogonal props: `root` (target window, render no wrapper divs) and `rootContext` (register in the global store so `useLenis` reaches it anywhere). `rootContext` defaults to `root`. Removes the overloaded `root="asChild"` string.
+- [x] Use `useSyncExternalStore` for state management (`store.ts`)
 
 ---
 
