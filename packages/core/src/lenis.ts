@@ -120,6 +120,7 @@ export class Lenis {
     __experimental__naiveDimensions = false,
     naiveDimensions = __experimental__naiveDimensions,
     stopInertiaOnNavigate = false,
+    smoothKeyboard = true,
   }: LenisOptions = {}) {
     // Set version (deprecated)
     window.lenisVersion = version
@@ -177,6 +178,7 @@ export class Lenis {
       allowNestedScroll,
       naiveDimensions,
       stopInertiaOnNavigate,
+      smoothKeyboard,
     }
 
     // Setup dimensions instance
@@ -214,6 +216,11 @@ export class Lenis {
     })
     this.virtualScroll.on('scroll', this.onVirtualScroll)
 
+    // Setup keyboard scroll
+    if (this.options.smoothKeyboard) {
+      window.addEventListener('keydown', this.onKeyDown)
+    }
+
     if (this.options.autoToggle) {
       this.checkOverflow()
       this.rootElement.addEventListener('transitionend', this.onTransitionEnd)
@@ -246,6 +253,10 @@ export class Lenis {
         'click',
         this.onClick as EventListener
       )
+    }
+
+    if (this.options.smoothKeyboard) {
+      window.removeEventListener('keydown', this.onKeyDown)
     }
 
     this.virtualScroll.destroy()
@@ -389,6 +400,181 @@ export class Lenis {
     if (event.button === 1) {
       this.reset()
     }
+  }
+
+  /**
+   * Check if an element is an editable form element that should receive keyboard input
+   */
+  private isEditableElement(element: Element | null): boolean {
+    if (!element) return false
+    const tagName = element.tagName
+    if (tagName === 'INPUT' || tagName === 'TEXTAREA' || tagName === 'SELECT') {
+      return true
+    }
+    if (element instanceof HTMLElement && element.isContentEditable) {
+      return true
+    }
+    return false
+  }
+
+  /**
+   * Handle keyboard scroll events
+   *
+   * Supports: ArrowUp, ArrowDown, ArrowLeft, ArrowRight, Space, PageUp, PageDown, Home, End
+   * Skips handling when an editable element is focused or when data-lenis-prevent is set on the active element
+   */
+  private onKeyDown = (event: KeyboardEvent) => {
+    if (this.isStopped || this.isLocked) return
+
+    // Don't intercept keyboard events on editable form elements
+    const activeElement = document.activeElement
+    if (this.isEditableElement(activeElement)) return
+
+    // Respect data-lenis-prevent on focused element
+    if (
+      activeElement instanceof HTMLElement &&
+      activeElement.hasAttribute('data-lenis-prevent')
+    ) {
+      return
+    }
+
+    // Respect prevent callback
+    if (
+      activeElement instanceof HTMLElement &&
+      typeof this.options.prevent === 'function' &&
+      this.options.prevent(activeElement)
+    ) {
+      return
+    }
+
+    // Check virtualScroll callback if defined
+    if (typeof this.options.virtualScroll === 'function') {
+      const shouldPrevent = this.options.virtualScroll({
+        deltaX: 0,
+        deltaY: 0,
+        event,
+      })
+      if (shouldPrevent === false) return
+    }
+
+    const { key, shiftKey } = event
+
+    // Arrow key delta — matches typical single wheel tick (~100px)
+    const arrowDelta = 100
+    // Space/Page delta — viewport minus some breathing room, inspired by app.js's spaceGap
+    const viewportSize = this.isHorizontal
+      ? this.dimensions.width
+      : this.dimensions.height
+    const pageDelta = viewportSize - 40
+
+    const gestureOrientation = this.options.gestureOrientation
+    // In 'both' mode, cross-axis arrow keys should also scroll (matching wheel behavior)
+    const acceptVertical =
+      gestureOrientation === 'vertical' || gestureOrientation === 'both'
+    const acceptHorizontal =
+      gestureOrientation === 'horizontal' || gestureOrientation === 'both'
+
+    let deltaX = 0
+    let deltaY = 0
+    let isHandled = false
+
+    switch (key) {
+      case 'ArrowUp':
+        if (acceptVertical) {
+          deltaY = -arrowDelta
+          isHandled = true
+        }
+        break
+      case 'ArrowDown':
+        if (acceptVertical) {
+          deltaY = arrowDelta
+          isHandled = true
+        }
+        break
+      case 'ArrowLeft':
+        if (acceptHorizontal) {
+          deltaX = -arrowDelta
+          isHandled = true
+        }
+        break
+      case 'ArrowRight':
+        if (acceptHorizontal) {
+          deltaX = arrowDelta
+          isHandled = true
+        }
+        break
+      case ' ':
+        if (this.isHorizontal) {
+          deltaX = shiftKey ? -pageDelta : pageDelta
+        } else {
+          deltaY = shiftKey ? -pageDelta : pageDelta
+        }
+        isHandled = true
+        break
+      case 'PageUp':
+        if (this.isHorizontal) {
+          deltaX = -pageDelta
+        } else {
+          deltaY = -pageDelta
+        }
+        isHandled = true
+        break
+      case 'PageDown':
+        if (this.isHorizontal) {
+          deltaX = pageDelta
+        } else {
+          deltaY = pageDelta
+        }
+        isHandled = true
+        break
+      case 'Home':
+        this.scrollTo('start', {
+          programmatic: true,
+          lerp: this.options.lerp,
+          duration: this.options.duration,
+          easing: this.options.easing,
+        })
+        if (event.cancelable) event.preventDefault()
+        return
+      case 'End':
+        this.scrollTo('end', {
+          programmatic: true,
+          lerp: this.options.lerp,
+          duration: this.options.duration,
+          easing: this.options.easing,
+        })
+        if (event.cancelable) event.preventDefault()
+        return
+      case 'Tab':
+        // Never prevent Tab — accessibility
+        return
+      default:
+        return
+    }
+
+    if (!isHandled) return
+
+    if (event.cancelable) {
+      event.preventDefault()
+    }
+
+    // Resolve delta to the scroll axis, matching the wheel handler's gestureOrientation logic
+    let delta = deltaY
+    if (gestureOrientation === 'both') {
+      delta = Math.abs(deltaY) > Math.abs(deltaX) ? deltaY : deltaX
+    } else if (gestureOrientation === 'horizontal') {
+      delta = deltaX
+    }
+
+    // Emit virtual-scroll event so user callbacks can observe keyboard scroll
+    this.emitter.emit('virtual-scroll', { deltaX, deltaY, event })
+
+    this.scrollTo(this.targetScroll + delta, {
+      programmatic: false,
+      lerp: this.options.lerp,
+      duration: this.options.duration,
+      easing: this.options.easing,
+    })
   }
 
   private onVirtualScroll = (data: VirtualScrollData) => {

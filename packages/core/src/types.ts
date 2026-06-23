@@ -40,7 +40,7 @@ export type VirtualScrollCallback = (data: VirtualScrollData) => void
 export type VirtualScrollData = {
   deltaX: number
   deltaY: number
-  event: WheelEvent | TouchEvent
+  event: WheelEvent | TouchEvent | KeyboardEvent
 }
 
 export type Orientation = 'vertical' | 'horizontal'
@@ -228,6 +228,11 @@ export type LenisOptions = {
    * @default false
    */
   stopInertiaOnNavigate?: boolean
+  /**
+   * Smooth the scroll initiated by keyboard events (ArrowUp/Down, Space, PageUp/Down, Home, End)
+   * @default true
+   */
+  smoothKeyboard?: boolean
 }
 
 declare global {
