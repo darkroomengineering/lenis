@@ -1,0 +1,69 @@
+---
+import Layout from '../layouts/Layout.astro'
+---
+
+<Layout title="Touch / selection debug">
+  <div id="hud">waiting for touch…</div>
+  <div id="flash"></div>
+  <div id="dot"></div>
+
+  <main>
+    <h1>Touch / selection debug</h1>
+    <p>
+      Long-press the text below to select, then drag the selection handles.
+      Watch the HUD: if <code>touchmove</code> keeps counting while you drag a
+      handle, this device forwards selection drags to the page (iOS). If it
+      stays put, it doesn't (Android).
+    </p>
+    <div id="content"></div>
+  </main>
+
+  <script src="../../touch-debug/test.ts"></script>
+</Layout>
+
+<style>
+  main {
+    width: min(70ch, 90vw);
+    margin: 6rem auto 40vh;
+    -webkit-user-select: text;
+    user-select: text;
+  }
+
+  #hud {
+    position: fixed;
+    top: 0;
+    right: 0;
+    background: #111;
+    color: #0f0;
+    font: 12px/1.4 monospace;
+    padding: 8px;
+    white-space: pre;
+    z-index: 10;
+    max-height: 45vh;
+    overflow: auto;
+  }
+
+  #flash {
+    position: fixed;
+    inset: 0;
+    background: red;
+    opacity: 0;
+    pointer-events: none;
+    z-index: 5;
+    transition: opacity 0.05s;
+  }
+
+  #dot {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 24px;
+    height: 24px;
+    margin: -12px 0 0 -12px;
+    border: 2px solid lime;
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 6;
+    opacity: 0;
+  }
+</style>

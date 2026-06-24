@@ -41,6 +41,10 @@ export class Lenis {
    */
   isTouching?: boolean
   /**
+   * Whether or not the device is running iOS
+   */
+  isIos: boolean
+  /**
    * The time in ms since the lenis instance was created
    */
   time = 0
@@ -138,6 +142,8 @@ export class Lenis {
     if (syncTouch === true) {
       window.lenis.touch = true
     }
+
+    this.isIos = /(iPad|iPhone|iPod)/g.test(navigator.userAgent)
 
     // Check if wrapper is <html>, fallback to window
     if (!wrapper || wrapper === document.documentElement) {
@@ -439,10 +445,9 @@ export class Lenis {
     const isTouch = event.type.includes('touch')
     const isWheel = event.type.includes('wheel')
 
-    const isIos = /(iPad|iPhone|iPod)/g.test(navigator.userAgent)
     // If the touch grabbed an iOS text-selection handle, let the OS adjust the
     // selection instead of scrolling. Latched on touchstart, held until touchend.
-    if (isTouch && isIos) {
+    if (isTouch && this.isIos) {
       if (event.type === 'touchstart') {
         this._isDraggingSelection = this.isTouchOnSelectionHandle(
           event as TouchEvent
