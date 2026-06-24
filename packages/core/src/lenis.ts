@@ -34,6 +34,7 @@ export class Lenis {
   private _preventNextNativeScrollEvent = false
   private _resetVelocityTimeout: ReturnType<typeof setTimeout> | null = null
   private _rafId: number | null = null
+  private _isDraggingSelection = false // true while a touch is dragging an iOS selection handle
 
   /**
    * Whether or not the user is touching the screen
@@ -391,6 +392,34 @@ export class Lenis {
     }
   }
 
+  // iOS renders text-selection handles at the start and end points of the
+  // selection. A touch starting within a handle-sized radius of either point is
+  // the user grabbing a handle, not scrolling.
+  private isTouchOnSelectionHandle(event: TouchEvent) {
+    const selection = window.getSelection()
+    if (!selection || selection.isCollapsed || selection.rangeCount === 0)
+      return false
+
+    const touch = event.targetTouches[0] ?? event.changedTouches[0]
+    if (!touch) return false
+
+    const rects = selection.getRangeAt(0).getClientRects()
+    if (rects.length === 0) return false
+
+    const first = rects[0]!
+    const last = rects[rects.length - 1]!
+    const HANDLE_RADIUS = 40 // px — handles are large, finger-sized touch targets
+
+    const nearStart =
+      Math.hypot(touch.clientX - first.left, touch.clientY - first.top) <=
+      HANDLE_RADIUS
+    const nearEnd =
+      Math.hypot(touch.clientX - last.right, touch.clientY - last.bottom) <=
+      HANDLE_RADIUS
+
+    return nearStart || nearEnd
+  }
+
   private onVirtualScroll = (data: VirtualScrollData) => {
     if (
       typeof this.options.virtualScroll === 'function' &&
@@ -409,6 +438,21 @@ export class Lenis {
 
     const isTouch = event.type.includes('touch')
     const isWheel = event.type.includes('wheel')
+
+    const isIos = /(iPad|iPhone|iPod)/g.test(navigator.userAgent)
+    // If the touch grabbed an iOS text-selection handle, let the OS adjust the
+    // selection instead of scrolling. Latched on touchstart, held until touchend.
+    if (isTouch && isIos) {
+      if (event.type === 'touchstart') {
+        this._isDraggingSelection = this.isTouchOnSelectionHandle(
+          event as TouchEvent
+        )
+      }
+      if (this._isDraggingSelection) {
+        if (event.type === 'touchend') this._isDraggingSelection = false
+        return
+      }
+    }
 
     this.isTouching = event.type === 'touchstart' || event.type === 'touchmove'
 
