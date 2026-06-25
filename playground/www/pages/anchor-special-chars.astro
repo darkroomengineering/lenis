@@ -1,0 +1,45 @@
+---
+import Layout from '../layouts/Layout.astro'
+---
+
+<!-- Tests anchor scroll for ids with CSS-special chars (issue #520) -->
+<Layout title="Lenis — Anchor special chars">
+  <nav id="links">
+    <a href="#footnote-†">jump to #footnote-†</a>
+    <a href="#a*b">jump to #a*b</a>
+    <a href="#with space">jump to #with space</a>
+    <a href="#about">jump to #about (plain)</a>
+    <a href="#top">jump to #top</a>
+  </nav>
+
+  <section id="about"><h2>about (plain id)</h2></section>
+  <section id="footnote-†"><h2>id="footnote-†"</h2></section>
+  <section id="a*b"><h2>id="a*b"</h2></section>
+  <section id="with space"><h2>id="with space"</h2></section>
+
+  <script>
+    import Lenis from 'lenis'
+    const lenis = new Lenis({ autoRaf: true, anchors:true })
+    console.log(lenis)
+  </script>
+
+  <style>
+    #links {
+      position: fixed;
+      top: 4rem;
+      left: 2px;
+      flex-direction: column;
+      height: auto;
+    }
+    section {
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: monospace;
+    }
+    section:nth-child(even) {
+      background: #f0f0f0;
+    }
+  </style>
+</Layout>
