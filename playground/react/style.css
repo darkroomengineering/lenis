@@ -54,6 +54,7 @@ html:not(.lenis) {
   background: #222;
   color: #fff;
   border-radius: 4px;
+  margin-right: 4px;
 }
 
 .debug-panel button:hover {
