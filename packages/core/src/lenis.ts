@@ -371,7 +371,9 @@ export class Lenis {
             ? this.options.anchors
             : undefined
 
-        const target = `#${anchorElementUrl.hash.split('#')[1]}`
+        // hash is URL-encoded (e.g. `#footnote-%E2%80%A0`); decode so it
+        // matches the raw HTML id in scrollTo's getElementById
+        const target = decodeURIComponent(anchorElementUrl.hash)
 
         this.scrollTo(target, options)
         return
@@ -764,8 +766,11 @@ export class Lenis {
       let node: Element | null = null
 
       if (typeof target === 'string') {
-        // CSS selector
-        node = document.querySelector(target)
+        // getElementById accepts any valid HTML id (e.g. `#footnote-†`),
+        // querySelector would reject it as an invalid CSS selector
+        node = target.startsWith('#')
+          ? document.getElementById(target.slice(1))
+          : document.querySelector(target)
 
         if (!node) {
           if (target === '#top') {
