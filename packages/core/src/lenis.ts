@@ -35,6 +35,8 @@ export class Lenis {
   private _resetVelocityTimeout: ReturnType<typeof setTimeout> | null = null
   private _rafId: number | null = null
   private _isDraggingSelection = false // true while a touch is dragging an iOS selection handle
+  private _isAutoscrolling = false
+  private _middleClickTime = 0
 
   /**
    * Whether or not the user is touching the screen
@@ -214,6 +216,9 @@ export class Lenis {
       this.onPointerDown as EventListener
     )
 
+    window.addEventListener('pointerup', this.onPointerUp as EventListener)
+    window.addEventListener('keydown', this.onKeyDown as EventListener)
+
     // Setup virtual scroll instance
     this.virtualScroll = new VirtualScroll(eventsTarget as HTMLElement, {
       touchMultiplier,
@@ -247,6 +252,9 @@ export class Lenis {
       'pointerdown',
       this.onPointerDown as EventListener
     )
+
+    window.removeEventListener('pointerup', this.onPointerUp as EventListener)
+    window.removeEventListener('keydown', this.onKeyDown as EventListener)
 
     if (this.options.anchors || this.options.stopInertiaOnNavigate) {
       this.options.wrapper.removeEventListener(
@@ -395,8 +403,29 @@ export class Lenis {
   }
 
   private onPointerDown = (event: PointerEvent | MouseEvent) => {
+    if (this._isAutoscrolling) {
+      this._isAutoscrolling = false
+      return
+    }
+
     if (event.button === 1) {
       this.reset()
+      this._isAutoscrolling = true
+      this._middleClickTime = Date.now()
+    }
+  }
+
+  private onPointerUp = (event: PointerEvent | MouseEvent) => {
+    if (event.button === 1 && this._isAutoscrolling) {
+      if (Date.now() - this._middleClickTime > 300) {
+        this._isAutoscrolling = false
+      }
+    }
+  }
+
+  private onKeyDown = () => {
+    if (this._isAutoscrolling) {
+      this._isAutoscrolling = false
     }
   }
 
@@ -429,6 +458,8 @@ export class Lenis {
   }
 
   private onVirtualScroll = (data: VirtualScrollData) => {
+    if (this._isAutoscrolling) return
+
     if (
       typeof this.options.virtualScroll === 'function' &&
       this.options.virtualScroll(data) === false
@@ -645,6 +676,7 @@ export class Lenis {
   private reset() {
     this.isLocked = false
     this.isScrolling = false
+    this._isAutoscrolling = false
     this.animatedScroll = this.targetScroll = this.actualScroll
     this.lastVelocity = this.velocity = 0
     this.animate.stop()
