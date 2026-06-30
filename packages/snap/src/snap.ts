@@ -387,6 +387,13 @@ export class Snap {
     const dirY = Math.sign(e.deltaY) as -1 | 0 | 1
     if (dirX === 0 && dirY === 0) return -1
 
+    // With `gestureOrientation: 'both'`, a gesture on either axis can drive the
+    // scroll, so detection is axis-agnostic and a zero-direction axis must not
+    // block a snap. Otherwise (single-axis gestures), a snap that needs to move
+    // on a zero-direction axis isn't reachable — a horizontal flick can't
+    // trigger a vertical snap.
+    const anyDirection = this.lenis.options.gestureOrientation === 'both'
+
     const current = {
       x: this.lenis.x.scroll,
       y: this.lenis.y.scroll,
@@ -402,10 +409,24 @@ export class Snap {
       // Skip the snap we're already on (within sub-pixel rounding).
       if (Math.abs(dx) < 1 && Math.abs(dy) < 1) continue
 
-      // Direction gate: each gesture-active axis with a defined snap coord
-      // must lie in the gesture's halfspace.
-      if (dirX !== 0 && snap.x !== undefined && Math.sign(dx) !== dirX) continue
-      if (dirY !== 0 && snap.y !== undefined && Math.sign(dy) !== dirY) continue
+      // Direction gate: every defined axis that needs to move must do so in
+      // the gesture's direction on that axis. A zero-direction axis blocks a
+      // snap that needs to move along it — unless `anyDirection` (then the
+      // gesture may drive any axis, so skip the gate for that axis).
+      if (
+        snap.x !== undefined &&
+        Math.abs(dx) >= 1 &&
+        !(anyDirection && dirX === 0) &&
+        Math.sign(dx) !== dirX
+      )
+        continue
+      if (
+        snap.y !== undefined &&
+        Math.abs(dy) >= 1 &&
+        !(anyDirection && dirY === 0) &&
+        Math.sign(dy) !== dirY
+      )
+        continue
 
       // Reach gate: snap must sit within `distanceThreshold` of the current
       // scroll on each axis with a defined coord. Acts as a "max jump" so
