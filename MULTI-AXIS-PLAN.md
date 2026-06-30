@@ -96,7 +96,7 @@ Ordered so each is a discrete, independently-shippable unit. `→` marks depende
 
 ### Phase 3 — ecosystem & docs
 
-12. **React / Vue wrappers** — `useLenis` exposing per-axis state; updated types.
+12. **React / Vue wrappers** — per-axis state needs no wrapper change (the scroll callback already receives the `Lenis` instance, so consumers read `lenis.x` / `lenis.y` directly). Wrapper parity work: ✅ React (`root`/`rootContext` split, named instances via `useLenis(name)`). ✅ Vue + Nuxt — mirrored the keyed registry: `<VueLenis>` gains `rootContext` (defaults to `root`) and `name`; `useLenis(name?, callback?, priority?)` reads any instance from anywhere. Nuxt inherits it all by re-exporting `lenis/vue`.
 13. **`playground/two-axis` polish** — wire it as the real test bed / example.
 14. **Docs + migration note** — `orientation: 'both'`, `lenis.x` / `lenis.y`, `scrollTo({ x, y })`, "`gestureOrientation` has no effect when `'both'`".
 

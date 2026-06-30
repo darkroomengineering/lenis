@@ -1,33 +1,39 @@
-//
 <script setup>
-// import Inner from '../components/inner.vue'
-// import { useLenis } from 'lenis/vue'
-// import { watchEffect } from 'vue'
+// `useLenis` and `VueLenis` are auto-imported by the lenis/nuxt module.
+// Bare useLenis() resolves the root (page) instance from app.vue.
+const page = useLenis((lenis) => {
+  console.log('page scroll', lenis.scroll)
+})
 
-// const lenisRef = ref()
-
-// watchEffect(() => {
-//   console.log('lenisRef', lenisRef.value?.lenis)
-// })
-//
+watch(page, (lenis) => console.log('page instance', lenis))
 </script>
 
 <template>
-  <!-- <vue-lenis class="scroller" ref="lenisRef"> -->
-  <div class="content">Home <Inner /></div>
-  <!-- </vue-lenis> -->
+  <div class="content">
+    Home
+
+    <!-- Inner sits OUTSIDE the sidebar subtree, yet reaches it via its name -->
+    <Inner />
+
+    <VueLenis name="sidebar" class="scroller">
+      <div class="tall">Scrollable sidebar content</div>
+    </VueLenis>
+  </div>
 </template>
 
 <style scoped>
 .content {
-  /* min-height: 200vh; */
   padding-top: 24px;
   min-height: 200vh;
 }
 
 .scroller {
-  /* height: 100vh;
-  overflow-y: auto; */
-  pointer-events: none;
+  height: 50vh;
+  overflow-y: auto;
+  border: 1px solid currentColor;
+}
+
+.tall {
+  min-height: 200vh;
 }
 </style>

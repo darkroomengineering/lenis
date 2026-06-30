@@ -72,33 +72,37 @@ watch(
 
 ## Props
 - `options`: [Lenis options](https://github.com/darkroomengineering/lenis#instance-settings).
-- `root`: if `true`, Lenis will be instanciate using `<html>` scroll, then you can use the `useLenis` hook to access the Lenis instance from anywhere in your app. Default: `false`.
+- `root`: if `true`, Lenis targets the `<html>` page scroll and renders no wrapper divs. Default: `false`.
+- `rootContext`: registers the instance in the global registry so `useLenis()` reaches it from anywhere (even outside the provider subtree). Independent of `root` — set it on a scoped container to expose it globally, or unset it on a `root` to keep it local. Default: same as `root`.
+- `name`: registers the instance under a name so it can be reached anywhere via `useLenis(name)`. Use it for secondary scrollers (e.g. a sidebar) alongside the page scroll.
 
 ## Hooks
 Once the Lenis context is set (components mounted inside `<VueLenis>` or `<vue-lenis>`) you can use these handy hooks:
 
-`useLenis` is a hook that returns the Lenis instance
+`useLenis` is a hook that returns the Lenis instance (as a `ComputedRef`).
 
-The hook takes two arguments:
-- `callback`: The function to be called whenever a scroll event is emitted
-- `priority`: Manage callback execution order
+Without a name it targets the nearest provider and falls back to the global root (`<VueLenis root>` / `rootContext`). Pass a name as the first argument to reach a specific instance from anywhere, ignoring context.
+
+Arguments:
+- `name` (optional, first): target a named instance instead of the nearest/root one
+- `callback`: the function called whenever a scroll event is emitted
+- `priority`: manage callback execution order (default `0`)
 
 ```vue
 <script setup>
 import { VueLenis, useLenis } from 'lenis/vue'
-import { watch } from 'vue'
 
 const scrollCallback = (lenis) => {
-  // called on every scroll
-  // useLenis provides the lenis instance as an argument
+  // called on every scroll — lenis is passed as the argument
 }
 
-const lenis = useLenis(scrollCallback, 0) // where 0 is the default callback priority
+const lenis = useLenis(scrollCallback, 0)        // nearest provider, or the global root
+const sidebar = useLenis('sidebar', scrollCallback) // a named instance, from anywhere
 </script>
 
 <template>
   <VueLenis root />
-  <!-- content -->
+  <VueLenis name="sidebar" class="sidebar"><!-- ... --></VueLenis>
 </template>
 ```
 

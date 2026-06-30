@@ -1,15 +1,15 @@
 <script setup>
-// import { useLenis } from 'lenis/vue'
+// Reaches the `name="sidebar"` instance even though Inner is rendered outside
+// its subtree — named lookups read the registry, not Vue's inject context.
+const sidebar = useLenis('sidebar', (lenis) => {
+  console.log('inner: sidebar scroll', lenis.scroll)
+})
 
-// const lenis = useLenis((lenis) => {
-//   console.log('inner callback', lenis)
-// })
-
-// watch(lenis, (lenis) => {
-//   console.log('inner lenis', lenis)
-// })
+watch(sidebar, (lenis) => console.log('inner: sidebar instance', lenis))
 </script>
 
 <template>
-  <div>Inner</div>
+  <button type="button" @click="sidebar?.scrollTo(300)">
+    scroll sidebar from Inner
+  </button>
 </template>
