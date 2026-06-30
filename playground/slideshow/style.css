@@ -26,3 +26,40 @@
 .slide-5 {
   background-color: #0e0e0e;
 }
+
+/* Custom scrollbar — thin, right side, vertically centered. */
+.scrollbar {
+  position: fixed;
+  top: 50%;
+  right: 12px;
+  transform: translateY(-50%);
+  height: 60vh;
+  width: 6px;
+  z-index: 10;
+}
+
+.scrollbar-track {
+  position: relative;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+/* Segments grow proportionally to their slide's height (flex-grow set in JS). */
+.scrollbar-segment {
+  width: 100%;
+  background-color: rgba(0, 0, 0, 0.15);
+  border-radius: 3px;
+}
+
+/* Thumb overlays the track and tracks the viewport's position in the content. */
+.scrollbar-thumb {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 100%;
+  background-color: #0e0e0e;
+  border-radius: 3px;
+  will-change: transform;
+}
