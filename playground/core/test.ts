@@ -43,9 +43,9 @@ const lenis = new Lenis({
     smooth: true,
     // duration: 5,
   },
-  dimensions: {
-    mode: 'read',
-  },
+  // dimensions: {
+  //   mode: 'read',
+  // },
   onGesture: (data, lenis) => {
     // console.log(data)
     // return {
@@ -67,7 +67,12 @@ const lenis = new Lenis({
 // })
 
 lenis.on('scroll', (lenis) => {
-  console.log(lenis.isScrolling, lenis.isTouch, lenis.isWheel)
+  console.log({
+    userData: lenis.userData,
+    scroll: lenis.scroll,
+    actualScroll: lenis.actualScroll,
+    targetScroll: lenis.targetScroll,
+  })
   // console.log('scroll', e)
 })
 
@@ -160,6 +165,9 @@ document.getElementById('start')?.addEventListener('click', () => {
 
 document.getElementById('scroll-start')?.addEventListener('click', () => {
   lenis.scrollTo(100, {
+    userData: {
+      test: 'test',
+    },
     lock: true,
     duration: 1,
     onComplete: () => {

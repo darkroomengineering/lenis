@@ -117,8 +117,9 @@ The CSS is the source of truth: Lenis observes the root's overflow and reacts. U
 
 ### lenis/react
 
-- [ ] Deprecate `root` option — don't target window, just forward instance. Maybe `children` detection can help
-- [ ] Use `useSyncExternalStore` for state management
+- [x] Split `root` into two orthogonal props: `root` (target window, render no wrapper divs) and `rootContext` (register in the global store so `useLenis` reaches it anywhere). `rootContext` defaults to `root`. Removes the overloaded `root="asChild"` string.
+- [x] Use `useSyncExternalStore` for state management (`store.ts`)
+- [x] Named instances: `<ReactLenis name="sidebar">` → `useLenis('sidebar')`. The single-slot global store became a keyed registry; the global root is just the entry under `ROOT_KEY`, so `rootContext` and `name` share one mechanism.
 
 ---
 
@@ -176,12 +177,17 @@ iOS detection handles the iPadOS 13+ desktop-UA case via `navigator.maxTouchPoin
 
 ### 🚧 Multi-axis scrolling
 
-Allows simultaneous horizontal and vertical scrolling for use cases like 2D canvas navigation, maps, spreadsheets, and layouts that scroll in both directions. In progress:
+Simultaneous horizontal + vertical scrolling (2D canvas, maps, spreadsheets, layouts that scroll both ways), opt-in via `new Lenis({ orientation: 'both' })`. Single-axis API stays unchanged; you gain `lenis.x` / `lenis.y`.
 
-- 🚧 `Axis` class (`packages/core/src/axis.ts`) — per-axis `animatedScroll` / `targetScroll`, `Animate` instance, `cssOverflow` + `overflow` (content vs. viewport) getters, `scrollTo`, `advance`. Still scaffolding — `isStopped` / `isLocked` getters are stubs, `Lenis` doesn't yet delegate to it, and `console.log`s remain.
-- 🚧 `playground/two-axis` — 5×5 viewport grid (`500vw × 500vh`) for eyeballing 2D scroll behavior
-- ⏳ Wire `Lenis` to drive two `Axis` instances; expose `lenis.axes` / per-axis state
-- ⏳ Decide the public API surface (per-axis `scrollTo`, events, dimensions)
+**Full design + step-by-step plan: [`MULTI-AXIS-PLAN.md`](./MULTI-AXIS-PLAN.md).**
+
+Current state: **core mechanics are implemented and verified working.** The `Axis` class (`packages/core/src/axis.ts`) is clean — per-axis state, `checkOverflow`, `reset`, `advance`, `scrollTo`, `scroll`/`limit`/`progress`. `Lenis` delegates to `this.x` / `this.y`, and `orientation: 'both'` is wired through gesture routing, scroll emission, the single per-frame DOM write, `scrollTo`, and `isScrollable`. `lenis/snap` is 2D-aware (per-axis `align`, 2D candidate selection). Verified in a browser on `playground/two-axis`: diagonal `scrollTo`, combined-delta wheel (both axes), DOM sync, and 2D snap to cell centers all behave.
+
+Remaining before stable:
+
+- ⏳ Real touch / trackpad-inertia testing on devices (only wheel + programmatic verified so far)
+- ⏳ Resolve the top-level `duration` / `easing` scope question (see [Open design questions](#open-design-questions))
+- ⏳ Polished examples (the two-axis playground is still a raw test bed)
 
 ### ⏳ Auto CSS injection
 
@@ -218,7 +224,7 @@ Warn in development mode when `infinite` is used on `html`/`body` (causes flicke
 ### Examples
 
 - ✅ `playground/touch` — native vs Lenis side-by-side for debugging `touch.smooth` on real devices
-- 🚧 `playground/two-axis` — 5×5 viewport-sized grid for 2D scroll testing (corner cells colour-coded)
+- 🚧 `playground/two-axis` — 5×5 viewport-sized grid for 2D scroll testing (corner cells colour-coded); functional test bed, not yet a polished example
 - ⏳ Nested scroll
 - ⏳ Horizontal scroll
 - ⏳ Framework integrations

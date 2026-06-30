@@ -1,6 +1,7 @@
 <html lang="en">
   <head>
     <link rel="stylesheet" href="./style.css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   </head>
   <body>
     <div id="grid">
@@ -18,6 +19,10 @@
         for (let y = 0; y < rows; y++) {
           for (let x = 0; x < cols; x++) {
             const cell = document.createElement('div')
+            const innerCell = document.createElement('div')
+            innerCell.className = 'inner-cell'
+            innerCell.textContent = `${x},${y}`
+            cell.appendChild(innerCell)
             cell.className = 'cell'
             const edge = edgeFor(x, y)
             if (edge) cell.dataset.edge = edge
@@ -27,5 +32,33 @@
         }
       </script>
     </div>
+
+    <aside id="tweak" data-open="true" aria-label="Lenis tweak panel">
+      <button id="tweak-toggle" type="button" aria-controls="tweak-body" aria-expanded="true">
+        <span class="tweak-handle"></span>
+        <span class="tweak-title">tweak</span>
+      </button>
+      <div id="tweak-body">
+        <label class="tweak-row">
+          <span class="tweak-label">lerp</span>
+          <input type="range" data-key="lerp" min="0.01" max="0.5" step="0.01" />
+          <output data-out="lerp"></output>
+        </label>
+        <label class="tweak-row">
+          <span class="tweak-label">inertia</span>
+          <input type="range" data-key="inertia" min="1" max="3" step="0.05" />
+          <output data-out="inertia"></output>
+        </label>
+        <label class="tweak-row">
+          <span class="tweak-label">multiplier</span>
+          <input type="range" data-key="multiplier" min="0.25" max="3" step="0.05" />
+          <output data-out="multiplier"></output>
+        </label>
+        <div class="tweak-actions">
+          <button id="tweak-reset" type="button">reset</button>
+          <button id="tweak-copy" type="button">copy</button>
+        </div>
+      </div>
+    </aside>
   </body>
 </html>

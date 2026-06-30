@@ -36,6 +36,7 @@ export type Scrolling = boolean | 'native' | 'smooth'
 export type LenisEvent = 'scroll' | 'gesture'
 export type ScrollCallback = (lenis: Lenis) => void
 export type GestureCallback = (data: GestureData) => void
+export type EventCallback = ScrollCallback | GestureCallback
 
 export type GestureData = {
   deltaX: number
@@ -44,16 +45,17 @@ export type GestureData = {
   type: 'wheel' | 'touch'
 }
 
-export type Orientation = 'vertical' | 'horizontal'
+export type Orientation = 'vertical' | 'horizontal' | 'both'
 export type GestureOrientation = 'vertical' | 'horizontal' | 'both'
 export type EasingFunction = (time: number) => number
 
 export type ScrollToOptions = {
   /**
-   * The offset to apply to the target value
+   * The offset to apply to the target value. A single number applies to every
+   * driven axis; pass `{ x?, y? }` to offset each axis independently.
    * @default 0
    */
-  offset?: number
+  offset?: number | { x?: number; y?: number }
   /**
    * Skip the animation and jump to the target value immediately
    * @default false
@@ -90,6 +92,11 @@ export type ScrollToOptions = {
    * User data that will be forwarded through the scroll event
    */
   userData?: UserData
+  /**
+   * Lock the scroll to the target value
+   * @default false
+   */
+  lock?: boolean
 }
 
 export interface WheelOptions {
@@ -168,7 +175,12 @@ export type LenisOptions = {
    */
   infinite?: boolean
   /**
-   * The orientation of the scrolling. Can be `vertical` or `horizontal`
+   * The orientation of the scrolling. Can be `vertical`, `horizontal`, or `both` (2D).
+   *
+   * When `both`, `lenis.x` and `lenis.y` each handle one axis and `gestureOrientation`
+   * has no effect (horizontal gestures drive `x`, vertical gestures drive `y`). The
+   * single-axis getters on `lenis` (`scroll`, `progress`, `scrollTo(n)`, …) alias the
+   * vertical axis.
    * @default vertical
    */
   orientation?: Orientation
@@ -180,7 +192,7 @@ export type LenisOptions = {
   /**
    * Called on every gesture event (wheel or touch)
    */
-  onGesture?: (data: GestureData, lenis: Lenis) => GestureData | false
+  onGesture?: (data: GestureData, lenis: Lenis) => GestureData | false | void
   /**
    * Wether or not to enable overscroll on a nested Lenis instance, similar to CSS overscroll-behavior (https://developer.mozilla.org/en-US/docs/Web/CSS/overscroll-behavior)
    * @default true

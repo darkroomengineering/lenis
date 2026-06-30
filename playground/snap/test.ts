@@ -18,10 +18,16 @@ const lenis = new Lenis({
 const _i = 0
 
 const snap = new Snap(lenis, {
-  type: 'lock', // 'mandatory', 'proximity', 'lock'
+  // lock: true,
   // velocityThreshold: 1.2,
   duration: 1,
-  distanceThreshold: '50%',
+  // Directional gates by `|snap - currentScroll| ≤ distanceThreshold`. The
+  // sections in this playground are 50–250vh, so adjacent snaps can sit
+  // 2+ viewports apart — `Infinity` disables the gate so any flick
+  // reaches the next snap. Lower to e.g. `'100%'` to see the gate clip
+  // far jumps.
+  distanceThreshold: Number.POSITIVE_INFINITY,
+  mode: 'directional',
   debounce: 500,
   // duration: 2,
   // easing: (t) => t,
@@ -93,9 +99,7 @@ const _unsubs = snap.addElements([section4, section5], {
 //   align: ['start', 'end'], // 'start', 'center', 'end'
 // })
 
-function raf(time: number) {
-  lenis.raf(time)
-  requestAnimationFrame(raf)
-}
-
-requestAnimationFrame(raf)
+// Lenis defaults to `autoRaf: true` and runs its own RAF loop, so no manual
+// `requestAnimationFrame(raf)` is needed here. Pass `autoRaf: false` to the
+// Lenis constructor and re-add a manual loop if you want to drive ticks
+// from an external clock (e.g. Tempus).

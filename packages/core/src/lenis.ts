@@ -1,10 +1,11 @@
 import { version } from '../../../package.json'
-import { Animate } from './animate'
+import { Axis } from './axis'
 import { Dimensions } from './dimensions'
 import { Emitter } from './emitter'
 import { GesturesHandler } from './gestures-handler'
-import { clamp, modulo } from './maths'
+import { clamp } from './maths'
 import type {
+  EventCallback,
   GestureCallback,
   GestureData,
   LenisEvent,
@@ -30,18 +31,20 @@ const defaultEasing = (t: number) => Math.min(1, 1.001 - 2 ** (-10 * t))
 
 export class Lenis {
   private _isScrolling: Scrolling = false // true when scroll is animating
-  private _isScrollable = true // true if element is scrollable (computed from css overflow property)
-  private _isLocked = false // // true when user-initiated scroll (wheel/touch) is suppressed — toggled via lock()/unlock()
   private _preventNextNativeScrollEvent = false
   private _resetVelocityTimeout: ReturnType<typeof setTimeout> | null = null
   private _rafId: number | null = null
+  /** User data for the in-flight `scrollTo` operation. @see {@link userData} */
+  private _userData: UserData = {}
+  /** Instance-wide lock — both axes are locked together or neither is. @see {@link isLocked} */
+  private _isLocked = false
 
   /**
-   * Whether or not the user is touching the screen
+   * Whether or not the last gesture was a touch
    */
   isTouch?: boolean
   /**
-   * Whether the root this user is wheel scrolling
+   * Whether the last gesture was a wheel
    */
   isWheel?: boolean
   /**
@@ -49,7 +52,10 @@ export class Lenis {
    */
   time = 0
   /**
-   * User data that will be forwarded through the scroll event
+   * User data carried by the in-flight `scrollTo` operation, forwarded through
+   * scroll callbacks. Set once per call — a 2D `scrollTo({ x, y })` shares one
+   * `userData` across both axes and keeps it readable until the whole
+   * operation completes (not wiped when the first axis lands).
    *
    * @example
    * lenis.scrollTo(100, {
@@ -58,19 +64,13 @@ export class Lenis {
    *   }
    * })
    */
-  userData: UserData = {}
-  /**
-   * The last velocity of the scroll
-   */
-  lastVelocity = 0
-  /**
-   * The current velocity of the scroll
-   */
-  velocity = 0
-  /**
-   * The direction of the scroll
-   */
-  direction: 1 | -1 | 0 = 0
+  get userData(): UserData {
+    return this._userData
+  }
+
+  set userData(value: UserData) {
+    this._userData = value
+  }
   /**
    * The options passed to the lenis instance
    */
@@ -78,20 +78,15 @@ export class Lenis {
     Required<LenisOptions>,
     'duration' | 'easing' | 'onGesture' | 'content' | 'dimensions'
   >
-  /**
-   * The target scroll value
-   */
-  targetScroll: number
-  /**
-   * The animated scroll value
-   */
-  animatedScroll: number
 
-  // These are instanciated here as they don't need information from the options
-  private readonly animate = new Animate()
+  // Instanciated here as it doesn't need information from the options
   private readonly emitter = new Emitter()
-  // These are instanciated in the constructor as they need information from the options
-  readonly dimensions: Dimensions // This is not private because it's used in the Snap class
+  // Instanciated in the constructor as they need information from the options
+  readonly dimensions: Dimensions // not private — used by the Snap class
+  /** The horizontal scroll axis */
+  readonly x: Axis
+  /** The vertical scroll axis */
+  readonly y: Axis
   private readonly gesturesHandler: GesturesHandler
   private readonly isIOS: boolean
 
@@ -102,8 +97,8 @@ export class Lenis {
     wheel,
     touch,
     infinite = false,
-    orientation = 'vertical', // vertical, horizontal
-    gestureOrientation = orientation === 'horizontal' ? 'both' : 'vertical', // vertical, horizontal, both
+    orientation = 'vertical', // vertical, horizontal, both
+    gestureOrientation = orientation === 'vertical' ? 'vertical' : 'both', // vertical, horizontal, both — has no effect when orientation is 'both'
     onGesture,
     overscroll = true,
     autoRaf = true,
@@ -134,9 +129,9 @@ export class Lenis {
       wrapper = window
     }
 
-    // if (wrapper === window) {
-    //   content = document.documentElement
-    // }
+    if (wrapper === window) {
+      content = document.documentElement
+    }
 
     eventsTarget ??= wrapper
 
@@ -160,12 +155,12 @@ export class Lenis {
         lerp: 0.1,
         multiplier: 1,
         inertia: 2,
-        ...(this.isIOS
-          ? (touch?.ios ?? {
-              inertia: 1.7,
-              lerp: 0.05,
-            })
-          : touch), // overwrite default values if iOS
+        ...touch,
+        ...(this.isIOS &&
+          (touch?.ios ?? {
+            inertia: 1.7,
+            lerp: 0.05,
+          })), // overwrite default values if iOS
       },
       infinite,
       gestureOrientation,
@@ -203,6 +198,9 @@ export class Lenis {
       this.options.dimensions
     )
 
+    this.x = new Axis('x', this)
+    this.y = new Axis('y', this)
+
     // Setup class name
     this.updateClassName()
 
@@ -228,7 +226,7 @@ export class Lenis {
       this.onPointerDown as EventListener
     )
 
-    // Setup virtual scroll instance
+    // Setup gestures handler
     this.gesturesHandler = new GesturesHandler(eventsTarget as HTMLElement)
     this.gesturesHandler.on('gesture', this.onGesture)
 
@@ -264,9 +262,10 @@ export class Lenis {
       )
     }
 
-    // this.virtualScroll.destroy()
     this.gesturesHandler.destroy()
     this.dimensions.destroy()
+    this.x.destroy()
+    this.y.destroy()
 
     this.cleanUpClassName()
 
@@ -284,7 +283,7 @@ export class Lenis {
    */
   on(event: 'scroll', callback: ScrollCallback): () => void
   on(event: 'gesture', callback: GestureCallback): () => void
-  on(event: LenisEvent, callback: ScrollCallback | GestureCallback) {
+  on(event: LenisEvent, callback: EventCallback) {
     return this.emitter.on(event, callback as (...args: unknown[]) => void)
   }
 
@@ -296,7 +295,7 @@ export class Lenis {
    */
   off(event: 'scroll', callback: ScrollCallback): void
   off(event: 'gesture', callback: GestureCallback): void
-  off(event: LenisEvent, callback: ScrollCallback | GestureCallback) {
+  off(event: LenisEvent, callback: EventCallback) {
     return this.emitter.off(event, callback as (...args: unknown[]) => void)
   }
 
@@ -321,12 +320,10 @@ export class Lenis {
   }
 
   private checkOverflow() {
-    const property = this.isHorizontal ? 'overflow-x' : 'overflow-y'
-    const overflow = getComputedStyle(this.rootElement)[
-      property as keyof CSSStyleDeclaration
-    ] as string
-
-    this.isScrollable = !['hidden', 'clip'].includes(overflow)
+    this.x.checkOverflow()
+    this.y.checkOverflow()
+    // Reflect a live overflow flip in the class names (e.g. `lenis-stopped`).
+    this.updateClassName()
   }
 
   private onTransitionEnd = (event: TransitionEvent) => {
@@ -339,19 +336,7 @@ export class Lenis {
   }
 
   private setScroll(scroll: number) {
-    // behavior: 'instant' bypasses the scroll-behavior CSS property
-
-    if (this.isHorizontal) {
-      this.options.wrapper.scrollTo({
-        left: scroll,
-        behavior: 'instant',
-      })
-    } else {
-      this.options.wrapper.scrollTo({
-        top: scroll,
-        behavior: 'instant',
-      })
-    }
+    this.activeAxis.setScroll(scroll)
   }
 
   private onClick = (event: PointerEvent | MouseEvent) => {
@@ -414,18 +399,17 @@ export class Lenis {
     const data = this.options.onGesture?.(_data, this) ?? _data
 
     if (data === false) return
+    this.emitter.emit('gesture', data)
 
     let { deltaX, deltaY, event, type } = data
 
-    this.emitter.emit('gesture', { deltaX, deltaY, event, type })
+    this.isTouch = type === 'touch'
+    this.isWheel = type === 'wheel'
 
     // keep zoom feature
     if (event.ctrlKey) return
     // @ts-expect-error
     if (event.lenisStopPropagation) return
-
-    this.isTouch = type === 'touch'
-    this.isWheel = type === 'wheel'
 
     if (this.isTouch) {
       deltaX *= this.options.touch.multiplier!
@@ -511,6 +495,73 @@ export class Lenis {
       return
     }
 
+    // 2D routing — gestureOrientation has no effect; deltaX drives x, deltaY drives y.
+    if (this.options.orientation === 'both') {
+      const isTouchEnd = event.type === 'touchend'
+
+      let dx = deltaX
+      let dy = deltaY
+      if (isTouchEnd) {
+        const inertia = this.options.touch.inertia!
+        dx = Math.sign(dx) * Math.abs(this.x.velocity) ** inertia
+        dy = Math.sign(dy) * Math.abs(this.y.velocity) ** inertia
+      }
+
+      // Per-axis consumption: an axis "consumes" the gesture if it's scrollable AND
+      // mid-range or pushing further into the boundary in the gesture's direction.
+      // Mirrors the single-axis overscroll-edge check below.
+      const consuming = (axis: Axis, delta: number) =>
+        axis.isScrollable &&
+        axis.limit > 0 &&
+        ((axis.animatedScroll > 0 && axis.animatedScroll < axis.limit) ||
+          (axis.animatedScroll === 0 && delta > 0) ||
+          (axis.animatedScroll === axis.limit && delta < 0))
+
+      if (
+        !this.options.overscroll ||
+        this.options.infinite ||
+        (this.options.wrapper !== window &&
+          (consuming(this.x, dx) || consuming(this.y, dy)))
+      ) {
+        // @ts-expect-error
+        event.lenisStopPropagation = true
+      }
+
+      if (event.cancelable) event.preventDefault()
+
+      const touchConfig = isTouchEnd
+        ? {
+            lerp: this.options.touch.lerp,
+            duration: this.options.touch.duration,
+            easing: this.options.touch.easing,
+          }
+        : { lerp: 1 }
+      const wheelConfig = {
+        lerp: this.options.wheel.lerp,
+        duration: this.options.wheel.duration,
+        easing: this.options.wheel.easing,
+      }
+      const config = this.isTouch ? touchConfig : wheelConfig
+
+      // Drive each axis independently, but only if it's scrollable and the
+      // instance isn't locked. Programmatic `scrollTo` still works on a locked /
+      // non-scrollable axis (matches the "scrollTo always runs" policy);
+      // only user-initiated gestures are gated.
+      if (dx !== 0 && this.x.isScrollable && !this.isLocked) {
+        this.scrollAxisTo(this.x, this.x.targetScroll + dx, {
+          programmatic: false,
+          ...config,
+        })
+      }
+      if (dy !== 0 && this.y.isScrollable && !this.isLocked) {
+        this.scrollAxisTo(this.y, this.y.targetScroll + dy, {
+          programmatic: false,
+          ...config,
+        })
+      }
+      return
+    }
+
     let delta = deltaY
     if (this.options.gestureOrientation === 'both') {
       delta = Math.abs(deltaY) > Math.abs(deltaX) ? deltaY : deltaX
@@ -591,13 +642,18 @@ export class Lenis {
     }
 
     if (this.isScrolling === false || this.isScrolling === 'native') {
-      const lastScroll = this.animatedScroll
-      this.animatedScroll = this.targetScroll = this.actualScroll
-      this.lastVelocity = this.velocity
-      this.velocity = this.animatedScroll - lastScroll
-      this.direction = Math.sign(
-        this.animatedScroll - lastScroll
-      ) as Lenis['direction']
+      // Sync each axis to the browser's reported scroll position. In single-axis
+      // mode the inactive axis just re-reads 0 (or whatever the user dragged via a
+      // visible scrollbar); in `'both'` mode both axes track native scroll.
+      let anyVelocity = false
+      for (const axis of [this.x, this.y]) {
+        const lastScroll = axis.animatedScroll
+        axis.animatedScroll = axis.targetScroll = axis.actualScroll
+        axis.lastVelocity = axis.velocity
+        axis.velocity = axis.animatedScroll - lastScroll
+        axis.direction = Math.sign(axis.velocity) as 1 | -1 | 0
+        if (axis.velocity !== 0) anyVelocity = true
+      }
 
       if (this.isScrollable) {
         this.isScrolling = 'native'
@@ -605,28 +661,44 @@ export class Lenis {
 
       this.emit()
 
-      if (this.velocity !== 0) {
+      if (anyVelocity) {
         this._resetVelocityTimeout = setTimeout(() => {
-          this.reset()
-          this.emit()
+          if (this.isScrolling === 'native' || this.isScrolling === false) {
+            this.reset()
+            this.emit()
+          }
+          this._resetVelocityTimeout = null
         }, 400) // arbitrary timeout to reset the velocity
       }
     }
   }
 
   private reset() {
+    if (this._resetVelocityTimeout !== null) {
+      clearTimeout(this._resetVelocityTimeout)
+      this._resetVelocityTimeout = null
+    }
+
     this.isScrolling = false
-    this.isTouch = undefined
-    this.isWheel = undefined
-    this.animatedScroll = this.targetScroll = this.actualScroll
-    this.lastVelocity = this.velocity = 0
-    this.animate.stop()
+    this.x.reset()
+    this.y.reset()
   }
 
+  /** Whether any axis currently has an animation running. */
+  private get isAnyAxisAnimating() {
+    return this.x.animate.isRunning || this.y.animate.isRunning
+  }
+
+  /**
+   * Lock scrolling — user-initiated wheel/touch gestures are suppressed on both
+   * axes. Programmatic `scrollTo` still runs (matches the "scrollTo always runs"
+   * policy). Pair with {@link unlock}.
+   */
   lock() {
     this.isLocked = true
   }
 
+  /** Release the lock. */
   unlock() {
     this.isLocked = false
   }
@@ -640,7 +712,14 @@ export class Lenis {
     const deltaTime = time - (this.time || time)
     this.time = time
 
-    this.animate.advance(deltaTime * 0.001)
+    const xActive = this.x.advance(deltaTime * 0.001)
+    const yActive = this.y.advance(deltaTime * 0.001)
+
+    // If either axis animated this frame, flush both axes' positions to the wrapper
+    // in a single `scrollTo` call (instead of two per-axis writes).
+    if (xActive || yActive) {
+      this.flushScroll()
+    }
 
     if (this.options.autoRaf) {
       this._rafId = requestAnimationFrame(this.raf)
@@ -648,139 +727,291 @@ export class Lenis {
   }
 
   /**
+   * Apply the current per-axis scroll values to the wrapper in one call, only
+   * writing the coordinate for each axis that's live (per `orientation`). This
+   * avoids double-writes when both axes animate in `'both'` mode and avoids
+   * clobbering the user's manual scroll on the inactive axis in single-axis mode.
+   */
+  private flushScroll() {
+    const opts: { left?: number; top?: number; behavior: ScrollBehavior } = {
+      behavior: 'instant',
+    }
+    if (this.options.orientation !== 'vertical') opts.left = this.x.scroll
+    if (this.options.orientation !== 'horizontal') opts.top = this.y.scroll
+    this.options.wrapper.scrollTo(opts)
+  }
+
+  /**
    * Scroll to a target value
    *
-   * @param target The target value to scroll to
+   * @param target Numeric target, scroll-keyword (`'top'`, `'bottom'`, …), CSS selector,
+   *               `HTMLElement`, or `{ x?, y? }` to drive each axis independently.
+   *               A bare number / element / selector targets the active axis (the vertical
+   *               one in `orientation: 'both'` mode); pass `{ x, y }` to scroll both at once.
    * @param options The options for the scroll
    *
    * @example
-   * lenis.scrollTo(100, {
-   *   offset: 100,
-   *   duration: 1,
-   *   easing: (t) => 1 - Math.cos((t * Math.PI) / 2),
-   *   lerp: 0.1,
-   *   onStart: () => {
-   *     console.log('onStart')
-   *   },
-   *   onComplete: () => {
-   *     console.log('onComplete')
-   *   },
-   * })
+   * lenis.scrollTo(100, { duration: 1 })
+   * lenis.scrollTo('#section')
+   * lenis.scrollTo({ x: 200, y: 800 })       // 2D, dispatches to both axes
    */
   scrollTo(
-    _target: number | string | HTMLElement,
+    target: number | string | HTMLElement,
+    options?: ScrollToOptions
+  ): void
+  scrollTo(target: { x?: number; y?: number }, options?: ScrollToOptions): void
+  scrollTo(
+    _target: number | string | HTMLElement | { x?: number; y?: number },
+    options: ScrollToOptions = {}
+  ) {
+    this.dispatchScrollTo(this.resolveScrollTargets(_target, options), options)
+  }
+
+  /**
+   * Resolve a `scrollTo` target into the concrete `{ axis, target }` pairs to
+   * drive. A bare `{ x?, y? }` (or an element in `'both'` mode) yields one
+   * entry per axis; everything else yields a single entry on the active axis.
+   * Returns `[]` when there's nothing to scroll (e.g. unresolved selector).
+   */
+  private resolveScrollTargets(
+    _target: number | string | HTMLElement | { x?: number; y?: number },
+    options: ScrollToOptions
+  ): { axis: Axis; target: number }[] {
+    // Per-axis offset: a scalar applies to every axis, `{ x?, y? }` per axis.
+    const offsetFor = (axis: Axis) => this.resolveOffset(options.offset, axis)
+    const active = this.activeAxis
+
+    // 2D dispatch — bare `{ x?, y? }` object (excluding HTMLElement).
+    if (
+      typeof _target === 'object' &&
+      _target !== null &&
+      !(_target instanceof HTMLElement)
+    ) {
+      const { x, y } = _target
+      const targets: { axis: Axis; target: number }[] = []
+      if (x !== undefined)
+        targets.push({ axis: this.x, target: x + offsetFor(this.x) })
+      if (y !== undefined)
+        targets.push({ axis: this.y, target: y + offsetFor(this.y) })
+      return targets
+    }
+
+    // Keywords — single-axis semantics (active axis). `top`/`left`/`start`/`#` → 0,
+    // `bottom`/`right`/`end` → limit. Users wanting 2D keyword semantics pass `{ x, y }`.
+    if (typeof _target === 'string') {
+      if (['top', 'left', 'start', '#'].includes(_target)) {
+        return [{ axis: active, target: offsetFor(active) }]
+      }
+      if (['bottom', 'right', 'end'].includes(_target)) {
+        return [{ axis: active, target: active.limit + offsetFor(active) }]
+      }
+    }
+
+    // Resolve a selector / HTMLElement to a `node`
+    let node: Element | null = null
+    if (typeof _target === 'string') {
+      node = document.querySelector(_target)
+      if (!node) {
+        if (_target === '#top') {
+          return [{ axis: active, target: offsetFor(active) }]
+        }
+        console.warn('Lenis: Target not found', _target)
+        return []
+      }
+    } else if (_target instanceof HTMLElement && _target.nodeType) {
+      node = _target
+    }
+
+    if (node) {
+      if (this.options.orientation === 'both') {
+        // 2D: scroll the element into view on both axes.
+        return [
+          {
+            axis: this.x,
+            target: this.resolveElementTarget(node, this.x, offsetFor(this.x)),
+          },
+          {
+            axis: this.y,
+            target: this.resolveElementTarget(node, this.y, offsetFor(this.y)),
+          },
+        ]
+      }
+      return [
+        {
+          axis: active,
+          target: this.resolveElementTarget(node, active, offsetFor(active)),
+        },
+      ]
+    }
+
+    // Bare number
+    if (typeof _target === 'number') {
+      return [{ axis: active, target: _target + offsetFor(active) }]
+    }
+
+    return []
+  }
+
+  /** Resolve the `offset` option to a number for a given axis. */
+  private resolveOffset(offset: ScrollToOptions['offset'], axis: Axis): number {
+    if (typeof offset === 'number') return offset
+    if (!offset) return 0
+    return (axis.axis === 'x' ? offset.x : offset.y) ?? 0
+  }
+
+  /**
+   * Run one logical `scrollTo` across one or more axes as a single operation:
+   * `userData`, `lock`, and the `onStart` / `onComplete` callbacks apply once
+   * for the whole call, not once per driven axis. Each axis still animates on
+   * its own `Animate` instance under the hood; this layer coordinates their
+   * shared lifecycle — `onStart` fires once when the first axis starts and
+   * `onComplete` once when the last axis settles.
+   */
+  private dispatchScrollTo(
+    targets: { axis: Axis; target: number }[],
     {
-      offset = 0,
+      onStart,
+      onComplete,
+      userData,
+      lock = false,
+      ...options
+    }: ScrollToOptions = {}
+  ) {
+    if (targets.length === 0) return
+
+    // Operation-scoped userData: stays readable through every scroll callback
+    // until the whole operation finishes (not wiped when the first axis lands).
+    this.userData = userData ?? {}
+
+    // Operation-scoped lock: suppress gestures (on both axes) for the lifetime
+    // of the call, then release when it completes.
+    if (lock) this.isLocked = true
+
+    let started = false
+    let pending = targets.length
+
+    const handleStart = () => {
+      if (started) return
+      started = true
+      onStart?.(this)
+    }
+
+    const handleComplete = () => {
+      if (--pending > 0) return
+      this.userData = {}
+      if (lock) this.isLocked = false
+      onComplete?.(this)
+    }
+
+    for (const { axis, target } of targets) {
+      this.scrollAxisTo(axis, target, {
+        ...options,
+        onStart: handleStart,
+        onComplete: handleComplete,
+      })
+    }
+  }
+
+  /**
+   * Resolve an `Element`'s bounding rect to a numeric scroll target on the given
+   * `axis`, accounting for wrapper offset (nested Lenis), `scroll-margin` on the
+   * target, `scroll-padding` on the container, and the caller-provided `offset`.
+   */
+  private resolveElementTarget(
+    node: Element,
+    axis: Axis,
+    offset: number
+  ): number {
+    let adjustedOffset = offset
+
+    if (this.options.wrapper !== window) {
+      // nested scroll offset correction
+      const wrapperRect = this.rootElement.getBoundingClientRect()
+      adjustedOffset -= axis.axis === 'x' ? wrapperRect.left : wrapperRect.top
+    }
+
+    const rect = node.getBoundingClientRect()
+
+    // Account for scroll-margin CSS property on the target element
+    const targetStyle = getComputedStyle(node)
+    const scrollMargin =
+      axis.axis === 'x'
+        ? Number.parseFloat(targetStyle.scrollMarginLeft)
+        : Number.parseFloat(targetStyle.scrollMarginTop)
+
+    // Account for scroll-padding CSS property on the scroll container
+    const containerStyle = getComputedStyle(this.rootElement)
+    const scrollPadding =
+      axis.axis === 'x'
+        ? Number.parseFloat(containerStyle.scrollPaddingLeft)
+        : Number.parseFloat(containerStyle.scrollPaddingTop)
+
+    return (
+      (axis.axis === 'x' ? rect.left : rect.top) +
+      axis.animatedScroll -
+      (Number.isNaN(scrollMargin) ? 0 : scrollMargin) -
+      (Number.isNaN(scrollPadding) ? 0 : scrollPadding) +
+      adjustedOffset
+    )
+  }
+
+  /**
+   * Drive a single `axis` to a numeric `target` — the per-axis animation state
+   * machine (infinite-wrap, clamp, `immediate` vs animated branches, the
+   * `onStart` / `onUpdate` / `onComplete` hooks). Lenis-level state
+   * (`isScrolling`, `emit`, scrollend dispatch) lives on `this` and is shared.
+   *
+   * Operation-level concerns — `userData`, `lock`, and firing the *caller's*
+   * `onStart` / `onComplete` exactly once — are owned by {@link dispatchScrollTo},
+   * which is the only caller. The `onStart` / `onComplete` passed here are that
+   * orchestrator's per-axis settle hooks.
+   */
+  private scrollAxisTo(
+    axis: Axis,
+    _target: number,
+    {
       immediate = false,
-      programmatic = true, // called from outside of the class
+      programmatic = true,
       lerp = programmatic ? this.options.wheel.lerp : undefined,
       duration = programmatic ? this.options.duration : undefined,
       easing = programmatic ? this.options.easing : undefined,
       onStart,
       onComplete,
-      userData,
     }: ScrollToOptions = {}
   ) {
-    let target: number | string | HTMLElement = _target
-    let adjustedOffset = offset
-
-    // keywords
-    if (
-      typeof target === 'string' &&
-      ['top', 'left', 'start', '#'].includes(target)
-    ) {
-      target = 0
-    } else if (
-      typeof target === 'string' &&
-      ['bottom', 'right', 'end'].includes(target)
-    ) {
-      target = this.limit
-    } else {
-      let node: Element | null = null
-
-      if (typeof target === 'string') {
-        // CSS selector
-        node = document.querySelector(target)
-
-        if (!node) {
-          if (target === '#top') {
-            target = 0
-          } else {
-            console.warn('Lenis: Target not found', target)
-          }
-        }
-      } else if (target instanceof HTMLElement && target?.nodeType) {
-        // Node element
-        node = target
-      }
-
-      if (node) {
-        if (this.options.wrapper !== window) {
-          // nested scroll offset correction
-          const wrapperRect = this.rootElement.getBoundingClientRect()
-          adjustedOffset -= this.isHorizontal
-            ? wrapperRect.left
-            : wrapperRect.top
-        }
-
-        const rect = node.getBoundingClientRect()
-
-        // Account for scroll-margin CSS property on the target element
-        const targetStyle = getComputedStyle(node)
-        const scrollMargin = this.isHorizontal
-          ? Number.parseFloat(targetStyle.scrollMarginLeft)
-          : Number.parseFloat(targetStyle.scrollMarginTop)
-
-        // Account for scroll-padding CSS property on the scroll container
-        const containerStyle = getComputedStyle(this.rootElement)
-        const scrollPadding = this.isHorizontal
-          ? Number.parseFloat(containerStyle.scrollPaddingLeft)
-          : Number.parseFloat(containerStyle.scrollPaddingTop)
-
-        target =
-          (this.isHorizontal ? rect.left : rect.top) +
-          this.animatedScroll -
-          (Number.isNaN(scrollMargin) ? 0 : scrollMargin) -
-          (Number.isNaN(scrollPadding) ? 0 : scrollPadding)
-      }
-    }
-
-    if (typeof target !== 'number') return
-
-    target += adjustedOffset
+    let target = _target
 
     if (this.options.infinite) {
       if (programmatic) {
-        this.targetScroll = this.animatedScroll = this.scroll
+        axis.targetScroll = axis.animatedScroll = axis.scroll
 
-        const distance = target - this.animatedScroll
+        const distance = target - axis.animatedScroll
 
-        if (distance > this.limit / 2) {
-          target -= this.limit
-        } else if (distance < -this.limit / 2) {
-          target += this.limit
+        if (distance > axis.limit / 2) {
+          target -= axis.limit
+        } else if (distance < -axis.limit / 2) {
+          target += axis.limit
         }
       }
     } else {
-      target = clamp(0, target, this.limit)
+      target = clamp(0, target, axis.limit)
     }
 
-    if (target === this.targetScroll) {
+    if (target === axis.targetScroll) {
       onStart?.(this)
       onComplete?.(this)
       return
     }
 
-    this.userData = userData ?? {}
-
     if (immediate) {
-      this.animatedScroll = this.targetScroll = target
-      this.setScroll(this.scroll)
-      this.reset()
+      axis.animatedScroll = axis.targetScroll = target
+      axis.setScroll(axis.scroll)
+      axis.reset()
+      if (!this.isAnyAxisAnimating) this.isScrolling = false
       this.preventNextNativeScrollEvent()
       this.emit()
+      onStart?.(this)
       onComplete?.(this)
-      this.userData = {}
 
       requestAnimationFrame(() => {
         this.dispatchScrollendEvent()
@@ -789,7 +1020,7 @@ export class Lenis {
     }
 
     if (!programmatic) {
-      this.targetScroll = target
+      axis.targetScroll = target
     }
 
     // flip to easing/time based animation if at least one of them is provided
@@ -799,7 +1030,7 @@ export class Lenis {
       duration = 1
     }
 
-    this.animate.fromTo(this.animatedScroll, target, {
+    axis.animate.fromTo(axis.animatedScroll, target, {
       duration,
       easing,
       lerp,
@@ -811,25 +1042,25 @@ export class Lenis {
         this.isScrolling = 'smooth'
 
         // updated
-        this.lastVelocity = this.velocity
-        this.velocity = value - this.animatedScroll
-        this.direction = Math.sign(this.velocity) as Lenis['direction']
+        axis.lastVelocity = axis.velocity
+        axis.velocity = value - axis.animatedScroll
+        axis.direction = Math.sign(axis.velocity) as 1 | -1 | 0
 
-        this.animatedScroll = value
-        this.setScroll(this.scroll)
+        axis.animatedScroll = value
+        // DOM write is consolidated into a single `wrapper.scrollTo` per frame in `Lenis.raf`.
 
         if (programmatic) {
           // wheel during programmatic should stop it
-          this.targetScroll = value
+          axis.targetScroll = value
         }
 
         if (!completed) this.emit()
 
         if (completed) {
-          this.reset()
+          axis.reset()
+          if (!this.isAnyAxisAnimating) this.isScrolling = false
           this.emit()
           onComplete?.(this)
-          this.userData = {}
 
           requestAnimationFrame(() => {
             this.dispatchScrollendEvent()
@@ -862,10 +1093,16 @@ export class Lenis {
   }
 
   /**
-   * The limit which is the maximum scroll value
+   * The active scroll axis — `x` when `orientation` is `horizontal`, otherwise `y`.
+   * The single-axis scroll getters/setters on the instance delegate to it.
    */
-  get limit() {
-    return this.dimensions.limit[this.isHorizontal ? 'x' : 'y']
+  private get activeAxis() {
+    return this.isHorizontal ? this.x : this.y
+  }
+
+  /** @internal the animation driving the active axis */
+  private get animate() {
+    return this.activeAxis.animate
   }
 
   /**
@@ -876,37 +1113,91 @@ export class Lenis {
   }
 
   /**
-   * The actual scroll value
+   * The target scroll value (active axis — `y` in `'vertical'`/`'both'`, `x` in `'horizontal'`).
+   * In 2D mode read each axis directly via `lenis.x.targetScroll` / `lenis.y.targetScroll`.
+   */
+  get targetScroll() {
+    return this.activeAxis.targetScroll
+  }
+  set targetScroll(value: number) {
+    this.activeAxis.targetScroll = value
+  }
+
+  /**
+   * The animated scroll value (active axis — see {@link targetScroll}).
+   */
+  get animatedScroll() {
+    return this.activeAxis.animatedScroll
+  }
+  set animatedScroll(value: number) {
+    this.activeAxis.animatedScroll = value
+  }
+
+  /**
+   * The current velocity of the scroll (active axis — see {@link targetScroll}).
+   * In 2D, each axis has its own velocity — `lenis.x.velocity` / `lenis.y.velocity`.
+   */
+  get velocity() {
+    return this.activeAxis.velocity
+  }
+  set velocity(value: number) {
+    this.activeAxis.velocity = value
+  }
+
+  /**
+   * The last velocity of the scroll
+   */
+  get lastVelocity() {
+    return this.activeAxis.lastVelocity
+  }
+  set lastVelocity(value: number) {
+    this.activeAxis.lastVelocity = value
+  }
+
+  /**
+   * The scroll direction on the active axis: `1` forward, `-1` backward, `0` idle.
+   * Per-axis: `lenis.x.direction` / `lenis.y.direction`.
+   */
+  get direction() {
+    return this.activeAxis.direction
+  }
+  set direction(value: 1 | -1 | 0) {
+    this.activeAxis.direction = value
+  }
+
+  /**
+   * The maximum scroll value for the active axis.
+   */
+  get limit() {
+    return this.activeAxis.limit
+  }
+
+  /**
+   * The scroll value the browser currently reports for the active axis.
    */
   get actualScroll() {
-    // value browser takes into account
-    // it has to be this way because of DOCTYPE declaration
-    const wrapper = this.options.wrapper as Window | HTMLElement
-
-    return this.isHorizontal
-      ? ((wrapper as Window).scrollX ?? (wrapper as HTMLElement).scrollLeft)
-      : ((wrapper as Window).scrollY ?? (wrapper as HTMLElement).scrollTop)
+    return this.activeAxis.actualScroll
   }
 
   /**
-   * The current scroll value
+   * The current (animated) scroll value for the active axis.
+   * In 2D, read each axis directly via `lenis.x.scroll` / `lenis.y.scroll`.
    */
   get scroll() {
-    return this.options.infinite
-      ? modulo(this.animatedScroll, this.limit)
-      : this.animatedScroll
+    return this.activeAxis.scroll
   }
 
   /**
-   * The progress of the scroll relative to the limit
+   * Scroll progress (0..1) of the active axis relative to its `limit`.
    */
   get progress() {
-    // avoid progress to be NaN
-    return this.limit === 0 ? 1 : this.scroll / this.limit
+    return this.activeAxis.progress
   }
 
   /**
-   * Current scroll state
+   * Current scroll state: `'native'` while consuming a non-smooth native scroll,
+   * `'smooth'` while a Lenis animation is driving any axis, `false` when idle.
+   * In 2D, becomes `false` only once *no* axis is animating.
    */
   get isScrolling() {
     return this._isScrolling
@@ -920,40 +1211,41 @@ export class Lenis {
   }
 
   /**
-   * Whether the root element's CSS overflow currently permits scrolling
+   * Whether Lenis is currently smooth-scrolling (a Lenis animation is driving a
+   * scroll, on any axis) — i.e. {@link isScrolling} is `'smooth'`.
    */
-  get isScrollable() {
-    return this._isScrollable
-  }
-
-  private set isScrollable(value: boolean) {
-    if (this._isScrollable !== value) {
-      this._isScrollable = value
-      this.reset()
-      this.emit()
-      this.updateClassName()
-    }
+  get isSmooth() {
+    return this.isScrolling === 'smooth'
   }
 
   /**
-   * Check if lenis is locked
+   * Whether the user can scroll: `true` when at least one live axis is scrollable
+   * (cached per-axis on `lenis.x.isScrollable` / `lenis.y.isScrollable`, refreshed
+   * at construction and on `overflow` `transitionend`). The `lenis-stopped` class is
+   * applied when this is `false`.
+   */
+  get isScrollable() {
+    const orientation = this.options.orientation
+    if (orientation === 'horizontal') return this.x.isScrollable
+    if (orientation === 'both')
+      return this.x.isScrollable || this.y.isScrollable
+    return this.y.isScrollable
+  }
+
+  /**
+   * Whether user-initiated scrolling is suppressed. Instance-wide and
+   * all-or-nothing — both axes are locked together or neither is. Set via
+   * {@link lock} / {@link unlock} or a `scrollTo({ lock: true })` (for the
+   * lifetime of that scroll). Programmatic `scrollTo` runs regardless.
    */
   get isLocked() {
     return this._isLocked
   }
 
-  private set isLocked(value: boolean) {
-    if (this._isLocked !== value) {
-      this._isLocked = value
-      this.updateClassName()
-    }
-  }
-
-  /**
-   * Check if lenis is smooth scrolling
-   */
-  get isSmooth() {
-    return this.isScrolling === 'smooth'
+  set isLocked(value: boolean) {
+    if (value === this._isLocked) return
+    this._isLocked = value
+    this.updateClassName()
   }
 
   /**

@@ -1,4 +1,5 @@
 import { debounce } from './debounce'
+import type { SnapAlign } from './types'
 
 function removeParentSticky(element: HTMLElement) {
   const position = getComputedStyle(element).position
@@ -58,8 +59,18 @@ function scrollLeft(element: HTMLElement, accumulator = 0) {
   return left + window.scrollX
 }
 
+/**
+ * Each element produces a single 2D snap target. The `align` option controls
+ * how that target is anchored on each axis:
+ *
+ *   align: 'center'                  // both axes centered
+ *   align: ['start']                 // both axes start (shorthand)
+ *   align: ['start', 'end']          // x = start, y = end
+ *
+ * Extra entries are ignored; missing entries fall back to the first.
+ */
 export type SnapElementOptions = {
-  align?: string | string[]
+  align?: SnapAlign | SnapAlign[]
   ignoreSticky?: boolean
   ignoreTransform?: boolean
 }
@@ -79,7 +90,8 @@ type Rect = {
 export class SnapElement {
   element: HTMLElement
   options: SnapElementOptions
-  align: string[]
+  /** [xAlign, yAlign] — both always defined. */
+  align: [SnapAlign, SnapAlign]
   // @ts-expect-error
   rect: Rect = {}
   wrapperResizeObserver: ResizeObserver
@@ -89,16 +101,18 @@ export class SnapElement {
   constructor(
     element: HTMLElement,
     {
-      align = ['start'],
+      align = 'start',
       ignoreSticky = true,
       ignoreTransform = false,
     }: SnapElementOptions = {}
   ) {
     this.element = element
-
     this.options = { align, ignoreSticky, ignoreTransform }
 
-    this.align = [align].flat()
+    const list = Array.isArray(align) ? align : [align]
+    const xAlign = (list[0] ?? 'start') as SnapAlign
+    const yAlign = (list[1] ?? list[0] ?? 'start') as SnapAlign
+    this.align = [xAlign, yAlign]
 
     this.debouncedWrapperResize = debounce(this.onWrapperResize, 500)
 
