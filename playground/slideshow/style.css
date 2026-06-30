@@ -1,0 +1,28 @@
+/* Full-viewport slides — one per screen, snapped one-per-flick. */
+.slide {
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: monospace;
+  font-size: 12vw;
+  font-weight: 700;
+  color: white;
+}
+
+.slide-1 {
+  background-color: #255bec;
+}
+.slide-2 {
+  background-color: #f6c74d;
+}
+.slide-3 {
+  height: 300vh;
+  background-color: #b49df8;
+}
+.slide-4 {
+  background-color: #ea6e38;
+}
+.slide-5 {
+  background-color: #0e0e0e;
+}
