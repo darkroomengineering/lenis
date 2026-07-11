@@ -35,6 +35,8 @@ export class Lenis {
   private _resetVelocityTimeout: ReturnType<typeof setTimeout> | null = null
   private _rafId: number | null = null
   private _isDraggingSelection = false // true while a touch is dragging an iOS selection handle
+  private _nestedCache = new WeakMap<HTMLElement, Lenis>()
+  private _nestedChildren = new Set<Lenis>()
 
   /**
    * Whether or not the user is touching the screen
@@ -255,6 +257,9 @@ export class Lenis {
       )
     }
 
+    for (const child of this._nestedChildren) child.destroy()
+    this._nestedChildren.clear()
+
     this.virtualScroll.destroy()
     this.dimensions.destroy()
 
@@ -428,6 +433,49 @@ export class Lenis {
     return nearStart || nearEnd
   }
 
+  private getOrCreateNestedLenis(node: HTMLElement): Lenis {
+    let child = this._nestedCache.get(node)
+    if (child) return child
+
+    const orientation = this.options.orientation
+
+    child = new Lenis({
+      wrapper: node,
+      content: node.firstElementChild as HTMLElement,
+      autoRaf: true,
+      lerp: this.options.lerp,
+      duration: this.options.duration,
+      easing: this.options.easing,
+      wheelMultiplier: this.options.wheelMultiplier,
+      touchMultiplier: this.options.touchMultiplier,
+      smoothWheel: this.options.smoothWheel,
+      syncTouch: this.options.syncTouch,
+      syncTouchLerp: this.options.syncTouchLerp,
+      overscroll: true,
+      virtualScroll: ({ deltaX, deltaY }) => {
+        const gestureDir =
+          Math.abs(deltaX) >= Math.abs(deltaY) ? 'horizontal' : 'vertical'
+        if (gestureDir !== orientation) return false
+
+        const isVertical = orientation === 'vertical'
+        const scroll = Math.round(isVertical ? node.scrollTop : node.scrollLeft)
+        const maxScroll = isVertical
+          ? node.scrollHeight - node.clientHeight
+          : node.scrollWidth - node.clientWidth
+        const delta = isVertical ? deltaY : deltaX
+
+        return !(
+          (scroll <= 0 && delta < 0) ||
+          (scroll >= maxScroll - 1 && delta > 0)
+        )
+      },
+    })
+
+    this._nestedCache.set(node, child)
+    this._nestedChildren.add(child)
+    return child
+  }
+
   private onVirtualScroll = (data: VirtualScrollData) => {
     if (
       typeof this.options.virtualScroll === 'function' &&
@@ -497,6 +545,40 @@ export class Lenis {
     let composedPath = event.composedPath()
     composedPath = composedPath.slice(0, composedPath.indexOf(this.rootElement)) // remove parents elements
 
+    // Smooth nested scroll: delegate to a child Lenis instance for main-axis
+    // gestures on scrollable nested containers, giving them the same smooth
+    // inertia as the page. On the first event we create the child and forward
+    // the delta manually; subsequent events are handled by the child's own
+    // listener (which fires before ours due to bubbling order).
+    if (this.options.allowNestedScroll) {
+      const nestedGesture =
+        Math.abs(deltaX) >= Math.abs(deltaY) ? 'horizontal' : 'vertical'
+
+      if (nestedGesture === this.options.orientation) {
+        const nestedNode = composedPath.find(
+          (node) =>
+            node instanceof HTMLElement &&
+            this.hasNestedScroll(node, { deltaX, deltaY })
+        ) as HTMLElement | undefined
+
+        if (nestedNode) {
+          const child = this.getOrCreateNestedLenis(nestedNode)
+          const delta =
+            this.options.orientation === 'vertical' ? deltaY : deltaX
+          child.scrollTo(child.targetScroll + delta, {
+            programmatic: false,
+            lerp: this.options.lerp,
+            duration: this.options.duration,
+            easing: this.options.easing,
+          })
+          if (event.cancelable) event.preventDefault()
+          // @ts-expect-error
+          event.lenisStopPropagation = true
+          return
+        }
+      }
+    }
+
     const prevent = this.options.prevent
 
     const gestureOrientation =
@@ -513,12 +595,7 @@ export class Lenis {
             (gestureOrientation === 'horizontal' &&
               node.hasAttribute?.('data-lenis-prevent-horizontal')) ||
             (isTouch && node.hasAttribute?.('data-lenis-prevent-touch')) ||
-            (isWheel && node.hasAttribute?.('data-lenis-prevent-wheel')) ||
-            (this.options.allowNestedScroll &&
-              this.hasNestedScroll(node, {
-                deltaX,
-                deltaY,
-              })))
+            (isWheel && node.hasAttribute?.('data-lenis-prevent-wheel')))
       )
     )
       return

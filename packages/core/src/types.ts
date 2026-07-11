@@ -210,7 +210,9 @@ export type LenisOptions = {
    */
   autoToggle?: boolean
   /**
-   * If `true`, Lenis will allow nested scroll
+   * If `true`, Lenis will create child instances on nested scrollable containers
+   * to provide smooth inertia scrolling instead of falling back to native scroll.
+   * Boundary detection ensures page scrolling resumes when a container hits its scroll limit.
    * @default false
    */
   allowNestedScroll?: boolean
