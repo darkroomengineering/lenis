@@ -1,6 +1,6 @@
 {
   "name": "lenis",
-  "version": "1.3.25",
+  "version": "1.3.25-framer",
   "description": "How smooth scroll should be",
   "type": "module",
   "sideEffects": false,
@@ -43,6 +43,7 @@
     "version:major": "npm version major --force --no-git-tag-version",
     "postversion": "bun run build && bun run readme",
     "publish:dev": "npm publish --tag dev",
+    "publish:framer": "npm publish --tag framer",
     "publish:main": "npm publish"
   },
   "files": [
