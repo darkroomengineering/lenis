@@ -35,6 +35,10 @@ export class Lenis {
   private _resetVelocityTimeout: ReturnType<typeof setTimeout> | null = null
   private _rafId: number | null = null
   private _isDraggingSelection = false // true while a touch is dragging an iOS selection handle
+  // `.matches` is read at scroll time so preference changes apply live, no listener needed
+  private readonly reducedMotionMediaQuery = window.matchMedia(
+    '(prefers-reduced-motion: reduce)'
+  )
 
   /**
    * Whether or not the user is touching the screen
@@ -125,6 +129,7 @@ export class Lenis {
     __experimental__naiveDimensions = false,
     naiveDimensions = __experimental__naiveDimensions,
     stopInertiaOnNavigate = false,
+    respectReducedMotion = true,
   }: LenisOptions = {}) {
     // Set version (deprecated)
     window.lenisVersion = version
@@ -184,6 +189,7 @@ export class Lenis {
       allowNestedScroll,
       naiveDimensions,
       stopInertiaOnNavigate,
+      respectReducedMotion,
     }
 
     // Setup dimensions instance
@@ -746,6 +752,18 @@ export class Lenis {
       userData,
     }: ScrollToOptions = {}
   ) {
+    if (this.prefersReducedMotion) {
+      if (programmatic) {
+        // jump cut instead of animation
+        immediate = true
+      } else {
+        // 1:1 input tracking, same mechanism as syncTouch finger tracking
+        lerp = 1
+        duration = undefined
+        easing = undefined
+      }
+    }
+
     if ((this.isStopped || this.isLocked) && !force) return
 
     let target: number | string | HTMLElement = _target
@@ -1151,6 +1169,15 @@ export class Lenis {
    */
   get isSmooth() {
     return this.isScrolling === 'smooth'
+  }
+
+  /**
+   * Whether the user prefers reduced motion and lenis is honoring it (see `respectReducedMotion` option)
+   */
+  get prefersReducedMotion() {
+    return (
+      this.options.respectReducedMotion && this.reducedMotionMediaQuery.matches
+    )
   }
 
   /**

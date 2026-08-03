@@ -228,6 +228,11 @@ export type LenisOptions = {
    * @default false
    */
   stopInertiaOnNavigate?: boolean
+  /**
+   * If `true`, Lenis will honor the user's `prefers-reduced-motion` setting: smoothing is disabled (`lerp` forced to `1` so scroll tracks the input device 1:1) and programmatic scrolls become instant, while scroll keeps running on the main thread
+   * @default true
+   */
+  respectReducedMotion?: boolean
 }
 
 declare global {
