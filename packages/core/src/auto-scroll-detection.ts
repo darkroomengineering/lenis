@@ -19,17 +19,19 @@ export class AutoScrollDetection {
 
     this.wrapper.addEventListener('pointerdown', this.onPointerDown)
     this.wrapper.addEventListener('pointerup', this.onPointerUp)
-    window.addEventListener('blur', this.onBlur)
+    window.addEventListener('blur', this.reset)
+    window.addEventListener('keydown', this.reset)
   }
 
   destroy() {
     this.wrapper.removeEventListener('pointerdown', this.onPointerDown)
     this.wrapper.removeEventListener('pointerup', this.onPointerUp)
-    window.removeEventListener('blur', this.onBlur)
+    window.removeEventListener('blur', this.reset)
+    window.removeEventListener('keydown', this.reset)
     this.emitter.destroy()
   }
 
-  private onBlur = () => {
+  private reset = () => {
     this.phase = 0
   }
 
