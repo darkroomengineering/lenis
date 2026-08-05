@@ -202,6 +202,7 @@ That's it, your page now has smooth scrolling and should handle most of the usua
 | `orientation`           | `string`                   | `vertical`                                         | The orientation of the scrolling. Can be `vertical` or `horizontal`.                                                                                                                                                                                                                 |
 | `overscroll`            | `boolean`                  | `true`                                             | Similar to CSS overscroll-behavior (https://developer.mozilla.org/en-US/docs/Web/CSS/overscroll-behavior).                                                                                                                                                                           |
 | `prevent`               | `function`                 | `undefined`                                        | Manually prevent scroll to be smoothed based on elements traversed by events. If `true` is returned, it will prevent the scroll to be smoothed. Example: `(node) =>  node.classList.contains('cookie-modal')`.                                                                       |
+| `respectReducedMotion`  | `boolean`                  | `true`                                             | Honor the user's `prefers-reduced-motion` setting: smoothing is disabled and programmatic scrolls are instant, while scroll keeps running on the main thread ([see Reduced motion](#reduced-motion)).                                                                                 |
 | `smoothWheel`           | `boolean`                  | `true`                                             | Smooth the scroll initiated by `wheel` events.                                                                                                                                                                                                                                       |
 | `stopInertiaOnNavigate` | `boolean`                  | `false`                                            | If `true`, Lenis will stop inertia when an internal link is clicked.                                                                                                                                                                                                                 |
 | `syncTouch`             | `boolean`                  | `false`                                            | Mimic touch device scroll while allowing scroll sync (can be unstable on iOS<16).                                                                                                                                                                                                    |
@@ -244,6 +245,7 @@ That's it, your page now has smooth scrolling and should handle most of the usua
 | `lastVelocity`          | `number`          | Last scroll velocity                                                       |
 | `limit` (getter)        | `number`          | Maximum scroll value                                                       |
 | `options`               | `object`          | Instance options                                                           |
+| `prefersReducedMotion` (getter) | `boolean` | Whether the user prefers reduced motion and Lenis is honoring it           |
 | `progress` (getter)     | `number`          | Scroll progress from `0` to `1`                                            |
 | `rootElement` (getter)  | `HTMLElement`     | Element on which Lenis is instanced                                        |
 | `scroll` (getter)       | `number`          | Current scroll value (handles infinite scroll if activated)                |
@@ -342,6 +344,18 @@ new Lenis({
       console.log('scrolled to anchor')
     }
   }
+})
+```
+
+### Reduced motion
+
+By default, Lenis honors the user's [`prefers-reduced-motion`](https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-reduced-motion) setting: when it is set to `reduce`, smoothing is disabled (`lerp` is forced to `1` so the scroll tracks the input device 1:1, ignoring `duration`/`easing`) and programmatic scrolls (`scrollTo`, anchor links) jump instantly to their target. Lenis keeps running so WebGL/DOM synchronization stays intact, and the preference is picked up live without a reload. You can check `lenis.prefersReducedMotion` to adapt your own animations.
+
+You can opt out (not recommended) with:
+
+```js
+const lenis = new Lenis({
+  respectReducedMotion: false,
 })
 ```
 
