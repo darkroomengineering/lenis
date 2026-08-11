@@ -128,6 +128,9 @@ const renderDebug = (e: Lenis) => {
 }
 
 lenis.on('scroll', renderDebug)
+lenis.on('scroll', (lenis) => {
+  console.log(lenis.isScrolling)
+})
 window.addEventListener('scroll', () => renderDebug(lenis), { passive: true })
 
 // document.querySelectorAll('a[href*="#"]').forEach((node) => {
