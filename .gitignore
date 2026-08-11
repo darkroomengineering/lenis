@@ -36,7 +36,10 @@ yarn-error.log*
 .vercel
 .eslintcache
 
+# Keep root /.npmrc tracked (provenance=true setting, no secrets).
+# Ignore nested .npmrc files where auth tokens may end up.
 .npmrc
+!/.npmrc
 
 
 packages/core/dist/

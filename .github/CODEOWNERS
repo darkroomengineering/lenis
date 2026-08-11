@@ -1,1 +1,13 @@
 * @darkroomengineering/devs
+
+# Release-critical paths. Changes here can compromise the supply chain
+# (workflow swap, manifest tampering, registry config). Reviewers should
+# verify that any modification is intentional and does not weaken the
+# publish pipeline. Replace with a smaller `release-admins` team once
+# one exists.
+/.github/workflows/    @darkroomengineering/devs
+/.github/CODEOWNERS    @darkroomengineering/devs
+/.github/dependabot.yml @darkroomengineering/devs
+/package.json          @darkroomengineering/devs
+/.npmrc                @darkroomengineering/devs
+/SECURITY.md           @darkroomengineering/devs
