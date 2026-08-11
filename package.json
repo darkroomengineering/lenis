@@ -49,9 +49,9 @@
     "dist"
   ],
   "devDependencies": {
-    "@biomejs/biome": "^2.4.2",
-    "tsdown": "^0.21.4",
-    "typescript": "^5.7.3"
+    "@biomejs/biome": "^2.5.5",
+    "tsdown": "^0.21.10",
+    "typescript": "^5.9.3"
   },
   "peerDependencies": {
     "@nuxt/kit": ">=3.0.0",
