@@ -441,7 +441,7 @@ export class Lenis {
     )
       return
 
-    const { deltaX, deltaY, event } = data
+    const { deltaX, deltaY, event, isPrecisionTouchpad } = data
 
     this.emitter.emit('virtual-scroll', { deltaX, deltaY, event })
 
@@ -590,11 +590,15 @@ export class Lenis {
         ? {
             lerp: hasTouchInertia ? this.options.syncTouchLerp : 1,
           }
-        : {
-            lerp: this.options.lerp,
-            duration: this.options.duration,
-            easing: this.options.easing,
-          }),
+        : isPrecisionTouchpad
+          ? {
+              lerp: 1,
+            }
+          : {
+              lerp: this.options.lerp,
+              duration: this.options.duration,
+              easing: this.options.easing,
+            }),
     })
   }
 

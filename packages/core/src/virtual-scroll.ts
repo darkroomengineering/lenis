@@ -24,6 +24,9 @@ export class VirtualScroll {
     height: 0,
   }
   private emitter = new Emitter()
+  private lastWheelTime = 0
+  private rapidWheelCount = 0
+  isPrecisionTouchpad = false
 
   constructor(
     private element: HTMLElement,
@@ -152,7 +155,33 @@ export class VirtualScroll {
     deltaX *= this.options.wheelMultiplier
     deltaY *= this.options.wheelMultiplier
 
-    this.emitter.emit('scroll', { deltaX, deltaY, event })
+    // Detect precision touchpad: pixel-mode events arriving rapidly with small deltas
+    if (deltaMode === 0) {
+      const now = performance.now()
+      const elapsed = now - this.lastWheelTime
+      const maxDelta = Math.max(Math.abs(event.deltaX), Math.abs(event.deltaY))
+
+      if (elapsed < 100 && maxDelta < 50) {
+        this.rapidWheelCount++
+        if (this.rapidWheelCount >= 2) {
+          this.isPrecisionTouchpad = true
+        }
+      } else if (elapsed >= 100) {
+        this.rapidWheelCount = 0
+        this.isPrecisionTouchpad = false
+      }
+
+      this.lastWheelTime = now
+    } else {
+      this.isPrecisionTouchpad = false
+    }
+
+    this.emitter.emit('scroll', {
+      deltaX,
+      deltaY,
+      event,
+      isPrecisionTouchpad: this.isPrecisionTouchpad,
+    })
   }
 
   onWindowResize = () => {

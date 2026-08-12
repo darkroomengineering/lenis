@@ -41,6 +41,7 @@ export type VirtualScrollData = {
   deltaX: number
   deltaY: number
   event: WheelEvent | TouchEvent
+  isPrecisionTouchpad?: boolean
 }
 
 export type Orientation = 'vertical' | 'horizontal'
