@@ -92,19 +92,19 @@ export class Axis {
   }
 
   /**
-   * The current scroll value (wrapped to `scrollMax` when `infinite`). Stays full-float —
+   * The current scroll value (wrapped to `maxScroll` when `infinite`). Stays full-float —
    * the browser quantizes the DOM write per device pixel ratio at `scrollTo` time, so
    * downstream consumers (transforms, WebGL, etc.) get the full-precision value.
    */
   get scroll() {
     return this.lenis.options.infinite
-      ? modulo(this.animatedScroll, this.scrollMax)
+      ? modulo(this.animatedScroll, this.maxScroll)
       : this.animatedScroll
   }
 
   /** The maximum scroll value for this axis. */
-  get scrollMax() {
-    return this.lenis.scrollingBox.scrollMax[this.axis]
+  get maxScroll() {
+    return this.lenis.scrollingBox.maxScroll[this.axis]
   }
 
   /**
@@ -115,9 +115,9 @@ export class Axis {
     return this.lenis.scrollingBox.isScrollable[this.axis]
   }
 
-  /** Scroll progress relative to `scrollMax`, `0..1`. */
+  /** Scroll progress relative to `maxScroll`, `0..1`. */
   get progress() {
     // avoid progress being NaN
-    return this.scrollMax === 0 ? 0 : this.scroll / this.scrollMax
+    return this.maxScroll === 0 ? 0 : this.scroll / this.maxScroll
   }
 }

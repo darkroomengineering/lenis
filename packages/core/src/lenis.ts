@@ -503,14 +503,14 @@ export class Lenis {
       // Per-axis consumption: an axis "consumes" the gesture if it's scrollable AND
       // mid-range or pushing further into the boundary in the gesture's direction.
       // Mirrors the single-axis overscroll-edge check below.
-      // Scroll values can be fractional while scrollMax derives from rounded values,
+      // Scroll values can be fractional while maxScroll derives from rounded values,
       // so the end check needs a 1px threshold instead of strict equality (and native
-      // overscroll can push the value outside [0, scrollMax]).
+      // overscroll can push the value outside [0, maxScroll]).
       // https://developer.mozilla.org/en-US/docs/Web/API/Element/scrollHeight#determine_if_an_element_has_been_totally_scrolled
       const consuming = (axis: Axis, delta: number) => {
         if (!axis.isScrollable) return false
         const atStart = axis.animatedScroll <= 0
-        const atEnd = axis.scrollMax - axis.animatedScroll <= 1
+        const atEnd = axis.maxScroll - axis.animatedScroll <= 1
         // consume if the axis can scroll further in the delta's direction
         if (delta > 0) return !atEnd
         if (delta < 0) return !atStart
@@ -572,7 +572,7 @@ export class Lenis {
     // Same 1px totally-scrolled threshold as the 2D `consuming` check above:
     // consume if the wrapper can scroll further in the gesture's direction
     const atStart = this.animatedScroll <= 0
-    const atEnd = this.scrollMax - this.animatedScroll <= 1
+    const atEnd = this.maxScroll - this.animatedScroll <= 1
     let consuming = !(atStart || atEnd)
     if (deltaY > 0) consuming = !atEnd
     else if (deltaY < 0) consuming = !atStart
@@ -580,7 +580,7 @@ export class Lenis {
     if (
       !this.options.overscroll ||
       this.options.infinite ||
-      (this.options.wrapper !== window && this.scrollMax > 0 && consuming)
+      (this.options.wrapper !== window && this.maxScroll > 0 && consuming)
     ) {
       // @ts-expect-error
       event.lenisStopPropagation = true
@@ -801,13 +801,13 @@ export class Lenis {
     }
 
     // Keywords — single-axis semantics (active axis). `top`/`left`/`start`/`#` → 0,
-    // `bottom`/`right`/`end` → scrollMax. Users wanting 2D keyword semantics pass `{ x, y }`.
+    // `bottom`/`right`/`end` → maxScroll. Users wanting 2D keyword semantics pass `{ x, y }`.
     if (typeof _target === 'string') {
       if (['top', 'left', 'start', '#'].includes(_target)) {
         return [{ axis: active, target: offsetFor(active) }]
       }
       if (['bottom', 'right', 'end'].includes(_target)) {
-        return [{ axis: active, target: active.scrollMax + offsetFor(active) }]
+        return [{ axis: active, target: active.maxScroll + offsetFor(active) }]
       }
     }
 
@@ -991,14 +991,14 @@ export class Lenis {
 
         const distance = target - axis.animatedScroll
 
-        if (distance > axis.scrollMax / 2) {
-          target -= axis.scrollMax
-        } else if (distance < -axis.scrollMax / 2) {
-          target += axis.scrollMax
+        if (distance > axis.maxScroll / 2) {
+          target -= axis.maxScroll
+        } else if (distance < -axis.maxScroll / 2) {
+          target += axis.maxScroll
         }
       }
     } else {
-      target = clamp(0, target, axis.scrollMax)
+      target = clamp(0, target, axis.maxScroll)
     }
 
     if (target === axis.targetScroll) {
@@ -1172,8 +1172,8 @@ export class Lenis {
   /**
    * The maximum scroll value for the active axis.
    */
-  get scrollMax() {
-    return this.activeAxis.scrollMax
+  get maxScroll() {
+    return this.activeAxis.maxScroll
   }
 
   /**
@@ -1192,7 +1192,7 @@ export class Lenis {
   }
 
   /**
-   * Scroll progress (0..1) of the active axis relative to its `scrollMax`.
+   * Scroll progress (0..1) of the active axis relative to its `maxScroll`.
    */
   get progress() {
     return this.activeAxis.progress

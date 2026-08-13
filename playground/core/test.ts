@@ -178,14 +178,14 @@ document.getElementById('scroll-start')?.addEventListener('click', () => {
 })
 
 document.getElementById('scroll-center')?.addEventListener('click', () => {
-  lenis.scrollTo(lenis.scrollMax / 2, {
+  lenis.scrollTo(lenis.maxScroll / 2, {
     // duration: 10,
     // easing: (t) => t,
   })
 })
 
 document.getElementById('scroll-end')?.addEventListener('click', () => {
-  lenis.scrollTo(lenis.scrollMax - 100)
+  lenis.scrollTo(lenis.maxScroll - 100)
 })
 
 // const stopButton = document.getElementById('stop')

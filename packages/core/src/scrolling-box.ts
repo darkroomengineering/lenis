@@ -126,7 +126,7 @@ export class ScrollingBox {
   }
 
   // https://developer.mozilla.org/en-US/docs/Web/API/Element/scrollTopMax
-  get scrollMax() {
+  get maxScroll() {
     if (this.mode === 'observe') {
       return {
         x: this.scrollWidth! - this.width!,
@@ -186,7 +186,7 @@ export class ScrollingBox {
 
   // https://developer.mozilla.org/en-US/docs/Web/API/Element/scrollHeight#determine_if_the_content_of_an_element_is_overflowing
   get isOverflowing() {
-    const { x, y } = this.scrollMax
+    const { x, y } = this.maxScroll
     return {
       x: x > 0,
       y: y > 0,
