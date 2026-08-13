@@ -38,6 +38,13 @@ export class Lenis {
   private _userData: UserData = {}
   /** Instance-wide lock — both axes are locked together or neither is. @see {@link isLocked} */
   private _isLocked = false
+  /** True while the lock is held by a `scrollTo({ lock: true })` operation (vs a manual `lock()`), so `reset` can release it if the operation is interrupted mid-flight. */
+  private _scrollToLocked = false
+  private _isDraggingSelection = false // true while a touch is dragging an iOS selection handle
+  // `.matches` is read at scroll time so preference changes apply live, no listener needed
+  private readonly reducedMotionMediaQuery = window.matchMedia(
+    '(prefers-reduced-motion: reduce)'
+  )
 
   /**
    * Whether or not the last gesture was a touch
@@ -108,6 +115,7 @@ export class Lenis {
     allowNestedScroll = true,
     dimensions,
     stopInertiaOnNavigate = true,
+    respectReducedMotion = true,
   }: LenisOptions = {}) {
     // Set version (deprecated)
     window.lenisVersion = version
@@ -176,6 +184,7 @@ export class Lenis {
       allowNestedScroll,
       dimensions,
       stopInertiaOnNavigate,
+      respectReducedMotion,
     }
 
     // set default duration and easing if not provided
@@ -363,7 +372,9 @@ export class Lenis {
             ? this.options.anchors
             : undefined
 
-        const target = `#${anchorElementUrl.hash.split('#')[1]}`
+        // hash is URL-encoded (e.g. `#footnote-%E2%80%A0`); decode so it
+        // matches the raw HTML id in scrollTo's getElementById
+        const target = decodeURIComponent(anchorElementUrl.hash)
 
         this.scrollTo(target, options)
         return
@@ -390,6 +401,34 @@ export class Lenis {
     }
   }
 
+  // iOS renders text-selection handles at the start and end points of the
+  // selection. A touch starting within a handle-sized radius of either point is
+  // the user grabbing a handle, not scrolling.
+  private isTouchOnSelectionHandle(event: TouchEvent) {
+    const selection = window.getSelection()
+    if (!selection || selection.isCollapsed || selection.rangeCount === 0)
+      return false
+
+    const touch = event.targetTouches[0] ?? event.changedTouches[0]
+    if (!touch) return false
+
+    const rects = selection.getRangeAt(0).getClientRects()
+    if (rects.length === 0) return false
+
+    const first = rects[0]!
+    const last = rects[rects.length - 1]!
+    const HANDLE_RADIUS = 40 // px — handles are large, finger-sized touch targets
+
+    const nearStart =
+      Math.hypot(touch.clientX - first.left, touch.clientY - first.top) <=
+      HANDLE_RADIUS
+    const nearEnd =
+      Math.hypot(touch.clientX - last.right, touch.clientY - last.bottom) <=
+      HANDLE_RADIUS
+
+    return nearStart || nearEnd
+  }
+
   private onGesture = (_data: GestureData) => {
     // return = false -> stop execution
     // return modified data -> modify the data and continue execution
@@ -407,6 +446,20 @@ export class Lenis {
     if (event.ctrlKey) return
     // @ts-expect-error
     if (event.lenisStopPropagation) return
+
+    // If the touch grabbed an iOS text-selection handle, let the OS adjust the
+    // selection instead of scrolling. Latched on touchstart, held until touchend.
+    if (this.isTouch && this.isIOS) {
+      if (event.type === 'touchstart') {
+        this._isDraggingSelection = this.isTouchOnSelectionHandle(
+          event as TouchEvent
+        )
+      }
+      if (this._isDraggingSelection) {
+        if (event.type === 'touchend') this._isDraggingSelection = false
+        return
+      }
+    }
 
     if (this.isTouch) {
       deltaX *= this.options.touch.multiplier!
@@ -687,6 +740,13 @@ export class Lenis {
       this._resetVelocityTimeout = null
     }
 
+    // A reset interrupts any in-flight `scrollTo` — release its operation lock
+    // (a manual `lock()` survives; only the scrollTo-scoped lock is dropped).
+    if (this._scrollToLocked) {
+      this._scrollToLocked = false
+      this.isLocked = false
+    }
+
     this.isScrolling = false
     this.x.reset()
     this.y.reset()
@@ -818,7 +878,11 @@ export class Lenis {
     // Resolve a selector / HTMLElement to a `node`
     let node: Element | null = null
     if (typeof _target === 'string') {
-      node = document.querySelector(_target)
+      // getElementById accepts any valid HTML id (e.g. `#footnote-†`),
+      // querySelector would reject it as an invalid CSS selector
+      node = _target.startsWith('#')
+        ? document.getElementById(_target.slice(1))
+        : document.querySelector(_target)
       if (!node) {
         if (_target === '#top') {
           return [{ axis: active, target: offsetFor(active) }]
@@ -892,8 +956,11 @@ export class Lenis {
     this.userData = userData ?? {}
 
     // Operation-scoped lock: suppress gestures (on both axes) for the lifetime
-    // of the call, then release when it completes.
-    if (lock) this.isLocked = true
+    // of the call, then release when it completes (or when `reset` interrupts it).
+    if (lock) {
+      this.isLocked = true
+      this._scrollToLocked = true
+    }
 
     let started = false
     let pending = targets.length
@@ -907,7 +974,10 @@ export class Lenis {
     const handleComplete = () => {
       if (--pending > 0) return
       this.userData = {}
-      if (lock) this.isLocked = false
+      if (lock) {
+        this.isLocked = false
+        this._scrollToLocked = false
+      }
       onComplete?.(this)
     }
 
@@ -987,6 +1057,18 @@ export class Lenis {
       onComplete,
     }: ScrollToOptions = {}
   ) {
+    if (this.prefersReducedMotion) {
+      if (programmatic) {
+        // jump cut instead of animation
+        immediate = true
+      } else {
+        // 1:1 input tracking, same mechanism as touch-smooth finger tracking
+        lerp = 1
+        duration = undefined
+        easing = undefined
+      }
+    }
+
     let target = _target
 
     if (this.options.infinite) {
@@ -1224,6 +1306,15 @@ export class Lenis {
    */
   get isSmooth() {
     return this.isScrolling === 'smooth'
+  }
+
+  /**
+   * Whether the user prefers reduced motion and lenis is honoring it (see `respectReducedMotion` option)
+   */
+  get prefersReducedMotion() {
+    return (
+      this.options.respectReducedMotion && this.reducedMotionMediaQuery.matches
+    )
   }
 
   /**

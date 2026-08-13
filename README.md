@@ -191,6 +191,7 @@ That's it, your page now has smooth scrolling — the defaults already handle mo
 | `onGesture`             | `function`                 | `undefined`                                                | Called on every gesture before it's consumed (replaces v1 `virtualScroll`). Return `false` to cancel it, or a modified `GestureData` to alter it. Example: `({ deltaY, ...data }) => ({ ...data, deltaY: deltaY / 2 })`.                                      |
 | `orientation`           | `string`                   | `vertical`                                                 | The orientation of the scrolling. Can be `vertical`, `horizontal` or `both` (see [Multi-axis scrolling](#multi-axis-scrolling)).                                                                                                                              |
 | `overscroll`            | `boolean`                  | `true`                                                     | Similar to CSS overscroll-behavior (https://developer.mozilla.org/en-US/docs/Web/CSS/overscroll-behavior).                                                                                                                                                    |
+| `respectReducedMotion`  | `boolean`                  | `true`                                                     | Honor the user's `prefers-reduced-motion` setting: smoothing is disabled and programmatic scrolls are instant, while scroll keeps running on the main thread ([see Reduced motion](#reduced-motion)).                                                          |
 | `stopInertiaOnNavigate` | `boolean`                  | `true`                                                     | Stop scroll inertia when an internal link is clicked.                                                                                                                                                                                                         |
 | `touch`                 | `object`                   | `{ smooth: false, lerp: 0.1, multiplier: 1, inertia: 2 }`  | Touch scroll behavior (replaces v1 `syncTouch*`/`touchMultiplier`), see [Wheel, touch & iOS](#wheel-touch--ios).                                                                                                                                              |
 | `wheel`                 | `object`                   | `{ smooth: true, lerp: 0.1, multiplier: 1 }`               | Wheel scroll behavior (replaces v1 `smoothWheel`/`wheelMultiplier`/`lerp`), see [Wheel, touch & iOS](#wheel-touch--ios).                                                                                                                                      |
@@ -244,6 +245,7 @@ Scroll state properties (`scroll`, `velocity`, `direction`, …) read the *activ
 | `isTouch` / `isWheel`   | `boolean`         | Whether the last gesture was a touch / a wheel                             |
 | `lastVelocity`          | `number`          | Last scroll velocity                                                       |
 | `options`               | `object`          | Instance options                                                           |
+| `prefersReducedMotion` (getter) | `boolean` | Whether the user prefers reduced motion and Lenis is honoring it           |
 | `progress` (getter)     | `number`          | Scroll progress from `0` to `1`                                            |
 | `rootElement` (getter)  | `HTMLElement`     | Element on which Lenis is instanced                                        |
 | `scroll` (getter)       | `number`          | Current scroll value (handles infinite scroll if activated)                |
@@ -369,6 +371,18 @@ Lenis follows the browser's own rules to decide whether an axis can scroll: the 
 Lenis reacts to live `overflow` changes (e.g. toggling `overflow: hidden` while a modal is open) without polling, via overflow transition events. This requires the recommended CSS, which sets `transition-behavior: allow-discrete` for `overflow` on the wrapper (Chrome 117+, Firefox 129+, Safari 17.4+ — without it, overflow changes are picked up on the next resize). When an axis flips to non-scrollable, its in-flight animation is halted and its state re-synced. You can subscribe via `lenis.scrollingBox.events.on('overflow style changed', callback)`.
 
 Note: the `lenis-stopped` class is no longer applied.
+
+### Reduced motion
+
+By default, Lenis honors the user's [`prefers-reduced-motion`](https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-reduced-motion) setting: when it is set to `reduce`, smoothing is disabled (`lerp` is forced to `1` so the scroll tracks the input device 1:1, ignoring `duration`/`easing`) and programmatic scrolls (`scrollTo`, anchor links) jump instantly to their target. Lenis keeps running so WebGL/DOM synchronization stays intact, and the preference is picked up live without a reload. You can check `lenis.prefersReducedMotion` to adapt your own animations.
+
+You can opt out (not recommended) with:
+
+```js
+const lenis = new Lenis({
+  respectReducedMotion: false,
+})
+```
 
 ### Anchor links
 Anchor links are handled by Lenis out of the box (`anchors` option, default `true`). Set `anchors: false` to opt out, or pass `scrollTo` options to customize the scroll:
