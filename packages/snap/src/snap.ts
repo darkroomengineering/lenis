@@ -102,6 +102,8 @@ export class Snap {
   }
 
   destroy() {
+    // Debounced handlers may already be queued — isStopped makes them no-ops.
+    this.isStopped = true
     this.lenis.off('gesture', this.onSnapDebounced)
     this.elements.forEach((element) => {
       element.destroy()
@@ -152,7 +154,10 @@ export class Snap {
   ): () => void {
     const id = uid()
 
-    this.elements.set(id, new SnapElement(element, options))
+    this.elements.set(
+      id,
+      new SnapElement(element, options, this.lenis.rootElement)
+    )
 
     return () => this.elements.delete(id)
   }

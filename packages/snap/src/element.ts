@@ -43,22 +43,6 @@ function offsetLeft(element: HTMLElement, accumulator = 0) {
   return left
 }
 
-function scrollTop(element: HTMLElement, accumulator = 0) {
-  const top = accumulator + element.scrollTop
-  if (element.offsetParent) {
-    return scrollTop(element.offsetParent as HTMLElement, top)
-  }
-  return top + window.scrollY
-}
-
-function scrollLeft(element: HTMLElement, accumulator = 0) {
-  const left = accumulator + element.scrollLeft
-  if (element.offsetParent) {
-    return scrollLeft(element.offsetParent as HTMLElement, left)
-  }
-  return left + window.scrollX
-}
-
 /**
  * Each element produces a single 2D snap target. The `align` option controls
  * how that target is anchored on each axis:
@@ -104,7 +88,9 @@ export class SnapElement {
       align = 'start',
       ignoreSticky = true,
       ignoreTransform = false,
-    }: SnapElementOptions = {}
+    }: SnapElementOptions = {},
+    // The Lenis scroll container — rects are expressed in its scroll space.
+    private wrapper: HTMLElement = document.documentElement
   ) {
     this.element = element
     this.options = { align, ignoreSticky, ignoreTransform }
@@ -180,9 +166,19 @@ export class SnapElement {
       top = offsetTop(this.element)
       left = offsetLeft(this.element)
     } else {
+      // Position in the wrapper's scroll space: viewport-relative rect, made
+      // scroll-invariant by adding the wrapper's own scroll back. Walking
+      // offsetParents doesn't work here — an unpositioned `overflow: auto`
+      // wrapper is not an offsetParent, so its scroll would be missed.
       const rect = this.element.getBoundingClientRect()
-      top = rect.top + scrollTop(this.element)
-      left = rect.left + scrollLeft(this.element)
+      if (this.wrapper === document.documentElement) {
+        top = rect.top + window.scrollY
+        left = rect.left + window.scrollX
+      } else {
+        const wrapperRect = this.wrapper.getBoundingClientRect()
+        top = rect.top - wrapperRect.top + this.wrapper.scrollTop
+        left = rect.left - wrapperRect.left + this.wrapper.scrollLeft
+      }
     }
     if (this.options.ignoreSticky) addParentSticky(this.element)
 
