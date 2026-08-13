@@ -24,6 +24,7 @@ Read our [Manifesto](https://github.com/darkroomengineering/lenis/blob/main/MANI
 - [Properties](#properties)
 - [Methods](#methods)
 - [Events](#events)
+- [Multi-axis scrolling](#multi-axis-scrolling)
 - [Considerations](#considerations)
 - [Limitations](#limitations)
 - [Troubleshooting](#troubleshooting)
@@ -191,11 +192,11 @@ That's it, your page now has smooth scrolling and should handle most of the usua
 | `duration`              | `number`                   | `1.2`                                              | The duration of scroll animation (in seconds). Useless if lerp defined.                                                                                                                                                                                                              |
 | `easing`                | `function`                 | `(t) => Math.min(1, 1.001 - Math.pow(2, -10 * t))` | The easing function to use for the scroll animation, our default is custom but you can pick one from [Easings.net](https://easings.net/en). Useless if lerp defined.                                                                                                                 |
 | `eventsTarget`          | `HTMLElement, Window`      | `wrapper`                                          | The element that will listen to `wheel` and `touch` events.                                                                                                                                                                                                                          |
-| `gestureOrientation`    | `string`                   | `vertical`                                         | The orientation of the gestures. Can be `vertical`, `horizontal` or `both`.                                                                                                                                                                                                          |
+| `gestureOrientation`    | `string`                   | `vertical`                                         | The orientation of the gestures. Can be `vertical`, `horizontal` or `both`. Has no effect when `orientation: 'both'`.                                                                                                                                                                                                          |
 | `infinite`              | `boolean`                  | `false`                                            | Enable infinite scrolling! `syncTouch: true` is required on touch devices ([See example](https://codepen.io/ClementRoche/pen/OJqBLod)).                                                                                                                                              |
 | `lerp`                  | `number`                   | `0.1`                                              | Linear interpolation (lerp) intensity (between 0 and 1).                                                                                                                                                                                                                             |
 | `naiveDimensions`       | `boolean`                  | `false`                                            | If `true`, Lenis will use naive dimensions calculation. ⚠️ Be careful, this has a performance impact.                                                                                                                                                                                |
-| `orientation`           | `string`                   | `vertical`                                         | The orientation of the scrolling. Can be `vertical` or `horizontal`.                                                                                                                                                                                                                 |
+| `orientation`           | `string`                   | `vertical`                                         | The orientation of the scrolling. Can be `vertical`, `horizontal` or `both` (see [Multi-axis scrolling](#multi-axis-scrolling)).                                                                                                                                                                                                                 |
 | `overscroll`            | `boolean`                  | `true`                                             | Similar to CSS overscroll-behavior (https://developer.mozilla.org/en-US/docs/Web/CSS/overscroll-behavior).                                                                                                                                                                           |
 | `prevent`               | `function`                 | `undefined`                                        | Manually prevent scroll to be smoothed based on elements traversed by events. If `true` is returned, it will prevent the scroll to be smoothed. Example: `(node) =>  node.classList.contains('cookie-modal')`.                                                                       |
 | `smoothWheel`           | `boolean`                  | `true`                                             | Smooth the scroll initiated by `wheel` events.                                                                                                                                                                                                                                       |
@@ -271,6 +272,65 @@ That's it, your page now has smooth scrolling and should handle most of the usua
 | `scroll`         | Lenis instance            |
 | `virtual-scroll` | `{deltaX, deltaY, event}` |
 
+
+<br/>
+
+## Multi-axis scrolling
+
+Lenis can drive both axes simultaneously — 2D canvases, maps, spreadsheet-style layouts:
+
+```js
+const lenis = new Lenis({
+  orientation: 'both',
+})
+```
+
+### Per-axis API
+
+In 2D, the per-axis instances `lenis.x` / `lenis.y` are the canonical API — mirroring the browser's own model (`scrollX`/`scrollY`, `scrollLeft`/`scrollTop`):
+
+```js
+lenis.x.scroll        // current horizontal scroll value
+lenis.y.velocity      // current vertical velocity
+lenis.y.progress      // vertical progress, 0..1
+lenis.x.scrollMax     // maximum horizontal scroll value
+lenis.x.isScrollable  // whether the x axis can currently scroll
+```
+
+Each axis exposes `scroll`, `targetScroll`, `animatedScroll`, `velocity`, `lastVelocity`, `direction`, `progress`, `scrollMax` and `isScrollable`.
+
+### Top-level properties are single-axis shorthands
+
+`lenis.scroll`, `lenis.velocity`, `lenis.progress`, etc. read the *active* axis: `x` when `orientation: 'horizontal'`, `y` otherwise — **including in `'both'` mode**. They exist so single-axis code stays simple; in 2D, read `lenis.x` / `lenis.y` directly. `lenis.isScrolling` and `lenis.isScrollable` do aggregate across axes.
+
+### scrollTo
+
+Pass an `{ x, y }` object to target both axes (either can be omitted). Number, keyword and element targets apply to the active axis:
+
+```js
+lenis.scrollTo({ x: 500, y: 1000 }, { duration: 1 })
+lenis.scrollTo({ x: 500 }) // single axis
+```
+
+The `offset` option accepts a scalar (applied to both axes) or `{ x, y }`.
+
+### Gestures
+
+With `orientation: 'both'`, `gestureOrientation` has no effect: `deltaX` drives the x axis, `deltaY` drives the y axis, and each axis independently consumes the gesture or chains natively based on its own scrollability and edges.
+
+### Events
+
+`scroll` fires as usual — read the axes off the instance:
+
+```js
+lenis.on('scroll', ({ x, y }) => {
+  console.log(x.scroll, y.scroll)
+})
+```
+
+### Snap
+
+[lenis/snap](https://github.com/darkroomengineering/lenis/tree/main/packages/snap/README.md) is 2D-aware: snap points are `{ x, y }` cells and `align` applies per axis.
 
 <br/>
 

@@ -189,7 +189,9 @@ Simultaneous horizontal + vertical scrolling (2D canvas, maps, spreadsheets, lay
 
 **Full design + step-by-step plan: [`MULTI-AXIS-PLAN.md`](./MULTI-AXIS-PLAN.md).**
 
-Current state: **core mechanics are implemented and verified working.** The `Axis` class (`packages/core/src/axis.ts`) is clean — per-axis state, `reset`, `advance`, `scrollTo`, `scroll`/`scrollMax`/`progress`. `Lenis` delegates to `this.x` / `this.y`, and `orientation: 'both'` is wired through gesture routing, scroll emission, the single per-frame DOM write, `scrollTo`, and `isScrollable`. `lenis/snap` is 2D-aware (per-axis `align`, 2D candidate selection). Verified in a browser on `playground/two-axis`: diagonal `scrollTo`, combined-delta wheel (both axes), DOM sync, and 2D snap to cell centers all behave.
+Current state: **core mechanics are implemented and verified working.** The `Axis` class (`packages/core/src/axis.ts`) is clean — per-axis state, `reset`, `advance`, `scrollTo`, `scroll`/`scrollMax`/`progress`/`isScrollable`. `Lenis` delegates to `this.x` / `this.y`, and `orientation: 'both'` is wired through gesture routing, scroll emission, the single per-frame DOM write, `scrollTo`, and `isScrollable`. `lenis/snap` is 2D-aware (per-axis `align`, 2D candidate selection). Verified in a browser on `playground/two-axis`: diagonal `scrollTo`, combined-delta wheel (both axes), DOM sync, and 2D snap to cell centers all behave.
+
+**Decision — top-level scalars stay.** `lenis.scroll` / `velocity` / `progress` etc. remain single-axis conveniences delegating to the active axis (`y` in `'both'` mode); ~99% of users are single-axis and keeping them scalar avoids shape-shifting types and per-frame allocations. In 2D, `lenis.x` / `lenis.y` are the canonical API (the native mirror of `scrollX`/`scrollY`), documented in the README's multi-axis guide.
 
 Remaining before stable:
 
