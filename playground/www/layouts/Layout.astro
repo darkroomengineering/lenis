@@ -1,5 +1,7 @@
 ---
-import 'lenis/dist/lenis.css'
+// Relative import on purpose: `lenis/dist/lenis.css` resolves through
+// node_modules during SSR, where Node can't import a .css file.
+import '../../../dist/lenis.css'
 interface Props {
   title: string
 }

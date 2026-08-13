@@ -114,15 +114,15 @@ copy.addEventListener('click', async () => {
 
 lenis.on('scroll', (lenis) => {
   // console.log(lenis.isScrolling, lenis.isTouch, lenis.isWheel)
-  console.log(lenis, {
-    scroll: lenis.y.scroll,
-    // rounded: Math.round(lenis.x.scroll),
-    actuallScroll: lenis.y.actualScroll,
-  })
+  // console.log(lenis, {
+  //   scroll: lenis.y.scroll,
+  //   // rounded: Math.round(lenis.x.scroll),
+  //   actuallScroll: lenis.y.actualScroll,
+  // })
 })
 
 window.lenis = lenis
-// ;(window as unknown as { snap: Snap }).snap = snap
+;(window as unknown as { snap: Snap }).snap = snap
 
 // const wrapper = document.querySelector('#grid')!
 
