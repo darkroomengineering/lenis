@@ -539,121 +539,72 @@ export class Lenis {
 
     if (!isSmooth) {
       this.isScrolling = 'native'
-      this.animate.stop()
+      // halt any in-flight animation on every axis, not just the active one —
+      // a 2D scrollTo can be animating x even in single-axis mode
+      this.x.animate.stop()
+      this.y.animate.stop()
       // @ts-expect-error
       event.lenisStopPropagation = true
       return
     }
 
-    // 2D routing — gestureOrientation has no effect; deltaX drives x, deltaY drives y.
+    // Route the gesture to its axes: in 2D, deltaX drives x and deltaY drives y
+    // (gestureOrientation has no effect); in single-axis mode gestureOrientation
+    // picks which delta drives the active axis.
+    let axes: { axis: Axis; delta: number }[]
     if (this.options.orientation === 'both') {
-      const isTouchEnd = event.type === 'touchend'
-
-      let dx = deltaX
-      let dy = deltaY
-      if (isTouchEnd) {
-        const inertia = this.options.touch.inertia!
-        dx = Math.sign(dx) * Math.abs(this.x.velocity) ** inertia
-        dy = Math.sign(dy) * Math.abs(this.y.velocity) ** inertia
+      axes = [
+        { axis: this.x, delta: deltaX },
+        { axis: this.y, delta: deltaY },
+      ]
+    } else {
+      let delta = deltaY
+      if (this.options.gestureOrientation === 'both') {
+        delta = Math.abs(deltaY) > Math.abs(deltaX) ? deltaY : deltaX
+      } else if (this.options.gestureOrientation === 'horizontal') {
+        delta = deltaX
       }
-
-      // Per-axis consumption: an axis "consumes" the gesture if it's scrollable AND
-      // mid-range or pushing further into the boundary in the gesture's direction.
-      // Mirrors the single-axis overscroll-edge check below.
-      // Scroll values can be fractional while maxScroll derives from rounded values,
-      // so the end check needs a 1px threshold instead of strict equality (and native
-      // overscroll can push the value outside [0, maxScroll]).
-      // https://developer.mozilla.org/en-US/docs/Web/API/Element/scrollHeight#determine_if_an_element_has_been_totally_scrolled
-      const consuming = (axis: Axis, delta: number) => {
-        if (!axis.isScrollable) return false
-        const atStart = axis.animatedScroll <= 0
-        const atEnd = axis.maxScroll - axis.animatedScroll <= 1
-        // consume if the axis can scroll further in the delta's direction
-        if (delta > 0) return !atEnd
-        if (delta < 0) return !atStart
-        return !(atStart || atEnd)
-      }
-
-      if (
-        !this.options.overscroll ||
-        this.options.infinite ||
-        (this.options.wrapper !== window &&
-          (consuming(this.x, dx) || consuming(this.y, dy)))
-      ) {
-        // @ts-expect-error
-        event.lenisStopPropagation = true
-      }
-
-      if (event.cancelable) event.preventDefault()
-
-      const touchConfig = isTouchEnd
-        ? {
-            lerp: this.options.touch.lerp,
-            duration: this.options.touch.duration,
-            easing: this.options.touch.easing,
-          }
-        : { lerp: 1 }
-      const wheelConfig = {
-        lerp: this.options.wheel.lerp,
-        duration: this.options.wheel.duration,
-        easing: this.options.wheel.easing,
-      }
-      const config = this.isTouch ? touchConfig : wheelConfig
-
-      // Drive each axis independently, but only if it's scrollable and the
-      // instance isn't locked. Programmatic `scrollTo` still works on a locked /
-      // non-scrollable axis (matches the "scrollTo always runs" policy);
-      // only user-initiated gestures are gated.
-      if (dx !== 0 && this.x.isScrollable && !this.isLocked) {
-        this.scrollAxisTo(this.x, this.x.targetScroll + dx, {
-          programmatic: false,
-          ...config,
-        })
-      }
-      if (dy !== 0 && this.y.isScrollable && !this.isLocked) {
-        this.scrollAxisTo(this.y, this.y.targetScroll + dy, {
-          programmatic: false,
-          ...config,
-        })
-      }
-      return
+      axes = [{ axis: this.activeAxis, delta }]
     }
 
-    let delta = deltaY
-    if (this.options.gestureOrientation === 'both') {
-      delta = Math.abs(deltaY) > Math.abs(deltaX) ? deltaY : deltaX
-    } else if (this.options.gestureOrientation === 'horizontal') {
-      delta = deltaX
+    // Touch inertia: on touchend the raw delta is replaced by a fling based on
+    // each driven axis's own velocity.
+    const isTouchEnd = event.type === 'touchend'
+    if (isTouchEnd) {
+      const inertia = this.options.touch.inertia!
+      for (const entry of axes) {
+        entry.delta =
+          Math.sign(entry.delta) * Math.abs(entry.axis.velocity) ** inertia
+      }
     }
 
-    // Same 1px totally-scrolled threshold as the 2D `consuming` check above:
-    // consume if the wrapper can scroll further in the gesture's direction
-    const atStart = this.animatedScroll <= 0
-    const atEnd = this.maxScroll - this.animatedScroll <= 1
-    let consuming = !(atStart || atEnd)
-    if (delta > 0) consuming = !atEnd
-    else if (delta < 0) consuming = !atStart
+    // An axis "consumes" the gesture if it's scrollable AND mid-range or pushing
+    // further into the boundary in the delta's direction.
+    // Scroll values can be fractional while maxScroll derives from rounded values,
+    // so the end check needs a 1px threshold instead of strict equality (and native
+    // overscroll can push the value outside [0, maxScroll]).
+    // https://developer.mozilla.org/en-US/docs/Web/API/Element/scrollHeight#determine_if_an_element_has_been_totally_scrolled
+    const consuming = ({ axis, delta }: { axis: Axis; delta: number }) => {
+      if (!axis.isScrollable) return false
+      const atStart = axis.animatedScroll <= 0
+      const atEnd = axis.maxScroll - axis.animatedScroll <= 1
+      // consume if the axis can scroll further in the delta's direction
+      if (delta > 0) return !atEnd
+      if (delta < 0) return !atStart
+      return !(atStart || atEnd)
+    }
 
     if (
       !this.options.overscroll ||
       this.options.infinite ||
-      (this.options.wrapper !== window && this.maxScroll > 0 && consuming)
+      (this.options.wrapper !== window && axes.some(consuming))
     ) {
       // @ts-expect-error
       event.lenisStopPropagation = true
-      // event.stopPropagation()
     }
 
     if (event.cancelable) {
       event.preventDefault()
-    }
-
-    const isTouchEnd = event.type === 'touchend'
-
-    if (isTouchEnd) {
-      delta =
-        Math.sign(delta) *
-        Math.abs(this.velocity) ** this.options.touch.inertia!
     }
 
     const touchConfig = isTouchEnd
@@ -662,20 +613,24 @@ export class Lenis {
           duration: this.options.touch.duration,
           easing: this.options.touch.easing,
         }
-      : {
-          lerp: 1,
-        }
-
+      : { lerp: 1 } // 1:1 finger tracking while the touch is down
     const wheelConfig = {
       lerp: this.options.wheel.lerp,
       duration: this.options.wheel.duration,
       easing: this.options.wheel.easing,
     }
+    const config = this.isTouch ? touchConfig : wheelConfig
 
-    this.scrollTo(this.targetScroll + delta, {
-      programmatic: false,
-      ...(this.isTouch ? touchConfig : wheelConfig),
-    })
+    // Drive each axis independently. The isScrollable/isLocked gate above covers
+    // the instance; in 2D a non-scrollable axis still has to be skipped here.
+    for (const { axis, delta } of axes) {
+      if (delta !== 0 && axis.isScrollable) {
+        this.scrollAxisTo(axis, axis.targetScroll + delta, {
+          programmatic: false,
+          ...config,
+        })
+      }
+    }
   }
 
   /**
@@ -1188,11 +1143,6 @@ export class Lenis {
    */
   private get activeAxis() {
     return this.isHorizontal ? this.x : this.y
-  }
-
-  /** @internal the animation driving the active axis */
-  private get animate() {
-    return this.activeAxis.animate
   }
 
   /**
