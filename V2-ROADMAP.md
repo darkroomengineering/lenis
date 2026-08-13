@@ -8,6 +8,10 @@ Lenis was originally built for developers syncing WebGL and DOM through smooth s
 
 `new Lenis()` should just work — no configuration, no CSS import to remember, no gotchas.
 
+**v2 also moves Lenis closer to the native APIs.** Wherever the platform already defines a concept, Lenis adopts its name and its semantics instead of inventing its own: `scrollMax` mirrors [`scrollTopMax`](https://developer.mozilla.org/en-US/docs/Web/API/Element/scrollTopMax)/[`scrollLeftMax`](https://developer.mozilla.org/en-US/docs/Web/API/Element/scrollLeftMax), `isScrollable` follows [MDN's definition](https://developer.mozilla.org/en-US/docs/Web/API/Element/scrollHeight#determine_if_the_content_of_an_element_is_overflowing) (a [scroll container](https://developer.mozilla.org/en-US/docs/Glossary/Scroll_container) with overflowing content), root overflow follows the [CSS overflow-propagation spec](https://drafts.csswg.org/css-overflow/#overflow-propagation), boundary detection follows MDN's ["totally scrolled"](https://developer.mozilla.org/en-US/docs/Web/API/Element/scrollHeight#determine_if_an_element_has_been_totally_scrolled) recipe, and gestures on a non-scrollable axis chain natively instead of being captured. Lenis should be a faithful mirror of the browser's scroll model with animation on top — every property has a citable platform definition, and when in doubt, do what the browser would do.
+
+**The principle is scoped: mirror the platform where it's the authority, exceed it where it's the ceiling.** Scroll geometry, scrollability, and overflow semantics belong to the browser — Lenis mirrors them. Snapping is the opposite case: CSS Scroll Snap can't express lenis/snap's best features (`directional` mode, velocity prediction, snap callbacks, 2D cell selection), so lenis/snap deliberately goes beyond the platform — that's the point of owning the snapping system. When we diverge, we don't borrow names: `align` matches `scroll-snap-align` because the semantics truly match, while `directional` and `lock` get their own words — naming them after CSS properties they don't implement would be a false cognate.
+
 ---
 
 ## Status legend
@@ -93,7 +97,9 @@ new Lenis({
 
 | v1 | v2 | Reason |
 |----|-----|--------|
-| `isStopped` | `isScrollable` | Reflects observed CSS overflow; **polarity inverted** (`true` when overflow is not `hidden`/`clip`) |
+| `isStopped` | `isScrollable` | MDN semantics: a scroll container with overflowing content; **polarity inverted** |
+| `limit` | `scrollMax` | Mirrors `scrollTopMax` / `scrollLeftMax` |
+| `dimensions` | `scrollingBox` | `Dimensions` class rebuilt as `ScrollingBox` around the platform's scroll vocabulary |
 | `isTouching` | `isTouch` | Mirrors the gesture `type`; companion `isWheel` added — both reflect the last gesture (`undefined` after `reset()`) |
 
 `isScrolling` (`'native' \| 'smooth' \| false`) stays as-is — no three-way `isWheelScrolling` / `isTouchScrolling` / `isProgrammaticScrolling` split. Callers compose: `isScrolling && isTouch`, `isScrolling && isWheel`, programmatic ≈ `isScrolling === 'smooth' && !isTouch && !isWheel`.
@@ -104,7 +110,7 @@ The CSS is the source of truth: Lenis observes the root's overflow and reacts. U
 
 - ✅ Removed `lenis.start()` / `lenis.stop()` from the public API
 - ✅ Removed the `autoToggle` option (always on, no longer configurable)
-- ✅ `isStopped` → `isScrollable` — derived from observed overflow, set via `checkOverflow()` on init and on `transitionend`; flipping it runs `reset()` + `emit()` and toggles the `lenis-stopped` class
+- ✅ `isStopped` → `isScrollable` — derived from `ScrollingBox` (scroll container + overflowing content), refreshed on resize and on overflow transition events; a flip resets the affected axis. The `lenis-stopped` class is removed
 - ✅ Removed `scrollTo`'s `force` option — `scrollTo` always executes now, so there's nothing to force past
 - ✅ Removed `scrollTo`'s `lock` option — compose `lenis.lock()` / `lenis.unlock()` via `onStart` / `onComplete` instead
 - ✅ `isLocked` narrowed — now only suppresses user wheel/touch input (and tap-to-stop); programmatic `scrollTo` is unaffected. Toggled solely via `lock()` / `unlock()` (no longer cleared by `reset()`)
@@ -133,9 +139,11 @@ The old `virtual-scroll` abstraction was a general-purpose gesture library — L
 
 The private `hasNestedScroll` method that detected whether a composed-path element could handle the gesture itself was extracted as a pure function in `utils.ts`, decoupled from the `Lenis` class and reusable from other packages.
 
-### ✅ `Dimensions` owns its own config
+### ✅ `Dimensions` → `ScrollingBox`
 
-`Dimensions` now accepts a `DimensionsOptions` bag (`{ mode, autoResize, debounce }`) and applies its own defaults, including the smart `mode = content ? 'observe' : 'read'` default. `lenis.ts` just forwards the user's config without pre-baking values.
+Renamed (`lenis.dimensions` → `lenis.scrollingBox`) and rebuilt around the platform's scroll vocabulary. It now owns all scrollability state: `scrollMax` (was `limit`), `isScrollContainer` (with root overflow propagation per the CSS spec), `isOverflowing`, `isScrollable`, and an `'overflow style changed'` event driven by `transition-behavior: allow-discrete` transitions (from the recommended CSS), with resize as the fallback refresh. `Axis` / `Lenis` dropped their duplicate detection (`checkOverflow`, `cssOverflow`); gesture gating reads the cached `ScrollingBox` state — nothing touches `getComputedStyle` on the hot path — and boundary checks use MDN's 1px "totally scrolled" threshold so fractional scroll positions (zoom, DPR, Safari overscroll) resolve correctly.
+
+It still accepts the `DimensionsOptions` bag (`{ mode, autoResize, debounce }`) and applies its own defaults, including the smart `mode = content ? 'observe' : 'read'` default. `lenis.ts` just forwards the user's config without pre-baking values.
 
 ---
 
@@ -181,7 +189,7 @@ Simultaneous horizontal + vertical scrolling (2D canvas, maps, spreadsheets, lay
 
 **Full design + step-by-step plan: [`MULTI-AXIS-PLAN.md`](./MULTI-AXIS-PLAN.md).**
 
-Current state: **core mechanics are implemented and verified working.** The `Axis` class (`packages/core/src/axis.ts`) is clean — per-axis state, `checkOverflow`, `reset`, `advance`, `scrollTo`, `scroll`/`limit`/`progress`. `Lenis` delegates to `this.x` / `this.y`, and `orientation: 'both'` is wired through gesture routing, scroll emission, the single per-frame DOM write, `scrollTo`, and `isScrollable`. `lenis/snap` is 2D-aware (per-axis `align`, 2D candidate selection). Verified in a browser on `playground/two-axis`: diagonal `scrollTo`, combined-delta wheel (both axes), DOM sync, and 2D snap to cell centers all behave.
+Current state: **core mechanics are implemented and verified working.** The `Axis` class (`packages/core/src/axis.ts`) is clean — per-axis state, `reset`, `advance`, `scrollTo`, `scroll`/`scrollMax`/`progress`. `Lenis` delegates to `this.x` / `this.y`, and `orientation: 'both'` is wired through gesture routing, scroll emission, the single per-frame DOM write, `scrollTo`, and `isScrollable`. `lenis/snap` is 2D-aware (per-axis `align`, 2D candidate selection). Verified in a browser on `playground/two-axis`: diagonal `scrollTo`, combined-delta wheel (both axes), DOM sync, and 2D snap to cell centers all behave.
 
 Remaining before stable:
 
@@ -275,5 +283,7 @@ TBD — will provide a v1 → v2 migration guide covering:
 - `autoResize` moved into `dimensions`
 - Removed `start()` / `stop()` (→ CSS overflow) and `autoToggle` (always on)
 - Removed `scrollTo` options `force` (→ no longer needed) and `lock` (→ `onStart`/`onComplete` + `lock()`/`unlock()`)
-- Renamed properties: `isStopped` → `isScrollable` (inverted), `isTouching` → `isTouch` (+ new `isWheel`); `isScrolling` unchanged
+- Renamed properties: `isStopped` → `isScrollable` (inverted, and now requires overflowing content — not just overflow CSS), `isTouching` → `isTouch` (+ new `isWheel`); `isScrolling` unchanged
+- Renamed properties: `limit` → `scrollMax`, `dimensions` → `scrollingBox` (class `Dimensions` → `ScrollingBox`)
+- Removed the `lenis-stopped` class
 - React package changes

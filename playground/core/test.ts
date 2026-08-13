@@ -67,12 +67,13 @@ const lenis = new Lenis({
 // })
 
 lenis.on('scroll', (lenis) => {
-  console.log({
-    userData: lenis.userData,
-    scroll: lenis.scroll,
-    actualScroll: lenis.actualScroll,
-    targetScroll: lenis.targetScroll,
-  })
+  console.log(lenis)
+  // console.log({
+  //   userData: lenis.userData,
+  //   scroll: lenis.scroll,
+  //   actualScroll: lenis.actualScroll,
+  //   targetScroll: lenis.targetScroll,
+  // })
   // console.log('scroll', e)
 })
 
@@ -177,14 +178,14 @@ document.getElementById('scroll-start')?.addEventListener('click', () => {
 })
 
 document.getElementById('scroll-center')?.addEventListener('click', () => {
-  lenis.scrollTo(lenis.limit / 2, {
+  lenis.scrollTo(lenis.scrollMax / 2, {
     // duration: 10,
     // easing: (t) => t,
   })
 })
 
 document.getElementById('scroll-end')?.addEventListener('click', () => {
-  lenis.scrollTo(lenis.limit - 100)
+  lenis.scrollTo(lenis.scrollMax - 100)
 })
 
 // const stopButton = document.getElementById('stop')

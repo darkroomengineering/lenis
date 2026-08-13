@@ -1,9 +1,9 @@
 import { version } from '../../../package.json'
 import { Axis } from './axis'
-import { Dimensions } from './dimensions'
 import { Emitter } from './emitter'
 import { GesturesHandler } from './gestures-handler'
 import { clamp } from './maths'
+import { ScrollingBox } from './scrolling-box'
 import type {
   EventCallback,
   GestureCallback,
@@ -82,7 +82,7 @@ export class Lenis {
   // Instanciated here as it doesn't need information from the options
   private readonly emitter = new Emitter()
   // Instanciated in the constructor as they need information from the options
-  readonly dimensions: Dimensions // not private — used by the Snap class
+  readonly scrollingBox: ScrollingBox // not private — used by the Snap class
   /** The horizontal scroll axis */
   readonly x: Axis
   /** The vertical scroll axis */
@@ -192,7 +192,7 @@ export class Lenis {
       this.options.touch.easing ??= defaultEasing
     }
 
-    this.dimensions = new Dimensions(
+    this.scrollingBox = new ScrollingBox(
       this.rootElement,
       this.options.content,
       this.options.dimensions
@@ -200,6 +200,13 @@ export class Lenis {
 
     this.x = new Axis('x', this)
     this.y = new Axis('y', this)
+
+    // Reset an axis when its CSS overflow flips (halts an in-flight animation on
+    // a now non-scrollable axis, re-syncs to the browser position otherwise)
+    this.scrollingBox.events.on(
+      'overflow style changed',
+      this.onOverflowStyleChange as (...args: unknown[]) => void
+    )
 
     // Setup class name
     this.updateClassName()
@@ -229,9 +236,6 @@ export class Lenis {
     // Setup gestures handler
     this.gesturesHandler = new GesturesHandler(eventsTarget as HTMLElement)
     this.gesturesHandler.on('gesture', this.onGesture)
-
-    this.checkOverflow()
-    this.rootElement.addEventListener('transitionend', this.onTransitionEnd)
 
     if (this.options.autoRaf) {
       this._rafId = requestAnimationFrame(this.raf)
@@ -263,7 +267,7 @@ export class Lenis {
     }
 
     this.gesturesHandler.destroy()
-    this.dimensions.destroy()
+    this.scrollingBox.destroy()
     this.x.destroy()
     this.y.destroy()
 
@@ -319,20 +323,9 @@ export class Lenis {
     )
   }
 
-  private checkOverflow() {
-    this.x.checkOverflow()
-    this.y.checkOverflow()
-    // Reflect a live overflow flip in the class names (e.g. `lenis-stopped`).
-    this.updateClassName()
-  }
-
-  private onTransitionEnd = (event: TransitionEvent) => {
-    if (
-      event.propertyName?.includes('overflow') &&
-      event.target === this.rootElement
-    ) {
-      this.checkOverflow()
-    }
+  private onOverflowStyleChange = (changed: { x: boolean; y: boolean }) => {
+    if (changed.x) this.x.reset()
+    if (changed.y) this.y.reset()
   }
 
   private setScroll(scroll: number) {
@@ -510,12 +503,19 @@ export class Lenis {
       // Per-axis consumption: an axis "consumes" the gesture if it's scrollable AND
       // mid-range or pushing further into the boundary in the gesture's direction.
       // Mirrors the single-axis overscroll-edge check below.
-      const consuming = (axis: Axis, delta: number) =>
-        axis.isScrollable &&
-        axis.limit > 0 &&
-        ((axis.animatedScroll > 0 && axis.animatedScroll < axis.limit) ||
-          (axis.animatedScroll === 0 && delta > 0) ||
-          (axis.animatedScroll === axis.limit && delta < 0))
+      // Scroll values can be fractional while scrollMax derives from rounded values,
+      // so the end check needs a 1px threshold instead of strict equality (and native
+      // overscroll can push the value outside [0, scrollMax]).
+      // https://developer.mozilla.org/en-US/docs/Web/API/Element/scrollHeight#determine_if_an_element_has_been_totally_scrolled
+      const consuming = (axis: Axis, delta: number) => {
+        if (!this.scrollingBox.isScrollable[axis.axis]) return false
+        const atStart = axis.animatedScroll <= 0
+        const atEnd = axis.scrollMax - axis.animatedScroll <= 1
+        // consume if the axis can scroll further in the delta's direction
+        if (delta > 0) return !atEnd
+        if (delta < 0) return !atStart
+        return !(atStart || atEnd)
+      }
 
       if (
         !this.options.overscroll ||
@@ -547,13 +547,13 @@ export class Lenis {
       // instance isn't locked. Programmatic `scrollTo` still works on a locked /
       // non-scrollable axis (matches the "scrollTo always runs" policy);
       // only user-initiated gestures are gated.
-      if (dx !== 0 && this.x.isScrollable && !this.isLocked) {
+      if (dx !== 0 && this.scrollingBox.isScrollable.x && !this.isLocked) {
         this.scrollAxisTo(this.x, this.x.targetScroll + dx, {
           programmatic: false,
           ...config,
         })
       }
-      if (dy !== 0 && this.y.isScrollable && !this.isLocked) {
+      if (dy !== 0 && this.scrollingBox.isScrollable.y && !this.isLocked) {
         this.scrollAxisTo(this.y, this.y.targetScroll + dy, {
           programmatic: false,
           ...config,
@@ -569,14 +569,18 @@ export class Lenis {
       delta = deltaX
     }
 
+    // Same 1px totally-scrolled threshold as the 2D `consuming` check above:
+    // consume if the wrapper can scroll further in the gesture's direction
+    const atStart = this.animatedScroll <= 0
+    const atEnd = this.scrollMax - this.animatedScroll <= 1
+    let consuming = !(atStart || atEnd)
+    if (deltaY > 0) consuming = !atEnd
+    else if (deltaY < 0) consuming = !atStart
+
     if (
       !this.options.overscroll ||
       this.options.infinite ||
-      (this.options.wrapper !== window &&
-        this.limit > 0 &&
-        ((this.animatedScroll > 0 && this.animatedScroll < this.limit) ||
-          (this.animatedScroll === 0 && deltaY > 0) ||
-          (this.animatedScroll === this.limit && deltaY < 0)))
+      (this.options.wrapper !== window && this.scrollMax > 0 && consuming)
     ) {
       // @ts-expect-error
       event.lenisStopPropagation = true
@@ -621,7 +625,7 @@ export class Lenis {
    * Force lenis to recalculate the dimensions
    */
   resize() {
-    this.dimensions.resize()
+    this.scrollingBox.resize()
     this.reset()
     this.emit()
   }
@@ -797,13 +801,13 @@ export class Lenis {
     }
 
     // Keywords — single-axis semantics (active axis). `top`/`left`/`start`/`#` → 0,
-    // `bottom`/`right`/`end` → limit. Users wanting 2D keyword semantics pass `{ x, y }`.
+    // `bottom`/`right`/`end` → scrollMax. Users wanting 2D keyword semantics pass `{ x, y }`.
     if (typeof _target === 'string') {
       if (['top', 'left', 'start', '#'].includes(_target)) {
         return [{ axis: active, target: offsetFor(active) }]
       }
       if (['bottom', 'right', 'end'].includes(_target)) {
-        return [{ axis: active, target: active.limit + offsetFor(active) }]
+        return [{ axis: active, target: active.scrollMax + offsetFor(active) }]
       }
     }
 
@@ -987,14 +991,14 @@ export class Lenis {
 
         const distance = target - axis.animatedScroll
 
-        if (distance > axis.limit / 2) {
-          target -= axis.limit
-        } else if (distance < -axis.limit / 2) {
-          target += axis.limit
+        if (distance > axis.scrollMax / 2) {
+          target -= axis.scrollMax
+        } else if (distance < -axis.scrollMax / 2) {
+          target += axis.scrollMax
         }
       }
     } else {
-      target = clamp(0, target, axis.limit)
+      target = clamp(0, target, axis.scrollMax)
     }
 
     if (target === axis.targetScroll) {
@@ -1168,8 +1172,8 @@ export class Lenis {
   /**
    * The maximum scroll value for the active axis.
    */
-  get limit() {
-    return this.activeAxis.limit
+  get scrollMax() {
+    return this.activeAxis.scrollMax
   }
 
   /**
@@ -1188,7 +1192,7 @@ export class Lenis {
   }
 
   /**
-   * Scroll progress (0..1) of the active axis relative to its `limit`.
+   * Scroll progress (0..1) of the active axis relative to its `scrollMax`.
    */
   get progress() {
     return this.activeAxis.progress
@@ -1220,16 +1224,15 @@ export class Lenis {
 
   /**
    * Whether the user can scroll: `true` when at least one live axis is scrollable
-   * (cached per-axis on `lenis.x.isScrollable` / `lenis.y.isScrollable`, refreshed
-   * at construction and on `overflow` `transitionend`). The `lenis-stopped` class is
-   * applied when this is `false`.
+   * per `dimensions.isScrollable` (a scroll container with overflowing content,
+   * refreshed by `ScrollingBox` on resize and `overflow` transitions).
    */
   get isScrollable() {
+    const isScrollable = this.scrollingBox.isScrollable
     const orientation = this.options.orientation
-    if (orientation === 'horizontal') return this.x.isScrollable
-    if (orientation === 'both')
-      return this.x.isScrollable || this.y.isScrollable
-    return this.y.isScrollable
+    if (orientation === 'horizontal') return isScrollable.x
+    if (orientation === 'both') return isScrollable.x || isScrollable.y
+    return isScrollable.y
   }
 
   /**
@@ -1253,7 +1256,6 @@ export class Lenis {
    */
   get className() {
     let className = 'lenis'
-    if (!this.isScrollable) className += ' lenis-stopped'
     if (this.isLocked) className += ' lenis-locked'
     if (this.isScrolling) className += ' lenis-scrolling'
     if (this.isScrolling === 'smooth') className += ' lenis-smooth'

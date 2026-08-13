@@ -232,17 +232,18 @@ That's it, your page now has smooth scrolling and should handle most of the usua
 | `actualScroll`          | `number`          | Current scroll value registered by the browser                             |
 | `animatedScroll`        | `number`          | Current scroll value                                                       |
 | `className` (getter)    | `string`          | `rootElement` className                                                    |
-| `dimensions`            | `object`          | Dimensions instance                                                        |
 | `direction`             | `number`          | `1`: scrolling up, `-1`: scrolling down                                    |
 | `isHorizontal` (getter) | `boolean`         | Whether or not the instance is horizontal                                  |
+| `isScrollable` (getter) | `boolean`         | Whether the wrapper can currently scroll: it's a [scroll container](https://developer.mozilla.org/en-US/docs/Glossary/Scroll_container) with overflowing content (see [Scrollability detection](#scrollability-detection)) |
 | `isScrolling` (getter)  | `boolean, string` | Whether or not the scroll is being animated, `smooth`, `native` or `false` |
 | `isStopped` (getter)    | `boolean`         | Whether or not the user should be able to scroll                           |
 | `lastVelocity`          | `number`          | Last scroll velocity                                                       |
-| `limit` (getter)        | `number`          | Maximum scroll value                                                       |
 | `options`               | `object`          | Instance options                                                           |
 | `progress` (getter)     | `number`          | Scroll progress from `0` to `1`                                            |
 | `rootElement` (getter)  | `HTMLElement`     | Element on which Lenis is instanced                                        |
 | `scroll` (getter)       | `number`          | Current scroll value (handles infinite scroll if activated)                |
+| `scrollMax` (getter)    | `number`          | Maximum scroll value, mirrors [`scrollTopMax`](https://developer.mozilla.org/en-US/docs/Web/API/Element/scrollTopMax)/[`scrollLeftMax`](https://developer.mozilla.org/en-US/docs/Web/API/Element/scrollLeftMax) (was `limit` in v1) |
+| `scrollingBox`          | `object`          | `ScrollingBox` instance — the wrapper's scroll geometry, mirroring the element's scroll properties: `width`, `height`, `scrollWidth`, `scrollHeight`, `scrollMax`, `isScrollContainer`, `isOverflowing`, `isScrollable` (was `dimensions` in v1) |
 | `targetScroll`          | `number`          | Target scroll value                                                        |
 | `time`                  | `number`          | Time elapsed since instance creation                                       |
 | `velocity`              | `number`          | Current scroll velocity                                                    |
@@ -318,6 +319,14 @@ const lenis = new Lenis({
 [See example](https://codepen.io/ClementRoche/pen/emONGYN)
 
 
+
+### Scrollability detection
+
+Lenis follows the browser's own rules to decide whether an axis can scroll: the wrapper must be a [scroll container](https://developer.mozilla.org/en-US/docs/Glossary/Scroll_container) (`overflow` set to `scroll` or `auto`) **and** its [content must overflow](https://developer.mozilla.org/en-US/docs/Web/API/Element/scrollHeight#determine_if_the_content_of_an_element_is_overflowing). When the wrapper is the root element, [overflow propagation](https://drafts.csswg.org/css-overflow/#overflow-propagation) to the viewport is taken into account: `visible` counts as `auto`, and `<body>`'s overflow applies when the root's is `visible`. Gestures on a non-scrollable axis are not intercepted, matching native scroll chaining.
+
+Lenis reacts to live `overflow` changes (e.g. toggling `overflow: hidden` while a modal is open) without polling, via overflow transition events. This requires the recommended CSS, which sets `transition-behavior: allow-discrete` for `overflow` on the wrapper (Chrome 117+, Firefox 129+, Safari 17.4+ — without it, overflow changes are picked up on the next resize). When an axis flips to non-scrollable, its in-flight animation is halted and its state re-synced. You can subscribe via `lenis.scrollingBox.events.on('overflow style changed', callback)`.
+
+Note: the `lenis-stopped` class is no longer applied.
 
 ### Anchor links
 By default, Lenis will prevent anchor links from working while scrolling. To enable them, you must set `anchors: true`.

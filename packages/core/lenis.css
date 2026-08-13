@@ -15,8 +15,9 @@ html.lenis body {
   pointer-events: none;
 }
 
-.lenis {
+.lenis, html.lenis>body {
   transition-property: overflow;
   transition-duration: 1ms;
+  /* https://caniuse.com/mdn-css_properties_transition-behavior_allow-discrete */
   transition-behavior: allow-discrete;
 }

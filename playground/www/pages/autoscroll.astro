@@ -1,0 +1,30 @@
+---
+import Layout from '../layouts/Layout.astro'
+---
+
+<Layout title="Lenis Autoscroll">
+  <div id="wrapper">
+    <section>1</section>
+    <section>2</section>
+    <section>3</section>
+    <section>4</section>
+    <section>5</section>
+  </div>
+  <script src="../../autoscroll/test.ts"></script>
+</Layout>
+
+<style>
+  section {
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: monospace;
+    font-size: 20vh;
+  }
+
+  section:nth-child(odd) {
+    background-color: #0e0e0e;
+    color: white;
+  }
+</style>

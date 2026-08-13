@@ -45,11 +45,13 @@ document.body.append(bar)
 
 function updateThumb() {
   const trackHeight = track.clientHeight
-  const viewport = lenis.dimensions.height || window.innerHeight
-  const content = lenis.limit + viewport // total scrollable content height
+  const viewport = lenis.scrollingBox.height || window.innerHeight
+  const content = lenis.scrollMax + viewport // total scrollable content height
   const thumbHeight = Math.max(16, (viewport / content) * trackHeight)
   const offset =
-    lenis.limit > 0 ? (lenis.scroll / lenis.limit) * (trackHeight - thumbHeight) : 0
+    lenis.scrollMax > 0
+      ? (lenis.scroll / lenis.scrollMax) * (trackHeight - thumbHeight)
+      : 0
   thumb.style.height = `${thumbHeight}px`
   thumb.style.transform = `translateY(${offset}px)`
 }

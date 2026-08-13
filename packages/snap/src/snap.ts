@@ -56,8 +56,8 @@ export class Snap {
    */
   get viewport(): { width: number; height: number } {
     return {
-      width: this.lenis.dimensions.width!,
-      height: this.lenis.dimensions.height!,
+      width: this.lenis.scrollingBox.width!,
+      height: this.lenis.scrollingBox.height!,
     }
   }
 
