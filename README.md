@@ -192,9 +192,38 @@ That's it, your page now has smooth scrolling — the defaults already handle mo
 | `orientation`           | `string`                   | `vertical`                                                 | The orientation of the scrolling. Can be `vertical`, `horizontal` or `both` (see [Multi-axis scrolling](#multi-axis-scrolling)).                                                                                                                              |
 | `overscroll`            | `boolean`                  | `true`                                                     | Similar to CSS overscroll-behavior (https://developer.mozilla.org/en-US/docs/Web/CSS/overscroll-behavior).                                                                                                                                                    |
 | `stopInertiaOnNavigate` | `boolean`                  | `true`                                                     | Stop scroll inertia when an internal link is clicked.                                                                                                                                                                                                         |
-| `touch`                 | `object`                   | `{ smooth: false, lerp: 0.1, multiplier: 1, inertia: 2 }`  | Touch scroll behavior (replaces v1 `syncTouch*`/`touchMultiplier`). `smooth: true` mimics native touch scroll while keeping it synced (can be unstable on iOS<16). `ios: { inertia: 1.7, lerp: 0.05 }` overrides values on iOS. `duration`/`easing` switch to time-based animation. |
-| `wheel`                 | `object`                   | `{ smooth: true, lerp: 0.1, multiplier: 1 }`               | Wheel scroll behavior (replaces v1 `smoothWheel`/`wheelMultiplier`/`lerp`). `duration`/`easing` switch to time-based animation.                                                                                                                               |
+| `touch`                 | `object`                   | `{ smooth: false, lerp: 0.1, multiplier: 1, inertia: 2 }`  | Touch scroll behavior (replaces v1 `syncTouch*`/`touchMultiplier`), see [Wheel, touch & iOS](#wheel-touch--ios).                                                                                                                                              |
+| `wheel`                 | `object`                   | `{ smooth: true, lerp: 0.1, multiplier: 1 }`               | Wheel scroll behavior (replaces v1 `smoothWheel`/`wheelMultiplier`/`lerp`), see [Wheel, touch & iOS](#wheel-touch--ios).                                                                                                                                      |
 | `wrapper`               | `HTMLElement, Window`      | `window`                                                   | The element that will be used as the scroll container.                                                                                                                                                                                                        |
+<br/>
+
+### Wheel, touch & iOS
+
+Wheel and touch gestures are configured independently. Smoothing is on by default for wheel and off for touch — native touch scrolling is already smooth:
+
+```js
+new Lenis({
+  wheel: { smooth: true, lerp: 0.1, multiplier: 1 },
+  touch: { smooth: false, multiplier: 1 },
+})
+```
+
+Set `touch: { smooth: true }` to let Lenis drive touch scrolling too — it mimics native touch scroll while keeping it synced (required for `infinite` on touch devices, can be unstable on iOS<16). It's tuned by `lerp`, `multiplier` and `inertia` (release momentum strength).
+
+Touch physics feel different on iOS, so on iOS devices (iPhone, and iPad even when it reports as macOS) Lenis swaps in iOS-specific touch values — `{ inertia: 1.7, lerp: 0.05 }` by default. Pass `touch.ios` to override them; keys you set replace the iOS defaults, anything else falls back to your base `touch` values:
+
+```js
+new Lenis({
+  touch: {
+    smooth: true,
+    inertia: 2, // Android & others
+    ios: { inertia: 1.5, lerp: 0.06 }, // iPhone & iPad
+  },
+})
+```
+
+Both `wheel` and `touch` also accept `duration`/`easing` instead of `lerp` to switch to time-based animation. At runtime, `lenis.isWheel` / `lenis.isTouch` tell you which input drove the last gesture.
+
 <br/>
 
 ## Properties
