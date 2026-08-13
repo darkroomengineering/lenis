@@ -1,0 +1,32 @@
+---
+import '~/vertical/style.css'
+import Layout from '../layouts/Layout.astro'
+---
+
+<Layout title="Lenis Vertical">
+  <nav id="nav">
+    <a href="#contact">anchor to #contact</a>
+    <a href="/core">leave page (stops inertia)</a>
+  </nav>
+  <div id="wrapper">
+    <a href="twitter.com" id="about">
+      <h2>about</h2>
+    </a>
+    <div id="work">
+      <div id="work-content"></div>
+    </div>
+
+    <div id="work2">
+      <div id="work2-content"></div>
+    </div>
+
+    <div id="prevent" data-lenis-prevent>
+      <div id="prevent-content"></div>
+    </div>
+
+    <div id="contact">
+      <h2>contact</h2>
+    </div>
+  </div>
+  <script src="../../vertical/test.ts"></script>
+</Layout>

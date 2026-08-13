@@ -1,7 +1,7 @@
 import Lenis from 'lenis'
 
 const lenis = new Lenis()
-window.lenis = lenis
+;(window as unknown as { lenis: Lenis }).lenis = lenis
 
 const status = document.querySelector('#status') as HTMLElement
 const lockButton = document.querySelector('#lock') as HTMLButtonElement

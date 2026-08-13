@@ -1,5 +1,5 @@
 html {
-  overflow-y: clip;
+  overflow-x: clip;
 }
 
 #nav {
@@ -16,8 +16,9 @@ html {
 
 #wrapper {
   display: flex;
-  height: 100vh;
+  flex-direction: column;
   align-items: center;
+  width: 100vw;
 }
 
 #about,
@@ -25,58 +26,52 @@ html {
 #work2,
 #prevent,
 #contact {
-  width: 80vw;
+  height: 80vh;
   flex-shrink: 0;
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 100%;
+  width: 100%;
 }
 
 #about {
   background-color: rgb(255, 152, 162);
 }
 
+/* same-axis nested scroller */
 #work {
   background-color: rgb(213, 133, 169);
-  overflow-x: auto;
-  justify-content: flex-start;
-  height: 50%;
-  /* background: repeating-radial-gradient(circle, #000, #111 1px, #000 2px); */
-  /* filter: blur(2px) brightness(1.2) contrast(2) saturate(3);
-  mix-blend-mode: difference;
-  animation: insane-rotate 0.1s infinite linear;
-  transform: scale(1.001); */
+  overflow-y: auto;
+  align-items: flex-start;
+  width: 50%;
 }
 
+#work-content {
+  min-height: 100vh;
+  width: 50%;
+}
+
+/* cross-axis nested scroller */
 #work2 {
   background-color: rgb(255, 152, 162);
-  height: 50%;
-  overflow-y: auto;
+  width: 50%;
+  overflow-x: auto;
+  justify-content: flex-start;
 
   #work2-content {
     display: block;
+    white-space: nowrap;
   }
 }
 
 /* nested scroller lenis must never touch */
 #prevent {
   background-color: rgb(186, 155, 201);
-  height: 50%;
+  width: 50%;
   overflow-y: auto;
   align-items: flex-start;
-
-  #prevent-content {
-    display: block;
-    width: 50%;
-  }
 }
 
 #contact {
   background-color: rgb(163, 120, 164);
-}
-
-#work-content {
-  min-width: 100vw;
-  height: 50%;
 }
