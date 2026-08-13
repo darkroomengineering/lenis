@@ -96,6 +96,8 @@ export class Lenis {
     eventsTarget,
     wheel,
     touch,
+    duration,
+    easing,
     infinite = false,
     orientation = 'vertical', // vertical, horizontal, both
     gestureOrientation = orientation === 'vertical' ? 'vertical' : 'both', // vertical, horizontal, both — has no effect when orientation is 'both'
@@ -148,6 +150,8 @@ export class Lenis {
         smooth: true,
         lerp: 0.1,
         multiplier: 1,
+        duration,
+        easing,
         ...wheel, // overwrite default values
       },
       touch: {
@@ -574,8 +578,8 @@ export class Lenis {
     const atStart = this.animatedScroll <= 0
     const atEnd = this.maxScroll - this.animatedScroll <= 1
     let consuming = !(atStart || atEnd)
-    if (deltaY > 0) consuming = !atEnd
-    else if (deltaY < 0) consuming = !atStart
+    if (delta > 0) consuming = !atEnd
+    else if (delta < 0) consuming = !atStart
 
     if (
       !this.options.overscroll ||
@@ -977,8 +981,8 @@ export class Lenis {
       immediate = false,
       programmatic = true,
       lerp = programmatic ? this.options.wheel.lerp : undefined,
-      duration = programmatic ? this.options.duration : undefined,
-      easing = programmatic ? this.options.easing : undefined,
+      duration = programmatic ? this.options.wheel.duration : undefined,
+      easing = programmatic ? this.options.wheel.easing : undefined,
       onStart,
       onComplete,
     }: ScrollToOptions = {}
@@ -1230,7 +1234,8 @@ export class Lenis {
   get isScrollable() {
     const orientation = this.options.orientation
     if (orientation === 'horizontal') return this.x.isScrollable
-    if (orientation === 'both') return this.x.isScrollable || this.y.isScrollable
+    if (orientation === 'both')
+      return this.x.isScrollable || this.y.isScrollable
     return this.y.isScrollable
   }
 
