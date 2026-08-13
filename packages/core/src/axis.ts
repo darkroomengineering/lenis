@@ -107,6 +107,14 @@ export class Axis {
     return this.lenis.scrollingBox.scrollMax[this.axis]
   }
 
+  /**
+   * Whether this axis can currently scroll: the wrapper is a scroll container
+   * with overflowing content on this axis (delegates to `ScrollingBox`).
+   */
+  get isScrollable() {
+    return this.lenis.scrollingBox.isScrollable[this.axis]
+  }
+
   /** Scroll progress relative to `scrollMax`, `0..1`. */
   get progress() {
     // avoid progress being NaN

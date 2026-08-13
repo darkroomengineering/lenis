@@ -508,7 +508,7 @@ export class Lenis {
       // overscroll can push the value outside [0, scrollMax]).
       // https://developer.mozilla.org/en-US/docs/Web/API/Element/scrollHeight#determine_if_an_element_has_been_totally_scrolled
       const consuming = (axis: Axis, delta: number) => {
-        if (!this.scrollingBox.isScrollable[axis.axis]) return false
+        if (!axis.isScrollable) return false
         const atStart = axis.animatedScroll <= 0
         const atEnd = axis.scrollMax - axis.animatedScroll <= 1
         // consume if the axis can scroll further in the delta's direction
@@ -547,13 +547,13 @@ export class Lenis {
       // instance isn't locked. Programmatic `scrollTo` still works on a locked /
       // non-scrollable axis (matches the "scrollTo always runs" policy);
       // only user-initiated gestures are gated.
-      if (dx !== 0 && this.scrollingBox.isScrollable.x && !this.isLocked) {
+      if (dx !== 0 && this.x.isScrollable && !this.isLocked) {
         this.scrollAxisTo(this.x, this.x.targetScroll + dx, {
           programmatic: false,
           ...config,
         })
       }
-      if (dy !== 0 && this.scrollingBox.isScrollable.y && !this.isLocked) {
+      if (dy !== 0 && this.y.isScrollable && !this.isLocked) {
         this.scrollAxisTo(this.y, this.y.targetScroll + dy, {
           programmatic: false,
           ...config,
@@ -1228,11 +1228,10 @@ export class Lenis {
    * refreshed by `ScrollingBox` on resize and `overflow` transitions).
    */
   get isScrollable() {
-    const isScrollable = this.scrollingBox.isScrollable
     const orientation = this.options.orientation
-    if (orientation === 'horizontal') return isScrollable.x
-    if (orientation === 'both') return isScrollable.x || isScrollable.y
-    return isScrollable.y
+    if (orientation === 'horizontal') return this.x.isScrollable
+    if (orientation === 'both') return this.x.isScrollable || this.y.isScrollable
+    return this.y.isScrollable
   }
 
   /**
