@@ -1,0 +1,103 @@
+#controls {
+  position: fixed;
+  top: 64px; /* below the layout nav */
+  left: 16px;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px;
+  max-width: 360px;
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid #0e0e0e;
+  font-family: monospace;
+}
+
+#controls button {
+  font-family: monospace;
+  padding: 8px;
+  cursor: pointer;
+}
+
+#status {
+  margin: 0;
+  white-space: pre;
+  font-size: 12px;
+}
+
+#controls p {
+  margin: 0;
+  font-size: 11px;
+  line-height: 1.5;
+}
+
+section {
+  min-height: 80vh;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  justify-content: center;
+  align-items: center;
+  font-family: monospace;
+}
+
+section:nth-child(odd) {
+  background-color: #0e0e0e;
+  color: white;
+}
+
+.scroller {
+  width: 50%;
+  height: 50vh;
+  overflow-y: auto;
+  padding: 16px;
+  background-color: rgb(213, 133, 169);
+  color: #0e0e0e;
+}
+
+#strip {
+  width: 50%;
+  overflow-x: auto;
+  padding: 16px;
+  background-color: rgb(255, 152, 162);
+  color: #0e0e0e;
+}
+
+#strip-content {
+  white-space: nowrap;
+}
+
+#outer-list {
+  background-color: rgb(186, 155, 201);
+}
+
+#inner-list {
+  width: 80%;
+  height: 25vh;
+  background-color: rgb(255, 152, 162);
+}
+
+.native {
+  background-color: rgb(163, 120, 164);
+}
+
+#nested-textarea {
+  width: 50%;
+  height: 30vh;
+  font-family: monospace;
+}
+
+#modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 50vw;
+  height: 50vh;
+  overflow-y: auto;
+  padding: 16px;
+  background: white;
+  border: 2px solid #0e0e0e;
+  z-index: 3;
+  font-family: monospace;
+}

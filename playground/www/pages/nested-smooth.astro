@@ -1,0 +1,43 @@
+---
+import '~/nested-smooth/style.css'
+import Layout from '../layouts/Layout.astro'
+---
+
+<Layout title="Lenis Nested Smooth">
+  <div id="controls">
+    <button id="toggle-modal">mount / unmount modal</button>
+    <pre id="status"></pre>
+    <p>
+      1. wheel over each scroller — adopted on the first gesture, smooth from the first tick<br />
+      2. at a scroller's edge the gesture chains to the page<br />
+      3. .native stays native (filter), textarea stays native (built-in skip)<br />
+      4. #inner-list gets adopted by #outer-list's instance (recursion)<br />
+      5. unmount the modal — its instance is swept within ~1s
+    </p>
+  </div>
+  <div id="wrapper">
+    <section>
+      <h2>nested smooth — everything everywhere all at once</h2>
+    </section>
+    <section>
+      <div id="list" class="scroller fill"></div>
+    </section>
+    <section>
+      <div id="strip"><div id="strip-content"></div></div>
+    </section>
+    <section>
+      <div id="outer-list" class="scroller">
+        <div class="fill"></div>
+        <div id="inner-list" class="scroller fill"></div>
+        <div class="fill"></div>
+      </div>
+    </section>
+    <section>
+      <div class="native scroller fill"></div>
+    </section>
+    <section>
+      <textarea id="nested-textarea"></textarea>
+    </section>
+  </div>
+  <script src="../../nested-smooth/test.ts"></script>
+</Layout>

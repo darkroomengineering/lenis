@@ -60,7 +60,7 @@ html {
 
   #work2-content {
     display: block;
-    white-space: nowrap;
+    min-width: 1000px;
   }
 }
 
