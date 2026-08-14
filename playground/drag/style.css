@@ -1,0 +1,38 @@
+
+
+#grid {
+  display: grid;
+  grid-template-columns: repeat(4, 50vw);
+  grid-auto-rows: 50vh;
+  width: max-content;
+}
+
+.cell {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-family: monospace;
+  font-size: 6vh;
+  color: #0e0e0e;
+}
+
+.cell:nth-child(4n + 1) {
+  background-color: rgb(255, 152, 162);
+}
+
+.cell:nth-child(4n + 2) {
+  background-color: rgb(213, 133, 169);
+}
+
+.cell:nth-child(4n + 3) {
+  background-color: rgb(186, 155, 201);
+}
+
+.cell:nth-child(4n + 4) {
+  background-color: rgb(163, 120, 164);
+}
+
+.cell a {
+  font-size: 3vh;
+  color: #0e0e0e;
+}

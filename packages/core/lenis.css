@@ -20,3 +20,19 @@ html.lenis body {
   transition-duration: 1ms;
   transition-behavior: allow-discrete;
 }
+
+/* applied to the root element when the `drag` option is enabled */
+.lenis-draggable {
+  cursor: grab;
+}
+
+/* applied while a mouse drag is scrolling (drag option) */
+.lenis-dragging {
+  cursor: grabbing;
+}
+
+.lenis-dragging,
+.lenis-dragging * {
+  -webkit-user-select: none;
+  user-select: none;
+}

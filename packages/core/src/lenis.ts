@@ -41,6 +41,7 @@ export class Lenis {
   private _preventNextNativeScrollEvent = false
   private _resetVelocityTimeout: ReturnType<typeof setTimeout> | null = null
   private _rafId: number | null = null
+  private _isDragging = false // true while a mouse drag is scrolling (drag option)
   private _isDraggingSelection = false // true while a touch is dragging an iOS selection handle
   // `.matches` is read at scroll time so preference changes apply live, no listener needed
   private readonly reducedMotionMediaQuery = window.matchMedia(
@@ -59,6 +60,10 @@ export class Lenis {
    * Whether the last gesture was a wheel
    */
   isWheel?: boolean
+  /**
+   * Whether the last gesture was a mouse drag
+   */
+  isDrag?: boolean
   /**
    * The time in ms since the lenis instance was created
    */
@@ -82,7 +87,7 @@ export class Lenis {
    */
   options: OptionalPick<
     Required<LenisOptions>,
-    'duration' | 'easing' | 'onGesture' | 'content' | 'dimensions'
+    'onGesture' | 'content' | 'dimensions'
   >
 
   // ─── subsystems ───
@@ -106,8 +111,8 @@ export class Lenis {
     eventsTarget,
     wheel,
     touch,
-    duration,
-    easing,
+    drag,
+    programmatic,
     infinite = false,
     orientation = 'vertical', // vertical, horizontal, both
     gestureOrientation = orientation === 'vertical' ? 'vertical' : 'both', // vertical, horizontal, both — has no effect when orientation is 'both'
@@ -161,8 +166,6 @@ export class Lenis {
         smooth: true,
         lerp: 0.1,
         multiplier: 1,
-        duration,
-        easing,
         ...wheel, // overwrite default values
       },
       touch: {
@@ -176,6 +179,17 @@ export class Lenis {
             inertia: 1.7,
             lerp: 0.05,
           })), // overwrite default values if iOS
+      },
+      drag: {
+        enabled: false,
+        multiplier: 1,
+        inertia: 2,
+        lerp: 0.1,
+        ...drag, // overwrite default values
+      },
+      programmatic: {
+        lerp: 0.1,
+        ...programmatic, // overwrite default values
       },
       infinite,
       gestureOrientation,
@@ -208,6 +222,15 @@ export class Lenis {
       this.options.touch.easing ??= defaultEasing
     }
 
+    // set default duration and easing if not provided
+    if (
+      this.options.drag?.duration !== undefined ||
+      this.options.drag?.easing !== undefined
+    ) {
+      this.options.drag.duration ??= 1
+      this.options.drag.easing ??= defaultEasing
+    }
+
     this.scrollingBox = new ScrollingBox(
       this.rootElement,
       this.options.content,
@@ -219,10 +242,7 @@ export class Lenis {
 
     // Reset an axis when its CSS overflow flips (halts an in-flight animation on
     // a now non-scrollable axis, re-syncs to the browser position otherwise)
-    this.scrollingBox.events.on(
-      'overflow style changed',
-      this.onOverflowStyleChange as (...args: unknown[]) => void
-    )
+    this.scrollingBox.on('overflow style changed', this.onOverflowStyleChange)
 
     // Setup class name
     this.updateClassName()
@@ -257,8 +277,15 @@ export class Lenis {
     )
 
     // Setup gestures handler
-    this.gesturesHandler = new GesturesHandler(eventsTarget as HTMLElement)
+    this.gesturesHandler = new GesturesHandler(eventsTarget as HTMLElement, {
+      drag: this.options.drag.enabled,
+    })
     this.gesturesHandler.on('gesture', this.onGesture)
+    // drag start/end drives the `lenis-dragging` class via updateClassName
+    this.gesturesHandler.on(
+      'dragging',
+      this.onDraggingChange as unknown as GestureCallback
+    )
 
     if (this.options.autoRaf) {
       this._rafId = requestAnimationFrame(this.raf)
@@ -524,6 +551,21 @@ export class Lenis {
   }
 
   /**
+   * Whether a mouse drag is currently scrolling (see the `drag` option).
+   * Mirrored on the root element as the `lenis-dragging` class.
+   */
+  get isDragging() {
+    return this._isDragging
+  }
+
+  private set isDragging(value: boolean) {
+    if (this._isDragging !== value) {
+      this._isDragging = value
+      this.updateClassName()
+    }
+  }
+
+  /**
    * Whether the user can scroll: `true` when at least one live axis is scrollable
    * per `dimensions.isScrollable` (a scroll container with overflowing content,
    * refreshed by `ScrollingBox` on resize and `overflow` transitions).
@@ -569,6 +611,8 @@ export class Lenis {
     if (this.isLocked) className += ' lenis-locked'
     if (this.isScrolling) className += ' lenis-scrolling'
     if (this.isScrolling === 'smooth') className += ' lenis-smooth'
+    if (this.options.drag.enabled) className += ' lenis-draggable'
+    if (this.isDragging) className += ' lenis-dragging'
     return className
   }
 
@@ -591,6 +635,7 @@ export class Lenis {
 
     this.isTouch = type === 'touch'
     this.isWheel = type === 'wheel'
+    this.isDrag = type === 'drag'
 
     // keep zoom feature
     if (event.ctrlKey) return
@@ -617,14 +662,19 @@ export class Lenis {
     } else if (this.isWheel) {
       deltaX *= this.options.wheel.multiplier!
       deltaY *= this.options.wheel.multiplier!
+    } else if (this.isDrag) {
+      deltaX *= this.options.drag.multiplier!
+      deltaY *= this.options.drag.multiplier!
     }
 
     const isClickOrTap = deltaX === 0 && deltaY === 0
 
+    // touch: a tap stops the inertia; drag: grabbing the page stops the fling
     const isTapToStop =
-      this.options.touch.smooth &&
-      this.isTouch &&
-      event.type === 'touchstart' &&
+      ((this.options.touch.smooth &&
+        this.isTouch &&
+        event.type === 'touchstart') ||
+        (this.isDrag && event.type === 'pointerdown')) &&
       isClickOrTap &&
       this.isScrollable &&
       !this.isLocked
@@ -679,7 +729,9 @@ export class Lenis {
 
     const isSmooth =
       (this.options.touch.smooth && this.isTouch) ||
-      (this.options.wheel.smooth && this.isWheel)
+      (this.options.wheel.smooth && this.isWheel) ||
+      // drag gestures only arrive when enabled, and dragging is inherently smooth
+      this.isDrag
 
     if (!isSmooth) {
       this.isScrolling = 'native'
@@ -711,11 +763,15 @@ export class Lenis {
       axes = [{ axis: this.activeAxis, delta }]
     }
 
-    // Touch inertia: on touchend the raw delta is replaced by a fling based on
-    // each driven axis's own velocity.
-    const isTouchEnd = event.type === 'touchend'
-    if (isTouchEnd) {
-      const inertia = this.options.touch.inertia!
+    // Release inertia: on touchend/pointerup the raw delta is replaced by a
+    // fling based on each driven axis's own velocity.
+    const isRelease =
+      event.type === 'touchend' ||
+      event.type === 'pointerup' ||
+      event.type === 'pointercancel'
+    const pointerOptions = this.isDrag ? this.options.drag : this.options.touch
+    if (isRelease) {
+      const inertia = pointerOptions.inertia!
       for (const entry of axes) {
         entry.delta =
           Math.sign(entry.delta) * Math.abs(entry.axis.velocity) ** inertia
@@ -751,19 +807,19 @@ export class Lenis {
       event.preventDefault()
     }
 
-    const touchConfig = isTouchEnd
+    const pointerConfig = isRelease
       ? {
-          lerp: this.options.touch.lerp,
-          duration: this.options.touch.duration,
-          easing: this.options.touch.easing,
+          lerp: pointerOptions.lerp,
+          duration: pointerOptions.duration,
+          easing: pointerOptions.easing,
         }
-      : { lerp: 1 } // 1:1 finger tracking while the touch is down
+      : { lerp: 1 } // 1:1 finger/pointer tracking while the gesture is held
     const wheelConfig = {
       lerp: this.options.wheel.lerp,
       duration: this.options.wheel.duration,
       easing: this.options.wheel.easing,
     }
-    const config = this.isTouch ? touchConfig : wheelConfig
+    const config = this.isWheel ? wheelConfig : pointerConfig
 
     // Drive each axis independently. The isScrollable/isLocked gate above covers
     // the instance; in 2D a non-scrollable axis still has to be skipped here.
@@ -859,6 +915,10 @@ export class Lenis {
     if (event.button === 1) {
       this.reset()
     }
+  }
+
+  private onDraggingChange = (dragging: boolean) => {
+    this.isDragging = dragging
   }
 
   private onNativeScroll = () => {
@@ -1152,9 +1212,9 @@ export class Lenis {
     {
       immediate = false,
       programmatic = true,
-      lerp = programmatic ? this.options.wheel.lerp : undefined,
-      duration = programmatic ? this.options.wheel.duration : undefined,
-      easing = programmatic ? this.options.wheel.easing : undefined,
+      lerp = programmatic ? this.options.programmatic.lerp : undefined,
+      duration = programmatic ? this.options.programmatic.duration : undefined,
+      easing = programmatic ? this.options.programmatic.easing : undefined,
       onStart,
       onComplete,
     }: ScrollToOptions = {}

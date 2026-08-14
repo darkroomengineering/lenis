@@ -30,7 +30,7 @@ export class ScrollingBox {
     y: undefined,
     timestamp: 0,
   }
-  events = new Emitter()
+  private readonly emitter = new Emitter()
   isScrollContainer!: {
     x: boolean
     y: boolean
@@ -40,6 +40,20 @@ export class ScrollingBox {
   private debouncedResize?: ReturnType<typeof debounce<() => void>>
   private wrapperResizeObserver?: ResizeObserver
   private contentResizeObserver?: ResizeObserver
+
+  /**
+   * Add an event listener for the given event and callback
+   *
+   * @param event Event name
+   * @param callback Callback function
+   * @returns Unsubscribe function
+   */
+  on(
+    event: 'overflow style changed',
+    callback: (changed: { x: boolean; y: boolean }) => void
+  ) {
+    return this.emitter.on(event, callback as (...args: unknown[]) => void)
+  }
 
   constructor(
     private wrapper: HTMLElement | Element,
@@ -106,7 +120,7 @@ export class ScrollingBox {
       this.onTransitionEnd as EventListener
     )
     this.debouncedResize?.cancel()
-    this.events.destroy()
+    this.emitter.destroy()
   }
 
   resize = () => {
@@ -180,7 +194,7 @@ export class ScrollingBox {
     }
 
     if (changed.x || changed.y) {
-      this.events.emit('overflow style changed', changed)
+      this.emitter.emit('overflow style changed', changed)
     }
   }
 

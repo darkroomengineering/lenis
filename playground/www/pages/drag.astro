@@ -1,0 +1,23 @@
+---
+import '~/drag/style.css'
+import Layout from '../layouts/Layout.astro'
+
+const cells = Array.from({ length: 16 }, (_, i) => i)
+---
+
+<Layout title="Lenis Drag">
+  <div id="grid">
+    {
+      cells.map((i) => (
+        <div class="cell">
+          {i === 5 ? (
+            <a href="/core">link — click works, drag doesn't trigger it</a>
+          ) : (
+            i
+          )}
+        </div>
+      ))
+    }
+  </div>
+  <script src="../../drag/test.ts"></script>
+</Layout>

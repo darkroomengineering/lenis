@@ -41,8 +41,8 @@ export type EventCallback = ScrollCallback | GestureCallback
 export type GestureData = {
   deltaX: number
   deltaY: number
-  event: WheelEvent | TouchEvent
-  type: 'wheel' | 'touch'
+  event: WheelEvent | TouchEvent | PointerEvent
+  type: 'wheel' | 'touch' | 'drag'
 }
 
 export type Orientation = 'vertical' | 'horizontal' | 'both'
@@ -131,6 +131,28 @@ export interface TouchOptions {
   }
 }
 
+export interface DragOptions {
+  /** Enable scroll-by-dragging with the mouse (grab the page like a touch surface) @default false */
+  enabled?: boolean
+  /** Multiplier for drag movement @default 1 */
+  multiplier?: number
+  /** Strength of the release fling @default 2 */
+  inertia?: number
+  /** Linear interpolation intensity applied to the release fling (0-1) @default 0.1 */
+  lerp?: number
+  duration?: number
+  easing?: EasingFunction
+}
+
+export interface ProgrammaticOptions {
+  /** Linear interpolation intensity (0-1) @default 0.1 */
+  lerp?: number
+  /** The duration of the scroll animation (in s) — switches to time-based animation */
+  duration?: number
+  /** The easing function to use for the scroll animation — switches to time-based animation */
+  easing?: EasingFunction
+}
+
 export type DimensionsOptions = {
   mode?: 'observe' | 'read'
   autoResize?: boolean
@@ -161,14 +183,16 @@ export type LenisOptions = {
    */
   touch?: TouchOptions
   /**
-   * Scroll duration in seconds
+   * Mouse-drag scroll options — grab the page and fling it, like a touch
+   * surface. Off by default; enable with `drag: { enabled: true }`.
    */
-  duration?: number
+  drag?: DragOptions
   /**
-   * Scroll easing function
-   * @default (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t))
+   * Default animation for programmatic scrolls (`scrollTo`, anchors) — the
+   * same shape as the per-call `scrollTo` options `lerp` / `duration` /
+   * `easing`, which still override these per call
    */
-  easing?: EasingFunction
+  programmatic?: ProgrammaticOptions
   /**
    * Enable infinite scrolling
    * @default false

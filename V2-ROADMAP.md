@@ -199,6 +199,18 @@ Remaining before stable:
 - ⏳ Resolve the top-level `duration` / `easing` scope question (see [Open design questions](#open-design-questions))
 - ⏳ Polished examples (the two-axis playground is still a raw test bed)
 
+### 🚧 Drag-to-scroll
+
+Mouse drag as a first-class input (`drag: { enabled: true }`) — grab the page and fling it, like a touch surface. Lives in core: `GesturesHandler` emits `type: 'drag'` gestures into the same pipeline as wheel/touch, so axis routing, nested-scroll/`data-lenis-prevent`, release inertia (touch fling math) and reduced-motion all apply for free. 4px threshold keeps clicks and text selection native; the trailing click after a real drag is swallowed. Completes the multi-axis story — a mouse can't scroll a 2D canvas without it. `playground/drag` exercises it; needs cross-browser validation.
+
+### ⏳ Keyboard controls
+
+Route arrow/page/space/home/end through `scrollTo` so keyboard scrolling is smooth like every other input (today it goes native and bypasses smoothing). Must never hijack keys while focus is in an input, and respects `prefers-reduced-motion` for free via `scrollAxisTo`. With drag this completes "one scroll pipeline for every input".
+
+### ⏳ `lenis/slider` package
+
+Slider built on core + snap + drag: a real scroll container (progressive enhancement, native semantics) where CSS owns layout and Lenis owns feel and state (active index, events, loop, autoplay). Deliberately not Swiper — anything layout-shaped stays in CSS.
+
 ### ⏳ Auto CSS injection
 
 Inject critical styles at runtime so users never have to import `lenis.css` manually. This is the most common setup mistake.

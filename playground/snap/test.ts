@@ -11,8 +11,9 @@ import Snap from 'lenis/snap'
 const lenis = new Lenis({
   // wrapper: document.querySelector('#wrapper'),
   // content: document.querySelector('#content'),
-  lerp: 0.1,
-  syncTouch: true,
+  wheel: { lerp: 0.1 },
+  touch: { smooth: true },
+  drag: { enabled: true },
 })
 
 const _i = 0
