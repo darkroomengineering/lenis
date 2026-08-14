@@ -290,10 +290,14 @@ every constructor writes and every `destroy()` clears.
 
 ## Nested smooth scroll (`nested`)
 
-**Rule:** `nested: { smooth, filter }`, always an object, default `{ smooth: false }`.
+**Rule:** `nested: { mode, filter }`, always an object, default `{ mode: 'native' }`.
+The three modes are mutually exclusive by construction.
 
-- `smooth: false` (default): nested scrollers scroll natively (v1 `allowNestedScroll: true`).
-- `smooth: true`: the first gesture landing on a nested scrollable element
+- `mode: 'native'` (default): nested scrollers scroll natively (v1 `allowNestedScroll: true`).
+- `mode: 'none'`: nested scrollable elements are ignored entirely — gestures over
+  them drive this instance (v1 `allowNestedScroll: false`) and the per-gesture
+  scrollability checks are skipped. Prevent attributes still apply.
+- `mode: 'smooth'`: the first gesture landing on a nested scrollable element
   creates a Lenis instance on it and **hands the in-flight gesture over** — the first
   tick is already smooth. Instances are cached (one per element, `Lenis.get` finds
   them), inherit the adopter's config (including `nested` — adoption recurses), and

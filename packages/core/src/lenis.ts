@@ -32,7 +32,7 @@ type OptionalPick<T, F extends keyof T> = Omit<T, F> & Partial<Pick<T, F>>
 const defaultEasing = (t: number) => Math.min(1, 1.001 - 2 ** (-10 * t))
 
 // Every live instance keyed by its root element — the double-adoption guard
-// for `nested.smooth` and the lookup behind `Lenis.get`.
+// for `nested.mode: 'smooth'` and the lookup behind `Lenis.get`.
 const instancesRegistry = new WeakMap<Element, Lenis>()
 // Elements vetoed by `nested.filter` — the filter runs once per element.
 const nestedVetoed = new WeakSet<Element>()
@@ -109,14 +109,14 @@ export class Lenis {
   readonly y: Axis
   private readonly gesturesHandler: GesturesHandler
   private readonly isIOS: boolean
-  /** Instances adopted via `nested.smooth`, driven by this instance's raf. */
+  /** Instances adopted via `nested.mode: 'smooth'`, driven by this instance's raf. */
   private readonly nestedInstances = new Set<Lenis>()
   private _nestedSweepFrame = 0 // frame counter gating the disconnect sweep
 
   // ─── lifecycle ───
 
   /**
-   * The Lenis instance mounted on `element` — adopted via `nested.smooth` or
+   * The Lenis instance mounted on `element` — adopted via `nested.mode: 'smooth'` or
    * created manually — if any.
    */
   static get(element: Element): Lenis | undefined {
@@ -217,7 +217,7 @@ export class Lenis {
       autoRaf,
       anchors,
       nested: {
-        smooth: false,
+        mode: 'native',
         ...nested, // overwrite default values
       },
       dimensions,
@@ -759,8 +759,11 @@ export class Lenis {
       )
         return
 
-      if (isScrollableElement(node, { deltaX, deltaY })) {
-        // `nested.smooth` — everything everywhere all at once: adopt the
+      if (
+        this.options.nested.mode !== 'none' &&
+        isScrollableElement(node, { deltaX, deltaY })
+      ) {
+        // `nested.mode: 'smooth'` — everything everywhere all at once: adopt the
         // scroller with its own Lenis instance and hand it the in-flight
         // gesture, so even the first tick is smooth. Drags never adopt: the
         // child's pointer tracking can only start on its own pointerdown,
@@ -769,7 +772,7 @@ export class Lenis {
         // via lenisStopPropagation); at their edges falling through to
         // `return` chains to this instance like any native scroller.
         if (
-          this.options.nested.smooth &&
+          this.options.nested.mode === 'smooth' &&
           !this.isDrag &&
           this.isNestedAdoptable(node)
         ) {
@@ -914,7 +917,7 @@ export class Lenis {
     }
   }
 
-  /** Whether a nested scroller is eligible for `nested.smooth` adoption. */
+  /** Whether a nested scroller is eligible for `nested.mode: 'smooth'` adoption. */
   private isNestedAdoptable(element: HTMLElement) {
     // one instance per element — covers manual instances too
     if (instancesRegistry.has(element)) return false
@@ -938,7 +941,7 @@ export class Lenis {
   }
 
   /**
-   * `nested.smooth`: mount a Lenis instance on the scroller the user just
+   * `nested.mode: 'smooth'`: mount a Lenis instance on the scroller the user just
    * gestured on, inheriting this instance's config (including `nested` —
    * that's the recursion), and hand it the in-flight gesture so the very
    * first tick is already smooth. The child is driven by this instance's raf

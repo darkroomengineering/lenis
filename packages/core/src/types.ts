@@ -153,19 +153,25 @@ export interface ProgrammaticOptions {
   easing?: EasingFunction
 }
 
+export type NestedMode = 'native' | 'smooth' | 'none'
+
 export interface NestedOptions {
   /**
-   * If `true`, a gesture landing on a nested scrollable element recursively
-   * creates (and caches) a Lenis instance on it, handing over the in-flight
-   * gesture — every scroller the user touches inherits the smoothing
-   * ("everything everywhere all at once"). If `false`, nested scrollable
-   * elements scroll natively.
-   * @default false
+   * How gestures over nested scrollable elements behave:
+   * - `'native'` (default): they scroll natively (v1's `allowNestedScroll: true`)
+   * - `'smooth'`: the first gesture recursively creates (and caches) a Lenis
+   *   instance on the scroller, handing over the in-flight gesture — every
+   *   scroller the user touches inherits the smoothing ("everything everywhere
+   *   all at once")
+   * - `'none'`: nested scrollers are ignored — gestures drive this instance
+   *   (v1's `allowNestedScroll: false`) and the per-gesture scrollability
+   *   checks are skipped
+   * @default 'native'
    */
-  smooth?: boolean
+  mode?: NestedMode
   /**
-   * Choose which elements get adopted — return `false` to leave one native.
-   * Evaluated once per element (the verdict is cached).
+   * `mode: 'smooth'` only — choose which elements get adopted; return `false`
+   * to leave one native. Evaluated once per element (the verdict is cached).
    */
   filter?: (element: HTMLElement) => boolean
 }
@@ -250,9 +256,9 @@ export type LenisOptions = {
    */
   anchors?: boolean | ScrollToOptions
   /**
-   * Nested scroll behavior: `{ smooth: false }` (the default) lets nested
-   * scrollers scroll natively (v1's `allowNestedScroll`), `{ smooth: true }`
-   * adopts them with recursive Lenis instances
+   * Nested scroll behavior: `{ mode: 'native' }` (the default) lets nested
+   * scrollers scroll natively, `{ mode: 'smooth' }` adopts them with recursive
+   * Lenis instances, `{ mode: 'none' }` ignores them entirely
    */
   nested?: NestedOptions
   /**

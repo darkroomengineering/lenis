@@ -180,7 +180,7 @@ That's it, your page now has smooth scrolling — the defaults already handle mo
 
 | Option                  | Type                       | Default                                                    | Description                                                                                                                                                                                                                                                 |
 |-------------------------|----------------------------|------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `nested`                | `object`                   | `{ smooth: false }`                                        | Nested scroll behavior. Default: nested scrollers scroll natively (v1's `allowNestedScroll`). `{ smooth: true }` — everything everywhere all at once: the first gesture on a nested scrollable element adopts it with its own cached Lenis instance (recursive, same config), handing over the in-flight gesture; `filter: (element) => boolean` picks which elements get adopted (see [Nested scroll](#nested-scroll)). |
+| `nested`                | `object`                   | `{ mode: 'native' }`                                       | How nested scrollable elements behave. `'native'` (default): they scroll natively. `'smooth'` — everything everywhere all at once: the first gesture adopts the scroller with its own cached Lenis instance (recursive, same config), handing over the in-flight gesture; `filter: (element) => boolean` picks which elements get adopted. `'none'`: nested scrollers are ignored — gestures drive this instance and the per-gesture scrollability checks are skipped (see [Nested scroll](#nested-scroll)). |
 | `anchors`               | `boolean, ScrollToOptions` | `true`                                                     | Scroll to anchor links when clicked. Pass `ScrollToOptions` to customize the scroll (e.g. `{ offset: 100 }`).                                                                                                                                                 |
 | `autoRaf`               | `boolean`                  | `true`                                                     | Automatically run the `requestAnimationFrame` loop. Set to `false` to drive it yourself via `lenis.raf(time)`.                                                                                                                                                |
 | `content`               | `HTMLElement`              | `undefined`                                                | The element that contains the scrolled content, usually `wrapper`'s direct child (`document.documentElement` when `wrapper` is `window`). Providing it enables `ResizeObserver`-based dimensions (`dimensions.mode: 'observe'`).                              |
@@ -350,19 +350,19 @@ lenis.on('scroll', ({ x, y }) => {
 
 ### Nested scroll
 
-Nested scrollable elements scroll natively out of the box. Opt into `nested: { smooth: true }` and they're not just handled — they're smoothed, everything everywhere all at once: the first gesture on a nested scroller mounts a cached Lenis instance on it, recursively and with your instance's config, and the in-flight gesture is handed over so even the first tick is smooth. Adopted instances are ordinary Lenis instances — retrieve one with `Lenis.get(element)`.
+Nested scrollable elements scroll natively out of the box. Opt into `nested: { mode: 'smooth' }` and they're not just handled — they're smoothed, everything everywhere all at once: the first gesture on a nested scroller mounts a cached Lenis instance on it, recursively and with your instance's config, and the in-flight gesture is handed over so even the first tick is smooth. Adopted instances are ordinary Lenis instances — retrieve one with `Lenis.get(element)`.
 
 ```js
 new Lenis({
   nested: {
-    smooth: true,
+    mode: 'smooth',
     // choose which elements get adopted — return false to leave one native
     filter: (element) => !element.classList.contains('native'),
   },
 })
 ```
 
-Form fields (`input`, `textarea`, `select`) and `contenteditable` elements are never adopted. Detection checks the DOM tree on every scroll event — mark elements with `data-lenis-prevent` to skip them entirely:
+Form fields (`input`, `textarea`, `select`) and `contenteditable` elements are never adopted. To ignore nested scrollers entirely — gestures drive the page even over them, and the per-gesture scrollability checks are skipped — use `nested: { mode: 'none' }` (v1's `allowNestedScroll: false`). Detection checks the DOM tree on every scroll event — mark elements with `data-lenis-prevent` to skip them entirely:
 
 ```html
 <div data-lenis-prevent>scrollable content</div>

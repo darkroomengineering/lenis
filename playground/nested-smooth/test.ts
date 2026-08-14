@@ -6,7 +6,7 @@ const lorem = new LoremIpsum()
 const lenis = new Lenis({
   touch: { smooth: true },
   nested: {
-    smooth: true,
+    mode: 'smooth',
     // leave .native scrollers native
     filter: (element) => !element.classList.contains('native'),
   },

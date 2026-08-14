@@ -78,7 +78,7 @@ watch(
 
 ## Nested smooth scroll
 
-Opt into core's `nested: { smooth: true }` and scrollable elements inside your app — modals, drawers, overflow panels — are adopted by the nearest Lenis instance on their first gesture. No component or ref wiring needed, and adopted instances are destroyed automatically when their element unmounts.
+Opt into core's `nested: { mode: 'smooth' }` and scrollable elements inside your app — modals, drawers, overflow panels — are adopted by the nearest Lenis instance on their first gesture. No component or ref wiring needed, and adopted instances are destroyed automatically when their element unmounts.
 
 Adopted instances live outside the Vue tree (`useLenis` won't return them). Reach one imperatively when you need to attach behavior:
 

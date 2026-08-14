@@ -6,7 +6,7 @@
 
 One option makes every scrollable surface the user touches feel like Lenis: when a gesture lands on a nested scrollable element, Lenis creates (and caches) an instance on it and hands the gesture over — including the very first one. Adoption is recursive by construction — a spawned child runs the same pipeline with the same config, so *its* nested scrollers get adopted too.
 
-Launch posture: **opt-in** (`smooth` defaults to `false`). The failure modes are asymmetric — opt-in undiscovered is a docs problem; default-on misbehaving in third-party widgets is a production problem. Revisit the default once the feature has survived the wild; `false → true` is a cheap flip later, the reverse is not.
+Launch posture: **opt-in** (`mode` defaults to `'native'`). The failure modes are asymmetric — opt-in undiscovered is a docs problem; default-on misbehaving in third-party widgets is a production problem. Revisit the default once the feature has survived the wild; `false → true` is a cheap flip later, the reverse is not.
 
 Guiding principle (same as v2 core): stay native-aligned. Adopted instances are ordinary Lenis instances on ordinary scroll containers — no proxying, no synthetic scroll state. The existing nested-Lenis chaining (`overscroll`, `lenisStopPropagation`) is the composition mechanism.
 
@@ -15,11 +15,13 @@ Guiding principle (same as v2 core): stay native-aligned. Adopted instances are 
 ```js
 const lenis = new Lenis({
   nested: {
-    // true: recursively create a Lenis instance (same config) on any nested
+    // 'native' (default): nested scrollers scroll natively (v1 allowNestedScroll: true)
+    // 'smooth': recursively create a Lenis instance (same config) on any nested
     //   scroller the user interacts with
-    // false (default): nested scrollers scroll natively (v1's allowNestedScroll: true)
-    smooth: true,
-    // choose which elements get adopted; return false to leave one native
+    // 'none': ignore nested scrollers entirely — gestures drive this instance
+    //   and scrollability checks are skipped (v1 allowNestedScroll: false)
+    mode: 'smooth',
+    // 'smooth' only — choose which elements get adopted; return false to leave one native
     filter: (element) => !element.classList.contains('native'),
   },
 })
@@ -29,7 +31,7 @@ Lenis.get(element) // → the instance mounted on `element`, adopted or manual (
 
 ### Decisions
 
-- **`nested` replaces `allowNestedScroll`** — always an object, sibling of `wheel`/`touch`/`drag`/`programmatic`. Migration: `allowNestedScroll: true` → default (`{ smooth: false }` = native nested); `allowNestedScroll: false` (hijack gestures over nested scrollers) is dropped — no equivalent, it fought native behavior. Adoption is **opt-in** at launch (see posture above).
+- **`nested` replaces `allowNestedScroll`** — always an object, sibling of `wheel`/`touch`/`drag`/`programmatic`, default `{ mode: 'native' }`. A single tri-state `mode` (`'native' | 'smooth' | 'none'`, precedent: `dimensions.mode`) — the behaviors are mutually exclusive, so two boolean knobs would allow contradictions. Migration: `allowNestedScroll: true` → default; `allowNestedScroll: false` → `{ mode: 'none' }`. Adoption is **opt-in** at launch (see posture above).
 - **The first gesture is smooth too.** At the spawn point the parent detects the scroller, creates + caches the instance, then **forwards the in-flight gesture data into the child's pipeline** (internal handoff — the child runs its normal gesture path against the original event, so preventDefault/`lenisStopPropagation` behave as if the child had caught it). From the next gesture on, the child's own element-level listener fires before the parent's and the existing `lenisStopPropagation` flow keeps the parent out.
 - **Lazy spawn only.** No upfront DOM scan; the spawn point is the existing `isScrollableElement` hit in `onGesture`.
 - **Children never own a rAF loop.** Adopted instances are created with `autoRaf: false` and advanced by the adopting parent's `raf`. Parent destroyed → subtree destroyed. This is the leak-prevention backbone.
@@ -71,7 +73,7 @@ Implementation notes (decisions made while building):
 
 ## Decided constraints
 
-- `smooth: false` is the launch default (see posture in the goal section); the built-in exclusions and `filter` still gate adoption when enabled.
+- `mode: 'native'` is the launch default (see posture in the goal section); the built-in exclusions and `filter` still gate adoption in `'smooth'` mode.
 - No MutationObserver — `isConnected` sweeps from the frame loop are enough.
 - Adopted instances are real, ordinary `Lenis` instances — anything else (scrollbar plugin, snap, future keyboard) works on them unmodified.
 
