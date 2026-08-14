@@ -1,0 +1,35 @@
+/* Classic sticky stack: every wrapper's flow slot is 100vh, and since each
+   one pins at top: 0, later cards slide over the pinned earlier ones. */
+.card-wrapper {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.card {
+  width: min(90vw, 70vh * 4 / 3);
+  aspect-ratio: 4 / 3;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-family: monospace;
+  font-size: 20vh;
+  color: white;
+  border-radius: 16px;
+  box-shadow: 0 8px 40px rgba(0, 0, 0, 0.3);
+}
+
+.card-wrapper:nth-child(3n + 1) .card {
+  background-color: rgb(255, 152, 162);
+}
+
+.card-wrapper:nth-child(3n + 2) .card {
+  background-color: rgb(213, 133, 169);
+}
+
+.card-wrapper:nth-child(3n + 3) .card {
+  background-color: rgb(163, 120, 164);
+}

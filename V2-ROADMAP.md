@@ -235,10 +235,18 @@ Warn in development mode when `infinite` is used on `html`/`body` (causes flicke
 
 - ✅ `playground/touch` — native vs Lenis side-by-side for debugging `touch.smooth` on real devices
 - 🚧 `playground/two-axis` — 5×5 viewport-sized grid for 2D scroll testing (corner cells colour-coded); functional test bed, not yet a polished example
-- ⏳ Nested scroll
-- ⏳ Horizontal scroll
+- 🚧 `playground/vertical` + `playground/horizontal` — scenario validation twins: same-axis nested, cross-axis nested, `data-lenis-prevent`, anchors, `stopInertiaOnNavigate`
 - ⏳ Framework integrations
 - ⏳ Common patterns (modals, drawers, etc.)
+
+#### Examples to release (feature showcases)
+
+- ⏳ **Infinite two-axis grid + snap** — the v2 headline demo: `orientation: 'both'` + `infinite: true`, snap to cells. Reference: [oneupstudio.it](https://www.oneupstudio.it/)
+- 🚧 **Stacked cards** — 100vh `sticky top: 0` wrappers, 4/3 cards, snap to each (`playground/sticky-cards` has the mechanics; needs the visual pass). Reference: [stackhealth.darkroom.engineering](https://stackhealth.darkroom.engineering/)
+- ⏳ **Autoscroll (cinema)** — auto-advancing reel, pauses on interaction. Reference: [mhvkj4-3000.csb.app](https://mhvkj4-3000.csb.app/)
+- 🚧 **Slideshow** — snap-centered slides with proportional custom scrollbar (`playground/slideshow` has the mechanics; needs the visual pass)
+- ⏳ **Touch setup** — 100vh wrapper + scroll on a body child, the mobile-app-like layout (`touch.smooth` on a non-window wrapper)
+- ⏳ **Vertical gesture for horizontal scroll** — `orientation: 'horizontal'` + `gestureOrientation: 'both'`/`'vertical'`, wheel scrolls the rail
 
 ---
 
