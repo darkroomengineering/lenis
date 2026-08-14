@@ -76,6 +76,18 @@ watch(
 - `rootContext`: registers the instance in the global registry so `useLenis()` reaches it from anywhere (even outside the provider subtree). Independent of `root` — set it on a scoped container to expose it globally, or unset it on a `root` to keep it local. Default: same as `root`.
 - `name`: registers the instance under a name so it can be reached anywhere via `useLenis(name)`. Use it for secondary scrollers (e.g. a sidebar) alongside the page scroll.
 
+## Nested smooth scroll
+
+Opt into core's `nested: { smooth: true }` and scrollable elements inside your app — modals, drawers, overflow panels — are adopted by the nearest Lenis instance on their first gesture. No component or ref wiring needed, and adopted instances are destroyed automatically when their element unmounts.
+
+Adopted instances live outside the Vue tree (`useLenis` won't return them). Reach one imperatively when you need to attach behavior:
+
+```js
+import Lenis from 'lenis'
+
+const instance = Lenis.get(element) // undefined until first gesture
+```
+
 ## Hooks
 Once the Lenis context is set (components mounted inside `<VueLenis>` or `<vue-lenis>`) you can use these handy hooks:
 

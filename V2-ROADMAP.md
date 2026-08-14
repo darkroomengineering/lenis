@@ -33,7 +33,7 @@ Options that were opt-in in v1 are now default-on:
 | `autoRaf` | `false` | `true` | Most users forget to set up the raf loop |
 | `autoToggle` | `false` | **removed** — always on (see below) | Overflow changes are handled automatically; no opt-out |
 | `anchors` | `false` | `true` | Anchor links should just work |
-| `allowNestedScroll` | `false` | `true` | Modals and nested containers should just work |
+| `allowNestedScroll` → `nested` | `false` | `{ smooth: true }` | Modals and nested containers just work — and get adopted with their own Lenis instance ([`NESTED-PLAN.md`](./NESTED-PLAN.md)) |
 | `stopInertiaOnNavigate` | `false` | `true` | Prevents scroll bleed on navigation |
 | `dimensions.mode` | (was `naiveDimensions: false`) | `'observe'` when `content` is defined, `'read'` otherwise | More reliable for most setups, no manual `naiveDimensions` toggle |
 
@@ -202,6 +202,10 @@ Remaining before stable:
 ### 🚧 Drag-to-scroll
 
 Mouse drag as a first-class input (`drag: { enabled: true }`) — grab the page and fling it, like a touch surface. Lives in core: `GesturesHandler` emits `type: 'drag'` gestures into the same pipeline as wheel/touch, so axis routing, nested-scroll/`data-lenis-prevent`, release inertia (touch fling math) and reduced-motion all apply for free. 4px threshold keeps clicks and text selection native; the trailing click after a real drag is swallowed. Completes the multi-axis story — a mouse can't scroll a 2D canvas without it. `playground/drag` exercises it; needs cross-browser validation.
+
+### 🚧 Nested smooth scroll (recursive adoption)
+
+`nested: { smooth: true, filter }` (opt-in at launch) — a gesture landing on a nested scrollable element creates (and caches) a Lenis instance on it and hands the in-flight gesture over, so every scrollable surface inherits the feel from the very first wheel tick; recursion falls out naturally since children run the same config. Children are advanced by the parent's raf (no own loop — the leak-prevention backbone) and swept on disconnect. Replaces `allowNestedScroll` (`true` → the default; `false` is dropped). **Full design + step-by-step plan: [`NESTED-PLAN.md`](./NESTED-PLAN.md).**
 
 ### ⏳ Keyboard controls
 

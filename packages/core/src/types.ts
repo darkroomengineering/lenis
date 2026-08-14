@@ -153,6 +153,23 @@ export interface ProgrammaticOptions {
   easing?: EasingFunction
 }
 
+export interface NestedOptions {
+  /**
+   * If `true`, a gesture landing on a nested scrollable element recursively
+   * creates (and caches) a Lenis instance on it, handing over the in-flight
+   * gesture — every scroller the user touches inherits the smoothing
+   * ("everything everywhere all at once"). If `false`, nested scrollable
+   * elements scroll natively.
+   * @default false
+   */
+  smooth?: boolean
+  /**
+   * Choose which elements get adopted — return `false` to leave one native.
+   * Evaluated once per element (the verdict is cached).
+   */
+  filter?: (element: HTMLElement) => boolean
+}
+
 export type DimensionsOptions = {
   mode?: 'observe' | 'read'
   autoResize?: boolean
@@ -233,10 +250,11 @@ export type LenisOptions = {
    */
   anchors?: boolean | ScrollToOptions
   /**
-   * If `true`, Lenis will allow nested scroll
-   * @default true
+   * Nested scroll behavior: `{ smooth: false }` (the default) lets nested
+   * scrollers scroll natively (v1's `allowNestedScroll`), `{ smooth: true }`
+   * adopts them with recursive Lenis instances
    */
-  allowNestedScroll?: boolean
+  nested?: NestedOptions
   /**
    * Dimensions calculation mode. 'read' uses naive dimensions (scrollHeight/clientHeight),
    * 'observe' uses ResizeObserver. Default: { autoResize: true, debounce: 500 } if content is undefined, { autoResize: true, debounce: 500 } if content is defined

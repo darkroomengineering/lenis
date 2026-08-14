@@ -277,5 +277,35 @@ matching state holds.
 `ResizeObserver`).
 
 ### `destroy()`
-**Rule:** tear down — remove listeners, stop the raf loop, disconnect observers. The
-instance is unusable afterward.
+**Rule:** tear down — remove listeners, stop the raf loop, disconnect observers, and
+destroy every instance adopted via `nested.smooth` (the cascade recurses). The instance
+is unusable afterward.
+
+### `Lenis.get(element)` — static
+**Rule:** returns the live instance whose root element is `element` — created manually
+or adopted via `nested.smooth` — or `undefined`. Backed by a `WeakMap` registry that
+every constructor writes and every `destroy()` clears.
+
+---
+
+## Nested smooth scroll (`nested`)
+
+**Rule:** `nested: { smooth, filter }`, always an object, default `{ smooth: false }`.
+
+- `smooth: false` (default): nested scrollers scroll natively (v1 `allowNestedScroll: true`).
+- `smooth: true`: the first gesture landing on a nested scrollable element
+  creates a Lenis instance on it and **hands the in-flight gesture over** — the first
+  tick is already smooth. Instances are cached (one per element, `Lenis.get` finds
+  them), inherit the adopter's config (including `nested` — adoption recurses), and
+  detect their own orientation from the element's scrollable axes.
+- `filter(element)`: return `false` to leave an element native. Evaluated once per
+  element; the verdict is cached.
+- Never adopted: form controls (`input`, `textarea`, `select`), `contenteditable`
+  elements, elements behind `data-lenis-prevent`, and elements that already host an
+  instance. Mouse drags never trigger adoption (a drag can't be handed off
+  mid-gesture); the first wheel/touch does.
+- Lifecycle: adopted instances never run their own raf — the adopter's `raf` advances
+  them. They are destroyed when the adopter is destroyed, and swept automatically
+  (~1s cadence, plus on `resize()`) once their element leaves the DOM.
+- Chaining: at an adopted scroller's edge, gestures chain to the adopter exactly like
+  a native nested scroller (`overscroll` applies on the child).
