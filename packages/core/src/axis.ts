@@ -11,10 +11,17 @@ import type { ScrollToOptions } from './types'
  * touch gestures, events, class names or the options — that stays on `Lenis`.
  */
 export class Axis {
-  /** Animated (interpolated) scroll value */
-  animatedScroll = 0
-  /** Target scroll value the animation is moving toward */
-  targetScroll = 0
+  /**
+   * Raw animated (interpolated) scroll value, unwrapped in infinite mode.
+   * Public consumers read {@link scroll} instead.
+   */
+  rawScroll = 0
+  /**
+   * Raw target the animation is moving toward, in the same unwrapped space as
+   * `rawScroll` (accumulates past `maxScroll` in infinite mode). Public
+   * consumers read {@link targetScroll} instead.
+   */
+  rawTargetScroll = 0
   /** Current scroll velocity (delta since the last update) */
   velocity = 0
   /** Scroll velocity from the previous update */
@@ -40,14 +47,14 @@ export class Axis {
    * Reset all scroll state to the browser's current scroll position and stop the animation.
    */
   reset() {
-    this.animatedScroll = this.targetScroll = this.actualScroll
+    this.rawScroll = this.rawTargetScroll = this.actualScroll
     this.lastVelocity = this.velocity = 0
     this.animate.stop()
   }
 
   /**
    * Advance the animation by `deltaTime` (in seconds). Returns `true` if the
-   * animation was running this frame (i.e. `animatedScroll` may have changed and
+   * animation was running this frame (i.e. `rawScroll` may have changed and
    * the DOM needs to reflect it).
    */
   advance(deltaTime: number) {
@@ -98,8 +105,20 @@ export class Axis {
    */
   get scroll() {
     return this.lenis.options.infinite
-      ? modulo(this.animatedScroll, this.maxScroll)
-      : this.animatedScroll
+      ? modulo(this.rawScroll, this.maxScroll)
+      : this.rawScroll
+  }
+
+  /**
+   * The scroll value this axis is heading to rest at — `rawTargetScroll`
+   * wrapped to `maxScroll` when `infinite`, mirroring {@link scroll}. The raw
+   * value can sit outside `[0, maxScroll]` in infinite mode, so consumers
+   * comparing against document positions (e.g. snap) read this.
+   */
+  get targetScroll() {
+    return this.lenis.options.infinite
+      ? modulo(this.rawTargetScroll, this.maxScroll)
+      : this.rawTargetScroll
   }
 
   /** The maximum scroll value for this axis. */

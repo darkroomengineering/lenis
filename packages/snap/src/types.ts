@@ -34,18 +34,17 @@ export type SnapOptions = {
    */
   lock?: boolean
   /**
-   * @description How a gesture is mapped to a snap target.
-   * - `'closest'` — predict the post-gesture scroll position from the
-   *   gesture delta and snap to the nearest target within
-   *   `distanceThreshold` (velocity-aware).
+   * @description How a gesture is mapped to a snap target. Both modes
+   * measure from the scroll's natural resting position (`targetScroll` —
+   * where the in-flight inertia will land, wrapped in infinite mode).
+   * - `'closest'` — snap to the nearest target within `distanceThreshold`
+   *   of the resting position.
    * - `'directional'` — the gesture *direction* picks the halfspace; we then
-   *   pick the snap closest to the current scroll position whose per-axis
-   *   offset is within `distanceThreshold` (gesture *magnitude* is
-   *   ignored — every directional flick advances by one snap if a
-   *   reachable candidate exists). Pair with `lock: true` and
+   *   pick the snap closest to the resting position whose per-axis offset
+   *   is within `distanceThreshold`. Pair with `lock: true` and
    *   `debounce: 0` for the tightest one-card-per-flick feel.
    *
-   * @default 'closest'
+   * @default 'directional'
    */
   mode?: 'closest' | 'directional'
   /**
@@ -63,14 +62,13 @@ export type SnapOptions = {
   /**
    * @default '50%'
    * @description Per-axis "max reach" applied as `|snap - reference| ≤ value`,
-   * where the reference depends on `mode`:
-   * - `mode: 'closest'` — reference is the *predicted* post-gesture scroll
-   *   position. Pass `Infinity` for "always snap to the nearest" (the
-   *   former `type: 'mandatory'` behavior).
-   * - `mode: 'directional'` — reference is the *current* scroll position.
-   *   Acts as a "max jump" so we don't leap over plausible neighbours.
-   *   For viewport-sized cards, set this to `'100%'` (or higher) so the
-   *   adjacent snap is reachable.
+   * where the reference is the scroll's natural resting position
+   * (`targetScroll`) in both modes:
+   * - `mode: 'closest'` — pass `Infinity` for "always snap to the nearest"
+   *   (the former `type: 'mandatory'` behavior).
+   * - `mode: 'directional'` — acts as a "max jump" so we don't leap over
+   *   plausible neighbours. For viewport-sized cards, set this to `'100%'`
+   *   (or higher) so the adjacent snap is reachable.
    *
    * Shape:
    * - Scalar (`number` or `'50%'`): applied to both axes. Percentages scale

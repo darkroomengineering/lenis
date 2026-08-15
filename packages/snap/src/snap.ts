@@ -63,7 +63,7 @@ export class Snap {
   constructor(
     private lenis: Lenis,
     {
-      mode = 'closest',
+      mode = 'directional',
       lerp,
       lock,
       easing,
@@ -391,10 +391,20 @@ export class Snap {
   private onSnap = (e: GestureData) => {
     if (this.isStopped) return
     if (e.event.type === 'touchmove') return
+    // drag-to-scroll: snap only on release — never while the pointer is held
+    // (a mid-drag pause longer than the debounce must not kick off a snap)
+    if (
+      e.type === 'drag' &&
+      e.event.type !== 'pointerup' &&
+      e.event.type !== 'pointercancel'
+    )
+      return
     // Lenis locked (locked snap in flight, or a manual `lenis.lock()`) ⇒
     // core swallows gestures, so acting on them here would act on ghost
     // input — a flick mid-snap can't kick off a competing snap.
     if (this.lenis.isLocked) return
+
+    console.log("this.onSnap")
 
     const snaps = this.computeSnaps()
     if (snaps.length === 0) return
@@ -403,27 +413,28 @@ export class Snap {
     const bestIndex =
       this.options.mode === 'directional'
         ? this.pickDirectional(snaps, e, threshold)
-        : this.pickClosest(snaps, e, threshold)
+        : this.pickClosest(snaps, threshold)
 
     if (bestIndex === -1) return
     this.goTo(bestIndex)
   }
 
   /**
-   * Predict the post-gesture 2D scroll position and pick the snap closest to
-   * it. Per-axis threshold gates the nearest-neighbour search so a snap can't
-   * win just by being close on one axis.
+   * Pick the snap closest to the scroll's natural resting position. Per-axis
+   * threshold gates the nearest-neighbour search so a snap can't win just by
+   * being close on one axis.
    */
   private pickClosest(
     snaps: SnapItem[],
-    e: GestureData,
     threshold: { x: number; y: number }
   ): number {
-    // The gesture event fires before per-axis routing in core, so adding the
-    // gesture delta to the current scroll mirrors what Lenis is about to do.
+    // By the time the debounced handler runs, core has folded every gesture
+    // delta into targetScroll (the resting point, wrapped to maxScroll in
+    // infinite mode) — exact regardless of lerp/debounce timing. No delta
+    // math needed.
     const predicted = {
-      x: Math.ceil(this.lenis.x.scroll + e.deltaX),
-      y: Math.ceil(this.lenis.y.scroll + e.deltaY),
+      x: Math.ceil(this.lenis.x.targetScroll),
+      y: Math.ceil(this.lenis.y.targetScroll),
     }
 
     let bestIndex = -1
@@ -447,11 +458,11 @@ export class Snap {
 
   /**
    * Slideshow / carousel selection. The gesture's *direction* (per axis)
-   * picks the halfspace; we then return the snap closest to the current
-   * scroll position in that halfspace whose per-axis offset is within
-   * `distanceThreshold`. The gesture *magnitude* is irrelevant — every
-   * directional flick advances by one snap as long as a reachable
-   * candidate exists.
+   * picks the halfspace; we then return the snap closest to where the
+   * scroll is heading (targetScroll) in that halfspace whose per-axis
+   * offset is within `distanceThreshold`. A flick advances one snap from
+   * the heading position — a fling hard enough to overshoot the adjacent
+   * snap lands on the one past it.
    */
   private pickDirectional(
     snaps: SnapItem[],
@@ -470,8 +481,8 @@ export class Snap {
     const anyDirection = this.lenis.options.gestureOrientation === 'both'
 
     const current = {
-      x: this.lenis.x.scroll,
-      y: this.lenis.y.scroll,
+      x: this.lenis.x.targetScroll,
+      y: this.lenis.y.targetScroll,
     }
 
     let bestIndex = -1

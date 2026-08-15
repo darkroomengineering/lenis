@@ -236,7 +236,7 @@ Scroll state properties (`scroll`, `velocity`, `direction`, …) read the *activ
 | Property                | Type              | Description                                                                |
 |-------------------------|-------------------|----------------------------------------------------------------------------|
 | `actualScroll`          | `number`          | Current scroll value registered by the browser                             |
-| `animatedScroll`        | `number`          | Current scroll value                                                       |
+| `rawScroll`             | `number`          | Raw animated scroll value, unwrapped in infinite mode (was `animatedScroll` in v1) |
 | `className` (getter)    | `string`          | `rootElement` className                                                    |
 | `direction`             | `number`          | `1`: scrolling forward, `-1`: scrolling backward, `0`: idle                |
 | `isHorizontal` (getter) | `boolean`         | Whether or not the instance is horizontal                                  |
@@ -254,11 +254,11 @@ Scroll state properties (`scroll`, `velocity`, `direction`, …) read the *activ
 | `scroll` (getter)       | `number`          | Current scroll value (handles infinite scroll if activated)                |
 | `maxScroll` (getter)    | `number`          | Maximum scroll value, mirrors [`scrollTopMax`](https://developer.mozilla.org/en-US/docs/Web/API/Element/scrollTopMax)/[`scrollLeftMax`](https://developer.mozilla.org/en-US/docs/Web/API/Element/scrollLeftMax) (was `limit` in v1) |
 | `scrollingBox`          | `object`          | `ScrollingBox` instance — the wrapper's scroll geometry, mirroring the element's scroll properties: `width`, `height`, `scrollWidth`, `scrollHeight`, `maxScroll`, `isScrollContainer`, `isOverflowing`, `isScrollable` (was `dimensions` in v1) |
-| `targetScroll`          | `number`          | Target scroll value                                                        |
+| `targetScroll` (getter) | `number`          | Scroll value the animation is heading to rest at (wrapped in infinite mode; raw value: `rawTargetScroll`) |
 | `time`                  | `number`          | Time elapsed since instance creation                                       |
 | `userData` (getter)     | `object`          | `userData` of the in-flight `scrollTo`, forwarded through `scroll` events  |
 | `velocity`              | `number`          | Current scroll velocity                                                    |
-| `x` / `y`               | `Axis`            | Per-axis state — each exposes `scroll`, `targetScroll`, `animatedScroll`, `actualScroll`, `velocity`, `lastVelocity`, `direction`, `progress`, `maxScroll` and `isScrollable` |
+| `x` / `y`               | `Axis`            | Per-axis state — each exposes `scroll`, `targetScroll`, `rawScroll`, `rawTargetScroll`, `actualScroll`, `velocity`, `lastVelocity`, `direction`, `progress`, `maxScroll` and `isScrollable` |
 
 <br/>
 
@@ -309,7 +309,7 @@ lenis.x.maxScroll     // maximum horizontal scroll value
 lenis.x.isScrollable  // whether the x axis can currently scroll
 ```
 
-Each axis exposes `scroll`, `targetScroll`, `animatedScroll`, `velocity`, `lastVelocity`, `direction`, `progress`, `maxScroll` and `isScrollable`.
+Each axis exposes `scroll`, `targetScroll`, `rawScroll`, `rawTargetScroll`, `velocity`, `lastVelocity`, `direction`, `progress`, `maxScroll` and `isScrollable`. `scroll` and `targetScroll` are wrapped to `maxScroll` in infinite mode; the `raw*` pair is the unwrapped animation-space values.
 
 ### Top-level properties are single-axis shorthands
 

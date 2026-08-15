@@ -14,13 +14,18 @@ import Snap from 'lenis/snap'
 //  - callbacks + goTo/next/previous — HUD (top right)
 
 const lenis = new Lenis({
+  
   wheel: { lerp: 0.1 },
   touch: { smooth: true },
   drag: { enabled: true },
+  infinite:true,
 })
 
 const snap = new Snap(lenis, {
+  mode:'directional',
   duration: 1,
+  
+  // debounce:100,
   onSnapStart: (item) => hudLog('start', item),
   onSnapComplete: (item) => hudLog('complete', item),
 })
@@ -81,11 +86,11 @@ function hudLog(
 
 function render() {
   hudState.textContent = [
-    `scroll      : ${Math.round(lenis.scroll)}`,
-    `snap index  : ${snap.currentSnapIndex ?? '—'}`,
-    `isScrolling : ${lenis.isScrolling}`,
-    `isLocked    : ${lenis.isLocked}`,
-    `last event  : ${lastEvent}`,
+    `targetScroll : ${Math.round(lenis.targetScroll)}`,
+    `snap index   : ${snap.currentSnapIndex ?? '—'}`,
+    `isScrolling  : ${lenis.isScrolling}`,
+    `isLocked     : ${lenis.isLocked}`,
+    `last event   : ${lastEvent}`,
   ].join('\n')
 }
 

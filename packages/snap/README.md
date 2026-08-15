@@ -1,7 +1,7 @@
 # lenis/snap
 
 ## Introduction
-lenis/snap provides a partial support for CSS scroll snap with [Lenis](https://github.com/darkroomengineering/lenis), see [Demo](https://lenis.darkroom.engineering/snap)
+lenis/snap brings CSS-scroll-snap-like behavior to [Lenis](https://github.com/darkroomengineering/lenis): `scroll-snap-align` semantics (`start`/`center`/`end`/`none`), CSS `scroll-margin` and `scroll-padding` support, plus JS-only extras (raw points, per-target callbacks and locks, `goTo`/`next`/`previous`). See [Demo](https://lenis.darkroom.engineering/snap)
 
 ## Installation
 
@@ -17,14 +17,7 @@ npm i lenis
     import Lenis from 'lenis'
     import Snap from 'lenis/snap'
 
-    const lenis = new Lenis()
-
-    function raf(time) {
-        lenis.raf(time)
-        requestAnimationFrame(raf)
-    }
-
-    requestAnimationFrame(raf)
+    const lenis = new Lenis() // autoRaf: true by default
 
     const snap = new Snap(lenis)
 
@@ -65,16 +58,16 @@ One snap per flick, viewport-sized cards:
 
 ### CSS interop
 
-Element snap positions honor the CSS `scroll-margin` of each added element (outsets its snap area, read live) and the wrapper's CSS `scroll-padding` (insets the viewport, re-read on `resize()`) — same semantics as native scroll snap.
+Element snap positions honor the CSS `scroll-margin` of each added element (outsets its snap area, read live) and the wrapper's CSS `scroll-padding` (insets the viewport, re-read on `resize()`) — same semantics as native scroll snap. For strictness, CSS `mandatory` ⇒ `distanceThreshold: Infinity`, `proximity` ⇒ the default `'50%'`.
 
 ## Options
 
-- `mode`: `'closest' | 'directional'` (default: `'closest'`). How a gesture maps to a snap target.
-  - `'closest'`: predict the post-gesture scroll position and snap to the nearest target within `distanceThreshold` (velocity-aware).
-  - `'directional'`: gesture *direction* picks the halfspace; the snap closest to the current scroll position whose offset is within `distanceThreshold` wins (gesture *magnitude* is ignored). For viewport-sized cards, raise `distanceThreshold` to `'100%'` or higher so the adjacent snap is reachable. Pair with `lock: true` and `debounce: 0` for the tightest one-card-per-flick feel.
+- `mode`: `'closest' | 'directional'` (default: `'directional'`). How a gesture maps to a snap target. Both modes measure from the scroll's natural resting position (`targetScroll` — where the in-flight inertia will land, wrapped in infinite mode).
+  - `'closest'`: snap to the nearest target within `distanceThreshold` of the resting position.
+  - `'directional'`: gesture *direction* picks the halfspace; the snap closest to the resting position whose offset is within `distanceThreshold` wins. For viewport-sized cards, raise `distanceThreshold` to `'100%'` or higher so the adjacent snap is reachable. Pair with `lock: true` and `debounce: 0` for the tightest one-card-per-flick feel.
 - `lock`: `boolean` (default: unset). Lock Lenis to the snap target while the animation runs — user gestures can't interrupt it, and (in `'directional'` mode) competing flicks are ignored until it settles. When set (true or false) it overrides any per-element `lock`; leave unset to let each element decide.
-- `distanceThreshold`: `string | number | [x, y]` (default: `'50%'`). Per-axis "max reach" — applied to the *predicted* position in `'closest'` mode, to the *current* position in `'directional'` mode. Percentages resolve against the viewport (per axis). Pass `Infinity` to disable the gate entirely (always snap to the nearest target).
-- `debounce`: `number` (default: 500). The debounce time for the snap.
+- `distanceThreshold`: `string | number | [x, y]` (default: `'50%'`). Per-axis "max reach" from the scroll's natural resting position (both modes). Percentages resolve against the viewport (per axis). Pass `Infinity` to disable the gate entirely (always snap to the nearest target).
+- `debounce`: `number` (default: 500). Delay after the last gesture before snapping. Touch and mouse-drag gestures only ever trigger a snap on release — never while the finger/pointer is held.
 - `onSnapStart`: `function`. Callback when snap starts.
 - `onSnapComplete`: `function`. Callback when snap completes.
 - `lerp`: `number` Lerp value for snapping. (default: lenis lerp). 

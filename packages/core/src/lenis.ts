@@ -271,7 +271,7 @@ export class Lenis {
     this.updateClassName()
 
     // Set the initial scroll value for all scroll information
-    this.targetScroll = this.animatedScroll = this.actualScroll
+    this.targetScroll = this.rawScroll = this.actualScroll
 
     // Add event listeners (all removed at once via abortController in destroy)
     const signal = this.abortController.signal
@@ -507,17 +507,17 @@ export class Lenis {
     return this.activeAxis.targetScroll
   }
   set targetScroll(value: number) {
-    this.activeAxis.targetScroll = value
+    this.activeAxis.rawTargetScroll = value
   }
 
   /**
    * The animated scroll value (active axis — see {@link targetScroll}).
    */
-  get animatedScroll() {
-    return this.activeAxis.animatedScroll
+  get rawScroll() {
+    return this.activeAxis.rawScroll
   }
-  set animatedScroll(value: number) {
-    this.activeAxis.animatedScroll = value
+  set rawScroll(value: number) {
+    this.activeAxis.rawScroll = value
   }
 
   /**
@@ -857,8 +857,8 @@ export class Lenis {
     // https://developer.mozilla.org/en-US/docs/Web/API/Element/scrollHeight#determine_if_an_element_has_been_totally_scrolled
     const consuming = ({ axis, delta }: { axis: Axis; delta: number }) => {
       if (!axis.isScrollable) return false
-      const atStart = axis.animatedScroll <= 0
-      const atEnd = axis.maxScroll - axis.animatedScroll <= 1
+      const atStart = axis.rawScroll <= 0
+      const atEnd = axis.maxScroll - axis.rawScroll <= 1
       // consume if the axis can scroll further in the delta's direction
       if (delta > 0) return !atEnd
       if (delta < 0) return !atStart
@@ -896,7 +896,7 @@ export class Lenis {
     // the instance; in 2D a non-scrollable axis still has to be skipped here.
     for (const { axis, delta } of axes) {
       if (delta !== 0 && axis.isScrollable) {
-        this.scrollAxisTo(axis, axis.targetScroll + delta, {
+        this.scrollAxisTo(axis, axis.rawTargetScroll + delta, {
           programmatic: false,
           ...config,
         })
@@ -1100,10 +1100,10 @@ export class Lenis {
       // visible scrollbar); in `'both'` mode both axes track native scroll.
       let anyVelocity = false
       for (const axis of [this.x, this.y]) {
-        const lastScroll = axis.animatedScroll
-        axis.animatedScroll = axis.targetScroll = axis.actualScroll
+        const lastScroll = axis.rawScroll
+        axis.rawScroll = axis.rawTargetScroll = axis.actualScroll
         axis.lastVelocity = axis.velocity
-        axis.velocity = axis.animatedScroll - lastScroll
+        axis.velocity = axis.rawScroll - lastScroll
         axis.direction = Math.sign(axis.velocity) as 1 | -1 | 0
         if (axis.velocity !== 0) anyVelocity = true
       }
@@ -1298,7 +1298,7 @@ export class Lenis {
 
     return (
       (axis.axis === 'x' ? rect.left : rect.top) +
-      axis.animatedScroll -
+      axis.rawScroll -
       (Number.isNaN(scrollMargin) ? 0 : scrollMargin) -
       (Number.isNaN(scrollPadding) ? 0 : scrollPadding) +
       adjustedOffset
@@ -1404,9 +1404,9 @@ export class Lenis {
 
     if (this.options.infinite) {
       if (programmatic) {
-        axis.targetScroll = axis.animatedScroll = axis.scroll
+        axis.rawTargetScroll = axis.rawScroll = axis.scroll
 
-        const distance = target - axis.animatedScroll
+        const distance = target - axis.rawScroll
 
         if (distance > axis.maxScroll / 2) {
           target -= axis.maxScroll
@@ -1418,14 +1418,14 @@ export class Lenis {
       target = clamp(0, target, axis.maxScroll)
     }
 
-    if (target === axis.targetScroll) {
+    if (target === axis.rawTargetScroll) {
       onStart?.(this)
       onComplete?.(this)
       return
     }
 
     if (immediate) {
-      axis.animatedScroll = axis.targetScroll = target
+      axis.rawScroll = axis.rawTargetScroll = target
       axis.setScroll(axis.scroll)
       axis.reset()
       if (!this.isAnyAxisAnimating) this.isScrolling = false
@@ -1441,7 +1441,7 @@ export class Lenis {
     }
 
     if (!programmatic) {
-      axis.targetScroll = target
+      axis.rawTargetScroll = target
     }
 
     // flip to easing/time based animation if at least one of them is provided
@@ -1451,7 +1451,7 @@ export class Lenis {
       duration = 1
     }
 
-    axis.animate.fromTo(axis.animatedScroll, target, {
+    axis.animate.fromTo(axis.rawScroll, target, {
       duration,
       easing,
       lerp,
@@ -1464,15 +1464,15 @@ export class Lenis {
 
         // updated
         axis.lastVelocity = axis.velocity
-        axis.velocity = value - axis.animatedScroll
+        axis.velocity = value - axis.rawScroll
         axis.direction = Math.sign(axis.velocity) as 1 | -1 | 0
 
-        axis.animatedScroll = value
+        axis.rawScroll = value
         // DOM write is consolidated into a single `wrapper.scrollTo` per frame in `Lenis.raf`.
 
         if (programmatic) {
           // wheel during programmatic should stop it
-          axis.targetScroll = value
+          axis.rawTargetScroll = value
         }
 
         if (!completed) this.emit()
