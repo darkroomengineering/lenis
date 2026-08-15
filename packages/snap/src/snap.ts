@@ -42,12 +42,6 @@ export class Snap {
   onSnapDebounced: (e: GestureData) => void
   currentSnapIndex?: number
   /**
-   * Count of snap operations currently in flight. `scrollTo` fires `onStart` /
-   * `onComplete` once per call (even for a 2D `{ x, y }` snap), so this is a
-   * clean "is snapping" gate: incremented on start, decremented on complete.
-   */
-  private inFlight = 0
-  /**
    * CSS `scroll-padding` of the wrapper, resolved to px. Insets the snapport
    * when aligning elements. Cached — recomputed on `resize()`.
    */
@@ -71,7 +65,7 @@ export class Snap {
     {
       mode = 'closest',
       lerp,
-      lock = false,
+      lock,
       easing,
       duration,
       distanceThreshold = '50%',
@@ -147,13 +141,25 @@ export class Snap {
    * Add a raw snap point.
    *
    * Two-argument form is a 2D point; one-argument form anchors on the active
-   * axis (vertical unless the parent Lenis is horizontal).
+   * axis (vertical unless the parent Lenis is horizontal). The last argument
+   * may be an options object with a per-point `onSnap` callback, fired when
+   * the scroll lands on this point.
    *
    * @example
-   * snap.add(500)         // 1D: { y: 500 } (or { x: 500 } if horizontal)
-   * snap.add(500, 800)    // 2D: { x: 500, y: 800 }
+   * snap.add(500)                     // 1D: { y: 500 } (or { x: 500 } if horizontal)
+   * snap.add(500, 800)                // 2D: { x: 500, y: 800 }
+   * snap.add(500, { onSnap })         // 1D with callback
+   * snap.add(500, 800, { onSnap })    // 2D with callback
    */
-  add(x: number, y?: number): () => void {
+  add(
+    x: number,
+    y?: number | Pick<SnapItem, 'onSnap'>,
+    options?: Pick<SnapItem, 'onSnap'>
+  ): () => void {
+    if (typeof y === 'object') {
+      options = y
+      y = undefined
+    }
     const id = uid()
     const item: SnapItem =
       y === undefined
@@ -161,6 +167,7 @@ export class Snap {
           ? { x }
           : { y: x }
         : { x, y }
+    if (options?.onSnap) item.onSnap = options.onSnap
     this.snaps.set(id, item)
     return () => this.snaps.delete(id)
   }
@@ -217,7 +224,7 @@ export class Snap {
       collected.push(snap)
     }
 
-    this.elements.forEach(({ element, rect, align }) => {
+    this.elements.forEach(({ element, rect, align, lock, onSnap }) => {
       const [xAlign, yAlign] = align
       if (xAlign === 'none' && yAlign === 'none') return
 
@@ -269,6 +276,8 @@ export class Snap {
         if (yAlign === 'none') return
         item = { y: Math.ceil(resolveY()) }
       }
+      if (lock !== undefined) item.lock = lock
+      if (onSnap) item.onSnap = onSnap
       collected.push(item)
     })
 
@@ -315,25 +324,33 @@ export class Snap {
     if (currentSnap.x !== undefined) target.x = currentSnap.x
     if (currentSnap.y !== undefined) target.y = currentSnap.y
 
+    // Instance `lock` (when set) overrides the target's own `lock`.
+    const lock = this.options.lock ?? currentSnap.lock ?? false
+
+    // Callback payloads carry the snap's data, not its function.
+    const { onSnap, ...snapData } = currentSnap
+
     // `scrollTo` runs the 2D target as one operation, firing onStart/onComplete
     // once for the whole snap — so onSnapStart/onSnapComplete fire once each.
     this.lenis.scrollTo(target, {
       duration: this.options.duration,
       easing: this.options.easing,
       lerp: this.options.lerp,
-      lock: this.options.lock,
+      lock,
       onStart: () => {
-        this.inFlight++
         this.options.onSnapStart?.({
           index: clamped,
-          ...currentSnap,
+          ...snapData,
         })
       },
       onComplete: () => {
-        this.inFlight = Math.max(0, this.inFlight - 1)
         this.options.onSnapComplete?.({
           index: clamped,
-          ...currentSnap,
+          ...snapData,
+        })
+        onSnap?.({
+          index: clamped,
+          ...snapData,
         })
       },
     })
@@ -374,9 +391,10 @@ export class Snap {
   private onSnap = (e: GestureData) => {
     if (this.isStopped) return
     if (e.event.type === 'touchmove') return
-    // `lock: true` ⇒ ignore gestures while a snap animation is still running,
-    // so a flick mid-snap can't kick off a competing snap.
-    if (this.options.lock === true && this.inFlight > 0) return
+    // Lenis locked (locked snap in flight, or a manual `lenis.lock()`) ⇒
+    // core swallows gestures, so acting on them here would act on ghost
+    // input — a flick mid-snap can't kick off a competing snap.
+    if (this.lenis.isLocked) return
 
     const snaps = this.computeSnaps()
     if (snaps.length === 0) return

@@ -1,5 +1,5 @@
 import { debounce } from './debounce'
-import type { SnapAlign } from './types'
+import type { OnSnapCallback, SnapAlign } from './types'
 
 function removeParentSticky(element: HTMLElement) {
   const position = getComputedStyle(element).position
@@ -56,6 +56,10 @@ function offsetLeft(element: HTMLElement, accumulator = 0) {
  */
 export type SnapElementOptions = {
   align?: SnapAlign | SnapAlign[]
+  /** Lock the scroll while snapping to this element. Overridden by the instance-level `lock`. */
+  lock?: boolean
+  /** Fired when the scroll lands on this element's snap point. */
+  onSnap?: OnSnapCallback
   ignoreSticky?: boolean
   ignoreTransform?: boolean
 }
@@ -77,6 +81,10 @@ export class SnapElement {
   options: SnapElementOptions
   /** [xAlign, yAlign] — both always defined. */
   align: [SnapAlign, SnapAlign]
+  /** Per-element lock, hoisted from options like `align`. */
+  lock?: boolean
+  /** Per-element snap callback, hoisted from options like `align`. */
+  onSnap?: OnSnapCallback
   // @ts-expect-error
   rect: Rect = {}
   wrapperResizeObserver: ResizeObserver
@@ -87,6 +95,8 @@ export class SnapElement {
     element: HTMLElement,
     {
       align = 'start',
+      lock,
+      onSnap,
       ignoreSticky = true,
       ignoreTransform = false,
     }: SnapElementOptions = {},
@@ -94,12 +104,14 @@ export class SnapElement {
     private wrapper: HTMLElement = document.documentElement
   ) {
     this.element = element
-    this.options = { align, ignoreSticky, ignoreTransform }
+    this.options = { align, lock, onSnap, ignoreSticky, ignoreTransform }
 
     const list = Array.isArray(align) ? align : [align]
     const xAlign = (list[0] ?? 'start') as SnapAlign
     const yAlign = (list[1] ?? list[0] ?? 'start') as SnapAlign
     this.align = [xAlign, yAlign]
+    this.lock = lock
+    this.onSnap = onSnap
 
     this.debouncedWrapperResize = debounce(this.onWrapperResize, 500)
 

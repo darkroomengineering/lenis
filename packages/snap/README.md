@@ -72,7 +72,7 @@ Element snap positions honor the CSS `scroll-margin` of each added element (outs
 - `mode`: `'closest' | 'directional'` (default: `'closest'`). How a gesture maps to a snap target.
   - `'closest'`: predict the post-gesture scroll position and snap to the nearest target within `distanceThreshold` (velocity-aware).
   - `'directional'`: gesture *direction* picks the halfspace; the snap closest to the current scroll position whose offset is within `distanceThreshold` wins (gesture *magnitude* is ignored). For viewport-sized cards, raise `distanceThreshold` to `'100%'` or higher so the adjacent snap is reachable. Pair with `lock: true` and `debounce: 0` for the tightest one-card-per-flick feel.
-- `lock`: `boolean` (default: `false`). Lock Lenis to the snap target while the animation runs — user gestures can't interrupt it, and (in `'directional'` mode) competing flicks are ignored until it settles.
+- `lock`: `boolean` (default: unset). Lock Lenis to the snap target while the animation runs — user gestures can't interrupt it, and (in `'directional'` mode) competing flicks are ignored until it settles. When set (true or false) it overrides any per-element `lock`; leave unset to let each element decide.
 - `distanceThreshold`: `string | number | [x, y]` (default: `'50%'`). Per-axis "max reach" — applied to the *predicted* position in `'closest'` mode, to the *current* position in `'directional'` mode. Percentages resolve against the viewport (per axis). Pass `Infinity` to disable the gate entirely (always snap to the nearest target).
 - `debounce`: `number` (default: 500). The debounce time for the snap.
 - `onSnapStart`: `function`. Callback when snap starts.
@@ -84,8 +84,8 @@ Element snap positions honor the CSS `scroll-margin` of each added element (outs
 
 ## Methods
 
-- `add(x: number, y?: number)`: Add a snap point. One argument anchors the active axis (`{ y: x }`, or `{ x }` when the parent Lenis is horizontal); two arguments make a 2D point `{ x, y }`.
-- `addElement(element: HTMLElement, options?: SnapElementOptions)`: Add an element to snap to. `options.align` controls where the element lands: `'start' | 'center' | 'end' | 'none'` applied to both axes, or a tuple `[xAlign, yAlign]` for per-axis alignment (e.g. `['start', 'end']`). `'none'` skips that axis (like CSS `scroll-snap-align: none`).
+- `add(x: number, y?: number, options?)`: Add a snap point. One argument anchors the active axis (`{ y: x }`, or `{ x }` when the parent Lenis is horizontal); two arguments make a 2D point `{ x, y }`. The last argument may be `{ onSnap }` — a per-point callback fired when the scroll lands on it.
+- `addElement(element: HTMLElement, options?: SnapElementOptions)`: Add an element to snap to. `options.align` controls where the element lands: `'start' | 'center' | 'end' | 'none'` applied to both axes, or a tuple `[xAlign, yAlign]` for per-axis alignment (e.g. `['start', 'end']`). `'none'` skips that axis (like CSS `scroll-snap-align: none`). `options.lock` locks the scroll while snapping to this element (overridden by the instance-level `lock`). `options.onSnap` is a per-element callback fired when the scroll lands on its snap point.
 - `addElements(elements: HTMLElement[], options?: SnapElementOptions)`: Add elements at once (same `options` as `addElement`).
 - `next()`: Go to the next snap point.
 - `previous()`: Go to the previous snap point.

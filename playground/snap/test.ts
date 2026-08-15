@@ -1,126 +1,104 @@
-// import { LoremIpsum } from 'lorem-ipsum'
 import Lenis from 'lenis'
 import Snap from 'lenis/snap'
 
-// import Snap from '../src/index.ts'
-
-// document.querySelector('#app').innerHTML = new LoremIpsum().generateParagraphs(
-//   200
-// )
+// /snap — general 'closest'-mode playground for lenis/snap.
+// (One-flick-per-slide 'directional' mode lives in /slideshow.)
+//
+// Use cases on show, one per section (explanations live in the page itself):
+//  - raw point            snap.add(500) — the dashed marker line
+//  - align variants       center (2), end (3), batch center (4+5)
+//  - align 'none'         (6) contributes no snap on y
+//  - CSS scroll-margin    (2, 3) outsets a snap area, read live each compute
+//  - CSS scroll-padding   html — insets the snapport for every element snap
+//  - per-element lock     (7) uninterruptible while snapping there
+//  - callbacks + goTo/next/previous — HUD (top right)
 
 const lenis = new Lenis({
-  // wrapper: document.querySelector('#wrapper'),
-  // content: document.querySelector('#content'),
   wheel: { lerp: 0.1 },
   touch: { smooth: true },
   drag: { enabled: true },
 })
 
-const _i = 0
-
 const snap = new Snap(lenis, {
-  // lock: true,
-  // velocityThreshold: 1.2,
   duration: 1,
-  // Directional gates by `|snap - currentScroll| ≤ distanceThreshold`. The
-  // sections in this playground are 50–250vh, so adjacent snaps can sit
-  // 2+ viewports apart — `Infinity` disables the gate so any flick
-  // reaches the next snap. Lower to e.g. `'100%'` to see the gate clip
-  // far jumps.
-  distanceThreshold: Number.POSITIVE_INFINITY,
-  mode: 'directional',
-  debounce: 500,
-  // duration: 2,
-  // easing: (t) => t,
-  // onSnapStart: (snap) => {
-  //   console.log('onSnapStart', snap)
-  // },
-  // onSnapComplete: (snap) => {
-  //   console.log('onSnapComplete', snap)
-  // },
+  onSnapStart: (item) => hudLog('start', item),
+  onSnapComplete: (item) => hudLog('complete', item),
 })
+
 declare global {
   interface Window {
     snap: Snap
   }
 }
-
 window.snap = snap
 
-const _section1 = document.querySelector<HTMLDivElement>('.section-1')!
-const section2 = document.querySelector<HTMLDivElement>('.section-2')!
-const section3 = document.querySelector<HTMLDivElement>('.section-3')!
-const section4 = document.querySelector<HTMLDivElement>('.section-4')!
-const section5 = document.querySelector<HTMLDivElement>('.section-5')!
-const section6 = document.querySelector<HTMLDivElement>('.section-6')!
+const $ = (selector: string) =>
+  document.querySelector<HTMLElement>(selector)!
 
-// snap.add(0, {
-//   index: 0,
-// })
+// 1 — raw snap point: exact scroll position, no CSS adjustments (marker line);
+// per-point onSnap fires when the scroll lands on it (watch the HUD)
+snap.add(500, { onSnap: (item) => hudLog('onSnap raw', item) })
 
-// snap.add(643, {
-//   index: 1,
-// })
-
-// snap.addElement(section1, {
-//   align: ['start', 'end'],
-// })
-
-const _unsub1 = snap.addElement(section2, {
+// 2 — center align; CSS scroll-margin-top: 48px shifts the snap up 24px;
+// per-element onSnap fires on arrival
+snap.addElement($('.section-2'), {
   align: 'center',
+  onSnap: (item) => hudLog('onSnap §2', item),
 })
 
-// console.log('unsub1', unsub1)
-// unsub1()
+// 3 — end align on y; CSS scroll-margin-bottom pushes the snap 24px further
+snap.addElement($('.section-3'), { align: ['start', 'end'] })
 
-snap.addElement(section3, {
-  align: ['start', 'end'],
-})
+// 4+5 — batch registration, center; only global scroll-padding applies
+snap.addElements(
+  document.querySelectorAll<HTMLElement>('.section-4, .section-5'),
+  { align: ['center'] }
+)
 
-// snap.addElement(section4, {
-//   align: ['center'],
-// })
+// 6 — y 'none': contributes no snap in this vertical setup
+snap.addElement($('.section-6'), { align: ['center', 'none'] })
 
-// snap.addElement(section5, {
-//   align: ['center'],
-// })
+// 7 — per-element lock: gestures can't interrupt the snap to this section
+snap.addElement($('.section-7'), { align: 'start', lock: true })
 
-const _unsubs = snap.addElements([section4, section5], {
-  align: ['center'],
-})
+// ─── HUD ────────────────────────────────────────────────────────────────
 
-// console.log('unsubs', unsubs)
-// unsubs()
+// TS-private internals, runtime-accessible — playground introspection only
+const internals = snap as unknown as {
+  computeSnaps(): { x?: number; y?: number; lock?: boolean }[]
+}
 
-// snap.addElement(section6, {
-//   align: ['end'],
-// })
+const hudState = $('#hud-state')
+let lastEvent = '—'
 
-// snap.addElement(section4, {
-//   align: ['start', 'end'], // 'start', 'center', 'end'
-// })
+function hudLog(
+  phase: string,
+  item: { index?: number; y?: number; lock?: boolean }
+) {
+  lastEvent = `${phase} → #${item.index} @ ${Math.round(item.y ?? 0)}${item.lock ? ' 🔒' : ''}`
+  render()
+}
 
-// Lenis defaults to `autoRaf: true` and runs its own RAF loop, so no manual
-// `requestAnimationFrame(raf)` is needed here. Pass `autoRaf: false` to the
-// Lenis constructor and re-add a manual loop if you want to drive ticks
-// from an external clock (e.g. Tempus).
+function render() {
+  hudState.textContent = [
+    `scroll      : ${Math.round(lenis.scroll)}`,
+    `snap index  : ${snap.currentSnapIndex ?? '—'}`,
+    `isScrolling : ${lenis.isScrolling}`,
+    `isLocked    : ${lenis.isLocked}`,
+    `last event  : ${lastEvent}`,
+  ].join('\n')
+}
+
+$('#prev').addEventListener('click', () => snap.previous())
+$('#next').addEventListener('click', () => snap.next())
+lenis.on('scroll', render)
+render()
 
 // ─── CSS interop gauntlet ───────────────────────────────────────────────
-// style.css sets scroll-padding on <html> and scroll-margin on section-2/3.
-// Recompute each expected snap Y straight from the CSS scroll snap formula
-// (margin-outset area aligned against the padding-inset snapport) using
-// independent primitives (getBoundingClientRect), then diff against what
-// Snap computed. Logs ✓/✗ on load and on resize.
-
-// y 'none' in vertical mode ⇒ section-6 must contribute no snap at all
-const snapCountBeforeNone = internals().length
-snap.addElement(section6, { align: ['center', 'none'] })
-
-function internals() {
-  return (snap as unknown as { computeSnaps(): { y?: number }[] })
-    .computeSnaps()
-    .map((s) => s.y!)
-}
+// Recompute each expected snap position straight from the CSS scroll snap
+// formula (margin-outset area aligned against the padding-inset snapport)
+// using independent primitives (getBoundingClientRect + computed styles),
+// then diff against Snap's. Logs ✓/✗ on load and on resize.
 
 function px(value: string, base: number) {
   return value.endsWith('%')
@@ -128,7 +106,7 @@ function px(value: string, base: number) {
     : Number.parseFloat(value) || 0
 }
 
-function expectedY(element: HTMLElement, align: 'center' | 'end') {
+function expectedY(element: HTMLElement, align: 'start' | 'center' | 'end') {
   const rect = element.getBoundingClientRect()
   const style = getComputedStyle(element)
   const rootStyle = getComputedStyle(document.documentElement)
@@ -139,18 +117,22 @@ function expectedY(element: HTMLElement, align: 'center' | 'end') {
     rect.bottom + window.scrollY + Number.parseFloat(style.scrollMarginBottom)
   const portStart = px(rootStyle.scrollPaddingTop, vh)
   const portEnd = vh - px(rootStyle.scrollPaddingBottom, vh)
-  return align === 'center'
-    ? (areaStart + areaEnd) / 2 - (portStart + portEnd) / 2
-    : areaEnd - portEnd
+  if (align === 'start') return areaStart - portStart
+  if (align === 'center')
+    return (areaStart + areaEnd) / 2 - (portStart + portEnd) / 2
+  return areaEnd - portEnd
 }
 
 function verifyCSSInterop() {
-  const ys = internals()
+  const snaps = internals.computeSnaps()
+  const ys = snaps.map((s) => s.y!)
   const cases: [string, number][] = [
-    ['section-2 center (scroll-margin-top)', expectedY(section2, 'center')],
-    ['section-3 end (scroll-margin-bottom)', expectedY(section3, 'end')],
-    ['section-4 center (scroll-padding only)', expectedY(section4, 'center')],
-    ['section-5 center (scroll-padding only)', expectedY(section5, 'center')],
+    ['raw snap.add(500)', 500],
+    ['section-2 center (scroll-margin-top)', expectedY($('.section-2'), 'center')],
+    ['section-3 end (scroll-margin-bottom)', expectedY($('.section-3'), 'end')],
+    ['section-4 center (scroll-padding only)', expectedY($('.section-4'), 'center')],
+    ['section-5 center (scroll-padding only)', expectedY($('.section-5'), 'center')],
+    ['section-7 start (lock)', expectedY($('.section-7'), 'start')],
   ]
   let pass = true
   for (const [name, expected] of cases) {
@@ -160,13 +142,20 @@ function verifyCSSInterop() {
       console.error(`✗ ${name}: expected ~${Math.round(expected)}, got`, ys)
     }
   }
-  if (ys.length !== snapCountBeforeNone) {
+  // section-6 (y 'none') must not contribute — exactly the 6 targets above
+  if (snaps.length !== cases.length) {
     pass = false
-    console.error('✗ align "none": section-6 leaked a snap', ys)
+    console.error(`✗ expected ${cases.length} snaps (align 'none' leaked?), got`, ys)
+  }
+  // section-7's target must carry its per-element lock
+  const lockY = expectedY($('.section-7'), 'start')
+  if (!snaps.some((s) => Math.abs((s.y ?? Infinity) - lockY) <= 1 && s.lock === true)) {
+    pass = false
+    console.error('✗ section-7 snap does not carry lock: true', snaps)
   }
   if (pass)
     console.log(
-      `✓ CSS interop: scroll-margin + scroll-padding + align 'none' (${ys.join(', ')})`
+      `✓ CSS interop: scroll-margin + scroll-padding + align 'none' + lock (${ys.join(', ')})`
     )
 }
 
