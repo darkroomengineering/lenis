@@ -63,6 +63,10 @@ One snap per flick, viewport-sized cards:
     })
 ```
 
+### CSS interop
+
+Element snap positions honor the CSS `scroll-margin` of each added element (outsets its snap area, read live) and the wrapper's CSS `scroll-padding` (insets the viewport, re-read on `resize()`) — same semantics as native scroll snap.
+
 ## Options
 
 - `mode`: `'closest' | 'directional'` (default: `'closest'`). How a gesture maps to a snap target.
@@ -81,7 +85,7 @@ One snap per flick, viewport-sized cards:
 ## Methods
 
 - `add(x: number, y?: number)`: Add a snap point. One argument anchors the active axis (`{ y: x }`, or `{ x }` when the parent Lenis is horizontal); two arguments make a 2D point `{ x, y }`.
-- `addElement(element: HTMLElement, options?: SnapElementOptions)`: Add an element to snap to. `options.align` controls where the element lands: `'start' | 'center' | 'end'` applied to both axes, or a tuple `[xAlign, yAlign]` for per-axis alignment (e.g. `['start', 'end']`).
+- `addElement(element: HTMLElement, options?: SnapElementOptions)`: Add an element to snap to. `options.align` controls where the element lands: `'start' | 'center' | 'end' | 'none'` applied to both axes, or a tuple `[xAlign, yAlign]` for per-axis alignment (e.g. `['start', 'end']`). `'none'` skips that axis (like CSS `scroll-snap-align: none`).
 - `addElements(elements: HTMLElement[], options?: SnapElementOptions)`: Add elements at once (same `options` as `addElement`).
 - `next()`: Go to the next snap point.
 - `previous()`: Go to the previous snap point.

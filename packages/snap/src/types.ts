@@ -1,6 +1,7 @@
 import type { EasingFunction } from 'lenis'
 
-export type SnapAlign = 'start' | 'center' | 'end'
+/** Mirrors CSS `scroll-snap-align` — `'none'` skips that axis. */
+export type SnapAlign = 'start' | 'center' | 'end' | 'none'
 
 /**
  * A 2D snap target. `x` and `y` are optional so 1D snaps (single axis) and 2D

@@ -7,6 +7,25 @@
   scroll-snap-align: start;
 } */
 
+/* CSS interop under test — read by lenis/snap, not the browser (no
+   scroll-snap-type): scroll-padding insets the snapport, scroll-margin
+   outsets each element's snap area. Values are asymmetric on purpose so
+   every one shifts a snap position measurably (symmetric margins cancel
+   out for 'center' alignment). */
+html {
+  scroll-padding: 80px 0 40px;
+}
+
+.section-2 {
+  /* center align: shifts its snap up by 24px */
+  scroll-margin-top: 48px;
+}
+
+.section-3 {
+  /* end align: snap lands 24px past the bottom */
+  scroll-margin-bottom: 24px;
+}
+
 /* palette from https://twitter.com/tranmautritam/status/1783420779709026785 */
 
 .section {

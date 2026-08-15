@@ -52,7 +52,7 @@ const section2 = document.querySelector<HTMLDivElement>('.section-2')!
 const section3 = document.querySelector<HTMLDivElement>('.section-3')!
 const section4 = document.querySelector<HTMLDivElement>('.section-4')!
 const section5 = document.querySelector<HTMLDivElement>('.section-5')!
-const _section6 = document.querySelector<HTMLDivElement>('.section-6')!
+const section6 = document.querySelector<HTMLDivElement>('.section-6')!
 
 // snap.add(0, {
 //   index: 0,
@@ -104,3 +104,74 @@ const _unsubs = snap.addElements([section4, section5], {
 // `requestAnimationFrame(raf)` is needed here. Pass `autoRaf: false` to the
 // Lenis constructor and re-add a manual loop if you want to drive ticks
 // from an external clock (e.g. Tempus).
+
+// ─── CSS interop gauntlet ───────────────────────────────────────────────
+// style.css sets scroll-padding on <html> and scroll-margin on section-2/3.
+// Recompute each expected snap Y straight from the CSS scroll snap formula
+// (margin-outset area aligned against the padding-inset snapport) using
+// independent primitives (getBoundingClientRect), then diff against what
+// Snap computed. Logs ✓/✗ on load and on resize.
+
+// y 'none' in vertical mode ⇒ section-6 must contribute no snap at all
+const snapCountBeforeNone = internals().length
+snap.addElement(section6, { align: ['center', 'none'] })
+
+function internals() {
+  return (snap as unknown as { computeSnaps(): { y?: number }[] })
+    .computeSnaps()
+    .map((s) => s.y!)
+}
+
+function px(value: string, base: number) {
+  return value.endsWith('%')
+    ? (Number.parseFloat(value) / 100) * base
+    : Number.parseFloat(value) || 0
+}
+
+function expectedY(element: HTMLElement, align: 'center' | 'end') {
+  const rect = element.getBoundingClientRect()
+  const style = getComputedStyle(element)
+  const rootStyle = getComputedStyle(document.documentElement)
+  const vh = window.innerHeight
+  const areaStart =
+    rect.top + window.scrollY - Number.parseFloat(style.scrollMarginTop)
+  const areaEnd =
+    rect.bottom + window.scrollY + Number.parseFloat(style.scrollMarginBottom)
+  const portStart = px(rootStyle.scrollPaddingTop, vh)
+  const portEnd = vh - px(rootStyle.scrollPaddingBottom, vh)
+  return align === 'center'
+    ? (areaStart + areaEnd) / 2 - (portStart + portEnd) / 2
+    : areaEnd - portEnd
+}
+
+function verifyCSSInterop() {
+  const ys = internals()
+  const cases: [string, number][] = [
+    ['section-2 center (scroll-margin-top)', expectedY(section2, 'center')],
+    ['section-3 end (scroll-margin-bottom)', expectedY(section3, 'end')],
+    ['section-4 center (scroll-padding only)', expectedY(section4, 'center')],
+    ['section-5 center (scroll-padding only)', expectedY(section5, 'center')],
+  ]
+  let pass = true
+  for (const [name, expected] of cases) {
+    // ±1 tolerates Math.ceil rounding in computeSnaps
+    if (!ys.some((y) => Math.abs(y - expected) <= 1)) {
+      pass = false
+      console.error(`✗ ${name}: expected ~${Math.round(expected)}, got`, ys)
+    }
+  }
+  if (ys.length !== snapCountBeforeNone) {
+    pass = false
+    console.error('✗ align "none": section-6 leaked a snap', ys)
+  }
+  if (pass)
+    console.log(
+      `✓ CSS interop: scroll-margin + scroll-padding + align 'none' (${ys.join(', ')})`
+    )
+}
+
+verifyCSSInterop()
+window.addEventListener('resize', () => {
+  snap.resize()
+  verifyCSSInterop()
+})

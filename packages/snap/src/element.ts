@@ -50,6 +50,7 @@ function offsetLeft(element: HTMLElement, accumulator = 0) {
  *   align: 'center'                  // both axes centered
  *   align: ['start']                 // both axes start (shorthand)
  *   align: ['start', 'end']          // x = start, y = end
+ *   align: ['none', 'center']        // x skipped, y centered
  *
  * Extra entries are ignored; missing entries fall back to the first.
  */

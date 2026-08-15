@@ -47,6 +47,11 @@ export class Snap {
    * clean "is snapping" gate: incremented on start, decremented on complete.
    */
   private inFlight = 0
+  /**
+   * CSS `scroll-padding` of the wrapper, resolved to px. Insets the snapport
+   * when aligning elements. Cached — recomputed on `resize()`.
+   */
+  private padding = { top: 0, right: 0, bottom: 0, left: 0 }
 
   /**
    * Wrapper dimensions. Reads directly from the parent Lenis instance which
@@ -98,7 +103,27 @@ export class Snap {
       this.options.debounce
     )
 
+    this.updatePadding()
+
     this.lenis.on('gesture', this.onSnapDebounced)
+  }
+
+  /**
+   * Read the wrapper's CSS `scroll-padding` and resolve it to px. Percentages
+   * resolve against the matching viewport dimension; `auto` → 0.
+   */
+  private updatePadding() {
+    const style = getComputedStyle(this.lenis.rootElement)
+    const resolve = (value: string, base: number) =>
+      value.endsWith('%')
+        ? (parseFloat(value) / 100) * base
+        : parseFloat(value) || 0
+    this.padding = {
+      top: resolve(style.scrollPaddingTop, this.viewport.height),
+      right: resolve(style.scrollPaddingRight, this.viewport.width),
+      bottom: resolve(style.scrollPaddingBottom, this.viewport.height),
+      left: resolve(style.scrollPaddingLeft, this.viewport.width),
+    }
   }
 
   destroy() {
@@ -192,29 +217,56 @@ export class Snap {
       collected.push(snap)
     }
 
-    this.elements.forEach(({ rect, align }) => {
+    this.elements.forEach(({ element, rect, align }) => {
       const [xAlign, yAlign] = align
+      if (xAlign === 'none' && yAlign === 'none') return
 
+      // CSS `scroll-margin` outsets the element's snap area. Read fresh here
+      // (not cached on the element) so style changes are picked up; margins
+      // are px-only per spec, so no percentage resolution is needed.
+      const style = getComputedStyle(element)
+      const margin = {
+        top: parseFloat(style.scrollMarginTop) || 0,
+        right: parseFloat(style.scrollMarginRight) || 0,
+        bottom: parseFloat(style.scrollMarginBottom) || 0,
+        left: parseFloat(style.scrollMarginLeft) || 0,
+      }
+
+      // Snap area (margin-outset rect) aligned against the snapport
+      // (padding-inset viewport) — mirrors CSS scroll snap positioning.
       const resolveX = () => {
-        if (xAlign === 'start') return rect.left
+        const areaStart = rect.left - margin.left
+        const areaEnd = rect.right + margin.right
+        const portStart = this.padding.left
+        const portEnd = this.viewport.width - this.padding.right
+        if (xAlign === 'start') return areaStart - portStart
         if (xAlign === 'center')
-          return rect.left + rect.width / 2 - this.viewport.width / 2
-        return rect.left + rect.width - this.viewport.width
+          return (areaStart + areaEnd) / 2 - (portStart + portEnd) / 2
+        return areaEnd - portEnd
       }
       const resolveY = () => {
-        if (yAlign === 'start') return rect.top
+        const areaStart = rect.top - margin.top
+        const areaEnd = rect.bottom + margin.bottom
+        const portStart = this.padding.top
+        const portEnd = this.viewport.height - this.padding.bottom
+        if (yAlign === 'start') return areaStart - portStart
         if (yAlign === 'center')
-          return rect.top + rect.height / 2 - this.viewport.height / 2
-        return rect.top + rect.height - this.viewport.height
+          return (areaStart + areaEnd) / 2 - (portStart + portEnd) / 2
+        return areaEnd - portEnd
       }
 
-      // In 1D mode only emit the active axis coord; in 2D emit both.
+      // In 1D mode only emit the active axis coord; in 2D emit both. An axis
+      // aligned 'none' contributes nothing.
       let item: SnapItem
       if (isTwoAxis) {
-        item = { x: Math.ceil(resolveX()), y: Math.ceil(resolveY()) }
+        item = {}
+        if (xAlign !== 'none') item.x = Math.ceil(resolveX())
+        if (yAlign !== 'none') item.y = Math.ceil(resolveY())
       } else if (horizontalOnly) {
+        if (xAlign === 'none') return
         item = { x: Math.ceil(resolveX()) }
       } else {
+        if (yAlign === 'none') return
         item = { y: Math.ceil(resolveY()) }
       }
       collected.push(item)
@@ -449,6 +501,7 @@ export class Snap {
   }
 
   resize() {
+    this.updatePadding()
     this.elements.forEach((element) => {
       element.onWrapperResize()
     })
