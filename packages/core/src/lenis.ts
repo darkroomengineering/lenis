@@ -1,5 +1,6 @@
 import { version } from '../../../package.json'
 import { Axis } from './axis'
+import { debounce } from './debounce'
 import { Emitter } from './emitter'
 import { GesturesHandler } from './gestures-handler'
 import { clamp } from './maths'
@@ -46,7 +47,6 @@ export class Lenis {
   /** True while the lock is held by a `scrollTo({ lock: true })` operation (vs a manual `lock()`), so `reset` can release it if the operation is interrupted mid-flight. */
   private _scrollToLocked = false
   private _preventNextNativeScrollEvent = false
-  private _resetVelocityTimeout: ReturnType<typeof setTimeout> | null = null
   private _rafId: number | null = null
   private _isDragging = false // true while a mouse drag is scrolling (drag option)
   private _isDraggingSelection = false // true while a touch is dragging an iOS selection handle
@@ -283,6 +283,12 @@ export class Lenis {
       signal,
     })
 
+    this.options.wrapper.addEventListener(
+      'scroll',
+      this.debouncedNativeScrollReset,
+      { signal }
+    )
+
     this.options.wrapper.addEventListener('scrollend', this.onScrollEnd, {
       capture: true,
       signal,
@@ -333,6 +339,8 @@ export class Lenis {
 
     this.emitter.destroy()
     this.abortController.abort()
+
+    this.debouncedNativeScrollReset.cancel()
 
     this.gesturesHandler.destroy()
     this.scrollingBox.destroy()
@@ -1085,26 +1093,19 @@ export class Lenis {
   }
 
   private onNativeScroll = () => {
-    if (this._resetVelocityTimeout !== null) {
-      clearTimeout(this._resetVelocityTimeout)
-      this._resetVelocityTimeout = null
-    }
-
     if (this._preventNextNativeScrollEvent) {
       this._preventNextNativeScrollEvent = false
       return
     }
 
-    if (this.isScrolling === false || this.isScrolling === 'native') {
+    if (this.isScrolling !== 'smooth') {
       // Sync each axis to the browser's reported scroll position. In single-axis
       // mode the inactive axis just re-reads 0 (or whatever the user dragged via a
       // visible scrollbar); in `'both'` mode both axes track native scroll.
-      let anyVelocity = false
       for (const axis of [this.x, this.y]) {
         // rotate the history slot, then write — velocity/direction derive
         axis.rawLastScroll = axis.rawScroll
         axis.rawScroll = axis.rawTargetScroll = axis.actualScroll
-        if (axis.velocity !== 0) anyVelocity = true
       }
 
       if (this.isScrollable) {
@@ -1112,18 +1113,19 @@ export class Lenis {
       }
 
       this.emit()
-
-      if (anyVelocity) {
-        this._resetVelocityTimeout = setTimeout(() => {
-          if (this.isScrolling === 'native' || this.isScrolling === false) {
-            this.reset()
-            this.emit()
-          }
-          this._resetVelocityTimeout = null
-        }, 400) // arbitrary timeout to reset the velocity
-      }
     }
   }
+
+  // Runs on every native scroll event, even ones onNativeScroll ignores:
+  // no event for 400ms → settle the whole system. Re-check the state at fire
+  // time — a lerp tail can move <1px/frame and stop producing native scroll
+  // events while a smooth scrollTo is still in flight.
+  private debouncedNativeScrollReset = debounce(() => {
+    if (this.isScrolling !== 'smooth') {
+      this.reset()
+      this.emit()
+    }
+  }, 400)
 
   private onScrollEnd = (e: Event | CustomEvent) => {
     if (!(e instanceof CustomEvent)) {
@@ -1139,10 +1141,7 @@ export class Lenis {
   }
 
   private reset() {
-    if (this._resetVelocityTimeout !== null) {
-      clearTimeout(this._resetVelocityTimeout)
-      this._resetVelocityTimeout = null
-    }
+    this.debouncedNativeScrollReset.cancel()
 
     // A reset interrupts any in-flight `scrollTo` — release its operation lock
     // (a manual `lock()` survives; only the scrollTo-scoped lock is dropped).

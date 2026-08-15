@@ -38,7 +38,7 @@ window.addEventListener('hashchange', () => {
 const lenis = new Lenis({
   wheel: {
     smooth: true,
-    lerp: 0.01
+    // lerp: 0.01
   },
   touch: {
     smooth: true,
@@ -208,6 +208,29 @@ document.getElementById('scroll-center')?.addEventListener('click', () => {
 
 document.getElementById('scroll-end')?.addEventListener('click', () => {
   lenis.scrollTo(lenis.maxScroll - 100)
+})
+
+document.getElementById('scroll-immediate')?.addEventListener('click', () => {
+  // random target so repeated clicks always produce a real jump
+  lenis.scrollTo(Math.random() * lenis.maxScroll, { immediate: true })
+})
+
+// ─── scrollend debugger — every window scrollend, tagged lenis (synthetic
+// dispatch) vs native (browser), with the gap since the previous one so
+// doubles and missing events are visible at a glance ───
+const scrollendLog = document.getElementById('scrollend-log')!
+const scrollendEntries: string[] = []
+let lastScrollendAt: number | null = null
+window.addEventListener('scrollend', (e) => {
+  const now = performance.now()
+  const source = (e as CustomEvent).detail?.lenisScrollEnd ? 'lenis ' : 'native'
+  const delta =
+    lastScrollendAt === null ? '' : ` (+${Math.round(now - lastScrollendAt)}ms)`
+  lastScrollendAt = now
+  scrollendEntries.unshift(`${source} @ ${(now / 1000).toFixed(2)}s${delta}`)
+  if (scrollendEntries.length > 10) scrollendEntries.length = 10
+  scrollendLog.textContent = ['scrollend log', ...scrollendEntries].join('\n')
+  console.log('scrollend', source.trim(), e)
 })
 
 // const stopButton = document.getElementById('stop')
