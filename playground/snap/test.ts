@@ -88,6 +88,7 @@ function hudLog(
 function render() {
   hudState.textContent = [
     `targetScroll : ${Math.round(lenis.targetScroll)}`,
+    `rawTarget    : ${Math.round(lenis.rawTargetScroll)}`,
     `snap index   : ${snap.currentSnapIndex ?? '—'}`,
     `isScrolling  : ${lenis.isScrolling}`,
     `isLocked     : ${lenis.isLocked}`,
