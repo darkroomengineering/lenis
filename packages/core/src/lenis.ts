@@ -972,7 +972,7 @@ export class Lenis {
       drag: this.options.drag,
       programmatic: this.options.programmatic,
       overscroll: this.options.overscroll,
-      nested: { smooth: false },
+      nested: { mode: 'none' }, // main instance will discover them by itself
       onGesture: this.options.onGesture,
       respectReducedMotion: this.options.respectReducedMotion,
       // page-level concerns stay on the instance the user created
