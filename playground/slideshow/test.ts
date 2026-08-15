@@ -5,13 +5,12 @@ const lenis = new Lenis()
 
 // Slideshow feel: every flick advances exactly one full-viewport slide.
 // - mode 'directional' → the gesture *direction* picks the next slide (magnitude ignored)
-// - lock: true         → ignore input while a snap is animating (no skipping ahead)
-// - debounce: 0        → snap the instant the gesture ends, no settle delay
+// - lock: true         → grab: snap fires the instant the next slide is picked
+//                        (no debounce wait) and input is ignored until it lands
 // - distanceThreshold '100%' → slides are viewport-sized, so allow a full-viewport jump
 const snap = new Snap(lenis, {
   mode: 'directional',
   lock: true,
-  debounce: 0,
   distanceThreshold: '100%',
   duration: 1,
 })

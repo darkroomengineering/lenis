@@ -39,7 +39,7 @@ export class Snap {
   elements = new Map<UID, SnapElement>()
   snaps = new Map<UID, SnapItem>()
   isStopped = false
-  onSnapDebounced: (e: GestureData) => void
+  onSnapDebounced: ((e: GestureData) => void) & { cancel: () => void }
   currentSnapIndex?: number
   /**
    * CSS `scroll-padding` of the wrapper, resolved to px. Insets the snapport
@@ -99,7 +99,7 @@ export class Snap {
 
     this.updatePadding()
 
-    this.lenis.on('gesture', this.onSnapDebounced)
+    this.lenis.on('gesture', this.onGesture)
   }
 
   /**
@@ -123,7 +123,7 @@ export class Snap {
   destroy() {
     // Debounced handlers may already be queued — isStopped makes them no-ops.
     this.isStopped = true
-    this.lenis.off('gesture', this.onSnapDebounced)
+    this.lenis.off('gesture', this.onGesture)
     this.elements.forEach((element) => {
       element.destroy()
     })
@@ -388,9 +388,10 @@ export class Snap {
     }
   }
 
-  private onSnap = (e: GestureData) => {
-    if (this.isStopped) return
-    if (e.event.type === 'touchmove') return
+  /** Common gate shared by the immediate (lock) and debounced snap paths. */
+  private shouldSnap(e: GestureData): boolean {
+    if (this.isStopped) return false
+    if (e.event.type === 'touchmove') return false
     // drag-to-scroll: snap only on release — never while the pointer is held
     // (a mid-drag pause longer than the debounce must not kick off a snap)
     if (
@@ -398,12 +399,53 @@ export class Snap {
       e.event.type !== 'pointerup' &&
       e.event.type !== 'pointercancel'
     )
-      return
+      return false
     // Lenis locked (locked snap in flight, or a manual `lenis.lock()`) ⇒
     // core swallows gestures, so acting on them here would act on ghost
     // input — a flick mid-snap can't kick off a competing snap.
-    if (this.lenis.isLocked) return
+    if (this.lenis.isLocked) return false
+    return true
+  }
 
+  /**
+   * Could any target resolve to `lock: true`? Cheap gate so the immediate
+   * path doesn't run computeSnaps (style reads) on every gesture event when
+   * nothing can grab. Instance-level `lock` overrides per-target values.
+   */
+  private get hasLocks(): boolean {
+    if (this.options.lock !== undefined) return this.options.lock
+    for (const snap of this.snaps.values()) if (snap.lock) return true
+    for (const element of this.elements.values()) if (element.lock) return true
+    return false
+  }
+
+  private onGesture = (e: GestureData) => {
+    // A `lock` target grabs (CSS `scroll-snap-stop: always`): the moment it's
+    // the pick, snap immediately — no debounce wait — and hold until landed.
+    // Always direction-gated (pickDirectional), even in 'closest' mode: a
+    // grab only makes sense for a target you're heading toward — measuring
+    // plain proximity would rubber-band you back onto the target you're
+    // scrolling away from. pickDirectional also skips the point you're
+    // resting on (<1px), so a lock target lets you leave it.
+    if (this.hasLocks && this.shouldSnap(e)) {
+      const snaps = this.computeSnaps()
+      if (snaps.length > 0) {
+        const index = this.pickDirectional(snaps, e, this.resolvedThreshold)
+        const target = index === -1 ? undefined : snaps[index]
+        if (target && (this.options.lock ?? target.lock ?? false)) {
+          // Cancel the queued debounced snap so it can't re-fire after the
+          // grab and land somewhere else.
+          this.onSnapDebounced.cancel()
+          this.goTo(index)
+          return
+        }
+      }
+    }
+    this.onSnapDebounced(e)
+  }
+
+  private onSnap = (e: GestureData) => {
+    if (!this.shouldSnap(e)) return
 
     const snaps = this.computeSnaps()
     if (snaps.length === 0) return
@@ -416,6 +458,26 @@ export class Snap {
 
     if (bestIndex === -1) return
     this.goTo(bestIndex)
+  }
+
+  /**
+   * Per-axis offset from `current` to a snap coordinate. In infinite mode
+   * positions live on a circle of length `maxScroll`, so take the shortest
+   * signed arc — targets across the seam stay reachable (scrolling up from
+   * the first section picks the last one), matching core's own shortest-path
+   * rebase in `scrollTo`. `undefined` coords contribute 0 (axis untouched).
+   */
+  private snapDelta(
+    coord: number | undefined,
+    current: number,
+    period: number
+  ): number {
+    if (coord === undefined) return 0
+    const delta = coord - current
+    if (this.lenis.options.infinite && period > 0) {
+      return delta - Math.round(delta / period) * period
+    }
+    return delta
   }
 
   /**
@@ -440,8 +502,8 @@ export class Snap {
     let bestDistance = Number.POSITIVE_INFINITY
     for (let i = 0; i < snaps.length; i++) {
       const snap = snaps[i]!
-      const dx = snap.x === undefined ? 0 : snap.x - predicted.x
-      const dy = snap.y === undefined ? 0 : snap.y - predicted.y
+      const dx = this.snapDelta(snap.x, predicted.x, this.lenis.x.maxScroll)
+      const dy = this.snapDelta(snap.y, predicted.y, this.lenis.y.maxScroll)
 
       if (snap.x !== undefined && Math.abs(dx) > threshold.x) continue
       if (snap.y !== undefined && Math.abs(dy) > threshold.y) continue
@@ -492,8 +554,8 @@ export class Snap {
     let bestDistance = Number.POSITIVE_INFINITY
     for (let i = 0; i < snaps.length; i++) {
       const snap = snaps[i]!
-      const dx = snap.x === undefined ? 0 : snap.x - current.x
-      const dy = snap.y === undefined ? 0 : snap.y - current.y
+      const dx = this.snapDelta(snap.x, current.x, this.lenis.x.maxScroll)
+      const dy = this.snapDelta(snap.y, current.y, this.lenis.y.maxScroll)
 
       // Skip the snap we're already on (within sub-pixel rounding).
       if (Math.abs(dx) < 1 && Math.abs(dy) < 1) continue

@@ -95,10 +95,11 @@ import Layout from '../layouts/Layout.astro'
         <div class="inner">
           <h2>7 · lock: true</h2>
           <p>
-            Per-element lock — while snapping to this section, gestures are
-            ignored until it settles (watch isLocked in the HUD). The
-            instance-level lock is unset; setting it (true or false) would
-            override every element's own value.
+            Per-element lock — this section grabs, like CSS scroll-snap-stop:
+            always: the instant it's picked in your direction of travel the
+            snap fires (no debounce wait) and gestures are ignored until it
+            lands (watch isLocked in the HUD). Other sections wait out the
+            debounce; this one grabs you mid-gesture.
           </p>
         </div>
       </section>

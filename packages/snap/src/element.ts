@@ -56,7 +56,7 @@ function offsetLeft(element: HTMLElement, accumulator = 0) {
  */
 export type SnapElementOptions = {
   align?: SnapAlign | SnapAlign[]
-  /** Lock the scroll while snapping to this element. Overridden by the instance-level `lock`. */
+  /** Grab: snap here the instant this element is picked in the gesture's direction (no debounce wait) and hold until landed. Overridden by the instance-level `lock`. */
   lock?: boolean
   /** Fired when the scroll lands on this element's snap point. */
   onSnap?: OnSnapCallback

@@ -10,7 +10,7 @@ import Snap from 'lenis/snap'
 //  - align 'none'         (6) contributes no snap on y
 //  - CSS scroll-margin    (2, 3) outsets a snap area, read live each compute
 //  - CSS scroll-padding   html — insets the snapport for every element snap
-//  - per-element lock     (7) uninterruptible while snapping there
+//  - per-element lock     (7) grabs: snaps the instant it's picked, holds until landed
 //  - callbacks + goTo/next/previous — HUD (top right)
 
 const lenis = new Lenis({
@@ -63,7 +63,8 @@ snap.addElements(
 // 6 — y 'none': contributes no snap in this vertical setup
 snap.addElement($('.section-6'), { align: ['center', 'none'] })
 
-// 7 — per-element lock: gestures can't interrupt the snap to this section
+// 7 — per-element lock: grabs — snaps here the instant this section is picked
+// in the gesture's direction (no debounce wait), uninterruptible until landed
 snap.addElement($('.section-7'), { align: 'start', lock: true })
 
 // ─── HUD ────────────────────────────────────────────────────────────────

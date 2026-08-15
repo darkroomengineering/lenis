@@ -12,8 +12,11 @@ export type SnapItem = {
   x?: number
   y?: number
   /**
-   * Per-target lock (from `addElement`'s `lock` option). Ignored when the
-   * instance-level `lock` is set — instance overrides element.
+   * Per-target grab (from `addElement`'s `lock` option): the moment this
+   * target is picked in the gesture's direction of travel, snap to it
+   * immediately (no debounce wait) and hold the scroll until it lands —
+   * like CSS `scroll-snap-stop: always`. Ignored when the instance-level
+   * `lock` is set — instance overrides element.
    */
   lock?: boolean
   /**
@@ -27,9 +30,12 @@ export type OnSnapCallback = (item: SnapItem & { index?: number }) => void
 
 export type SnapOptions = {
   /**
-   * @description Whether to lock the scroll on the snap. When set (true or
-   * false), overrides any per-element `lock`; leave unset to let each
-   * element decide (elements without a `lock` default to false).
+   * @description Locked targets grab: the moment one is picked in the
+   * gesture's direction of travel, the snap fires immediately (no debounce
+   * wait) and holds the scroll until it lands — like CSS `scroll-snap-stop:
+   * always`. `true` makes every target grab; when set (true or false) it
+   * overrides any per-element `lock`; leave unset to let each element
+   * decide (elements without a `lock` default to false).
    * @default undefined
    */
   lock?: boolean
@@ -41,8 +47,8 @@ export type SnapOptions = {
    *   of the resting position.
    * - `'directional'` — the gesture *direction* picks the halfspace; we then
    *   pick the snap closest to the resting position whose per-axis offset
-   *   is within `distanceThreshold`. Pair with `lock: true` and
-   *   `debounce: 0` for the tightest one-card-per-flick feel.
+   *   is within `distanceThreshold`. Pair with `lock: true` for the
+   *   tightest one-card-per-flick feel.
    *
    * @default 'directional'
    */
