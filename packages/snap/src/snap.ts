@@ -314,7 +314,12 @@ export class Snap {
     const snaps = this.computeSnaps()
     if (snaps.length === 0) return
 
-    const clamped = Math.max(0, Math.min(index, snaps.length - 1))
+    // Infinite mode has no endpoints — wrap the index so `next()` from the
+    // last target reaches the first across the seam (and vice versa); core's
+    // scrollTo then animates the short way over it. Otherwise clamp.
+    const clamped = this.lenis.options.infinite
+      ? ((index % snaps.length) + snaps.length) % snaps.length
+      : Math.max(0, Math.min(index, snaps.length - 1))
     this.currentSnapIndex = clamped
 
     const currentSnap = snaps[clamped]
