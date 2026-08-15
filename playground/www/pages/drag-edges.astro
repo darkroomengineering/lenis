@@ -1,0 +1,149 @@
+---
+import '~/drag-edges/style.css'
+import Layout from '../layouts/Layout.astro'
+---
+
+<Layout title="Lenis Drag Edges">
+  <main>
+    <section>
+      <h1>1. Form controls &amp; selection</h1>
+      <p class="expect">
+        Expect: dragging inside a field selects its text / moves its control —
+        the page must not scroll. Dragging the page elsewhere must not activate
+        links or buttons on release.
+      </p>
+      <div class="cards">
+        <div class="card">
+          <label>text input — drag to select</label>
+          <input type="text" value="drag across this text to select it" />
+        </div>
+        <div class="card">
+          <label>textarea — drag-select + resize corner</label>
+          <textarea>drag to select, and drag the resize corner</textarea>
+        </div>
+        <div class="card">
+          <label>range — drag the thumb</label>
+          <input type="range" min="0" max="100" />
+        </div>
+        <div class="card">
+          <label>select — open and pick</label>
+          <select>
+            <option>option a</option>
+            <option>option b</option>
+            <option>option c</option>
+          </select>
+        </div>
+        <div class="card">
+          <label>contenteditable — drag to select</label>
+          <div contenteditable="true">editable text, drag to select me</div>
+        </div>
+        <div class="card">
+          <label>click suppression</label>
+          <a href="/core">link — click navigates, drag must not</a>
+          <button onclick="this.textContent = 'clicked!'">
+            button — click fires, drag must not
+          </button>
+        </div>
+        <div class="card">
+          <label>video with controls — drag the scrubber</label>
+          <video
+            controls
+            muted
+            playsinline
+            preload="metadata"
+            src="https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4"></video>
+        </div>
+        <div class="card">
+          <label>video without controls — page drag must work here</label>
+          <video
+            muted
+            playsinline
+            loop
+            autoplay
+            preload="metadata"
+            src="https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4"></video>
+        </div>
+        <div class="card">
+          <label>audio — drag the scrubber</label>
+          <audio
+            controls
+            preload="metadata"
+            src="https://interactive-examples.mdn.mozilla.net/media/cc0-audio/t-rex-roar.mp3"></audio>
+        </div>
+        <div class="card">
+          <label>draggable — native drag-and-drop must start</label>
+          <div class="draggable-chip" draggable="true">
+            drag me — expect a drag ghost, not a page scroll
+          </div>
+        </div>
+        <div class="card">
+          <label>input inside shadow DOM — drag to select</label>
+          <div id="shadow-host"></div>
+        </div>
+        <div class="card">
+          <label>plain text</label>
+          <p>
+            page-level selection is the documented tradeoff: with drag enabled,
+            dragging here scrolls instead of selecting.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h1>2. Gesture latch (prevent / nested)</h1>
+      <p class="expect">
+        Expect: a drag keeps the target it started on. Start inside a box and
+        leave it — the page must not start scrolling mid-gesture. Start on the
+        background and cross a box — the page drag must not freeze.
+      </p>
+      <div class="cards">
+        <div class="scrollbox" data-lenis-prevent>
+          <div class="filler">
+            data-lenis-prevent — native scroller. Start a drag in here, then
+            move the pointer outside.
+          </div>
+        </div>
+        <div class="scrollbox">
+          <div class="filler">
+            nested scroller (no prevent). Start a page drag on the background,
+            then cross over this box.
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h1>3. Iframe crossing</h1>
+      <p class="expect">
+        Expect: a page drag crossing the iframe keeps tracking (needs pointer
+        capture). Also try releasing the button while over the iframe — then
+        check the HUD for STUCK.
+      </p>
+      <iframe
+        title="drag-edges iframe"
+        srcdoc="<body style='font-family: monospace; padding: 1rem;'><h2>iframe</h2><p>pointer events end here — without capture, a drag freezes while over this area.</p></body>"
+      ></iframe>
+    </section>
+
+    <section>
+      <h1>4. Release outside the window</h1>
+      <p class="expect">
+        Expect: drag toward the browser chrome / outside the OS window and
+        release there, then move the mouse back — the HUD must not show STUCK
+        (a stuck state means the missed pointerup left a phantom drag).
+      </p>
+    </section>
+
+    <section>
+      <h1>5. Pointer types</h1>
+      <p class="expect">
+        Expect (decision pending): a pen/stylus drag should behave like the
+        mouse. The HUD shows the last pointerType — with a pen it currently
+        reads "pen" and drag does nothing (only "mouse" is accepted).
+      </p>
+    </section>
+  </main>
+  <pre id="hud"></pre>
+  <script src="../../drag-edges/test.ts"></script>
+</Layout>
