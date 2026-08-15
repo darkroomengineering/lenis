@@ -32,7 +32,7 @@
   ],
   "scripts": {
     "build": "tsdown",
-    "dev": "bun run --parallel dev:build dev:playground",
+    "dev": "node ./scripts/kill-ports.mjs && bun run --parallel dev:build dev:playground",
     "dev:build": "tsdown --watch --no-clean",
     "dev:playground": "bun --filter playground dev",
     "dev:nuxt": "bun --filter playground-nuxt dev",
