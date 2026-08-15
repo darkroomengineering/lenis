@@ -203,6 +203,18 @@ export class GesturesHandler {
     // touch pointers already flow through the touch events above
     if (event.pointerType !== 'mouse' || event.button !== 0) return
 
+    // a press on a text/form control (drag = select text, move slider), a
+    // media scrubber, an app-level draggable or a preserved element must not
+    // start a drag-to-scroll. composedPath()[0] instead of event.target so
+    // controls inside shadow roots are seen, not their host.
+    const target = event.composedPath()[0] as Element | undefined
+    if (
+      target?.closest?.(
+        'input, textarea, select, [contenteditable]:not([contenteditable="false"]), audio, video[controls], [draggable="true"], [data-lenis-prevent]'
+      )
+    )
+      return
+
     this.isPointerDown = true
     this.isDragging = false
     this.dragOrigin = { x: event.clientX, y: event.clientY }
