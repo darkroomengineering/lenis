@@ -201,7 +201,7 @@ export class Lenis {
       drag: {
         enabled: false,
         multiplier: 1,
-        inertia: 2,
+        inertia: 1.7,
         lerp: 0.1,
         ...drag, // overwrite default values
       },
