@@ -246,7 +246,6 @@ Scroll state properties (`scroll`, `velocity`, `direction`, …) read the *activ
 | `isSmooth` (getter)     | `boolean`         | Whether `isScrolling` is `smooth`                                          |
 | `isDragging` (getter)   | `boolean`         | Whether a mouse drag is currently scrolling (`drag` option), mirrored as the `lenis-dragging` class |
 | `isTouch` / `isWheel` / `isDrag` | `boolean` | Whether the last gesture was a touch / a wheel / a mouse drag              |
-| `lastVelocity`          | `number`          | Last scroll velocity                                                       |
 | `options`               | `object`          | Instance options                                                           |
 | `prefersReducedMotion` (getter) | `boolean` | Whether the user prefers reduced motion and Lenis is honoring it           |
 | `progress` (getter)     | `number`          | Scroll progress from `0` to `1`                                            |
@@ -258,7 +257,7 @@ Scroll state properties (`scroll`, `velocity`, `direction`, …) read the *activ
 | `time`                  | `number`          | Time elapsed since instance creation                                       |
 | `userData` (getter)     | `object`          | `userData` of the in-flight `scrollTo`, forwarded through `scroll` events  |
 | `velocity`              | `number`          | Current scroll velocity                                                    |
-| `x` / `y`               | `Axis`            | Per-axis state — each exposes `scroll`, `targetScroll`, `rawScroll`, `rawTargetScroll`, `actualScroll`, `velocity`, `lastVelocity`, `direction`, `progress`, `maxScroll` and `isScrollable` |
+| `x` / `y`               | `Axis`            | Per-axis state — each exposes `scroll`, `targetScroll`, `rawScroll`, `rawTargetScroll`, `actualScroll`, `velocity`, `direction`, `progress`, `maxScroll` and `isScrollable` |
 
 <br/>
 
@@ -309,7 +308,7 @@ lenis.x.maxScroll     // maximum horizontal scroll value
 lenis.x.isScrollable  // whether the x axis can currently scroll
 ```
 
-Each axis exposes `scroll`, `targetScroll`, `rawScroll`, `rawTargetScroll`, `velocity`, `lastVelocity`, `direction`, `progress`, `maxScroll` and `isScrollable`. `scroll` and `targetScroll` are wrapped to `maxScroll` in infinite mode; the `raw*` pair is the unwrapped animation-space values.
+Each axis exposes `scroll`, `targetScroll`, `rawScroll`, `rawTargetScroll`, `velocity`, `direction`, `progress`, `maxScroll` and `isScrollable`. `scroll` and `targetScroll` are wrapped to `maxScroll` in infinite mode; the `raw*` pair is the unwrapped animation-space values. `velocity` and `direction` are derived (delta since last update; sign of remaining travel), so they can never go stale — `lastVelocity` is gone (v1/early-v2).
 
 ### Top-level properties are single-axis shorthands
 

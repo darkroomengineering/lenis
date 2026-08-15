@@ -22,12 +22,13 @@ export class Axis {
    * consumers read {@link targetScroll} instead.
    */
   rawTargetScroll = 0
-  /** Current scroll velocity (delta since the last update) */
-  velocity = 0
-  /** Scroll velocity from the previous update */
-  lastVelocity = 0
-  /** Scroll direction: `1` forward, `-1` backward, `0` idle */
-  direction: 1 | -1 | 0 = 0
+  /**
+   * Previous update's `rawScroll` — the history slot behind the derived
+   * {@link velocity}. Update sites rotate it before writing `rawScroll`;
+   * teleport writes (reset, immediate scrollTo, infinite rebase) sync it
+   * instead, so a jump never registers as motion.
+   */
+  rawLastScroll = 0
 
   /** @internal the animation driving this axis */
   readonly animate = new Animate()
@@ -47,8 +48,10 @@ export class Axis {
    * Reset all scroll state to the browser's current scroll position and stop the animation.
    */
   reset() {
-    this.rawScroll = this.rawTargetScroll = this.actualScroll
-    this.lastVelocity = this.velocity = 0
+    this.rawScroll =
+      this.rawTargetScroll =
+      this.rawLastScroll =
+        this.actualScroll
     this.animate.stop()
   }
 
@@ -119,6 +122,24 @@ export class Axis {
     return this.lenis.options.infinite
       ? modulo(this.rawTargetScroll, this.maxScroll)
       : this.rawTargetScroll
+  }
+
+  /**
+   * Scroll delta since the last update — derived:
+   * `rawScroll - rawLastScroll`. Raw space, so it stays seam-free in
+   * infinite mode; zero at rest and after teleports.
+   */
+  get velocity() {
+    return this.rawScroll - this.rawLastScroll
+  }
+
+  /**
+   * Scroll direction: `1` forward, `-1` backward, `0` idle. Derived from
+   * actual motion (the {@link velocity} sign), so it only flips once the
+   * scroll really reverses — not the frame an opposing gesture retargets it.
+   */
+  get direction(): 1 | -1 | 0 {
+    return Math.sign(this.velocity) as 1 | -1 | 0
   }
 
   /** The maximum scroll value for this axis. */

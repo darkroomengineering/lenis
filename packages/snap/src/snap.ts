@@ -404,7 +404,6 @@ export class Snap {
     // input — a flick mid-snap can't kick off a competing snap.
     if (this.lenis.isLocked) return
 
-    console.log("this.onSnap")
 
     const snaps = this.computeSnaps()
     if (snaps.length === 0) return
@@ -469,8 +468,12 @@ export class Snap {
     e: GestureData,
     threshold: { x: number; y: number }
   ): number {
-    const dirX = Math.sign(e.deltaX) as -1 | 0 | 1
-    const dirY = Math.sign(e.deltaY) as -1 | 0 | 1
+    // Direction comes from the scroll's actual motion (lenis.direction =
+    // velocity sign — immune to trackpad recoil deltas and seam-free in
+    // infinite mode), falling back to the last gesture's sign once the
+    // animation has settled (velocity = 0).
+    const dirX = (this.lenis.x.direction || Math.sign(e.deltaX)) as -1 | 0 | 1
+    const dirY = (this.lenis.y.direction || Math.sign(e.deltaY)) as -1 | 0 | 1
     if (dirX === 0 && dirY === 0) return -1
 
     // With `gestureOrientation: 'both'`, a gesture on either axis can drive the

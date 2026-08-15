@@ -270,8 +270,11 @@ export class Lenis {
     // Setup class name
     this.updateClassName()
 
-    // Set the initial scroll value for all scroll information
-    this.targetScroll = this.rawScroll = this.actualScroll
+    // Set the initial scroll value for all scroll information (both axes,
+    // history slot included — a page restored mid-scroll must boot with
+    // zero velocity)
+    this.x.reset()
+    this.y.reset()
 
     // Add event listeners (all removed at once via abortController in destroy)
     const signal = this.abortController.signal
@@ -511,13 +514,25 @@ export class Lenis {
   }
 
   /**
-   * The animated scroll value (active axis — see {@link targetScroll}).
+   * The raw animated scroll value, unwrapped in infinite mode (active axis —
+   * see {@link scroll} for the wrapped view).
    */
   get rawScroll() {
     return this.activeAxis.rawScroll
   }
   set rawScroll(value: number) {
     this.activeAxis.rawScroll = value
+  }
+
+  /**
+   * The raw target scroll value, unwrapped in infinite mode (active axis —
+   * see {@link targetScroll} for the wrapped view).
+   */
+  get rawTargetScroll() {
+    return this.activeAxis.rawTargetScroll
+  }
+  set rawTargetScroll(value: number) {
+    this.activeAxis.rawTargetScroll = value
   }
 
   /**
@@ -529,34 +544,20 @@ export class Lenis {
 
   /**
    * The current velocity of the scroll (active axis — see {@link targetScroll}).
-   * In 2D, each axis has its own velocity — `lenis.x.velocity` / `lenis.y.velocity`.
+   * Derived per update from the raw scroll history. In 2D, each axis has its
+   * own velocity — `lenis.x.velocity` / `lenis.y.velocity`.
    */
   get velocity() {
     return this.activeAxis.velocity
   }
-  set velocity(value: number) {
-    this.activeAxis.velocity = value
-  }
-
-  /**
-   * The last velocity of the scroll
-   */
-  get lastVelocity() {
-    return this.activeAxis.lastVelocity
-  }
-  set lastVelocity(value: number) {
-    this.activeAxis.lastVelocity = value
-  }
 
   /**
    * The scroll direction on the active axis: `1` forward, `-1` backward, `0` idle.
+   * Derived from actual motion (the velocity sign).
    * Per-axis: `lenis.x.direction` / `lenis.y.direction`.
    */
   get direction() {
     return this.activeAxis.direction
-  }
-  set direction(value: 1 | -1 | 0) {
-    this.activeAxis.direction = value
   }
 
   /**
@@ -1100,11 +1101,9 @@ export class Lenis {
       // visible scrollbar); in `'both'` mode both axes track native scroll.
       let anyVelocity = false
       for (const axis of [this.x, this.y]) {
-        const lastScroll = axis.rawScroll
+        // rotate the history slot, then write — velocity/direction derive
+        axis.rawLastScroll = axis.rawScroll
         axis.rawScroll = axis.rawTargetScroll = axis.actualScroll
-        axis.lastVelocity = axis.velocity
-        axis.velocity = axis.rawScroll - lastScroll
-        axis.direction = Math.sign(axis.velocity) as 1 | -1 | 0
         if (axis.velocity !== 0) anyVelocity = true
       }
 
@@ -1404,7 +1403,8 @@ export class Lenis {
 
     if (this.options.infinite) {
       if (programmatic) {
-        axis.rawTargetScroll = axis.rawScroll = axis.scroll
+        // teleport, not motion — sync the velocity history alongside
+        axis.rawTargetScroll = axis.rawScroll = axis.rawLastScroll = axis.scroll
 
         const distance = target - axis.rawScroll
 
@@ -1462,11 +1462,8 @@ export class Lenis {
       onUpdate: (value: number, completed: boolean) => {
         this.isScrolling = 'smooth'
 
-        // updated
-        axis.lastVelocity = axis.velocity
-        axis.velocity = value - axis.rawScroll
-        axis.direction = Math.sign(axis.velocity) as 1 | -1 | 0
-
+        // rotate the history slot, then write — velocity/direction derive
+        axis.rawLastScroll = axis.rawScroll
         axis.rawScroll = value
         // DOM write is consolidated into a single `wrapper.scrollTo` per frame in `Lenis.raf`.
 

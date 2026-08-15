@@ -35,6 +35,21 @@
   top: 4rem;
 }
 
+#hud {
+  position: fixed;
+  top: 4rem;
+  right: 16px;
+  z-index: 10;
+  margin: 0;
+  padding: 12px;
+  border-radius: 8px;
+  background: rgba(17, 17, 17, 0.85);
+  color: #fff;
+  font-family: monospace;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
 /* html {
   overflow: hidden;
   height: 100%;

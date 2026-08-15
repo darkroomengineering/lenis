@@ -38,6 +38,7 @@ window.addEventListener('hashchange', () => {
 const lenis = new Lenis({
   wheel: {
     smooth: true,
+    lerp: 0.01
   },
   touch: {
     smooth: true,
@@ -153,6 +154,27 @@ declare global {
 // }
 
 // requestAnimationFrame(raf)
+
+// ─── HUD — live scroll state, rendered on its own rAF so no state change
+// (wheel-updated targets, settle resets, native scrolls) is ever missed ───
+const hud = document.getElementById('hud')!
+function renderHud() {
+  const round = (value: number) => Math.round(value * 100) / 100
+  hud.textContent = [
+    `scroll          : ${round(lenis.scroll)}`,
+    `targetScroll    : ${round(lenis.targetScroll)}`,
+    `rawScroll       : ${round(lenis.rawScroll)}`,
+    `rawTargetScroll : ${round(lenis.rawTargetScroll)}`,
+    `actualScroll    : ${round(lenis.actualScroll)}`,
+    `velocity        : ${round(lenis.velocity)}`,
+    `direction       : ${lenis.direction}`,
+    `progress        : ${round(lenis.progress)}`,
+    `isScrolling     : ${lenis.isScrolling}`,
+    `isLocked        : ${lenis.isLocked}`,
+  ].join('\n')
+  requestAnimationFrame(renderHud)
+}
+requestAnimationFrame(renderHud)
 
 document.getElementById('stop')?.addEventListener('click', () => {
   // document.documentElement.style.overflow = 'hidden'
