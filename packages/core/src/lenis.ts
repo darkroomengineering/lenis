@@ -1282,12 +1282,19 @@ export class Lenis {
         ? Number.parseFloat(targetStyle.scrollMarginLeft)
         : Number.parseFloat(targetStyle.scrollMarginTop)
 
-    // Account for scroll-padding CSS property on the scroll container
+    // Account for scroll-padding CSS property on the scroll container.
+    // Percentages resolve against the scrollport dimension on the axis.
     const containerStyle = getComputedStyle(this.rootElement)
-    const scrollPadding =
+    const scrollPaddingRaw =
       axis.axis === 'x'
-        ? Number.parseFloat(containerStyle.scrollPaddingLeft)
-        : Number.parseFloat(containerStyle.scrollPaddingTop)
+        ? containerStyle.scrollPaddingLeft
+        : containerStyle.scrollPaddingTop
+    const scrollPadding = scrollPaddingRaw.endsWith('%')
+      ? (Number.parseFloat(scrollPaddingRaw) / 100) *
+        ((axis.axis === 'x'
+          ? this.scrollingBox.width
+          : this.scrollingBox.height) ?? 0)
+      : Number.parseFloat(scrollPaddingRaw)
 
     return (
       (axis.axis === 'x' ? rect.left : rect.top) +
