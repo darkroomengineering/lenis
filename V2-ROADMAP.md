@@ -92,6 +92,7 @@ new Lenis({
 | `virtualScroll`, `prevent` | `onGesture` | Unified into a single transform/cancel callback |
 | `naiveDimensions` | `dimensions` | "Naive" was a CS term; the new option is a richer config object with a smart default |
 | `autoResize` | `dimensions.autoResize` | Co-located with the dimensions concern it belongs to |
+| `duration` / `easing` (top-level) | `programmatic.duration` / `programmatic.easing` | Each input group (`wheel`, `touch`, `drag`, `programmatic`) owns its animation config; `programmatic` is the default for `scrollTo` and anchors, per-call options still override |
 
 ### ✅ Properties rename
 
@@ -100,9 +101,9 @@ new Lenis({
 | `isStopped` | `isScrollable` | MDN semantics: a scroll container with overflowing content; **polarity inverted** |
 | `limit` | `maxScroll` | Mirrors `scrollTopMax` / `scrollLeftMax` |
 | `dimensions` | `scrollingBox` | `Dimensions` class rebuilt as `ScrollingBox` around the platform's scroll vocabulary |
-| `isTouching` | `isTouch` | Mirrors the gesture `type`; companion `isWheel` added — both reflect the last gesture (`undefined` after `reset()`) |
+| `isTouching` | `isTouch` | Mirrors the gesture `type`; companions `isWheel` / `isDrag` added — all reflect the last gesture (`undefined` after `reset()`); `isDragging` tracks an in-progress drag |
 
-`isScrolling` (`'native' \| 'smooth' \| false`) stays as-is — no three-way `isWheelScrolling` / `isTouchScrolling` / `isProgrammaticScrolling` split. Callers compose: `isScrolling && isTouch`, `isScrolling && isWheel`, programmatic ≈ `isScrolling === 'smooth' && !isTouch && !isWheel`.
+`isScrolling` (`'native' \| 'smooth' \| false`) stays as-is — no three-way `isWheelScrolling` / `isTouchScrolling` / `isProgrammaticScrolling` split. Callers compose: `isScrolling && isTouch`, `isScrolling && isWheel`, programmatic ≈ `isScrolling === 'smooth' && !isTouch && !isWheel && !isDrag`.
 
 ### ✅ Remove `start()` / `stop()`, `autoToggle`, and `scrollTo`'s `lock` / `force`
 
@@ -143,7 +144,7 @@ The private `hasNestedScroll` method that detected whether a composed-path eleme
 
 Renamed (`lenis.dimensions` → `lenis.scrollingBox`) and rebuilt around the platform's scroll vocabulary. It now owns all scrollability state: `maxScroll` (was `limit`), `isScrollContainer` (with root overflow propagation per the CSS spec), `isOverflowing`, `isScrollable`, and an `'overflow style changed'` event driven by `transition-behavior: allow-discrete` transitions (from the recommended CSS), with resize as the fallback refresh. `Axis` / `Lenis` dropped their duplicate detection (`checkOverflow`, `cssOverflow`); gesture gating reads the cached `ScrollingBox` state — nothing touches `getComputedStyle` on the hot path — and boundary checks use MDN's 1px "totally scrolled" threshold so fractional scroll positions (zoom, DPR, Safari overscroll) resolve correctly.
 
-It still accepts the `DimensionsOptions` bag (`{ mode, autoResize, debounce }`) and applies its own defaults, including the smart `mode = content ? 'observe' : 'read'` default. `lenis.ts` just forwards the user's config without pre-baking values.
+It still accepts the `DimensionsOptions` bag (`{ mode, autoResize, debounce }`) and applies its own defaults, including the smart `mode = content ? 'observe' : 'read'` default. `lenis.ts` just forwards the user's config without pre-baking values. Exposes a typed `.on()` (like `Lenis` and `GesturesHandler`) instead of a public `.events` emitter.
 
 ---
 
@@ -196,14 +197,14 @@ Current state: **core mechanics are implemented and verified working.** The `Axi
 Remaining before stable:
 
 - ⏳ Real touch / trackpad-inertia testing on devices (only wheel + programmatic verified so far)
-- ⏳ Resolve the top-level `duration` / `easing` scope question (see [Open design questions](#open-design-questions))
+- ✅ Top-level `duration` / `easing` scope question — resolved by the `programmatic` config group (see [Resolved design questions](#resolved-design-questions))
 - ⏳ Polished examples (the two-axis playground is still a raw test bed)
 
 ### 🚧 Drag-to-scroll
 
-Mouse drag as a first-class input (`drag: { enabled: true }`) — grab the page and fling it, like a touch surface. Lives in core: `GesturesHandler` emits `type: 'drag'` gestures into the same pipeline as wheel/touch, so axis routing, nested-scroll/`data-lenis-prevent`, release inertia (touch fling math) and reduced-motion all apply for free. 4px threshold keeps clicks and text selection native; the trailing click after a real drag is swallowed. Completes the multi-axis story — a mouse can't scroll a 2D canvas without it. `playground/drag` exercises it; needs cross-browser validation.
+Mouse drag as a first-class input — grab the page and fling it, like a touch surface. Lives in core: `GesturesHandler` emits `type: 'drag'` gestures into the same pipeline as wheel/touch, so axis routing, nested-scroll/`data-lenis-prevent`, release inertia (touch fling math) and reduced-motion all apply for free. Config joins the other input groups: `drag: { enabled, multiplier, inertia, lerp, duration, easing }` (default disabled), with `lenis.isDrag` / `lenis.isDragging` state and cursor/selection styling via the `lenis-draggable` / `lenis-dragging` classes in `lenis.css`. 4px threshold keeps clicks and text selection native; the trailing click after a real drag is swallowed. Completes the multi-axis story — a mouse can't scroll a 2D canvas without it. `playground/drag` exercises it (and `playground/snap` runs the grab → fling → snap chain); `playground/drag-edges` is the readiness gauntlet — form controls & selection, gesture latch, iframe crossing, outside-window release, pointer types — and doubles as the cross-browser validation script.
 
-### 🚧 Nested smooth scroll (recursive adoption)
+### ✅ Nested smooth scroll (recursive adoption)
 
 `nested: { mode: 'smooth', filter }` (opt-in at launch) — a gesture landing on a nested scrollable element creates (and caches) a Lenis instance on it and hands the in-flight gesture over, so every scrollable surface inherits the feel from the very first wheel tick; recursion falls out naturally since children run the same config. Children are advanced by the parent's raf (no own loop — the leak-prevention backbone) and swept on disconnect. Replaces `allowNestedScroll` (`true` → the default `'native'`; `false` → `{ mode: 'none' }`). **Full design + step-by-step plan: [`NESTED-PLAN.md`](./NESTED-PLAN.md).**
 
@@ -250,6 +251,10 @@ Warn in development mode when `infinite` is used on `html`/`body` (causes flicke
 ### Examples
 
 - ✅ `playground/touch` — native vs Lenis side-by-side for debugging `touch.smooth` on real devices
+- ✅ `playground/drag` — 2D grid demo for drag-to-scroll
+- ✅ `playground/drag-edges` — drag readiness gauntlet: form controls & selection, prevent/nested gesture latch, iframe crossing, outside-window release (STUCK detector HUD), pointer types
+- ✅ `playground/lock` — `lock()` / `unlock()` behavior
+- ✅ `playground/nested-smooth` — recursive adoption (`nested: { mode: 'smooth' }`)
 - 🚧 `playground/two-axis` — 5×5 viewport-sized grid for 2D scroll testing (corner cells colour-coded); functional test bed, not yet a polished example
 - 🚧 `playground/vertical` + `playground/horizontal` — scenario validation twins: same-axis nested, cross-axis nested, `data-lenis-prevent`, anchors, `stopInertiaOnNavigate`
 - ⏳ Framework integrations
@@ -261,8 +266,10 @@ Warn in development mode when `infinite` is used on `html`/`body` (causes flicke
 - 🚧 **Stacked cards** — 100vh `sticky top: 0` wrappers, 4/3 cards, snap to each (`playground/sticky-cards` has the mechanics; needs the visual pass). Reference: [stackhealth.darkroom.engineering](https://stackhealth.darkroom.engineering/)
 - ⏳ **Autoscroll (cinema)** — auto-advancing reel, pauses on interaction. Reference: [mhvkj4-3000.csb.app](https://mhvkj4-3000.csb.app/)
 - 🚧 **Slideshow** — snap-centered slides with proportional custom scrollbar (`playground/slideshow` has the mechanics; needs the visual pass)
-- ⏳ **Touch setup** — 100vh wrapper + scroll on a body child, the mobile-app-like layout (`touch.smooth` on a non-window wrapper)
+- ⏳ **Touch setup** — `html, body { overflow: hidden }` + inner `100svh overflow: auto` wrapper, the mobile-app-like layout (`touch.smooth` on a non-window wrapper). Bonus: freezes the mobile browser chrome, so no UI-collapse layout jumps while scrolling
 - ⏳ **Vertical gesture for horizontal scroll** — `orientation: 'horizontal'` + `gestureOrientation: 'both'`/`'vertical'`, wheel scrolls the rail
+- ⏳ **Horizontal scroll section** — sticky `100svh` section, track scroll progress (hamo/ScrollTrigger), `translateX` the rail
+- ⏳ **Seamless infinite** — `infinite: true` with repeated content inside a `height: 100svh; overflow: clip` wrapper; sidesteps the iOS flicker from `infinite` on `html`/`body` (see warning above) and makes the loop pixel-perfect
 
 ---
 
@@ -273,15 +280,11 @@ Warn in development mode when `infinite` is used on `html`/`body` (causes flicke
 
 ---
 
-## Open design questions
+## Resolved design questions
 
-### Top-level `duration` and `easing`
+### ✅ Top-level `duration` and `easing`
 
-With per-axis `wheel.duration`, `wheel.easing`, `touch.duration`, `touch.easing`, the top-level `LenisOptions.duration` / `LenisOptions.easing` now only serve as defaults for programmatic `lenis.scrollTo()` calls. Should they:
-
-- **Stay** — they act as the "programmatic default" layer (current behavior)
-- **Move** — rename to make their scope explicit, e.g. `scrollTo: { duration, easing }`
-- **Remove** — programmatic `scrollTo` falls back to `wheel.duration` / `wheel.easing`
+Resolved: **moved**. Top-level `LenisOptions.duration` / `easing` are gone; the `programmatic` config group (`{ lerp, duration, easing }`) joins `wheel` / `touch` / `drag` and provides the defaults for `scrollTo` and anchors — per-call `scrollTo` options still override.
 
 ---
 
