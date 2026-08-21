@@ -23,7 +23,7 @@ const snap = new Snap(lenis, {
   distanceThreshold: Number.POSITIVE_INFINITY, // former `type: 'mandatory'`
   mode: 'directional', // one snap per flick (former `type: 'lock'`)
   // lock: true,
-  debounce: 500,
+  // debounce: 500,
   onSnapComplete: (data) => {
     console.log('complete', data)
   },

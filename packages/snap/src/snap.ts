@@ -69,7 +69,7 @@ export class Snap {
       easing,
       duration,
       distanceThreshold = '50%',
-      debounce: debounceDelay = 500,
+      debounce: debounceDelay = 300,
       onSnapStart,
       onSnapComplete,
     }: SnapOptions = {}
@@ -110,8 +110,8 @@ export class Snap {
     const style = getComputedStyle(this.lenis.rootElement)
     const resolve = (value: string, base: number) =>
       value.endsWith('%')
-        ? (parseFloat(value) / 100) * base
-        : parseFloat(value) || 0
+        ? (Number.parseFloat(value) / 100) * base
+        : Number.parseFloat(value) || 0
     this.padding = {
       top: resolve(style.scrollPaddingTop, this.viewport.height),
       right: resolve(style.scrollPaddingRight, this.viewport.width),
@@ -233,10 +233,10 @@ export class Snap {
       // are px-only per spec, so no percentage resolution is needed.
       const style = getComputedStyle(element)
       const margin = {
-        top: parseFloat(style.scrollMarginTop) || 0,
-        right: parseFloat(style.scrollMarginRight) || 0,
-        bottom: parseFloat(style.scrollMarginBottom) || 0,
-        left: parseFloat(style.scrollMarginLeft) || 0,
+        top: Number.parseFloat(style.scrollMarginTop) || 0,
+        right: Number.parseFloat(style.scrollMarginRight) || 0,
+        bottom: Number.parseFloat(style.scrollMarginBottom) || 0,
+        left: Number.parseFloat(style.scrollMarginLeft) || 0,
       }
 
       // Snap area (margin-outset rect) aligned against the snapport

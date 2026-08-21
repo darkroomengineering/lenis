@@ -14,17 +14,16 @@ import Snap from 'lenis/snap'
 //  - callbacks + goTo/next/previous — HUD (top right)
 
 const lenis = new Lenis({
-  
   wheel: { lerp: 0.1 },
   touch: { smooth: true },
   drag: { enabled: true },
-  infinite:true,
+  infinite: true,
 })
 
 const snap = new Snap(lenis, {
-  mode:'directional',
+  mode: 'directional',
   duration: 1,
-  
+
   // debounce:100,
   onSnapStart: (item) => hudLog('start', item),
   onSnapComplete: (item) => hudLog('complete', item),
@@ -37,8 +36,7 @@ declare global {
 }
 window.snap = snap
 
-const $ = (selector: string) =>
-  document.querySelector<HTMLElement>(selector)!
+const $ = (selector: string) => document.querySelector<HTMLElement>(selector)!
 
 // 1 — raw snap point: exact scroll position, no CSS adjustments (marker line);
 // per-point onSnap fires when the scroll lands on it (watch the HUD)
@@ -135,10 +133,19 @@ function verifyCSSInterop() {
   const ys = snaps.map((s) => s.y!)
   const cases: [string, number][] = [
     ['raw snap.add(500)', 500],
-    ['section-2 center (scroll-margin-top)', expectedY($('.section-2'), 'center')],
+    [
+      'section-2 center (scroll-margin-top)',
+      expectedY($('.section-2'), 'center'),
+    ],
     ['section-3 end (scroll-margin-bottom)', expectedY($('.section-3'), 'end')],
-    ['section-4 center (scroll-padding only)', expectedY($('.section-4'), 'center')],
-    ['section-5 center (scroll-padding only)', expectedY($('.section-5'), 'center')],
+    [
+      'section-4 center (scroll-padding only)',
+      expectedY($('.section-4'), 'center'),
+    ],
+    [
+      'section-5 center (scroll-padding only)',
+      expectedY($('.section-5'), 'center'),
+    ],
     ['section-7 start (lock)', expectedY($('.section-7'), 'start')],
   ]
   let pass = true
@@ -152,11 +159,20 @@ function verifyCSSInterop() {
   // section-6 (y 'none') must not contribute — exactly the 6 targets above
   if (snaps.length !== cases.length) {
     pass = false
-    console.error(`✗ expected ${cases.length} snaps (align 'none' leaked?), got`, ys)
+    console.error(
+      `✗ expected ${cases.length} snaps (align 'none' leaked?), got`,
+      ys
+    )
   }
   // section-7's target must carry its per-element lock
   const lockY = expectedY($('.section-7'), 'start')
-  if (!snaps.some((s) => Math.abs((s.y ?? Infinity) - lockY) <= 1 && s.lock === true)) {
+  if (
+    !snaps.some(
+      (s) =>
+        Math.abs((s.y ?? Number.POSITIVE_INFINITY) - lockY) <= 1 &&
+        s.lock === true
+    )
+  ) {
     pass = false
     console.error('✗ section-7 snap does not carry lock: true', snaps)
   }
