@@ -37,7 +37,6 @@ const defaultEasing = (t: number) => Math.min(1, 1.001 - 2 ** (-10 * t))
 const instancesRegistry = new WeakMap<Element, Lenis>()
 // Elements vetoed by `nested.filter` — the filter runs once per element.
 const nestedVetoed = new WeakSet<Element>()
-
 export class Lenis {
   // ─── internal state ───
 
@@ -47,9 +46,14 @@ export class Lenis {
   /** True while the lock is held by a `scrollTo({ lock: true })` operation (vs a manual `lock()`), so `reset` can release it if the operation is interrupted mid-flight. */
   private _scrollToLocked = false
   private _preventNextNativeScrollEvent = false
+  /** Pending frame for a scrollend dispatch — one per frame at most. @see {@link scheduleScrollendEvent} */
+  private _scrollendRafId: number | null = null
   private _rafId: number | null = null
   private _isDragging = false // true while a mouse drag is scrolling (drag option)
   private _isDraggingSelection = false // true while a touch is dragging an iOS selection handle
+  // Safari shipped `scrollend` late — where it's missing, Lenis synthesizes one
+  // on the native path so consumers get the event everywhere.
+  private readonly supportsScrollend = 'onscrollend' in window
   // `.matches` is read at scroll time so preference changes apply live, no listener needed
   private readonly reducedMotionMediaQuery = window.matchMedia(
     '(prefers-reduced-motion: reduce)'
@@ -289,7 +293,11 @@ export class Lenis {
       { signal }
     )
 
-    this.options.wrapper.addEventListener('scrollend', this.onScrollEnd, {
+    // Always on `window`, even for element wrappers: `scrollend` doesn't bubble
+    // from an element, and a listener on the target node can't stopPropagation
+    // its siblings. The capture phase walks every ancestor either way, so this
+    // is the only place the event can be stopped before user listeners see it.
+    window.addEventListener('scrollend', this.onScrollEnd, {
       capture: true,
       signal,
     })
@@ -341,6 +349,11 @@ export class Lenis {
     this.abortController.abort()
 
     this.debouncedNativeScrollReset.cancel()
+
+    if (this._scrollendRafId !== null) {
+      cancelAnimationFrame(this._scrollendRafId)
+      this._scrollendRafId = null
+    }
 
     this.gesturesHandler.destroy()
     this.scrollingBox.destroy()
@@ -1122,16 +1135,27 @@ export class Lenis {
   // events while a smooth scrollTo is still in flight.
   private debouncedNativeScrollReset = debounce(() => {
     if (this.isScrolling !== 'smooth') {
+      // read before `reset`, which clears `isScrolling` to false
+      const wasNative = this.isScrolling === 'native'
+
       this.reset()
       this.emit()
+
+      // ponytail: reuses the 400ms settle window, so the polyfilled event lands
+      // later than a browser's own (~100ms). Give it its own shorter debounce if
+      // that latency shows up.
+      if (wasNative && !this.supportsScrollend) this.scheduleScrollendEvent()
     }
   }, 400)
 
   private onScrollEnd = (e: Event | CustomEvent) => {
-    if (!(e instanceof CustomEvent)) {
-      if (this.isScrolling === 'smooth' || this.isScrolling === false) {
-        e.stopPropagation()
-      }
+    if (e instanceof CustomEvent) return
+    // window-level listener: ignore scrollend from any other scroller
+    const wrapper = this.options.wrapper
+    if (e.target !== (wrapper === window ? document : wrapper)) return
+
+    if (this.isScrolling === 'smooth' || this.isScrolling === false) {
+      e.stopPropagation()
     }
   }
 
@@ -1420,6 +1444,7 @@ export class Lenis {
     if (target === axis.rawTargetScroll) {
       onStart?.(this)
       onComplete?.(this)
+      this.scheduleScrollendEvent()
       return
     }
 
@@ -1433,9 +1458,7 @@ export class Lenis {
       onStart?.(this)
       onComplete?.(this)
 
-      requestAnimationFrame(() => {
-        this.dispatchScrollendEvent()
-      })
+      this.scheduleScrollendEvent()
       return
     }
 
@@ -1479,9 +1502,7 @@ export class Lenis {
           this.emit()
           onComplete?.(this)
 
-          requestAnimationFrame(() => {
-            this.dispatchScrollendEvent()
-          })
+          this.scheduleScrollendEvent()
 
           // avoid emitting event twice
           this.preventNextNativeScrollEvent()
@@ -1507,13 +1528,31 @@ export class Lenis {
 
   // ─── scrollend plumbing ───
 
+  /**
+   * Queue a `scrollend` for the next frame — the frame's delay lets the browser
+   * flush the final scroll position first, so listeners read the settled value.
+   *
+   * Coalescing and the re-check are what keep this to one event per actual end:
+   * both axes of a 2D `scrollTo` landing together collapse into a single frame,
+   * and a scroll that restarts before the frame lands (a held drag whose lerp
+   * settles between two `touchmove`s) never ended at all.
+   */
+  private scheduleScrollendEvent() {
+    if (this._scrollendRafId !== null) return
+
+    this._scrollendRafId = requestAnimationFrame(() => {
+      this._scrollendRafId = null
+      if (this.isScrolling) return
+      this.dispatchScrollendEvent()
+    })
+  }
+
   private dispatchScrollendEvent = () => {
     this.options.wrapper.dispatchEvent(
       new CustomEvent('scrollend', {
         bubbles: this.options.wrapper === window,
-        // cancelable: false,
         detail: {
-          lenisScrollEnd: true,
+          lenis: this,
         },
       })
     )

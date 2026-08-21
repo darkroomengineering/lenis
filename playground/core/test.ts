@@ -223,11 +223,15 @@ const scrollendEntries: string[] = []
 let lastScrollendAt: number | null = null
 window.addEventListener('scrollend', (e) => {
   const now = performance.now()
-  const source = (e as CustomEvent).detail?.lenisScrollEnd ? 'lenis ' : 'native'
-  const delta =
-    lastScrollendAt === null ? '' : ` (+${Math.round(now - lastScrollendAt)}ms)`
+  const source = (e as CustomEvent).detail?.lenis ? 'lenis ' : 'native'
+  const gap = lastScrollendAt === null ? null : now - lastScrollendAt
+  const delta = gap === null ? '' : ` (+${Math.round(gap)}ms)`
+  // two ends within 100ms is a duplicate, not two scrolls — the per-frame storm
+  const dupe = gap !== null && gap < 100 ? '  ⚠ DUPE' : ''
   lastScrollendAt = now
-  scrollendEntries.unshift(`${source} @ ${(now / 1000).toFixed(2)}s${delta}`)
+  scrollendEntries.unshift(
+    `${source} @ ${(now / 1000).toFixed(2)}s${delta}${dupe}`
+  )
   if (scrollendEntries.length > 10) scrollendEntries.length = 10
   scrollendLog.textContent = ['scrollend log', ...scrollendEntries].join('\n')
   console.log('scrollend', source.trim(), e)
