@@ -1,0 +1,117 @@
+main {
+  font-family: monospace;
+  color: #0e0e0e;
+}
+
+section {
+  min-height: 100vh;
+  padding: 6rem 2rem 4rem;
+}
+
+section:nth-child(odd) {
+  background-color: rgb(255, 152, 162);
+}
+
+section:nth-child(even) {
+  background-color: rgb(186, 155, 201);
+}
+
+section h1 {
+  font-size: 2rem;
+  margin: 0 0 0.5rem;
+}
+
+section p {
+  max-width: 60ch;
+}
+
+.expect {
+  font-weight: bold;
+}
+
+.cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 1rem;
+  margin-top: 2rem;
+}
+
+.card {
+  background: rgba(255, 255, 255, 0.5);
+  border-radius: 8px;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.card label {
+  font-weight: bold;
+}
+
+textarea {
+  resize: both;
+  min-height: 4rem;
+}
+
+[contenteditable] {
+  background: white;
+  padding: 0.5rem;
+  min-height: 3rem;
+}
+
+video,
+audio {
+  width: 100%;
+  border-radius: 4px;
+}
+
+.draggable-chip {
+  background: white;
+  border: 2px solid #0e0e0e;
+  border-radius: 4px;
+  padding: 0.5rem;
+  cursor: grab;
+  width: fit-content;
+}
+
+.scrollbox {
+  height: 40vh;
+  overflow: auto;
+  background: rgba(255, 255, 255, 0.5);
+  border-radius: 8px;
+  padding: 1rem;
+}
+
+.scrollbox .filler {
+  height: 150vh;
+  background: linear-gradient(rgba(255, 255, 255, 0.8), rgba(0, 0, 0, 0.15));
+  border-radius: 8px;
+  padding: 0.5rem;
+}
+
+iframe {
+  width: 100%;
+  height: 40vh;
+  border: 4px dashed #0e0e0e;
+  border-radius: 8px;
+  background: white;
+}
+
+#hud {
+  position: fixed;
+  bottom: 1rem;
+  left: 1rem;
+  z-index: 2;
+  background: #0e0e0e;
+  color: white;
+  font-family: monospace;
+  white-space: pre;
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  pointer-events: none;
+}
+
+#hud.stuck {
+  background: #e30613;
+}

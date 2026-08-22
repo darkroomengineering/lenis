@@ -1,4 +1,5 @@
-import { useEffect, useState } from 'react'
+import { useSyncExternalStore } from 'react'
+import type { LenisContextValue } from './types'
 
 type Listener<S> = (state: S) => void
 
@@ -15,24 +16,44 @@ export class Store<S> {
     }
   }
 
-  subscribe(listener: Listener<S>) {
+  subscribe = (listener: Listener<S>) => {
     this.listeners = [...this.listeners, listener]
     return () => {
       this.listeners = this.listeners.filter((l) => l !== listener)
     }
   }
 
-  get() {
+  get = () => {
     return this.state
   }
 }
 
 export function useStore<S>(store: Store<S>) {
-  const [state, setState] = useState(store.get())
+  return useSyncExternalStore(store.subscribe, store.get, store.get)
+}
 
-  useEffect(() => {
-    return store.subscribe((state) => setState(state))
-  }, [store])
+/**
+ * Reserved registry key for the global/page instance (`root` / `rootContext`).
+ * `useLenis()` with no name falls back to this entry.
+ */
+export const ROOT_KEY = 'root'
 
-  return state
+/**
+ * Registry of named Lenis instances. Each key owns its own Store so that a
+ * `useLenis(name)` only re-renders when *that* instance changes, not when any
+ * other one does. The global root is simply the entry under {@link ROOT_KEY}.
+ */
+const registry = new Map<string, Store<LenisContextValue | null>>()
+
+export function getRegistryStore(name: string) {
+  let store = registry.get(name)
+  if (!store) {
+    store = new Store<LenisContextValue | null>(null)
+    registry.set(name, store)
+  }
+  return store
+}
+
+export function useRegistry(name: string) {
+  return useStore(getRegistryStore(name))
 }

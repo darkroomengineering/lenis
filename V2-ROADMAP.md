@@ -8,6 +8,10 @@ Lenis was originally built for developers syncing WebGL and DOM through smooth s
 
 `new Lenis()` should just work — no configuration, no CSS import to remember, no gotchas.
 
+**v2 also moves Lenis closer to the native APIs.** Wherever the platform already defines a concept, Lenis adopts its name and its semantics instead of inventing its own: `maxScroll` mirrors [`scrollTopMax`](https://developer.mozilla.org/en-US/docs/Web/API/Element/scrollTopMax)/[`scrollLeftMax`](https://developer.mozilla.org/en-US/docs/Web/API/Element/scrollLeftMax), `isScrollable` follows [MDN's definition](https://developer.mozilla.org/en-US/docs/Web/API/Element/scrollHeight#determine_if_the_content_of_an_element_is_overflowing) (a [scroll container](https://developer.mozilla.org/en-US/docs/Glossary/Scroll_container) with overflowing content), root overflow follows the [CSS overflow-propagation spec](https://drafts.csswg.org/css-overflow/#overflow-propagation), boundary detection follows MDN's ["totally scrolled"](https://developer.mozilla.org/en-US/docs/Web/API/Element/scrollHeight#determine_if_an_element_has_been_totally_scrolled) recipe, and gestures on a non-scrollable axis chain natively instead of being captured. Lenis should be a faithful mirror of the browser's scroll model with animation on top — every property has a citable platform definition, and when in doubt, do what the browser would do.
+
+**The principle is scoped: mirror the platform where it's the authority, exceed it where it's the ceiling.** Scroll geometry, scrollability, and overflow semantics belong to the browser — Lenis mirrors them. Snapping is the opposite case: CSS Scroll Snap can't express lenis/snap's best features (`directional` mode, velocity prediction, snap callbacks, 2D cell selection), so lenis/snap deliberately goes beyond the platform — that's the point of owning the snapping system. When we diverge, we don't borrow names: `align` matches `scroll-snap-align` because the semantics truly match, while `directional` and `lock` get their own words — naming them after CSS properties they don't implement would be a false cognate.
+
 ---
 
 ## Status legend
@@ -29,7 +33,7 @@ Options that were opt-in in v1 are now default-on:
 | `autoRaf` | `false` | `true` | Most users forget to set up the raf loop |
 | `autoToggle` | `false` | **removed** — always on (see below) | Overflow changes are handled automatically; no opt-out |
 | `anchors` | `false` | `true` | Anchor links should just work |
-| `allowNestedScroll` | `false` | `true` | Modals and nested containers should just work |
+| `allowNestedScroll` → `nested` | `false` | `{ mode: 'native' }` | Modals and nested containers just work; opt into `mode: 'smooth'` to adopt them with their own Lenis instance ([`NESTED-PLAN.md`](./NESTED-PLAN.md)) |
 | `stopInertiaOnNavigate` | `false` | `true` | Prevents scroll bleed on navigation |
 | `dimensions.mode` | (was `naiveDimensions: false`) | `'observe'` when `content` is defined, `'read'` otherwise | More reliable for most setups, no manual `naiveDimensions` toggle |
 
@@ -88,15 +92,18 @@ new Lenis({
 | `virtualScroll`, `prevent` | `onGesture` | Unified into a single transform/cancel callback |
 | `naiveDimensions` | `dimensions` | "Naive" was a CS term; the new option is a richer config object with a smart default |
 | `autoResize` | `dimensions.autoResize` | Co-located with the dimensions concern it belongs to |
+| `duration` / `easing` (top-level) | `programmatic.duration` / `programmatic.easing` | Each input group (`wheel`, `touch`, `drag`, `programmatic`) owns its animation config; `programmatic` is the default for `scrollTo` and anchors, per-call options still override |
 
 ### ✅ Properties rename
 
 | v1 | v2 | Reason |
 |----|-----|--------|
-| `isStopped` | `isScrollable` | Reflects observed CSS overflow; **polarity inverted** (`true` when overflow is not `hidden`/`clip`) |
-| `isTouching` | `isTouch` | Mirrors the gesture `type`; companion `isWheel` added — both reflect the last gesture (`undefined` after `reset()`) |
+| `isStopped` | `isScrollable` | MDN semantics: a scroll container with overflowing content; **polarity inverted** |
+| `limit` | `maxScroll` | Mirrors `scrollTopMax` / `scrollLeftMax` |
+| `dimensions` | `scrollingBox` | `Dimensions` class rebuilt as `ScrollingBox` around the platform's scroll vocabulary |
+| `isTouching` | `isTouch` | Mirrors the gesture `type`; companions `isWheel` / `isDrag` added — all reflect the last gesture (`undefined` after `reset()`); `isDragging` tracks an in-progress drag |
 
-`isScrolling` (`'native' \| 'smooth' \| false`) stays as-is — no three-way `isWheelScrolling` / `isTouchScrolling` / `isProgrammaticScrolling` split. Callers compose: `isScrolling && isTouch`, `isScrolling && isWheel`, programmatic ≈ `isScrolling === 'smooth' && !isTouch && !isWheel`.
+`isScrolling` (`'native' \| 'smooth' \| false`) stays as-is — no three-way `isWheelScrolling` / `isTouchScrolling` / `isProgrammaticScrolling` split. Callers compose: `isScrolling && isTouch`, `isScrolling && isWheel`, programmatic ≈ `isScrolling === 'smooth' && !isTouch && !isWheel && !isDrag`.
 
 ### ✅ Remove `start()` / `stop()`, `autoToggle`, and `scrollTo`'s `lock` / `force`
 
@@ -104,7 +111,7 @@ The CSS is the source of truth: Lenis observes the root's overflow and reacts. U
 
 - ✅ Removed `lenis.start()` / `lenis.stop()` from the public API
 - ✅ Removed the `autoToggle` option (always on, no longer configurable)
-- ✅ `isStopped` → `isScrollable` — derived from observed overflow, set via `checkOverflow()` on init and on `transitionend`; flipping it runs `reset()` + `emit()` and toggles the `lenis-stopped` class
+- ✅ `isStopped` → `isScrollable` — derived from `ScrollingBox` (scroll container + overflowing content), refreshed on resize and on overflow transition events; a flip resets the affected axis. The `lenis-stopped` class is removed
 - ✅ Removed `scrollTo`'s `force` option — `scrollTo` always executes now, so there's nothing to force past
 - ✅ Removed `scrollTo`'s `lock` option — compose `lenis.lock()` / `lenis.unlock()` via `onStart` / `onComplete` instead
 - ✅ `isLocked` narrowed — now only suppresses user wheel/touch input (and tap-to-stop); programmatic `scrollTo` is unaffected. Toggled solely via `lock()` / `unlock()` (no longer cleared by `reset()`)
@@ -117,8 +124,9 @@ The CSS is the source of truth: Lenis observes the root's overflow and reacts. U
 
 ### lenis/react
 
-- [ ] Deprecate `root` option — don't target window, just forward instance. Maybe `children` detection can help
-- [ ] Use `useSyncExternalStore` for state management
+- [x] Split `root` into two orthogonal props: `root` (target window, render no wrapper divs) and `rootContext` (register in the global store so `useLenis` reaches it anywhere). `rootContext` defaults to `root`. Removes the overloaded `root="asChild"` string.
+- [x] Use `useSyncExternalStore` for state management (`store.ts`)
+- [x] Named instances: `<ReactLenis name="sidebar">` → `useLenis('sidebar')`. The single-slot global store became a keyed registry; the global root is just the entry under `ROOT_KEY`, so `rootContext` and `name` share one mechanism.
 
 ---
 
@@ -132,9 +140,11 @@ The old `virtual-scroll` abstraction was a general-purpose gesture library — L
 
 The private `hasNestedScroll` method that detected whether a composed-path element could handle the gesture itself was extracted as a pure function in `utils.ts`, decoupled from the `Lenis` class and reusable from other packages.
 
-### ✅ `Dimensions` owns its own config
+### ✅ `Dimensions` → `ScrollingBox`
 
-`Dimensions` now accepts a `DimensionsOptions` bag (`{ mode, autoResize, debounce }`) and applies its own defaults, including the smart `mode = content ? 'observe' : 'read'` default. `lenis.ts` just forwards the user's config without pre-baking values.
+Renamed (`lenis.dimensions` → `lenis.scrollingBox`) and rebuilt around the platform's scroll vocabulary. It now owns all scrollability state: `maxScroll` (was `limit`), `isScrollContainer` (with root overflow propagation per the CSS spec), `isOverflowing`, `isScrollable`, and an `'overflow style changed'` event driven by `transition-behavior: allow-discrete` transitions (from the recommended CSS), with resize as the fallback refresh. `Axis` / `Lenis` dropped their duplicate detection (`checkOverflow`, `cssOverflow`); gesture gating reads the cached `ScrollingBox` state — nothing touches `getComputedStyle` on the hot path — and boundary checks use MDN's 1px "totally scrolled" threshold so fractional scroll positions (zoom, DPR, Safari overscroll) resolve correctly.
+
+It still accepts the `DimensionsOptions` bag (`{ mode, autoResize, debounce }`) and applies its own defaults, including the smart `mode = content ? 'observe' : 'read'` default. `lenis.ts` just forwards the user's config without pre-baking values. Exposes a typed `.on()` (like `Lenis` and `GesturesHandler`) instead of a public `.events` emitter.
 
 ---
 
@@ -176,12 +186,35 @@ iOS detection handles the iPadOS 13+ desktop-UA case via `navigator.maxTouchPoin
 
 ### 🚧 Multi-axis scrolling
 
-Allows simultaneous horizontal and vertical scrolling for use cases like 2D canvas navigation, maps, spreadsheets, and layouts that scroll in both directions. In progress:
+Simultaneous horizontal + vertical scrolling (2D canvas, maps, spreadsheets, layouts that scroll both ways), opt-in via `new Lenis({ orientation: 'both' })`. Single-axis API stays unchanged; you gain `lenis.x` / `lenis.y`.
 
-- 🚧 `Axis` class (`packages/core/src/axis.ts`) — per-axis `animatedScroll` / `targetScroll`, `Animate` instance, `cssOverflow` + `overflow` (content vs. viewport) getters, `scrollTo`, `advance`. Still scaffolding — `isStopped` / `isLocked` getters are stubs, `Lenis` doesn't yet delegate to it, and `console.log`s remain.
-- 🚧 `playground/two-axis` — 5×5 viewport grid (`500vw × 500vh`) for eyeballing 2D scroll behavior
-- ⏳ Wire `Lenis` to drive two `Axis` instances; expose `lenis.axes` / per-axis state
-- ⏳ Decide the public API surface (per-axis `scrollTo`, events, dimensions)
+**Full design + step-by-step plan: [`MULTI-AXIS-PLAN.md`](./MULTI-AXIS-PLAN.md).**
+
+Current state: **core mechanics are implemented and verified working.** The `Axis` class (`packages/core/src/axis.ts`) is clean — per-axis state, `reset`, `advance`, `scrollTo`, `scroll`/`maxScroll`/`progress`/`isScrollable`. `Lenis` delegates to `this.x` / `this.y`, and `orientation: 'both'` is wired through gesture routing, scroll emission, the single per-frame DOM write, `scrollTo`, and `isScrollable`. `lenis/snap` is 2D-aware (per-axis `align`, 2D candidate selection). Verified in a browser on `playground/two-axis`: diagonal `scrollTo`, combined-delta wheel (both axes), DOM sync, and 2D snap to cell centers all behave.
+
+**Decision — top-level scalars stay.** `lenis.scroll` / `velocity` / `progress` etc. remain single-axis conveniences delegating to the active axis (`y` in `'both'` mode); ~99% of users are single-axis and keeping them scalar avoids shape-shifting types and per-frame allocations. In 2D, `lenis.x` / `lenis.y` are the canonical API (the native mirror of `scrollX`/`scrollY`), documented in the README's multi-axis guide.
+
+Remaining before stable:
+
+- ⏳ Real touch / trackpad-inertia testing on devices (only wheel + programmatic verified so far)
+- ✅ Top-level `duration` / `easing` scope question — resolved by the `programmatic` config group (see [Resolved design questions](#resolved-design-questions))
+- ⏳ Polished examples (the two-axis playground is still a raw test bed)
+
+### 🚧 Drag-to-scroll
+
+Mouse drag as a first-class input — grab the page and fling it, like a touch surface. Lives in core: `GesturesHandler` emits `type: 'drag'` gestures into the same pipeline as wheel/touch, so axis routing, nested-scroll/`data-lenis-prevent`, release inertia (touch fling math) and reduced-motion all apply for free. Config joins the other input groups: `drag: { enabled, multiplier, inertia, lerp, duration, easing }` (default disabled), with `lenis.isDrag` / `lenis.isDragging` state and cursor/selection styling via the `lenis-draggable` / `lenis-dragging` classes in `lenis.css`. 4px threshold keeps clicks and text selection native; the trailing click after a real drag is swallowed. Completes the multi-axis story — a mouse can't scroll a 2D canvas without it. `playground/drag` exercises it (and `playground/snap` runs the grab → fling → snap chain); `playground/drag-edges` is the readiness gauntlet — form controls & selection, gesture latch, iframe crossing, outside-window release, pointer types — and doubles as the cross-browser validation script.
+
+### ✅ Nested smooth scroll (recursive adoption)
+
+`nested: { mode: 'smooth', filter }` (opt-in at launch) — a gesture landing on a nested scrollable element creates (and caches) a Lenis instance on it and hands the in-flight gesture over, so every scrollable surface inherits the feel from the very first wheel tick; recursion falls out naturally since children run the same config. Children are advanced by the parent's raf (no own loop — the leak-prevention backbone) and swept on disconnect. Replaces `allowNestedScroll` (`true` → the default `'native'`; `false` → `{ mode: 'none' }`). **Full design + step-by-step plan: [`NESTED-PLAN.md`](./NESTED-PLAN.md).**
+
+### ⏳ Keyboard controls
+
+Route arrow/page/space/home/end through `scrollTo` so keyboard scrolling is smooth like every other input (today it goes native and bypasses smoothing). Must never hijack keys while focus is in an input, and respects `prefers-reduced-motion` for free via `scrollAxisTo`. With drag this completes "one scroll pipeline for every input".
+
+### ⏳ `lenis/slider` package
+
+Slider built on core + snap + drag: a real scroll container (progressive enhancement, native semantics) where CSS owns layout and Lenis owns feel and state (active index, events, loop, autoplay). Deliberately not Swiper — anything layout-shaped stays in CSS.
 
 ### ⏳ Auto CSS injection
 
@@ -218,11 +251,25 @@ Warn in development mode when `infinite` is used on `html`/`body` (causes flicke
 ### Examples
 
 - ✅ `playground/touch` — native vs Lenis side-by-side for debugging `touch.smooth` on real devices
-- 🚧 `playground/two-axis` — 5×5 viewport-sized grid for 2D scroll testing (corner cells colour-coded)
-- ⏳ Nested scroll
-- ⏳ Horizontal scroll
+- ✅ `playground/drag` — 2D grid demo for drag-to-scroll
+- ✅ `playground/drag-edges` — drag readiness gauntlet: form controls & selection, prevent/nested gesture latch, iframe crossing, outside-window release (STUCK detector HUD), pointer types
+- ✅ `playground/lock` — `lock()` / `unlock()` behavior
+- ✅ `playground/nested-smooth` — recursive adoption (`nested: { mode: 'smooth' }`)
+- 🚧 `playground/two-axis` — 5×5 viewport-sized grid for 2D scroll testing (corner cells colour-coded); functional test bed, not yet a polished example
+- 🚧 `playground/vertical` + `playground/horizontal` — scenario validation twins: same-axis nested, cross-axis nested, `data-lenis-prevent`, anchors, `stopInertiaOnNavigate`
 - ⏳ Framework integrations
 - ⏳ Common patterns (modals, drawers, etc.)
+
+#### Examples to release (feature showcases)
+
+- ⏳ **Infinite two-axis grid + snap** — the v2 headline demo: `orientation: 'both'` + `infinite: true`, snap to cells. Reference: [oneupstudio.it](https://www.oneupstudio.it/)
+- 🚧 **Stacked cards** — 100vh `sticky top: 0` wrappers, 4/3 cards, snap to each (`playground/sticky-cards` has the mechanics; needs the visual pass). Reference: [stackhealth.darkroom.engineering](https://stackhealth.darkroom.engineering/)
+- ⏳ **Autoscroll (cinema)** — auto-advancing reel, pauses on interaction. Reference: [mhvkj4-3000.csb.app](https://mhvkj4-3000.csb.app/)
+- 🚧 **Slideshow** — snap-centered slides with proportional custom scrollbar (`playground/slideshow` has the mechanics; needs the visual pass)
+- ⏳ **Touch setup** — `html, body { overflow: hidden }` + inner `100svh overflow: auto` wrapper, the mobile-app-like layout (`touch.smooth` on a non-window wrapper). Bonus: freezes the mobile browser chrome, so no UI-collapse layout jumps while scrolling
+- ⏳ **Vertical gesture for horizontal scroll** — `orientation: 'horizontal'` + `gestureOrientation: 'both'`/`'vertical'`, wheel scrolls the rail
+- ⏳ **Horizontal scroll section** — sticky `100svh` section, track scroll progress (hamo/ScrollTrigger), `translateX` the rail
+- ⏳ **Seamless infinite** — `infinite: true` with repeated content inside a `height: 100svh; overflow: clip` wrapper; sidesteps the iOS flicker from `infinite` on `html`/`body` (see warning above) and makes the loop pixel-perfect
 
 ---
 
@@ -233,15 +280,11 @@ Warn in development mode when `infinite` is used on `html`/`body` (causes flicke
 
 ---
 
-## Open design questions
+## Resolved design questions
 
-### Top-level `duration` and `easing`
+### ✅ Top-level `duration` and `easing`
 
-With per-axis `wheel.duration`, `wheel.easing`, `touch.duration`, `touch.easing`, the top-level `LenisOptions.duration` / `LenisOptions.easing` now only serve as defaults for programmatic `lenis.scrollTo()` calls. Should they:
-
-- **Stay** — they act as the "programmatic default" layer (current behavior)
-- **Move** — rename to make their scope explicit, e.g. `scrollTo: { duration, easing }`
-- **Remove** — programmatic `scrollTo` falls back to `wheel.duration` / `wheel.easing`
+Resolved: **moved**. Top-level `LenisOptions.duration` / `easing` are gone; the `programmatic` config group (`{ lerp, duration, easing }`) joins `wheel` / `touch` / `drag` and provides the defaults for `scrollTo` and anchors — per-call `scrollTo` options still override.
 
 ---
 
@@ -269,5 +312,7 @@ TBD — will provide a v1 → v2 migration guide covering:
 - `autoResize` moved into `dimensions`
 - Removed `start()` / `stop()` (→ CSS overflow) and `autoToggle` (always on)
 - Removed `scrollTo` options `force` (→ no longer needed) and `lock` (→ `onStart`/`onComplete` + `lock()`/`unlock()`)
-- Renamed properties: `isStopped` → `isScrollable` (inverted), `isTouching` → `isTouch` (+ new `isWheel`); `isScrolling` unchanged
+- Renamed properties: `isStopped` → `isScrollable` (inverted, and now requires overflowing content — not just overflow CSS), `isTouching` → `isTouch` (+ new `isWheel`); `isScrolling` unchanged
+- Renamed properties: `limit` → `maxScroll`, `dimensions` → `scrollingBox` (class `Dimensions` → `ScrollingBox`)
+- Removed the `lenis-stopped` class
 - React package changes

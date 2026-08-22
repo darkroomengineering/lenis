@@ -14,19 +14,55 @@ const edgeFor = (x: number, y: number) => {
 }
 
 const cells = Array.from({ length: rows }, (_, y) =>
-  Array.from({ length: cols }, (_, x) => ({ x, y, edge: edgeFor(x, y) }))
+  Array.from({ length: cols }, (_, x) => ({
+    x: x % (cols - 1),
+    y: y % (rows - 1),
+    edge: edgeFor(x % (cols - 1), y % (rows - 1)),
+  }))
 ).flat()
 ---
 
 <Layout title="Two-axis scroll">
-  <div id="grid">
+  <div id="grid" style={`--cols: ${cols}; --rows: ${rows};`}>
     {
       cells.map(({ x, y, edge }) => (
         <div class="cell" data-edge={edge}>
-          {x},{y}
+          <div class="inner-cell">{x},{y}</div>
+          
         </div>
       ))
     }
   </div>
+
+  <aside id="tweak" data-open="true" aria-label="Lenis tweak panel">
+    <button id="tweak-toggle" type="button" aria-controls="tweak-body" aria-expanded="true">
+      <span class="tweak-handle"></span>
+      <span class="tweak-title">tweak</span>
+    </button>
+    <div id="tweak-body">
+      <label class="tweak-row">
+        <span class="tweak-label">lerp</span>
+        <input type="range" data-key="lerp" min="0.01" max="0.5" step="0.01" />
+        <output data-out="lerp"></output>
+      </label>
+      <label class="tweak-row">
+        <span class="tweak-label">inertia</span>
+        <input type="range" data-key="inertia" min="1" max="3" step="0.05" />
+        <output data-out="inertia"></output>
+      </label>
+      <label class="tweak-row">
+        <span class="tweak-label">multiplier</span>
+        <input type="range" data-key="multiplier" min="0.25" max="3" step="0.05" />
+        <output data-out="multiplier"></output>
+      </label>
+      <div class="tweak-actions">
+        <button id="tweak-reset" type="button">reset</button>
+        <button id="tweak-copy" type="button">copy</button>
+      </div>
+    </div>
+  </aside>
+
   <script src="../../two-axis/test.ts"></script>
 </Layout>
+
+

@@ -10,18 +10,10 @@ import {
   useRef,
   useState,
 } from 'react'
-import { Store } from './store'
+import { getRegistryStore, ROOT_KEY } from './store'
 import type { LenisContextValue, LenisProps, LenisRef } from './types'
 
 export const LenisContext = createContext<LenisContextValue | null>(null)
-
-/**
- * The root store for the lenis context
- *
- * This store serves as a fallback for the context if it is not available
- * and allows us to use the global lenis instance above a provider
- */
-export const rootLenisContextStore = new Store<LenisContextValue | null>(null)
 
 /**
  * React component to setup a Lenis instance
@@ -33,8 +25,9 @@ export const ReactLenis: ForwardRefExoticComponent<
     {
       children,
       root = false,
+      rootContext = root,
+      name,
       options = {},
-      autoRaf = true,
       className = '',
       ...props
     }: LenisProps,
@@ -65,7 +58,7 @@ export const ReactLenis: ForwardRefExoticComponent<
             wrapper: wrapperRef.current!,
             content: contentRef.current!,
           }),
-        autoRaf: options?.autoRaf ?? autoRaf, // this is to avoid breaking the autoRaf prop if it's still used (require breaking change)
+        autoRaf: options?.autoRaf,
       })
 
       setLenis(lenis)
@@ -74,7 +67,7 @@ export const ReactLenis: ForwardRefExoticComponent<
         lenis.destroy()
         setLenis(undefined)
       }
-    }, [autoRaf, JSON.stringify({ ...options, wrapper: null, content: null })])
+    }, [JSON.stringify({ ...options, wrapper: null, content: null })])
 
     // Handle callbacks
     const callbacksRefs = useRef<
@@ -101,14 +94,28 @@ export const ReactLenis: ForwardRefExoticComponent<
       []
     )
 
-    // This makes sure to set the global context if the root is true
+    // Publish to the named registry so useLenis() / useLenis(name) can reach
+    // this instance from outside its subtree. `rootContext` -> the global
+    // ROOT_KEY entry, `name` -> its own key; both are entries in one registry.
     useEffect(() => {
-      if (root && lenis) {
-        rootLenisContextStore.set({ lenis, addCallback, removeCallback })
+      if (!lenis) return
 
-        return () => rootLenisContextStore.set(null)
+      const keys: string[] = []
+      if (rootContext) keys.push(ROOT_KEY)
+      if (name && name !== ROOT_KEY) keys.push(name)
+      if (keys.length === 0) return
+
+      const value = { lenis, addCallback, removeCallback }
+      for (const key of keys) {
+        getRegistryStore(key).set(value)
       }
-    }, [root, lenis, addCallback, removeCallback])
+
+      return () => {
+        for (const key of keys) {
+          getRegistryStore(key).set(null)
+        }
+      }
+    }, [rootContext, name, lenis, addCallback, removeCallback])
 
     // Setup callback listeners
     useEffect(() => {
@@ -133,7 +140,7 @@ export const ReactLenis: ForwardRefExoticComponent<
       <LenisContext.Provider
         value={{ lenis: lenis!, addCallback, removeCallback }}
       >
-        {root && root !== 'asChild' ? (
+        {root ? (
           children
         ) : (
           <div

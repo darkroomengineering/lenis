@@ -3,11 +3,16 @@ export function debounce<CB extends (...args: unknown[]) => void>(
   delay: number
 ) {
   let timer: ReturnType<typeof setTimeout> | undefined
-  return function <T>(this: T, ...args: Parameters<typeof callback>): void {
+  function debounced<T>(this: T, ...args: Parameters<typeof callback>): void {
     clearTimeout(timer)
     timer = setTimeout(() => {
       timer = undefined
       callback.apply(this, args)
     }, delay)
   }
+  debounced.cancel = () => {
+    clearTimeout(timer)
+    timer = undefined
+  }
+  return debounced
 }

@@ -1,80 +1,94 @@
-html:not(.lenis) {
-  body,
-  & {
-    margin: 0;
-    padding: 0;
-    width: 100%;
-    height: 100%;
-    overflow: hidden;
-  }
-  body {
-    position: fixed;
-    overscroll-behavior-y: none;
-    overscroll-behavior-x: none;
-  }
-
-  .lenis {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    overflow: hidden;
-    overflow-y: scroll;
-    -ms-scroll-chaining: none;
-    overscroll-behavior: contain;
-    background: #0b41cd;
-  }
+* {
+  box-sizing: border-box;
 }
 
-.wrapper.lenis-scrolling {
-  background: #1a6b2a;
+body {
+  margin: 0;
+  font-family: system-ui, sans-serif;
+  background: #0b0b0f;
+  color: #e6e6ea;
+  line-height: 1.6;
 }
 
-.debug-panel {
+.page {
+  max-width: 680px;
+  margin: 0 auto;
+  padding: 40px 24px 160px;
+}
+
+.page h1 {
+  position: sticky;
+  top: 0;
+  margin: 0 0 24px;
+  padding: 12px 0;
+  background: #0b0b0f;
+}
+
+/* Scoped scroll container — Lenis observes the overflow we set here */
+.sidebar {
   position: fixed;
-  bottom: 12px;
-  right: 12px;
+  top: 16px;
+  right: 16px;
+  bottom: 16px;
+  width: 320px;
+  padding: 0 16px;
+  background: #15151c;
+  border: 1px solid #2a2a35;
+  border-radius: 10px;
+  overflow-y: auto;
+}
+
+.sidebar h2 {
+  position: sticky;
+  top: 0;
+  margin: 0;
+  padding: 16px 0 12px;
+  background: #15151c;
+  font-size: 15px;
+}
+
+.controls {
+  position: fixed;
+  left: 16px;
+  bottom: 16px;
   z-index: 100;
+  display: grid;
+  gap: 10px;
+  padding: 14px 16px;
   background: rgba(0, 0, 0, 0.85);
-  color: #fff;
-  padding: 16px;
-  border-radius: 8px;
-  font-family: monospace;
-  font-size: 13px;
-  max-width: 400px;
+  border-radius: 10px;
+  font: 13px monospace;
 }
 
-.debug-panel button {
-  padding: 8px 16px;
-  font-size: 14px;
-  cursor: pointer;
-  font-family: monospace;
-  border: 1px solid #555;
-  background: #222;
-  color: #fff;
-  border-radius: 4px;
+.controls .row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
-.debug-panel button:hover {
-  background: #444;
+.controls .row span {
+  width: 56px;
+  color: #9a9aa6;
 }
 
-.debug-panel code {
-  display: block;
-  padding: 6px 8px;
-  background: #111;
-  border-radius: 4px;
-  word-break: break-all;
+.controls progress {
+  width: 140px;
+}
+
+.controls code {
   color: #4fc3f7;
 }
 
-.debug-panel p {
-  margin: 8px 0 4px;
+.controls button {
+  padding: 4px 10px;
+  cursor: pointer;
+  background: #222;
+  color: #fff;
+  border: 1px solid #555;
+  border-radius: 4px;
+  font: 12px monospace;
 }
 
-.debug-panel .hint {
-  color: #999;
-  font-size: 11px;
-  margin-top: 10px;
+.controls button:hover {
+  background: #444;
 }

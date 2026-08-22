@@ -3,7 +3,11 @@ import '~/horizontal/style.css'
 import Layout from '../layouts/Layout.astro'
 ---
 
-<Layout title="Lenis">
+<Layout title="Lenis Horizontal">
+  <nav id="nav">
+    <a href="#contact">anchor to #contact</a>
+    <a href="/core">leave page (stops inertia)</a>
+  </nav>
   <div id="wrapper">
     <a href="twitter.com" id="about">
       <h2>about</h2>
@@ -28,6 +32,10 @@ import Layout from '../layouts/Layout.astro'
         hic atque qui nobis tempore quaerat illum laborum, reiciendis maxime
         natus vero dignissimos. Magnam accusantium sint nulla velit neque magni?
       </div>
+    </div>
+
+    <div id="prevent" data-lenis-prevent>
+      <div id="prevent-content"></div>
     </div>
 
     <div id="contact">

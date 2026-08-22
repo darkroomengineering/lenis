@@ -38,14 +38,15 @@ window.addEventListener('hashchange', () => {
 const lenis = new Lenis({
   wheel: {
     smooth: true,
+    // lerp: 0.01
   },
   touch: {
     smooth: true,
     // duration: 5,
   },
-  dimensions: {
-    mode: 'read',
-  },
+  // dimensions: {
+  //   mode: 'read',
+  // },
   onGesture: (data, lenis) => {
     // console.log(data)
     // return {
@@ -67,7 +68,13 @@ const lenis = new Lenis({
 // })
 
 lenis.on('scroll', (lenis) => {
-  console.log(lenis.isScrolling, lenis.isTouch, lenis.isWheel)
+  console.log(lenis)
+  // console.log({
+  //   userData: lenis.userData,
+  //   scroll: lenis.scroll,
+  //   actualScroll: lenis.actualScroll,
+  //   targetScroll: lenis.targetScroll,
+  // })
   // console.log('scroll', e)
 })
 
@@ -148,6 +155,27 @@ declare global {
 
 // requestAnimationFrame(raf)
 
+// ─── HUD — live scroll state, rendered on its own rAF so no state change
+// (wheel-updated targets, settle resets, native scrolls) is ever missed ───
+const hud = document.getElementById('hud')!
+function renderHud() {
+  const round = (value: number) => Math.round(value * 100) / 100
+  hud.textContent = [
+    `scroll          : ${round(lenis.scroll)}`,
+    `targetScroll    : ${round(lenis.targetScroll)}`,
+    `rawScroll       : ${round(lenis.rawScroll)}`,
+    `rawTargetScroll : ${round(lenis.rawTargetScroll)}`,
+    `actualScroll    : ${round(lenis.actualScroll)}`,
+    `velocity        : ${round(lenis.velocity)}`,
+    `direction       : ${lenis.direction}`,
+    `progress        : ${round(lenis.progress)}`,
+    `isScrolling     : ${lenis.isScrolling}`,
+    `isLocked        : ${lenis.isLocked}`,
+  ].join('\n')
+  requestAnimationFrame(renderHud)
+}
+requestAnimationFrame(renderHud)
+
 document.getElementById('stop')?.addEventListener('click', () => {
   // document.documentElement.style.overflow = 'hidden'
   lenis.stop()
@@ -160,6 +188,9 @@ document.getElementById('start')?.addEventListener('click', () => {
 
 document.getElementById('scroll-start')?.addEventListener('click', () => {
   lenis.scrollTo(100, {
+    userData: {
+      test: 'test',
+    },
     lock: true,
     duration: 1,
     onComplete: () => {
@@ -169,14 +200,41 @@ document.getElementById('scroll-start')?.addEventListener('click', () => {
 })
 
 document.getElementById('scroll-center')?.addEventListener('click', () => {
-  lenis.scrollTo(lenis.limit / 2, {
+  lenis.scrollTo(lenis.maxScroll / 2, {
     // duration: 10,
     // easing: (t) => t,
   })
 })
 
 document.getElementById('scroll-end')?.addEventListener('click', () => {
-  lenis.scrollTo(lenis.limit - 100)
+  lenis.scrollTo(lenis.maxScroll - 100)
+})
+
+document.getElementById('scroll-immediate')?.addEventListener('click', () => {
+  // random target so repeated clicks always produce a real jump
+  lenis.scrollTo(Math.random() * lenis.maxScroll, { immediate: true })
+})
+
+// ─── scrollend debugger — every window scrollend, tagged lenis (synthetic
+// dispatch) vs native (browser), with the gap since the previous one so
+// doubles and missing events are visible at a glance ───
+const scrollendLog = document.getElementById('scrollend-log')!
+const scrollendEntries: string[] = []
+let lastScrollendAt: number | null = null
+window.addEventListener('scrollend', (e) => {
+  const now = performance.now()
+  const source = (e as CustomEvent).detail?.lenis ? 'lenis ' : 'native'
+  const gap = lastScrollendAt === null ? null : now - lastScrollendAt
+  const delta = gap === null ? '' : ` (+${Math.round(gap)}ms)`
+  // two ends within 100ms is a duplicate, not two scrolls — the per-frame storm
+  const dupe = gap !== null && gap < 100 ? '  ⚠ DUPE' : ''
+  lastScrollendAt = now
+  scrollendEntries.unshift(
+    `${source} @ ${(now / 1000).toFixed(2)}s${delta}${dupe}`
+  )
+  if (scrollendEntries.length > 10) scrollendEntries.length = 10
+  scrollendLog.textContent = ['scrollend log', ...scrollendEntries].join('\n')
+  console.log('scrollend', source.trim(), e)
 })
 
 // const stopButton = document.getElementById('stop')

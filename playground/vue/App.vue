@@ -9,11 +9,11 @@ const _lerp = ref(0.1)
 const _autoRaf = ref(true)
 
 const lenis = useLenis(
+  'root',
   (lenis) => {
     console.log('root scroll', lenis.options.lerp, lenis.scroll)
   },
-  0,
-  'root'
+  0
 )
 
 const lenisRef = ref()
@@ -35,6 +35,7 @@ watch(lenisRef, (lenisRef) => {
     <button @click="lenis.scrollTo(200)">scroll to 200</button>
     <button @click="lenisRef.lenis.scrollTo(200)">ref scroll to 200</button>
     <vue-lenis
+      name="child"
       :options="{ lerp: 0.2, autoRaf }"
       style="height: 50svh; overflow: scroll"
       class="inner"

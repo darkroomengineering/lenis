@@ -1,0 +1,72 @@
+---
+import Layout from '../layouts/Layout.astro'
+---
+
+<Layout title="Lenis Lock">
+  <div id="controls">
+    <button id="lock">lock() / unlock()</button>
+    <button id="scrollto">scrollTo(&lbrace; lock: true, duration: 5 &rbrace;)</button>
+    <pre id="status"></pre>
+    <p>
+      1. lock() — wheel/touch must be suppressed until unlock()<br />
+      2. scrollTo lock — wheel must be suppressed during the 5s scroll<br />
+      3. middle-click mid-scroll — scroll stops AND isLocked returns to false<br />
+      4. lock(), then middle-click — isLocked must stay true
+    </p>
+  </div>
+  <div id="wrapper">
+    <section>1</section>
+    <section>2</section>
+    <section>3</section>
+    <section>4</section>
+    <section>5</section>
+  </div>
+  <script src="../../lock/test.ts"></script>
+</Layout>
+
+<style>
+  #controls {
+    position: fixed;
+    top: 64px; /* below the layout nav */
+    left: 16px;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 12px;
+    background: rgba(255, 255, 255, 0.9);
+    border: 1px solid #0e0e0e;
+    font-family: monospace;
+  }
+
+  #controls button {
+    font-family: monospace;
+    padding: 8px;
+    cursor: pointer;
+  }
+
+  #status {
+    margin: 0;
+    white-space: pre;
+  }
+
+  #controls p {
+    margin: 0;
+    font-size: 11px;
+    line-height: 1.5;
+  }
+
+  section {
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: monospace;
+    font-size: 20vh;
+  }
+
+  section:nth-child(odd) {
+    background-color: #0e0e0e;
+    color: white;
+  }
+</style>

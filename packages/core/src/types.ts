@@ -36,24 +36,26 @@ export type Scrolling = boolean | 'native' | 'smooth'
 export type LenisEvent = 'scroll' | 'gesture'
 export type ScrollCallback = (lenis: Lenis) => void
 export type GestureCallback = (data: GestureData) => void
+export type EventCallback = ScrollCallback | GestureCallback
 
 export type GestureData = {
   deltaX: number
   deltaY: number
-  event: WheelEvent | TouchEvent
-  type: 'wheel' | 'touch'
+  event: WheelEvent | TouchEvent | PointerEvent
+  type: 'wheel' | 'touch' | 'drag'
 }
 
-export type Orientation = 'vertical' | 'horizontal'
+export type Orientation = 'vertical' | 'horizontal' | 'both'
 export type GestureOrientation = 'vertical' | 'horizontal' | 'both'
 export type EasingFunction = (time: number) => number
 
 export type ScrollToOptions = {
   /**
-   * The offset to apply to the target value
+   * The offset to apply to the target value. A single number applies to every
+   * driven axis; pass `{ x?, y? }` to offset each axis independently.
    * @default 0
    */
-  offset?: number
+  offset?: number | { x?: number; y?: number }
   /**
    * Skip the animation and jump to the target value immediately
    * @default false
@@ -90,6 +92,11 @@ export type ScrollToOptions = {
    * User data that will be forwarded through the scroll event
    */
   userData?: UserData
+  /**
+   * Lock the scroll to the target value
+   * @default false
+   */
+  lock?: boolean
 }
 
 export interface WheelOptions {
@@ -124,6 +131,51 @@ export interface TouchOptions {
   }
 }
 
+export interface DragOptions {
+  /** Enable scroll-by-dragging with the mouse (grab the page like a touch surface) @default false */
+  enabled?: boolean
+  /** Multiplier for drag movement @default 1 */
+  multiplier?: number
+  /** Strength of the release fling @default 2 */
+  inertia?: number
+  /** Linear interpolation intensity applied to the release fling (0-1) @default 0.1 */
+  lerp?: number
+  duration?: number
+  easing?: EasingFunction
+}
+
+export interface ProgrammaticOptions {
+  /** Linear interpolation intensity (0-1) @default 0.1 */
+  lerp?: number
+  /** The duration of the scroll animation (in s) — switches to time-based animation */
+  duration?: number
+  /** The easing function to use for the scroll animation — switches to time-based animation */
+  easing?: EasingFunction
+}
+
+export type NestedMode = 'native' | 'smooth' | 'none'
+
+export interface NestedOptions {
+  /**
+   * How gestures over nested scrollable elements behave:
+   * - `'native'` (default): they scroll natively (v1's `allowNestedScroll: true`)
+   * - `'smooth'`: the first gesture recursively creates (and caches) a Lenis
+   *   instance on the scroller, handing over the in-flight gesture — every
+   *   scroller the user touches inherits the smoothing ("everything everywhere
+   *   all at once")
+   * - `'none'`: nested scrollers are ignored — gestures drive this instance
+   *   (v1's `allowNestedScroll: false`) and the per-gesture scrollability
+   *   checks are skipped
+   * @default 'native'
+   */
+  mode?: NestedMode
+  /**
+   * `mode: 'smooth'` only — choose which elements get adopted; return `false`
+   * to leave one native. Evaluated once per element (the verdict is cached).
+   */
+  filter?: (element: HTMLElement) => boolean
+}
+
 export type DimensionsOptions = {
   mode?: 'observe' | 'read'
   autoResize?: boolean
@@ -154,21 +206,28 @@ export type LenisOptions = {
    */
   touch?: TouchOptions
   /**
-   * Scroll duration in seconds
+   * Mouse-drag scroll options — grab the page and fling it, like a touch
+   * surface. Off by default; enable with `drag: { enabled: true }`.
    */
-  duration?: number
+  drag?: DragOptions
   /**
-   * Scroll easing function
-   * @default (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t))
+   * Default animation for programmatic scrolls (`scrollTo`, anchors) — the
+   * same shape as the per-call `scrollTo` options `lerp` / `duration` /
+   * `easing`, which still override these per call
    */
-  easing?: EasingFunction
+  programmatic?: ProgrammaticOptions
   /**
    * Enable infinite scrolling
    * @default false
    */
   infinite?: boolean
   /**
-   * The orientation of the scrolling. Can be `vertical` or `horizontal`
+   * The orientation of the scrolling. Can be `vertical`, `horizontal`, or `both` (2D).
+   *
+   * When `both`, `lenis.x` and `lenis.y` each handle one axis and `gestureOrientation`
+   * has no effect (horizontal gestures drive `x`, vertical gestures drive `y`). The
+   * single-axis getters on `lenis` (`scroll`, `progress`, `scrollTo(n)`, …) alias the
+   * vertical axis.
    * @default vertical
    */
   orientation?: Orientation
@@ -180,7 +239,7 @@ export type LenisOptions = {
   /**
    * Called on every gesture event (wheel or touch)
    */
-  onGesture?: (data: GestureData, lenis: Lenis) => GestureData | false
+  onGesture?: (data: GestureData, lenis: Lenis) => GestureData | false | void
   /**
    * Wether or not to enable overscroll on a nested Lenis instance, similar to CSS overscroll-behavior (https://developer.mozilla.org/en-US/docs/Web/CSS/overscroll-behavior)
    * @default true
@@ -197,10 +256,11 @@ export type LenisOptions = {
    */
   anchors?: boolean | ScrollToOptions
   /**
-   * If `true`, Lenis will allow nested scroll
-   * @default true
+   * Nested scroll behavior: `{ mode: 'native' }` (the default) lets nested
+   * scrollers scroll natively, `{ mode: 'smooth' }` adopts them with recursive
+   * Lenis instances, `{ mode: 'none' }` ignores them entirely
    */
-  allowNestedScroll?: boolean
+  nested?: NestedOptions
   /**
    * Dimensions calculation mode. 'read' uses naive dimensions (scrollHeight/clientHeight),
    * 'observe' uses ResizeObserver. Default: { autoResize: true, debounce: 500 } if content is undefined, { autoResize: true, debounce: 500 } if content is defined
@@ -211,6 +271,11 @@ export type LenisOptions = {
    * @default true
    */
   stopInertiaOnNavigate?: boolean
+  /**
+   * If `true`, Lenis will honor the user's `prefers-reduced-motion` setting: smoothing is disabled (`lerp` forced to `1` so scroll tracks the input device 1:1) and programmatic scrolls become instant, while scroll keeps running on the main thread
+   * @default true
+   */
+  respectReducedMotion?: boolean
 }
 
 declare global {

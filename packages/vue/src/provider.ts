@@ -8,6 +8,7 @@ import type {
   ToRefs,
 } from 'vue'
 import {
+  computed,
   defineComponent,
   h,
   onWatcherCleanup,
@@ -17,7 +18,7 @@ import {
   shallowRef,
   watch,
 } from 'vue'
-import { globalAddCallback, globalLenis, globalRemoveCallback } from './store'
+import { getRegistryStore, ROOT_KEY } from './store'
 
 export const LenisSymbol: InjectionKey<ShallowRef<Lenis | undefined>> =
   Symbol('LenisContext')
@@ -40,6 +41,15 @@ const VueLenisImpl = defineComponent({
     root: {
       type: Boolean as PropType<boolean>,
       default: false,
+    },
+    rootContext: {
+      // tri-state: `undefined` falls back to `root` (see effectiveRootContext)
+      type: Boolean as PropType<boolean | undefined>,
+      default: undefined,
+    },
+    name: {
+      type: String as PropType<string>,
+      default: undefined,
     },
     autoRaf: {
       type: Boolean as PropType<boolean>,
@@ -116,31 +126,41 @@ const VueLenisImpl = defineComponent({
       }
     }
 
+    // `rootContext` un-tangles global registration from window-targeting:
+    // it defaults to `root`, but can be set independently on a scoped container.
+    const effectiveRootContext = computed(() => props.rootContext ?? props.root)
+
+    // Publish to the keyed registry so useLenis() / useLenis(name) can reach
+    // this instance from outside its subtree. `rootContext` -> ROOT_KEY entry,
+    // `name` -> its own key; both are entries in one registry.
     watch(
-      [lenisRef, () => props.root],
-      ([lenis, root]) => {
-        lenis?.on('scroll', onScroll)
+      [lenisRef, effectiveRootContext, () => props.name],
+      ([lenis, rootContext, name]) => {
+        if (!lenis) return
 
-        if (root) {
-          globalLenis.value = lenis
-          globalAddCallback.value = addCallback
-          globalRemoveCallback.value = removeCallback
+        lenis.on('scroll', onScroll)
+        onWatcherCleanup(() => lenis.off('scroll', onScroll))
 
-          onWatcherCleanup(() => {
-            globalLenis.value = undefined
-            globalAddCallback.value = undefined
-            globalRemoveCallback.value = undefined
-          })
-        }
+        const keys: string[] = []
+        if (rootContext) keys.push(ROOT_KEY)
+        if (name && name !== ROOT_KEY) keys.push(name)
+        if (keys.length === 0) return
+
+        const entry = { lenis, addCallback, removeCallback }
+        for (const key of keys) getRegistryStore(key).value = entry
+
+        onWatcherCleanup(() => {
+          for (const key of keys) getRegistryStore(key).value = undefined
+        })
       },
       { immediate: true }
     )
 
-    if (!props.root) {
-      provide(LenisSymbol, lenisRef)
-      provide(AddCallbackSymbol, addCallback)
-      provide(RemoveCallbackSymbol, removeCallback)
-    }
+    // Always provide to the subtree so nested useLenis() resolves via context,
+    // regardless of root (window) vs scoped-container mode.
+    provide(LenisSymbol, lenisRef)
+    provide(AddCallbackSymbol, addCallback)
+    provide(RemoveCallbackSymbol, removeCallback)
 
     return () => {
       if (props.root) {

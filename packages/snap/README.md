@@ -1,7 +1,7 @@
 # lenis/snap
 
 ## Introduction
-lenis/snap provides a partial support for CSS scroll snap with [Lenis](https://github.com/darkroomengineering/lenis), see [Demo](https://lenis.darkroom.engineering/snap)
+lenis/snap brings CSS-scroll-snap-like behavior to [Lenis](https://github.com/darkroomengineering/lenis): `scroll-snap-align` semantics (`start`/`center`/`end`/`none`), CSS `scroll-margin` and `scroll-padding` support, plus JS-only extras (raw points, per-target callbacks and locks, `goTo`/`next`/`previous`). See [Demo](https://lenis.darkroom.engineering/snap)
 
 ## Installation
 
@@ -17,14 +17,7 @@ npm i lenis
     import Lenis from 'lenis'
     import Snap from 'lenis/snap'
 
-    const lenis = new Lenis()
-
-    function raf(time) {
-        lenis.raf(time)
-        requestAnimationFrame(raf)
-    }
-
-    requestAnimationFrame(raf)
+    const lenis = new Lenis() // autoRaf: true by default
 
     const snap = new Snap(lenis)
 
@@ -52,19 +45,28 @@ npm i lenis
 
 ### Slideshow
 
+One snap per flick, viewport-sized cards:
+
 ```jsx
     const snap = new Snap(lenis, {
-      type: 'lock',
-      distanceThreshold: '100%',
-      debounce: 0,
+      mode: 'directional', // one snap per flick (direction picks the next card)
+      lock: true,          // grab: snap the instant a card is picked, hold until it lands
+      distanceThreshold: '100%', // reach the adjacent (viewport-sized) card
     })
 ```
 
+### CSS interop
+
+Element snap positions honor the CSS `scroll-margin` of each added element (outsets its snap area, read live) and the wrapper's CSS `scroll-padding` (insets the viewport, re-read on `resize()`) — same semantics as native scroll snap. For strictness, CSS `mandatory` ⇒ `distanceThreshold: Infinity`, `proximity` ⇒ the default `'50%'`.
+
 ## Options
 
-- `type`: `proximity` (default), `mandatory` see [scroll-snap-type](https://developer.mozilla.org/en-US/docs/Web/CSS/scroll-snap-type) or `lock`.
-- `distanceThreshold`: `string | number` (default: '50%'). The distance threshold from the snap point to the scroll position. Ignored when `type` is `mandatory`. If a percentage, it is relative to the viewport size. If a number, it is absolute.
-- `debounce`: `number` (default: 500). The debounce time for the snap.
+- `mode`: `'closest' | 'directional'` (default: `'directional'`). How a gesture maps to a snap target. Both modes measure from the scroll's natural resting position (`targetScroll` — where the in-flight inertia will land, wrapped in infinite mode).
+  - `'closest'`: snap to the nearest target within `distanceThreshold` of the resting position.
+  - `'directional'`: gesture *direction* picks the halfspace; the snap closest to the resting position whose offset is within `distanceThreshold` wins. For viewport-sized cards, raise `distanceThreshold` to `'100%'` or higher so the adjacent snap is reachable. Pair with `lock: true` for the tightest one-card-per-flick feel.
+- `lock`: `boolean` (default: unset). Locked targets grab, like CSS `scroll-snap-stop: always`: the moment one is picked in the gesture's direction of travel, the snap fires immediately — no `debounce` wait — and holds the scroll until it lands (gestures can't interrupt it). `true` makes every target grab; when set (true or false) it overrides any per-element `lock`; leave unset to let each element decide.
+- `distanceThreshold`: `string | number | [x, y]` (default: `'50%'`). Per-axis "max reach" from the scroll's natural resting position (both modes). Percentages resolve against the viewport (per axis). Pass `Infinity` to disable the gate entirely (always snap to the nearest target).
+- `debounce`: `number` (default: 500). Delay after the last gesture before snapping. Touch and mouse-drag gestures only ever trigger a snap on release — never while the finger/pointer is held.
 - `onSnapStart`: `function`. Callback when snap starts.
 - `onSnapComplete`: `function`. Callback when snap completes.
 - `lerp`: `number` Lerp value for snapping. (default: lenis lerp). 
@@ -74,9 +76,9 @@ npm i lenis
 
 ## Methods
 
-- `add(value: number)`: Add a snap point.
-- `addElement(element: HTMLElement, options: SnapElementOptions = {})`: Add an element to snap to.
-- `addElements(elements: HTMLElement[], options: SnapElementOptions = {})`: Add elements at once.
+- `add(x: number, y?: number, options?)`: Add a snap point. One argument anchors the active axis (`{ y: x }`, or `{ x }` when the parent Lenis is horizontal); two arguments make a 2D point `{ x, y }`. The last argument may be `{ onSnap }` — a per-point callback fired when the scroll lands on it.
+- `addElement(element: HTMLElement, options?: SnapElementOptions)`: Add an element to snap to. `options.align` controls where the element lands: `'start' | 'center' | 'end' | 'none'` applied to both axes, or a tuple `[xAlign, yAlign]` for per-axis alignment (e.g. `['start', 'end']`). `'none'` skips that axis (like CSS `scroll-snap-align: none`). `options.lock` makes this element grab — snap fires the instant it's picked in the gesture's direction, no debounce wait, and holds the scroll until it lands (overridden by the instance-level `lock`). `options.onSnap` is a per-element callback fired when the scroll lands on its snap point.
+- `addElements(elements: HTMLElement[], options?: SnapElementOptions)`: Add elements at once (same `options` as `addElement`).
 - `next()`: Go to the next snap point.
 - `previous()`: Go to the previous snap point.
 - `goTo(index: number)`: Go to a specific snap point.

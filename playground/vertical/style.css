@@ -1,0 +1,77 @@
+html {
+  overflow-x: clip;
+}
+
+#nav {
+  position: fixed;
+  top: 64px; /* below the layout nav */
+  left: 16px;
+  z-index: 1;
+  display: flex;
+  gap: 16px;
+  padding: 8px;
+  font-family: monospace;
+  background: rgba(255, 255, 255, 0.9);
+}
+
+#wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100vw;
+}
+
+#about,
+#work,
+#work2,
+#prevent,
+#contact {
+  height: 80vh;
+  flex-shrink: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+}
+
+#about {
+  background-color: rgb(255, 152, 162);
+}
+
+/* same-axis nested scroller */
+#work {
+  background-color: rgb(213, 133, 169);
+  overflow-y: auto;
+  align-items: flex-start;
+  width: 50%;
+}
+
+#work-content {
+  min-height: 100vh;
+  width: 50%;
+}
+
+/* cross-axis nested scroller */
+#work2 {
+  background-color: rgb(255, 152, 162);
+  width: 50%;
+  overflow-x: auto;
+  justify-content: flex-start;
+
+  #work2-content {
+    display: block;
+    min-width: 1000px;
+  }
+}
+
+/* nested scroller lenis must never touch */
+#prevent {
+  background-color: rgb(186, 155, 201);
+  width: 50%;
+  overflow-y: auto;
+  align-items: flex-start;
+}
+
+#contact {
+  background-color: rgb(163, 120, 164);
+}

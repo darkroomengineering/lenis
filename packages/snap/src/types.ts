@@ -1,17 +1,58 @@
 import type { EasingFunction } from 'lenis'
 
+/** Mirrors CSS `scroll-snap-align` — `'none'` skips that axis. */
+export type SnapAlign = 'start' | 'center' | 'end' | 'none'
+
+/**
+ * A 2D snap target. `x` and `y` are optional so 1D snaps (single axis) and 2D
+ * snaps (`orientation: 'both'`) can share the same shape — an undefined
+ * coordinate is left untouched when scrolling.
+ */
 export type SnapItem = {
-  value: number
+  x?: number
+  y?: number
+  /**
+   * Per-target grab (from `addElement`'s `lock` option): the moment this
+   * target is picked in the gesture's direction of travel, snap to it
+   * immediately (no debounce wait) and hold the scroll until it lands —
+   * like CSS `scroll-snap-stop: always`. Ignored when the instance-level
+   * `lock` is set — instance overrides element.
+   */
+  lock?: boolean
+  /**
+   * Per-target callback, fired when the scroll lands on this point (same
+   * timing as `onSnapComplete`). Stripped from callback payloads.
+   */
+  onSnap?: OnSnapCallback
 }
 
 export type OnSnapCallback = (item: SnapItem & { index?: number }) => void
 
 export type SnapOptions = {
   /**
-   * Snap type
-   * @default 'proximity'
+   * @description Locked targets grab: the moment one is picked in the
+   * gesture's direction of travel, the snap fires immediately (no debounce
+   * wait) and holds the scroll until it lands — like CSS `scroll-snap-stop:
+   * always`. `true` makes every target grab; when set (true or false) it
+   * overrides any per-element `lock`; leave unset to let each element
+   * decide (elements without a `lock` default to false).
+   * @default undefined
    */
-  type?: 'mandatory' | 'proximity' | 'lock'
+  lock?: boolean
+  /**
+   * @description How a gesture is mapped to a snap target. Both modes
+   * measure from the scroll's natural resting position (`targetScroll` —
+   * where the in-flight inertia will land, wrapped in infinite mode).
+   * - `'closest'` — snap to the nearest target within `distanceThreshold`
+   *   of the resting position.
+   * - `'directional'` — the gesture *direction* picks the halfspace; we then
+   *   pick the snap closest to the resting position whose per-axis offset
+   *   is within `distanceThreshold`. Pair with `lock: true` for the
+   *   tightest one-card-per-flick feel.
+   *
+   * @default 'directional'
+   */
+  mode?: 'closest' | 'directional'
   /**
    * @description Linear interpolation (lerp) intensity (between 0 and 1)
    */
@@ -26,9 +67,29 @@ export type SnapOptions = {
   duration?: number
   /**
    * @default '50%'
-   * @description The distance threshold from the snap point to the scroll position. Ignored when `type` is `mandatory`. If a percentage, it is relative to the viewport size. If a number, it is absolute.
+   * @description Per-axis "max reach" applied as `|snap - reference| ≤ value`,
+   * where the reference is the scroll's natural resting position
+   * (`targetScroll`) in both modes:
+   * - `mode: 'closest'` — pass `Infinity` for "always snap to the nearest"
+   *   (the former `type: 'mandatory'` behavior).
+   * - `mode: 'directional'` — acts as a "max jump" so we don't leap over
+   *   plausible neighbours. For viewport-sized cards, set this to `'100%'`
+   *   (or higher) so the adjacent snap is reachable.
+   *
+   * Shape:
+   * - Scalar (`number` or `'50%'`): applied to both axes. Percentages scale
+   *   against each axis's viewport dimension independently (`x` → width,
+   *   `y` → height), so `'50%'` is "half a viewport on each axis".
+   * - Tuple `[x, y]`: separate value per axis. Each entry follows the same
+   *   number-or-percentage rule.
+   *
+   * Coordinates left `undefined` on a snap item skip their axis check
+   * (always pass).
    */
-  distanceThreshold?: number | `${number}%`
+  distanceThreshold?:
+    | number
+    | `${number}%`
+    | [number | `${number}%`, number | `${number}%`]
   /**
    * @default 500
    * @description The debounce delay (in ms) to prevent snapping too often.

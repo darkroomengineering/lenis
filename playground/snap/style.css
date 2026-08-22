@@ -1,11 +1,97 @@
-/* html {
-  scroll-snap-type: y mandatory;
-  scroll-behavior: smooth;
+/* CSS interop under test — read by lenis/snap, not the browser (no
+   scroll-snap-type): scroll-padding insets the snapport, scroll-margin
+   outsets each element's snap area. Values are asymmetric on purpose so
+   every one shifts a snap position measurably (symmetric margins cancel
+   out for 'center' alignment). */
+html {
+  scroll-padding: 80px 0 40px;
 }
 
-.section {
-  scroll-snap-align: start;
-} */
+.section-2 {
+  /* center align: shifts its snap up by 24px */
+  scroll-margin-top: 48px;
+}
+
+.section-3 {
+  /* end align: snap lands 24px past the bottom */
+  scroll-margin-bottom: 24px;
+}
+
+/* ─── chrome: fixed header, HUD, raw-point marker ─── */
+
+/* keep the playground nav clickable above the demo header */
+nav {
+  z-index: 20;
+}
+
+#header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 80px;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 2px;
+  /* nav row occupies the top ~50px — keep the text in the band below it */
+  padding: 48px 24px 0;
+  background: rgba(17, 17, 17, 0.85);
+  color: #fff;
+  font-family: monospace;
+  font-size: 11px;
+  line-height: 1.3;
+}
+
+#hud {
+  position: fixed;
+  top: 96px;
+  right: 16px;
+  z-index: 10;
+  max-width: 320px;
+  padding: 12px;
+  border-radius: 8px;
+  background: rgba(17, 17, 17, 0.85);
+  color: #fff;
+  font-family: monospace;
+  font-size: 12px;
+}
+
+#hud pre {
+  margin: 0 0 8px;
+}
+
+#hud button {
+  font: inherit;
+  padding: 4px 8px;
+  cursor: pointer;
+}
+
+#content {
+  position: relative;
+}
+
+#marker {
+  position: absolute;
+  top: 500px;
+  left: 0;
+  right: 0;
+  z-index: 5;
+  border-top: 2px dashed #111;
+  font-family: monospace;
+  font-size: 12px;
+}
+
+#marker span {
+  display: inline-block;
+  margin-left: 24px;
+  padding: 2px 8px;
+  background: #111;
+  color: #fff;
+}
+
+/* ─── sections ─── */
 
 /* palette from https://twitter.com/tranmautritam/status/1783420779709026785 */
 
@@ -36,6 +122,7 @@
 
   .inner {
     background-color: #f6c74d;
+    color: #111;
   }
 }
 
@@ -68,18 +155,36 @@
 
   .inner {
     background-color: #f6c74d;
+    color: #111;
+  }
+}
+
+.section-7 {
+  height: 100vh;
+
+  .inner {
+    background-color: #b49df8;
   }
 }
 
 .inner {
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
+  gap: 12px;
+  padding: 96px 24px 48px;
+  text-align: center;
+  color: #fff;
 }
 
-/* #wrapper {
-  height: 80vh;
-  overflow-y: auto;
-  position: relative;
-  top: 10vh;
-} */
+.inner h2 {
+  font-family: monospace;
+  font-size: 18px;
+}
+
+.inner p {
+  max-width: 60ch;
+  font-size: 14px;
+  line-height: 1.5;
+}

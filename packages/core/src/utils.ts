@@ -90,7 +90,7 @@ export function isScrollableElement(
   let hasOverscrollBehavior: boolean | undefined
 
   if (orientation === 'horizontal') {
-    scroll = Math.round(node.scrollLeft)
+    scroll = node.scrollLeft
     maxScroll = scrollWidth - clientWidth
     delta = deltaX
 
@@ -98,7 +98,7 @@ export function isScrollableElement(
     isScrollable = isScrollableX
     hasOverscrollBehavior = hasOverscrollBehaviorX
   } else if (orientation === 'vertical') {
-    scroll = Math.round(node.scrollTop)
+    scroll = node.scrollTop
     maxScroll = scrollHeight - clientHeight
     delta = deltaY
 
@@ -109,11 +109,14 @@ export function isScrollableElement(
     return false
   }
 
-  if (!hasOverscrollBehavior && (scroll >= maxScroll || scroll <= 0)) {
+  // scroll is fractional while maxScroll derives from rounded values — "totally
+  // scrolled" needs a 1px threshold, not equality
+  // https://developer.mozilla.org/en-US/docs/Web/API/Element/scrollHeight#determine_if_an_element_has_been_totally_scrolled
+  if (!hasOverscrollBehavior && (maxScroll - scroll <= 1 || scroll <= 0)) {
     return true
   }
 
-  const willScroll = delta > 0 ? scroll < maxScroll : scroll > 0
+  const willScroll = delta > 0 ? maxScroll - scroll > 1 : scroll > 0
 
   return Boolean(willScroll && hasOverflow && isScrollable)
 }

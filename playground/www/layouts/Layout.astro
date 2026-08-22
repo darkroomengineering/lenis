@@ -1,5 +1,7 @@
 ---
-import 'lenis/dist/lenis.css'
+// Relative import on purpose: `lenis/dist/lenis.css` resolves through
+// node_modules during SSR, where Node can't import a .css file.
+import '../../../dist/lenis.css'
 interface Props {
   title: string
 }
@@ -32,12 +34,20 @@ const { title } = Astro.props
       </a>
       <a href="/core">Core</a>
       <a href="/snap">Snap</a>
+      <a href="/sticky-cards">Sticky cards</a>
       <a href="/react">React</a>
       <a href="/vue">Vue</a>
+      <a href="/vertical">Vertical</a>
       <a href="/horizontal">Horizontal</a>
       <a href="/two-axis">Two-axis</a>
+      <a href="/drag">Drag</a>
+      <a href="/drag-edges">Drag edges</a>
       <a href="/infinite">Infinite</a>
       <a href="/touch">Touch</a>
+      <a href="/slideshow">Slideshow</a>
+      <a href="/autoscroll">Autoscroll</a>
+      <a href="/lock">Lock</a>
+      <a href="/nested-smooth">Nested</a>
     </nav>
     <slot />
   </body>

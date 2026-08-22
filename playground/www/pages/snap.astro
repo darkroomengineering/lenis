@@ -4,25 +4,104 @@ import Layout from '../layouts/Layout.astro'
 ---
 
 <Layout title="Lenis Snap">
+  <header id="header">
+    <strong>fixed header — 80px</strong>
+    <span
+      >html &#123; scroll-padding: 80px 0 40px &#125; — element snaps clear
+      this bar (raw points don't)</span
+    >
+  </header>
+
+  <aside id="hud">
+    <pre id="hud-state">…</pre>
+    <div class="hud-buttons">
+      <button id="prev">‹ previous</button>
+      <button id="next">next ›</button>
+    </div>
+  </aside>
+
   <div id="wrapper">
     <div id="content">
+      <div id="marker">
+        <span
+          >snap.add(500) — raw point: exact scroll position, ignores
+          scroll-margin / scroll-padding — snapped here, this line parks under
+          the fixed header on purpose</span
+        >
+      </div>
       <section class="section section-1">
-        <div class="inner">0</div>
+        <div class="inner">
+          <h2>1 · unregistered</h2>
+          <p>
+            This section contributes no snap. The default distanceThreshold
+            '50%' ≈ CSS proximity: release the scroll within half a viewport
+            of a target to feel the pull — further away, the scroll rests
+            free. Pass Infinity for CSS 'mandatory'.
+          </p>
+        </div>
       </section>
       <section class="section section-2">
-        <div class="inner">1</div>
+        <div class="inner">
+          <h2>2 · align 'center' + scroll-margin-top</h2>
+          <p>
+            Centered in the snapport. CSS scroll-margin-top: 48px outsets the
+            snap area, shifting the resting point 24px up. Margins are read
+            live on every compute — edit it in devtools and snap again.
+          </p>
+        </div>
       </section>
       <section class="section section-3">
-        <div class="inner">2</div>
+        <div class="inner">
+          <h2>3 · align ['start', 'end'] + scroll-margin-bottom</h2>
+          <p>
+            250vh tall — in this vertical setup only the y align ('end')
+            applies: one snap where its bottom edge meets the viewport bottom,
+            inset by scroll-padding-bottom: 40px and pushed 24px further by
+            scroll-margin-bottom. The rest of it scrolls freely.
+          </p>
+        </div>
       </section>
       <section class="section section-4">
-        <div class="inner">3</div>
+        <div class="inner">
+          <h2>4 · addElements batch, align 'center'</h2>
+          <p>
+            Registered together with section 5 in a single addElements call.
+            No margins here — only the global scroll-padding shifts its center
+            (down 20px, since the snapport center sits below the geometric
+            one).
+          </p>
+        </div>
       </section>
       <section class="section section-5">
-        <div class="inner">4</div>
+        <div class="inner">
+          <h2>5 · same batch</h2>
+          <p>
+            Same registration as section 4 — the function addElements returns
+            unsubscribes both at once.
+          </p>
+        </div>
       </section>
       <section class="section section-6">
-        <div class="inner">5</div>
+        <div class="inner">
+          <h2>6 · align ['center', 'none']</h2>
+          <p>
+            y is 'none' (CSS scroll-snap-align: none) — in this vertical setup
+            the section contributes no snap at all. The scroll rests anywhere
+            here.
+          </p>
+        </div>
+      </section>
+      <section class="section section-7">
+        <div class="inner">
+          <h2>7 · lock: true</h2>
+          <p>
+            Per-element lock — this section grabs, like CSS scroll-snap-stop:
+            always: the instant it's picked in your direction of travel the
+            snap fires (no debounce wait) and gestures are ignored until it
+            lands (watch isLocked in the HUD). Other sections wait out the
+            debounce; this one grabs you mid-gesture.
+          </p>
+        </div>
       </section>
     </div>
   </div>

@@ -24,6 +24,7 @@ Read our [Manifesto](https://github.com/darkroomengineering/lenis/blob/main/MANI
 - [Properties](#properties)
 - [Methods](#methods)
 - [Events](#events)
+- [Multi-axis scrolling](#multi-axis-scrolling)
 - [Considerations](#considerations)
 - [Limitations](#limitations)
 - [Troubleshooting](#troubleshooting)
@@ -95,10 +96,8 @@ Using scripts:
 ### Basic:
 
 ```js
-// Initialize Lenis
-const lenis = new Lenis({
-  autoRaf: true,
-});
+// Initialize Lenis (runs its own requestAnimationFrame loop by default)
+const lenis = new Lenis();
 
 // Listen for the scroll event and log the event data
 lenis.on('scroll', (e) => {
@@ -109,8 +108,8 @@ lenis.on('scroll', (e) => {
 ### Custom raf loop:
 
 ```js
-// Initialize Lenis
-const lenis = new Lenis();
+// Initialize Lenis without its internal raf loop
+const lenis = new Lenis({ autoRaf: false });
 
 // Use requestAnimationFrame to continuously update the scroll
 function raf(time) {
@@ -140,8 +139,8 @@ import 'lenis/dist/lenis.css'
 
 ### GSAP ScrollTrigger:
 ```js
-// Initialize a new Lenis instance for smooth scrolling
-const lenis = new Lenis();
+// Initialize a new Lenis instance for smooth scrolling, driven by GSAP's ticker
+const lenis = new Lenis({ autoRaf: false });
 
 // Synchronize Lenis scrolling with GSAP's ScrollTrigger plugin
 lenis.on('scroll', ScrollTrigger.update);
@@ -166,86 +165,99 @@ One line, no build step — just drop this into your HTML:
 ```html
 <link rel="stylesheet" href="https://unpkg.com/lenis@1.3.21/dist/lenis.css">
 <script src="https://unpkg.com/lenis@1.3.21/dist/lenis.min.js"></script> 
-<script>new Lenis({ autoRaf: true, autoToggle: true, anchors: true, allowNestedScroll: true, naiveDimensions: true, stopInertiaOnNavigate: true })</script>
+<script>new Lenis()</script>
 ```
 
-That's it, your page now has smooth scrolling and should handle most of the usual issues such as:
-- compatibility with other packages
-- modals
+That's it, your page now has smooth scrolling — the defaults already handle most of the usual issues:
+- compatibility with other packages (nested scroll)
 - smooth anchors
-- scroll reset on page change
+- scroll inertia stopped on page change
 
 <br/>
 
 
 ## Settings
 
-| Option                  | Type                       | Default                                            | Description                                                                                                                                                                                                                                                                          |
-|-------------------------|----------------------------|----------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `allowNestedScroll`     | `boolean`                  | `false`                                            | Automatically allow nested scrollable elements to scroll natively. This is the simplest way to handle nested scroll. ⚠️ Can create performance issues since it checks the DOM tree on every scroll event. If that's a concern, use `prevent` option instead.          |
-| `anchors`               | `boolean, ScrollToOptions` | `false`                                            | Scroll to anchor links when clicked. If `true` is passed, it will enable anchor links with default options. If `ScrollToOptions` is passed, it will enable anchor links with the given options.                                                                                      |
-| `autoRaf`               | `boolean`                  | `false`                                            | Whether or not to automatically run `requestAnimationFrame` loop.                                                                                                                                                                                                                    |
-| `autoResize`            | `boolean`                  | `true`                                             | Resize instance automatically based on `ResizeObserver`. If `false` you must resize manually using `.resize()`.                                                                                                                                                                      |
-| `autoToggle`            | `boolean`                  | `false`                                            | Automatically start or stop the lenis instance based on the wrapper's overflow property, ⚠️ this requires Lenis recommended CSS. Safari > 17.3, Chrome > 116 and Firefox > 128 ([https://caniuse.com/?search=transition-behavior](https://caniuse.com/?search=transition-behavior)). |
-| `content`               | `HTMLElement`              | `document.documentElement`                         | The element that contains the content that will be scrolled, usually `wrapper`'s direct child.                                                                                                                                                                                       |
-| `duration`              | `number`                   | `1.2`                                              | The duration of scroll animation (in seconds). Useless if lerp defined.                                                                                                                                                                                                              |
-| `easing`                | `function`                 | `(t) => Math.min(1, 1.001 - Math.pow(2, -10 * t))` | The easing function to use for the scroll animation, our default is custom but you can pick one from [Easings.net](https://easings.net/en). Useless if lerp defined.                                                                                                                 |
-| `eventsTarget`          | `HTMLElement, Window`      | `wrapper`                                          | The element that will listen to `wheel` and `touch` events.                                                                                                                                                                                                                          |
-| `gestureOrientation`    | `string`                   | `vertical`                                         | The orientation of the gestures. Can be `vertical`, `horizontal` or `both`.                                                                                                                                                                                                          |
-| `infinite`              | `boolean`                  | `false`                                            | Enable infinite scrolling! `syncTouch: true` is required on touch devices ([See example](https://codepen.io/ClementRoche/pen/OJqBLod)).                                                                                                                                              |
-| `lerp`                  | `number`                   | `0.1`                                              | Linear interpolation (lerp) intensity (between 0 and 1).                                                                                                                                                                                                                             |
-| `naiveDimensions`       | `boolean`                  | `false`                                            | If `true`, Lenis will use naive dimensions calculation. ⚠️ Be careful, this has a performance impact.                                                                                                                                                                                |
-| `orientation`           | `string`                   | `vertical`                                         | The orientation of the scrolling. Can be `vertical` or `horizontal`.                                                                                                                                                                                                                 |
-| `overscroll`            | `boolean`                  | `true`                                             | Similar to CSS overscroll-behavior (https://developer.mozilla.org/en-US/docs/Web/CSS/overscroll-behavior).                                                                                                                                                                           |
-| `prevent`               | `function`                 | `undefined`                                        | Manually prevent scroll to be smoothed based on elements traversed by events. If `true` is returned, it will prevent the scroll to be smoothed. Example: `(node) =>  node.classList.contains('cookie-modal')`.                                                                       |
-| `smoothWheel`           | `boolean`                  | `true`                                             | Smooth the scroll initiated by `wheel` events.                                                                                                                                                                                                                                       |
-| `stopInertiaOnNavigate` | `boolean`                  | `false`                                            | If `true`, Lenis will stop inertia when an internal link is clicked.                                                                                                                                                                                                                 |
-| `syncTouch`             | `boolean`                  | `false`                                            | Mimic touch device scroll while allowing scroll sync (can be unstable on iOS<16).                                                                                                                                                                                                    |
-| `syncTouchLerp`         | `number`                   | `0.075`                                            | Lerp applied during `syncTouch` inertia.                                                                                                                                                                                                                                             |
-| `touchInertiaExponent`  | `number`                   | `1.7`                                              | Manage the strength of syncTouch inertia.                                                                                                                                                                                                                                            |
-| `touchMultiplier`       | `number`                   | `1`                                                | The multiplier to use for touch events.                                                                                                                                                                                                                                              |
-| `virtualScroll`         | `function`                 | `undefined`                                        | Manually modify the events before they get consumed. If `false` is returned, the scroll will not be smoothed. Examples: `(e) => { e.deltaY /= 2 }` (to slow down vertical scroll) or `({ event }) => !event.shiftKey` (to prevent scroll to be smoothed if shift key is pressed).    |
-| `wheelMultiplier`       | `number`                   | `1`                                                | The multiplier to use for mouse wheel events.                                                                                                                                                                                                                                        |
-| `wrapper`               | `HTMLElement, Window`      | `window`                                           | The element that will be used as the scroll container.                                                                                                                                                                                                                               |
+| Option                  | Type                       | Default                                                    | Description                                                                                                                                                                                                                                                 |
+|-------------------------|----------------------------|------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `nested`                | `object`                   | `{ mode: 'native' }`                                       | How nested scrollable elements behave. `'native'` (default): they scroll natively. `'smooth'` — everything everywhere all at once: the first gesture adopts the scroller with its own cached Lenis instance (recursive, same config), handing over the in-flight gesture; `filter: (element) => boolean` picks which elements get adopted. `'none'`: nested scrollers are ignored — gestures drive this instance and the per-gesture scrollability checks are skipped (see [Nested scroll](#nested-scroll)). |
+| `anchors`               | `boolean, ScrollToOptions` | `true`                                                     | Scroll to anchor links when clicked. Pass `ScrollToOptions` to customize the scroll (e.g. `{ offset: 100 }`).                                                                                                                                                 |
+| `autoRaf`               | `boolean`                  | `true`                                                     | Automatically run the `requestAnimationFrame` loop. Set to `false` to drive it yourself via `lenis.raf(time)`.                                                                                                                                                |
+| `content`               | `HTMLElement`              | `undefined`                                                | The element that contains the scrolled content, usually `wrapper`'s direct child (`document.documentElement` when `wrapper` is `window`). Providing it enables `ResizeObserver`-based dimensions (`dimensions.mode: 'observe'`).                              |
+| `dimensions`            | `object`                   | `{ autoResize: true, debounce: 500, mode: content ? 'observe' : 'read' }` | How scroll dimensions are computed. `'observe'` uses `ResizeObserver` (requires `content`), `'read'` reads `scrollWidth`/`scrollHeight` directly (⚠️ can cause reflows). With `autoResize: false` you must call `.resize()` manually.          |
+| `drag`                  | `object`                   | `{ enabled: false, multiplier: 1, inertia: 2, lerp: 0.1 }` | Scroll by dragging with the mouse, like a touch surface — grab the page, fling it, inertia on release. Enable with `drag: { enabled: true }`. Clicks still work (a 4px threshold separates them from drags), and form fields, editable content, media controls and `draggable` elements keep their native drag behavior — but dragging elsewhere scrolls instead of selecting page text. Pairs well with `orientation: 'both'`. |
+| `eventsTarget`          | `HTMLElement, Window`      | `wrapper`                                                  | The element that will listen to `wheel` and `touch` events.                                                                                                                                                                                                   |
+| `gestureOrientation`    | `string`                   | `'vertical'` if `orientation` is `vertical`, else `'both'` | The orientation of the gestures. Can be `vertical`, `horizontal` or `both`. Has no effect when `orientation: 'both'`.                                                                                                                                         |
+| `infinite`              | `boolean`                  | `false`                                                    | Enable infinite scrolling! `touch: { smooth: true }` is required on touch devices ([See example](https://codepen.io/ClementRoche/pen/OJqBLod)).                                                                                                               |
+| `onGesture`             | `function`                 | `undefined`                                                | Called on every gesture before it's consumed (replaces v1 `virtualScroll`). Return `false` to cancel it, or a modified `GestureData` to alter it. Example: `({ deltaY, ...data }) => ({ ...data, deltaY: deltaY / 2 })`.                                      |
+| `orientation`           | `string`                   | `vertical`                                                 | The orientation of the scrolling. Can be `vertical`, `horizontal` or `both` (see [Multi-axis scrolling](#multi-axis-scrolling)).                                                                                                                              |
+| `overscroll`            | `boolean`                  | `true`                                                     | Similar to CSS overscroll-behavior (https://developer.mozilla.org/en-US/docs/Web/CSS/overscroll-behavior).                                                                                                                                                    |
+| `programmatic`          | `object`                   | `{ lerp: 0.1 }`                                            | Default animation for programmatic scrolls (`scrollTo`, anchors): `lerp`, `duration`, `easing`. Setting `duration`/`easing` switches to time-based animation. Per-call `scrollTo` options still override these.                                                |
+| `respectReducedMotion`  | `boolean`                  | `true`                                                     | Honor the user's `prefers-reduced-motion` setting: smoothing is disabled and programmatic scrolls are instant, while scroll keeps running on the main thread ([see Reduced motion](#reduced-motion)).                                                          |
+| `stopInertiaOnNavigate` | `boolean`                  | `true`                                                     | Stop scroll inertia when an internal link is clicked.                                                                                                                                                                                                         |
+| `touch`                 | `object`                   | `{ smooth: false, lerp: 0.1, multiplier: 1, inertia: 2 }`  | Touch scroll behavior (replaces v1 `syncTouch*`/`touchMultiplier`), see [Wheel, touch & iOS](#wheel-touch--ios).                                                                                                                                              |
+| `wheel`                 | `object`                   | `{ smooth: true, lerp: 0.1, multiplier: 1 }`               | Wheel scroll behavior (replaces v1 `smoothWheel`/`wheelMultiplier`/`lerp`), see [Wheel, touch & iOS](#wheel-touch--ios).                                                                                                                                      |
+| `wrapper`               | `HTMLElement, Window`      | `window`                                                   | The element that will be used as the scroll container.                                                                                                                                                                                                        |
 <br/>
 
-<!-- `target`: goal to reach
-- `number`: value to scroll in pixels
-- `string`: CSS selector or keyword (`top`, `left`, `start`, `bottom`, `right`, `end`)
-- `HTMLElement`: DOM element
+### Wheel, touch & iOS
+
+Wheel and touch gestures are configured independently. Smoothing is on by default for wheel and off for touch — native touch scrolling is already smooth:
+
+```js
+new Lenis({
+  wheel: { smooth: true, lerp: 0.1, multiplier: 1 },
+  touch: { smooth: false, multiplier: 1 },
+})
+```
+
+Set `touch: { smooth: true }` to let Lenis drive touch scrolling too — it mimics native touch scroll while keeping it synced (required for `infinite` on touch devices, can be unstable on iOS<16). It's tuned by `lerp`, `multiplier` and `inertia` (release momentum strength).
+
+Touch physics feel different on iOS, so on iOS devices (iPhone, and iPad even when it reports as macOS) Lenis swaps in iOS-specific touch values — `{ inertia: 1.7, lerp: 0.05 }` by default. Pass `touch.ios` to override them; keys you set replace the iOS defaults, anything else falls back to your base `touch` values:
+
+```js
+new Lenis({
+  touch: {
+    smooth: true,
+    inertia: 2, // Android & others
+    ios: { inertia: 1.5, lerp: 0.06 }, // iPhone & iPad
+  },
+})
+```
+
+Both `wheel` and `touch` also accept `duration`/`easing` instead of `lerp` to switch to time-based animation. At runtime, `lenis.isWheel` / `lenis.isTouch` tell you which input drove the last gesture.
 
 <br/>
-
-`options`:
-- `offset`(`number`): equivalent to [`scroll-padding-top`](https://developer.mozilla.org/en-US/docs/Web/CSS/scroll-padding-top)
-- `lerp`(`number`): animation lerp intensity
-- `duration`(`number`): animation duration (in seconds)
-- `easing`(`function`): animation easing
-- `immediate`(`boolean`): ignore duration, easing and lerp
-- `lock`(`boolean`): whether or not to prevent user from scrolling until target reached
-- `onComplete`(`function`): called when target is reached -->
 
 ## Properties
+
+Scroll state properties (`scroll`, `velocity`, `direction`, …) read the *active* axis — `x` when `orientation: 'horizontal'`, `y` otherwise. In `orientation: 'both'` mode, read each axis via `lenis.x` / `lenis.y` (see [Multi-axis scrolling](#multi-axis-scrolling)).
 
 | Property                | Type              | Description                                                                |
 |-------------------------|-------------------|----------------------------------------------------------------------------|
 | `actualScroll`          | `number`          | Current scroll value registered by the browser                             |
-| `animatedScroll`        | `number`          | Current scroll value                                                       |
+| `rawScroll`             | `number`          | Raw animated scroll value, unwrapped in infinite mode (was `animatedScroll` in v1) |
 | `className` (getter)    | `string`          | `rootElement` className                                                    |
-| `dimensions`            | `object`          | Dimensions instance                                                        |
-| `direction`             | `number`          | `1`: scrolling up, `-1`: scrolling down                                    |
+| `direction`             | `number`          | `1`: scrolling forward, `-1`: scrolling backward, `0`: idle                |
 | `isHorizontal` (getter) | `boolean`         | Whether or not the instance is horizontal                                  |
+| `isLocked` (getter)     | `boolean`         | Whether user-initiated scrolling is currently suppressed, via `lock()` or `scrollTo(target, { lock: true })` (replaces v1 `isStopped`) |
+| `isScrollable` (getter) | `boolean`         | Whether the wrapper can currently scroll: it's a [scroll container](https://developer.mozilla.org/en-US/docs/Glossary/Scroll_container) with overflowing content (see [Scrollability detection](#scrollability-detection)) |
 | `isScrolling` (getter)  | `boolean, string` | Whether or not the scroll is being animated, `smooth`, `native` or `false` |
-| `isStopped` (getter)    | `boolean`         | Whether or not the user should be able to scroll                           |
-| `lastVelocity`          | `number`          | Last scroll velocity                                                       |
-| `limit` (getter)        | `number`          | Maximum scroll value                                                       |
+| `isSmooth` (getter)     | `boolean`         | Whether `isScrolling` is `smooth`                                          |
+| `isDragging` (getter)   | `boolean`         | Whether a mouse drag is currently scrolling (`drag` option), mirrored as the `lenis-dragging` class |
+| `isTouch` / `isWheel` / `isDrag` | `boolean` | Whether the last gesture was a touch / a wheel / a mouse drag              |
 | `options`               | `object`          | Instance options                                                           |
+| `prefersReducedMotion` (getter) | `boolean` | Whether the user prefers reduced motion and Lenis is honoring it           |
 | `progress` (getter)     | `number`          | Scroll progress from `0` to `1`                                            |
 | `rootElement` (getter)  | `HTMLElement`     | Element on which Lenis is instanced                                        |
 | `scroll` (getter)       | `number`          | Current scroll value (handles infinite scroll if activated)                |
-| `targetScroll`          | `number`          | Target scroll value                                                        |
+| `maxScroll` (getter)    | `number`          | Maximum scroll value, mirrors [`scrollTopMax`](https://developer.mozilla.org/en-US/docs/Web/API/Element/scrollTopMax)/[`scrollLeftMax`](https://developer.mozilla.org/en-US/docs/Web/API/Element/scrollLeftMax) (was `limit` in v1) |
+| `scrollingBox`          | `object`          | `ScrollingBox` instance — the wrapper's scroll geometry, mirroring the element's scroll properties: `width`, `height`, `scrollWidth`, `scrollHeight`, `maxScroll`, `isScrollContainer`, `isOverflowing`, `isScrollable` (was `dimensions` in v1) |
+| `targetScroll` (getter) | `number`          | Scroll value the animation is heading to rest at (wrapped in infinite mode; raw value: `rawTargetScroll`) |
 | `time`                  | `number`          | Time elapsed since instance creation                                       |
+| `userData` (getter)     | `object`          | `userData` of the in-flight `scrollTo`, forwarded through `scroll` events  |
 | `velocity`              | `number`          | Current scroll velocity                                                    |
+| `x` / `y`               | `Axis`            | Per-axis state — each exposes `scroll`, `targetScroll`, `rawScroll`, `rawTargetScroll`, `actualScroll`, `velocity`, `direction`, `progress`, `maxScroll` and `isScrollable` |
 
 <br/>
 
@@ -253,23 +265,83 @@ That's it, your page now has smooth scrolling and should handle most of the usua
 
 | Method                      | Description                                                                     | Arguments                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
 |-----------------------------|---------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `destroy()`                 | Destroys the instance and removes all events.                                   |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
-| `on(id, function)`          | `id` can be any of the following [instance events](#instance-events) to listen. |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
-| `raf(time)`                 | Must be called every frame for internal usage.                                  | `time`: in ms                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
-| `resize()`                  | Compute internal sizes, it has to be used if `autoResize` option is `false`.    |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
-| `scrollTo(target, options)` | Scroll to target.                                                               | `target`: goal to reach<ul><li>`number`: value to scroll in pixels</li><li>`string`: CSS selector or keyword (`top`, `left`, `start`, `bottom`, `right`, `end`)</li><li>`HTMLElement`: DOM element</li></ul>`options`<ul><li>`offset`(`number`): equivalent to [`scroll-padding-top`](https://developer.mozilla.org/en-US/docs/Web/CSS/scroll-padding-top)</li><li>`lerp`(`number`): animation lerp intensity</li><li>`duration`(`number`): animation duration (in seconds)</li><li>`easing`(`function`): animation easing</li><li>`immediate`(`boolean`): ignore duration, easing and lerp</li><li>`lock`(`boolean`): whether or not to prevent the user from scrolling until the target is reached</li><li>`force`(`boolean`): reach target even if instance is stopped</li><li>`onComplete`(`function`): called when the target is reached</li><li>`userData`(`object`): this object will be forwarded through `scroll` events</li></ul> |
-| `start()`                   | Resumes the scroll                                                              |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
-| `stop()`                    | Pauses the scroll                                                               |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
+| `Lenis.get(element)` (static) | Returns the Lenis instance mounted on `element` — created manually or adopted via `nested.smooth` — if any. | `element`: HTMLElement                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
+| `destroy()`                 | Destroys the instance and removes all events (adopted nested instances included).                                   |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
+| `lock()` / `unlock()`       | Suppress / restore user-initiated scrolling on both axes (replaces v1 `stop()`/`start()`). Programmatic `scrollTo` still runs while locked. |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
+| `on(event, callback)`       | Subscribe to an [instance event](#events). Returns an unsubscribe function.     |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
+| `off(event, callback)`      | Unsubscribe from an [instance event](#events).                                  |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
+| `raf(time)`                 | Must be called every frame if `autoRaf: false`.                                 | `time`: in ms                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
+| `resize()`                  | Compute internal sizes, it has to be used if `dimensions.autoResize` is `false`. |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
+| `scrollTo(target, options)` | Scroll to target.                                                               | `target`: goal to reach<ul><li>`number`: value to scroll in pixels</li><li>`string`: CSS selector or keyword (`top`, `left`, `start`, `bottom`, `right`, `end`)</li><li>`HTMLElement`: DOM element</li><li>`{ x?, y? }`: per-axis values, drives both axes at once (see [Multi-axis scrolling](#multi-axis-scrolling))</li></ul>`options`<ul><li>`offset`(`number, { x?, y? }`): equivalent to [`scroll-padding-top`](https://developer.mozilla.org/en-US/docs/Web/CSS/scroll-padding-top), a scalar applies to every driven axis</li><li>`lerp`(`number`): animation lerp intensity</li><li>`duration`(`number`): animation duration (in seconds)</li><li>`easing`(`function`): animation easing</li><li>`immediate`(`boolean`): ignore duration, easing and lerp</li><li>`lock`(`boolean`): whether or not to prevent the user from scrolling until the target is reached</li><li>`onStart`(`function`): called when the scroll starts</li><li>`onComplete`(`function`): called when the target is reached</li><li>`userData`(`object`): this object will be forwarded through `scroll` events</li></ul> |
 
 
 
 ## Events
 
-| Event            | Callback Arguments        |
-|------------------|---------------------------|
-| `scroll`         | Lenis instance            |
-| `virtual-scroll` | `{deltaX, deltaY, event}` |
+| Event     | Callback Arguments                                            |
+|-----------|---------------------------------------------------------------|
+| `scroll`  | Lenis instance                                                |
+| `gesture` | `{deltaX, deltaY, event, type}` (replaces v1 `virtual-scroll`) |
 
+
+<br/>
+
+## Multi-axis scrolling
+
+Lenis can drive both axes simultaneously — 2D canvases, maps, spreadsheet-style layouts:
+
+```js
+const lenis = new Lenis({
+  orientation: 'both',
+})
+```
+
+### Per-axis API
+
+In 2D, the per-axis instances `lenis.x` / `lenis.y` are the canonical API — mirroring the browser's own model (`scrollX`/`scrollY`, `scrollLeft`/`scrollTop`):
+
+```js
+lenis.x.scroll        // current horizontal scroll value
+lenis.y.velocity      // current vertical velocity
+lenis.y.progress      // vertical progress, 0..1
+lenis.x.maxScroll     // maximum horizontal scroll value
+lenis.x.isScrollable  // whether the x axis can currently scroll
+```
+
+Each axis exposes `scroll`, `targetScroll`, `rawScroll`, `rawTargetScroll`, `velocity`, `direction`, `progress`, `maxScroll` and `isScrollable`. `scroll` and `targetScroll` are wrapped to `maxScroll` in infinite mode; the `raw*` pair is the unwrapped animation-space values. `velocity` and `direction` are derived (delta since last update; sign of remaining travel), so they can never go stale — `lastVelocity` is gone (v1/early-v2).
+
+### Top-level properties are single-axis shorthands
+
+`lenis.scroll`, `lenis.velocity`, `lenis.progress`, etc. read the *active* axis: `x` when `orientation: 'horizontal'`, `y` otherwise — **including in `'both'` mode**. They exist so single-axis code stays simple; in 2D, read `lenis.x` / `lenis.y` directly. `lenis.isScrolling` and `lenis.isScrollable` do aggregate across axes.
+
+### scrollTo
+
+Pass an `{ x, y }` object to target both axes (either can be omitted). Number, keyword and element targets apply to the active axis:
+
+```js
+lenis.scrollTo({ x: 500, y: 1000 }, { duration: 1 })
+lenis.scrollTo({ x: 500 }) // single axis
+```
+
+The `offset` option accepts a scalar (applied to both axes) or `{ x, y }`.
+
+### Gestures
+
+With `orientation: 'both'`, `gestureOrientation` has no effect: `deltaX` drives the x axis, `deltaY` drives the y axis, and each axis independently consumes the gesture or chains natively based on its own scrollability and edges.
+
+### Events
+
+`scroll` fires as usual — read the axes off the instance:
+
+```js
+lenis.on('scroll', ({ x, y }) => {
+  console.log(x.scroll, y.scroll)
+})
+```
+
+### Snap
+
+[lenis/snap](https://github.com/darkroomengineering/lenis/tree/main/packages/snap/README.md) is 2D-aware: snap points are `{ x, y }` cells and `align` applies per axis.
 
 <br/>
 
@@ -277,17 +349,19 @@ That's it, your page now has smooth scrolling and should handle most of the usua
 
 ### Nested scroll
 
-The simplest and most reliable way to handle nested scrollable elements is to use the `allowNestedScroll` option:
+Nested scrollable elements scroll natively out of the box. Opt into `nested: { mode: 'smooth' }` and they're not just handled — they're smoothed, everything everywhere all at once: the first gesture on a nested scroller mounts a cached Lenis instance on it, recursively and with your instance's config, and the in-flight gesture is handed over so even the first tick is smooth. Adopted instances are ordinary Lenis instances — retrieve one with `Lenis.get(element)`.
 
 ```js
-const lenis = new Lenis({
-  allowNestedScroll: true,
+new Lenis({
+  nested: {
+    mode: 'smooth',
+    // choose which elements get adopted — return false to leave one native
+    filter: (element) => !element.classList.contains('native'),
+  },
 })
 ```
 
-This automatically detects nested scrollable elements and lets them scroll natively. However, this can create performance issues since Lenis needs to check the DOM tree on every scroll event. If you experience performance problems, use `data-lenis-prevent` instead.
-
-#### Using HTML attributes
+Form fields (`input`, `textarea`, `select`) and `contenteditable` elements are never adopted. To ignore nested scrollers entirely — gestures drive the page even over them, and the per-gesture scrollability checks are skipped — use `nested: { mode: 'none' }` (v1's `allowNestedScroll: false`). Detection checks the DOM tree on every scroll event — mark elements with `data-lenis-prevent` to skip them entirely:
 
 ```html
 <div data-lenis-prevent>scrollable content</div>
@@ -303,32 +377,30 @@ This automatically detects nested scrollable elements and lets them scroll nativ
 | `data-lenis-prevent-vertical`   | Prevent vertical scroll events only  |
 | `data-lenis-prevent-horizontal` | Prevent horizontal scroll events only|
 
-#### Using Javascript
 
-```html
-<div id="modal">scrollable content</div>
-```
+
+### Scrollability detection
+
+Lenis follows the browser's own rules to decide whether an axis can scroll: the wrapper must be a [scroll container](https://developer.mozilla.org/en-US/docs/Glossary/Scroll_container) (`overflow` set to `scroll` or `auto`) **and** its [content must overflow](https://developer.mozilla.org/en-US/docs/Web/API/Element/scrollHeight#determine_if_the_content_of_an_element_is_overflowing). When the wrapper is the root element, [overflow propagation](https://drafts.csswg.org/css-overflow/#overflow-propagation) to the viewport is taken into account: `visible` counts as `auto`, and `<body>`'s overflow applies when the root's is `visible`. Gestures on a non-scrollable axis are not intercepted, matching native scroll chaining.
+
+Lenis reacts to live `overflow` changes (e.g. toggling `overflow: hidden` while a modal is open) without polling, via overflow transition events. This requires the recommended CSS, which sets `transition-behavior: allow-discrete` for `overflow` on the wrapper (Chrome 117+, Firefox 129+, Safari 17.4+ — without it, overflow changes are picked up on the next resize). When an axis flips to non-scrollable, its in-flight animation is halted and its state re-synced. You can subscribe via `lenis.scrollingBox.on('overflow style changed', callback)`.
+
+Note: the `lenis-stopped` class is no longer applied.
+
+### Reduced motion
+
+By default, Lenis honors the user's [`prefers-reduced-motion`](https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-reduced-motion) setting: when it is set to `reduce`, smoothing is disabled (`lerp` is forced to `1` so the scroll tracks the input device 1:1, ignoring `duration`/`easing`) and programmatic scrolls (`scrollTo`, anchor links) jump instantly to their target. Lenis keeps running so WebGL/DOM synchronization stays intact, and the preference is picked up live without a reload. You can check `lenis.prefersReducedMotion` to adapt your own animations.
+
+You can opt out (not recommended) with:
 
 ```js
 const lenis = new Lenis({
-  prevent: (node) => node.id === 'modal',
+  respectReducedMotion: false,
 })
 ```
-
-[See example](https://codepen.io/ClementRoche/pen/emONGYN)
-
-
 
 ### Anchor links
-By default, Lenis will prevent anchor links from working while scrolling. To enable them, you must set `anchors: true`.
-
-```js
-new Lenis({
-  anchors: true
-})
-```
-
-You can also use `scrollTo` options:
+Anchor links are handled by Lenis out of the box (`anchors` option, default `true`). Set `anchors: false` to opt out, or pass `scrollTo` options to customize the scroll:
 
 ```js
 new Lenis({
@@ -349,7 +421,7 @@ new Lenis({
 - capped to 60fps on Safari ([source](https://bugs.webkit.org/show_bug.cgi?id=173434)) and 30fps on low power mode
 - smooth scroll will stop working over iframe since they don't forward wheel events
 - position fixed seems to lag on MacOS Safari pre-M1 ([source](https://github.com/darkroomengineering/lenis/issues/103))
-- touch events may behave unexpectedly when `syncTouch` is enabled on iOS < 16
+- touch events may behave unexpectedly when `touch.smooth` is enabled on iOS < 16
 - nested scroll containers require proper configuration to work correctly
 
 <br/>
@@ -359,7 +431,7 @@ new Lenis({
 - Include the recommended CSS
 - If using GSAP ScrollTrigger, ensure proper integration (see [GSAP ScrollTrigger setup](#setup) section)
 - Test without Lenis to ensure your element/page is scrollable
-- Be sure to use `autoRaf: true` or manually call `lenis.raf(time)` in your animation loop
+- If you set `autoRaf: false`, make sure to call `lenis.raf(time)` in your animation loop
 
 <br/>
 

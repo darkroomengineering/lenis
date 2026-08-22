@@ -2,6 +2,18 @@ html {
   overflow-y: clip;
 }
 
+#nav {
+  position: fixed;
+  top: 64px; /* below the layout nav */
+  left: 16px;
+  z-index: 1;
+  display: flex;
+  gap: 16px;
+  padding: 8px;
+  font-family: monospace;
+  background: rgba(255, 255, 255, 0.9);
+}
+
 #wrapper {
   display: flex;
   height: 100vh;
@@ -11,6 +23,7 @@ html {
 #about,
 #work,
 #work2,
+#prevent,
 #contact {
   width: 80vw;
   flex-shrink: 0;
@@ -43,6 +56,19 @@ html {
 
   #work2-content {
     display: block;
+  }
+}
+
+/* nested scroller lenis must never touch */
+#prevent {
+  background-color: rgb(186, 155, 201);
+  height: 50%;
+  overflow-y: auto;
+  align-items: flex-start;
+
+  #prevent-content {
+    display: block;
+    width: 50%;
   }
 }
 

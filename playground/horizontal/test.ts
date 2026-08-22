@@ -1,28 +1,17 @@
 import Lenis from 'lenis'
 import { LoremIpsum } from 'lorem-ipsum'
 
+const lorem = new LoremIpsum()
+
+// cross-axis nested scroller (overflow-y inside a horizontal page)
 document.querySelector('#work2-content')!.innerHTML =
-  new LoremIpsum().generateParagraphs(30)
+  lorem.generateParagraphs(30)
+// data-lenis-prevent scroller
+document.querySelector('#prevent-content')!.innerHTML =
+  lorem.generateParagraphs(10)
 
-new Lenis({
+const lenis = new Lenis({
   orientation: 'horizontal',
-  // gestureOrientation: 'vertical',
-  autoRaf: true,
-  allowNestedScroll: true,
-  syncTouch: true,
-  anchors: true,
-  stopInertiaOnNavigate: true,
-  // virtualScroll: (data) => {
-  //   data.deltaX = 0
-  //   // data.deltaY =  0.00001
-  //   if (data.deltaY === 0 && data.deltaX === 0) {
-  //     data.deltaY = 0.00001
-  //   }
-  //   console.log(data)
-  //   return true
-  // },
+  touch: { smooth: true },
 })
-
-// setInterval(() => {
-//   document.querySelector('#work').style.width = `${50 + Math.random() * 30}vw`
-// }, 1000)
+;(window as unknown as { lenis: Lenis }).lenis = lenis
