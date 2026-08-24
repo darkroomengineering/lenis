@@ -1168,6 +1168,10 @@ export class Lenis {
   private onOverflowStyleChange = (changed: { x: boolean; y: boolean }) => {
     if (changed.x) this.x.reset()
     if (changed.y) this.y.reset()
+    // The other axis may still be mid-flight (multi-axis): leave it and its
+    // scrollTo lock alone. Otherwise settle instance state — isScrolling and
+    // the lenis-scrolling/lenis-smooth classes, the scrollTo lock, the debounce
+    if (!this.isAnyAxisAnimating) this.reset()
   }
 
   private reset() {
