@@ -36,6 +36,7 @@ function App() {
 function Controls() {
   const [page, setPage] = useState(0)
   const [sidebar, setSidebar] = useState(0)
+  const [stopped, setStopped] = useState(false)
 
   // root instance (no name): subscribe to the window scroll
   const lenis = useLenis((l) => setPage(l.progress))
@@ -52,6 +53,15 @@ function Controls() {
         </button>
         <button type="button" onClick={() => lenis?.scrollTo(1e9)}>
           bottom
+        </button>
+        <button
+          type="button"
+          onClick={() => {
+            // toggles `overflow: hidden` on <html>, Lenis picks it up on its own
+            setStopped(document.documentElement.classList.toggle('stopped'))
+          }}
+        >
+          {stopped ? 'start' : 'stop'}
         </button>
       </div>
       <div className="row">

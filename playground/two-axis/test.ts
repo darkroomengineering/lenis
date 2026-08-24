@@ -121,6 +121,21 @@ lenis.on('scroll', (lenis) => {
   // })
 })
 
+// Per-axis stop via overflow-x/y: hidden on the wrapper. `#classes` mirrors
+// the wrapper's lenis-* classes so a stuck `lenis-scrolling` is visible.
+const grid = document.querySelector<HTMLElement>('#grid')!
+const classes = document.querySelector<HTMLElement>('#classes')!
+document.querySelectorAll<HTMLButtonElement>('#axes button').forEach((btn) => {
+  const axis = btn.dataset.axis as 'x' | 'y'
+  btn.addEventListener('click', () => {
+    const stopped = grid.classList.toggle(`stop-${axis}`)
+    btn.textContent = `${stopped ? 'start' : 'stop'} ${axis}`
+  })
+})
+new MutationObserver(() => {
+  classes.textContent = grid.className
+}).observe(grid, { attributeFilter: ['class'] })
+
 window.lenis = lenis
 ;(window as unknown as { snap: Snap }).snap = snap
 

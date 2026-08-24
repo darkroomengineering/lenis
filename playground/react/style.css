@@ -2,6 +2,10 @@
   box-sizing: border-box;
 }
 
+html.stopped {
+  overflow: hidden;
+}
+
 body {
   margin: 0;
   font-family: system-ui, sans-serif;

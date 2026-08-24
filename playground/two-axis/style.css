@@ -65,6 +65,37 @@ html, body {
   overscroll-behavior: none;
 }
 
+/* per-axis stop: Lenis observes the overflow flip on the wrapper itself */
+#grid.stop-x {
+  overflow-x: hidden;
+}
+
+#grid.stop-y {
+  overflow-y: hidden;
+}
+
+#axes {
+  position: fixed;
+  top: calc(3rem + 10px); /* below the global nav */
+  left: 8px;
+  z-index: 10;
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  font: 12px monospace;
+  color: white;
+}
+
+#axes button {
+  padding: 4px 10px;
+  cursor: pointer;
+  background: #222;
+  color: #fff;
+  border: 1px solid #555;
+  border-radius: 4px;
+  font: inherit;
+}
+
 #tweak {
   position: fixed;
   left: 0;

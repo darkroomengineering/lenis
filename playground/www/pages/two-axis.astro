@@ -34,6 +34,12 @@ const cells = Array.from({ length: rows }, (_, y) =>
     }
   </div>
 
+  <div id="axes">
+    <button type="button" data-axis="x">stop x</button>
+    <button type="button" data-axis="y">stop y</button>
+    <code id="classes"></code>
+  </div>
+
   <aside id="tweak" data-open="true" aria-label="Lenis tweak panel">
     <button id="tweak-toggle" type="button" aria-controls="tweak-body" aria-expanded="true">
       <span class="tweak-handle"></span>
