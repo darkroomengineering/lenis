@@ -42,6 +42,14 @@ lenis.scrollTo({ x: 200, y: 800 })        // 2D — drives both axes as one oper
 each callback exactly once: `onStart` when the first axis starts, `onComplete` when the
 last axis settles. Interrupting the operation never fires `onComplete`.
 
+**Returns `Promise<boolean>`** — resolves `true` when the target is reached (same moment as
+`onComplete`), `false` when the operation is interrupted (a gesture, resize, `destroy`) or
+the target can't be resolved. Never rejects, so fire-and-forget calls stay silent.
+
+```ts
+if (await lenis.scrollTo('#pricing')) openModal()
+```
+
 ### `scrollTo` options
 
 #### `offset?: number | { x?, y? }` — default `0`

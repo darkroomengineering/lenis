@@ -27,6 +27,10 @@ export type FromToOptions = {
    * Called when the scroll progress changes
    */
   onUpdate?: OnUpdateCallback
+  /**
+   * Called when the animation is stopped before reaching its target
+   */
+  onCancel?: () => void
 }
 
 export type UserData = Record<string, unknown>

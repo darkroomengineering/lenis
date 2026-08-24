@@ -28,6 +28,7 @@ export class Animate {
   duration?: number
   easing?: EasingFunction
   onUpdate?: OnUpdateCallback
+  onCancel?: () => void
 
   /**
    * Advance the animation by the given delta time
@@ -61,17 +62,18 @@ export class Animate {
       completed = true
     }
 
-    if (completed) {
-      this.stop()
-    }
+    // reached the target: not a cancellation, so bypass `stop()`
+    if (completed) this.isRunning = false
 
     // Call the onUpdate callback with the current value and completed status
     this.onUpdate?.(this.value, completed)
   }
 
-  /** Stop the animation */
+  /** Stop the animation — fires `onCancel` if it was still in flight */
   stop() {
+    if (!this.isRunning) return
     this.isRunning = false
+    this.onCancel?.()
   }
 
   /**
@@ -85,8 +87,11 @@ export class Animate {
   fromTo(
     from: number,
     to: number,
-    { lerp, duration, easing, onStart, onUpdate }: FromToOptions
+    { lerp, duration, easing, onStart, onUpdate, onCancel }: FromToOptions
   ) {
+    // a new run interrupts any in-flight one
+    this.stop()
+    this.onCancel = onCancel
     this.from = this.value = from
     this.to = to
     this.lerp = lerp

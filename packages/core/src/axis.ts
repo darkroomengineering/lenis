@@ -72,7 +72,7 @@ export class Axis {
    * `userData`, `lock`) as any other `scrollTo`.
    */
   scrollTo(target: number, options?: ScrollToOptions) {
-    this.lenis.scrollTo(
+    return this.lenis.scrollTo(
       this.axis === 'x' ? { x: target } : { y: target },
       options
     )

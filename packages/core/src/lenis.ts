@@ -417,13 +417,19 @@ export class Lenis {
   scrollTo(
     target: number | string | HTMLElement,
     options?: ScrollToOptions
-  ): void
-  scrollTo(target: { x?: number; y?: number }, options?: ScrollToOptions): void
+  ): Promise<boolean>
+  scrollTo(
+    target: { x?: number; y?: number },
+    options?: ScrollToOptions
+  ): Promise<boolean>
   scrollTo(
     _target: number | string | HTMLElement | { x?: number; y?: number },
     options: ScrollToOptions = {}
-  ) {
-    this.dispatchScrollTo(this.resolveScrollTargets(_target, options), options)
+  ): Promise<boolean> {
+    return this.dispatchScrollTo(
+      this.resolveScrollTargets(_target, options),
+      options
+    )
   }
 
   /**
@@ -1334,6 +1340,9 @@ export class Lenis {
    * its own `Animate` instance under the hood; this layer coordinates their
    * shared lifecycle — `onStart` fires once when the first axis starts and
    * `onComplete` once when the last axis settles.
+   *
+   * Resolves `true` once every axis reaches its target, `false` as soon as any
+   * axis is interrupted (gesture, reset, destroy) or there's nothing to scroll.
    */
   private dispatchScrollTo(
     targets: { axis: Axis; target: number }[],
@@ -1344,8 +1353,8 @@ export class Lenis {
       lock = false,
       ...options
     }: ScrollToOptions = {}
-  ) {
-    if (targets.length === 0) return
+  ): Promise<boolean> {
+    if (targets.length === 0) return Promise.resolve(false)
 
     // Operation-scoped userData: stays readable through every scroll callback
     // until the whole operation finishes (not wiped when the first axis lands).
@@ -1367,23 +1376,27 @@ export class Lenis {
       onStart?.(this)
     }
 
-    const handleComplete = () => {
-      if (--pending > 0) return
-      this.userData = {}
-      if (lock) {
-        this.isLocked = false
-        this._scrollToLocked = false
+    return new Promise((resolve) => {
+      const handleComplete = () => {
+        if (--pending > 0) return
+        this.userData = {}
+        if (lock) {
+          this.isLocked = false
+          this._scrollToLocked = false
+        }
+        onComplete?.(this)
+        resolve(true)
       }
-      onComplete?.(this)
-    }
 
-    for (const { axis, target } of targets) {
-      this.scrollAxisTo(axis, target, {
-        ...options,
-        onStart: handleStart,
-        onComplete: handleComplete,
-      })
-    }
+      for (const { axis, target } of targets) {
+        this.scrollAxisTo(axis, target, {
+          ...options,
+          onStart: handleStart,
+          onComplete: handleComplete,
+          onCancel: () => resolve(false),
+        })
+      }
+    })
   }
 
   /**
@@ -1408,7 +1421,8 @@ export class Lenis {
       easing = programmatic ? this.options.programmatic.easing : undefined,
       onStart,
       onComplete,
-    }: ScrollToOptions = {}
+      onCancel,
+    }: ScrollToOptions & { onCancel?: () => void } = {}
   ) {
     if (this.prefersReducedMotion) {
       if (programmatic) {
@@ -1477,6 +1491,7 @@ export class Lenis {
       duration,
       easing,
       lerp,
+      onCancel,
       onStart: () => {
         this.isScrolling = 'smooth'
         onStart?.(this)

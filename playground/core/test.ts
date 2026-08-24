@@ -115,7 +115,7 @@ lenis.on('scroll', (_e) => {
 //   // e.deltaY *= 10
 //   // e.cancel = true
 // })
-// window.lenis = lenis
+window.lenis = lenis
 
 declare global {
   interface Window {
@@ -157,6 +157,8 @@ declare global {
 
 // ─── HUD — live scroll state, rendered on its own rAF so no state change
 // (wheel-updated targets, settle resets, native scrolls) is ever missed ───
+// result of the last awaited `scrollTo` — `true` reached, `false` interrupted
+let lastScrollTo: string = '—'
 const hud = document.getElementById('hud')!
 function renderHud() {
   const round = (value: number) => Math.round(value * 100) / 100
@@ -171,6 +173,7 @@ function renderHud() {
     `progress        : ${round(lenis.progress)}`,
     `isScrolling     : ${lenis.isScrolling}`,
     `isLocked        : ${lenis.isLocked}`,
+    `lastScrollTo    : ${lastScrollTo}`,
   ].join('\n')
   requestAnimationFrame(renderHud)
 }
@@ -213,6 +216,14 @@ document.getElementById('scroll-end')?.addEventListener('click', () => {
 document.getElementById('scroll-immediate')?.addEventListener('click', () => {
   // random target so repeated clicks always produce a real jump
   lenis.scrollTo(Math.random() * lenis.maxScroll, { immediate: true })
+})
+
+document.getElementById('scroll-await')?.addEventListener('click', async () => {
+  // scroll (or wheel) before it lands to see it resolve `false`
+  lastScrollTo = 'pending…'
+  const target = lenis.scroll < lenis.maxScroll / 2 ? 'bottom' : 'top'
+  lastScrollTo = String(await lenis.scrollTo(target, { duration: 3 }))
+  console.log('await scrollTo →', lastScrollTo)
 })
 
 // ─── scrollend debugger — every window scrollend, tagged lenis (synthetic
