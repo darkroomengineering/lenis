@@ -16,13 +16,13 @@ const snap = new Snap(lenis, {
 })
 
 const slides = document.querySelectorAll<HTMLElement>('.slide')
-snap.addElements(Array.from(slides), { align: 'start' })
+snap.add(Array.from(slides), { align: 'start' })
 
 // Each element makes one snap target, so the tall 3rd slide (300vh) gets a
 // second one at its bottom edge — `'end'` aligns the section's bottom with the
 // viewport's bottom.
 const section3 = document.querySelector<HTMLElement>('.slide-3')!
-snap.addElement(section3, { align: 'end' })
+snap.add(section3, { align: 'end' })
 
 // Custom scrollbar: one segment per slide, sized by `flex-grow` = the slide's
 // own pixel height, so segment heights mirror section heights (the 300vh 3rd

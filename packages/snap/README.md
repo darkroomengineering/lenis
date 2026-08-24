@@ -27,16 +27,16 @@ npm i lenis
     snap.add(1500) // snap at 1500px
 
     // or add an element to snap to
-    snap.addElement(document.querySelector('.element'), {
+    snap.add(document.querySelector('.element'), {
       align: ['start', 'end'], // 'start', 'center', 'end'
     })
 
-    snap.addElement(document.querySelector('.element1'), {
+    snap.add(document.querySelector('.element1'), {
       align: 'center', // 'start', 'center', 'end'
     })
 
     // or add elements at once
-    snap.addElements(document.querySelectorAll('.section'), {
+    snap.add(document.querySelectorAll('.section'), {
       align: ['start', 'end'], // 'start', 'center', 'end'
     })
     
@@ -76,12 +76,11 @@ Element snap positions honor the CSS `scroll-margin` of each added element (outs
 
 ## Methods
 
-- `add(x: number, y?: number, options?)`: Add a snap point. One argument anchors the active axis (`{ y: x }`, or `{ x }` when the parent Lenis is horizontal); two arguments make a 2D point `{ x, y }`. The last argument may be `{ onSnap }` — a per-point callback fired when the scroll lands on it.
-- `addElement(element: HTMLElement, options?: SnapElementOptions)`: Add an element to snap to. `options.align` controls where the element lands: `'start' | 'center' | 'end' | 'none'` applied to both axes, or a tuple `[xAlign, yAlign]` for per-axis alignment (e.g. `['start', 'end']`). `'none'` skips that axis (like CSS `scroll-snap-align: none`). `options.lock` makes this element grab — snap fires the instant it's picked in the gesture's direction, no debounce wait, and holds the scroll until it lands (overridden by the instance-level `lock`). `options.onSnap` is a per-element callback fired when the scroll lands on its snap point.
-- `addElements(elements: HTMLElement[], options?: SnapElementOptions)`: Add elements at once (same `options` as `addElement`).
+- `add(point: number | { x?: number, y?: number }, options?)`: Add a snap point. A number anchors the active axis (`{ y }`, or `{ x }` when the parent Lenis is horizontal); an object sets each axis explicitly. `options.onSnap` is a per-point callback fired when the scroll lands on it.
+- `add(element: HTMLElement | HTMLElement[] | NodeListOf<HTMLElement>, options?: SnapElementOptions)`: Add one or more elements to snap to. `options.align` controls where the element lands: `'start' | 'center' | 'end' | 'none'` applied to both axes, or a tuple `[xAlign, yAlign]` for per-axis alignment (e.g. `['start', 'end']`). `'none'` skips that axis (like CSS `scroll-snap-align: none`). `options.lock` makes this element grab — snap fires the instant it's picked in the gesture's direction, no debounce wait, and holds the scroll until it lands (overridden by the instance-level `lock`). `options.onSnap` is a per-element callback fired when the scroll lands on its snap point.
 - `next()`: Go to the next snap point.
 - `previous()`: Go to the previous snap point.
 - `goTo(index: number)`: Go to a specific snap point.
 - `start()`: Start the snap.
 - `stop()`: Stop the snap.
-- `resize()`: Force recalculate the snap points.
+- `resize()`: Force recalculate the snap points.

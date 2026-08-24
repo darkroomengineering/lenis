@@ -36,7 +36,7 @@ const snap = new Snap(lenis, {
 // // becomes a single 2D snap target at its top-left corner — `align: 'start'`
 // // applies to both axes.
 const cells = document.querySelectorAll<HTMLElement>('#grid .inner-cell')
-snap.addElements(cells, { align: ['center', 'center'] })
+snap.add(cells, { align: ['center', 'center'] })
 
 const tweak = document.querySelector<HTMLElement>('#tweak')
 if (!tweak)

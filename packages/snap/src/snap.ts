@@ -29,10 +29,10 @@ type RequiredPick<T, F extends keyof T> = Omit<T, F> & Required<Pick<T, F>>
  * snap.add(500)
  *
  * // 2D: explicit point
- * snap.add(500, 800)
+ * snap.add({ x: 500, y: 800 })
  *
  * // Element-driven: align[0] = xAlign, align[1] = yAlign
- * snap.addElement(section, { align: ['start', 'end'] })
+ * snap.add(section, { align: ['start', 'end'] })
  */
 export class Snap {
   options: RequiredPick<SnapOptions, 'debounce' | 'mode'>
@@ -138,74 +138,67 @@ export class Snap {
   }
 
   /**
-   * Add a raw snap point.
+   * Add a snap target: a raw point, an element, or a list of elements.
+   * Returns a function that removes what was added.
    *
-   * Two-argument form is a 2D point; one-argument form anchors on the active
-   * axis (vertical unless the parent Lenis is horizontal). The last argument
-   * may be an options object with a per-point `onSnap` callback, fired when
-   * the scroll lands on this point.
+   * Points: a number anchors on the active axis (vertical unless the parent
+   * Lenis is horizontal); an object `{ x?, y? }` sets each axis explicitly.
+   * `options.onSnap` fires when the scroll lands on this point.
+   *
+   * Elements: each produces a single 2D target derived from its rect and
+   * the `align` option — a single value applied to both axes (`'center'`,
+   * `['start']`) or a tuple `[xAlign, yAlign]` (`['start', 'end']`).
    *
    * @example
-   * snap.add(500)                     // 1D: { y: 500 } (or { x: 500 } if horizontal)
-   * snap.add(500, 800)                // 2D: { x: 500, y: 800 }
-   * snap.add(500, { onSnap })         // 1D with callback
-   * snap.add(500, 800, { onSnap })    // 2D with callback
+   * snap.add(500)                          // { y: 500 } (or { x: 500 } if horizontal)
+   * snap.add({ x: 500, y: 800 })           // 2D point
+   * snap.add(500, { onSnap })              // with callback
+   * snap.add(section, { align: 'center' })
+   * snap.add(document.querySelectorAll('.section'), { align: 'start' })
    */
   add(
-    x: number,
-    y?: number | Pick<SnapItem, 'onSnap'>,
+    point: number | Pick<SnapItem, 'x' | 'y'>,
     options?: Pick<SnapItem, 'onSnap'>
+  ): () => void
+  add(element: HTMLElement, options?: SnapElementOptions): () => void
+  add(
+    elements: Iterable<HTMLElement>,
+    options?: SnapElementOptions
+  ): () => void
+  add(
+    target:
+      | number
+      | Pick<SnapItem, 'x' | 'y'>
+      | HTMLElement
+      | Iterable<HTMLElement>,
+    options: Pick<SnapItem, 'onSnap'> | SnapElementOptions = {}
   ): () => void {
-    if (typeof y === 'object') {
-      options = y
-      y = undefined
-    }
     const id = uid()
+
+    // `nodeType` tells a single element apart from a list (NodeList/array):
+    // some elements (form, select) are iterable too.
+    if (typeof target === 'object' && 'nodeType' in target) {
+      this.elements.set(
+        id,
+        new SnapElement(target, options, this.lenis.rootElement)
+      )
+      return () => this.elements.delete(id)
+    }
+
+    if (typeof target === 'object' && Symbol.iterator in target) {
+      const removers = Array.from(target, (el) => this.add(el, options))
+      return () => removers.forEach((remove) => remove())
+    }
+
     const item: SnapItem =
-      y === undefined
+      typeof target === 'number'
         ? this.lenis.options.orientation === 'horizontal'
-          ? { x }
-          : { y: x }
-        : { x, y }
-    if (options?.onSnap) item.onSnap = options.onSnap
+          ? { x: target }
+          : { y: target }
+        : { ...target }
+    if (options.onSnap) item.onSnap = options.onSnap
     this.snaps.set(id, item)
     return () => this.snaps.delete(id)
-  }
-
-  /**
-   * Add an element. The element produces a single 2D snap target whose
-   * coordinates are derived from its rect and the `align` option.
-   *
-   * `align` accepts:
-   * - a single value applied to both axes: `'center'`, `['start']`
-   * - a tuple `[xAlign, yAlign]`: `['start', 'end']`
-   */
-  addElement(
-    element: HTMLElement,
-    options: SnapElementOptions = {}
-  ): () => void {
-    const id = uid()
-
-    this.elements.set(
-      id,
-      new SnapElement(element, options, this.lenis.rootElement)
-    )
-
-    return () => this.elements.delete(id)
-  }
-
-  addElements(
-    elements: HTMLElement[] | NodeListOf<HTMLElement>,
-    options: SnapElementOptions = {}
-  ): () => void {
-    const map = Array.from(elements).map((element) =>
-      this.addElement(element, options)
-    )
-    return () => {
-      map.forEach((remove) => {
-        remove()
-      })
-    }
   }
 
   /**

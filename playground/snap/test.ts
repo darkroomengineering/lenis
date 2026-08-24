@@ -44,26 +44,26 @@ snap.add(500, { onSnap: (item) => hudLog('onSnap raw', item) })
 
 // 2 — center align; CSS scroll-margin-top: 48px shifts the snap up 24px;
 // per-element onSnap fires on arrival
-snap.addElement($('.section-2'), {
+snap.add($('.section-2'), {
   align: 'center',
   onSnap: (item) => hudLog('onSnap §2', item),
 })
 
 // 3 — end align on y; CSS scroll-margin-bottom pushes the snap 24px further
-snap.addElement($('.section-3'), { align: ['start', 'end'] })
+snap.add($('.section-3'), { align: ['start', 'end'] })
 
 // 4+5 — batch registration, center; only global scroll-padding applies
-snap.addElements(
+snap.add(
   document.querySelectorAll<HTMLElement>('.section-4, .section-5'),
   { align: ['center'] }
 )
 
 // 6 — y 'none': contributes no snap in this vertical setup
-snap.addElement($('.section-6'), { align: ['center', 'none'] })
+snap.add($('.section-6'), { align: ['center', 'none'] })
 
 // 7 — per-element lock: grabs — snaps here the instant this section is picked
 // in the gesture's direction (no debounce wait), uninterruptible until landed
-snap.addElement($('.section-7'), { align: 'start', lock: true })
+snap.add($('.section-7'), { align: 'start', lock: true })
 
 // ─── HUD ────────────────────────────────────────────────────────────────
 

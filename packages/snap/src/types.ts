@@ -12,7 +12,7 @@ export type SnapItem = {
   x?: number
   y?: number
   /**
-   * Per-target grab (from `addElement`'s `lock` option): the moment this
+   * Per-target grab (from `snap.add(element)`'s `lock` option): the moment this
    * target is picked in the gesture's direction of travel, snap to it
    * immediately (no debounce wait) and hold the scroll until it lands —
    * like CSS `scroll-snap-stop: always`. Ignored when the instance-level

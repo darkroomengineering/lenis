@@ -11,7 +11,7 @@ const snap = new Snap(lenis, {
 
 // Snap to each wrapper's flow position (ignoreSticky, the default, measures
 // the un-stuck position even while a card is pinned).
-snap.addElements(
+snap.add(
   Array.from(document.querySelectorAll<HTMLElement>('.card-wrapper')),
   { align: 'start' }
 )
