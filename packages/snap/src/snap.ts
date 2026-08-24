@@ -274,6 +274,21 @@ export class Snap {
       collected.push(item)
     })
 
+    // A stopped axis (`overflow: hidden` ⇒ not scrollable) is dropped from every
+    // target: pickers treat it as untouched (delta 0) and `goTo` never drives
+    // it. The dedupe below then collapses the points that only differed on it.
+    const stopX = !this.lenis.x.isScrollable
+    const stopY = !this.lenis.y.isScrollable
+    if (stopX || stopY) {
+      collected.forEach((item, i) => {
+        collected[i] = {
+          ...item,
+          x: stopX ? undefined : item.x,
+          y: stopY ? undefined : item.y,
+        }
+      })
+    }
+
     // Sort by (x, y) lexicographically — gives `next/previous` a stable order
     // and lets us dedupe consecutive identical points.
     collected.sort((a, b) => {
@@ -402,6 +417,8 @@ export class Snap {
     // core swallows gestures, so acting on them here would act on ghost
     // input — a flick mid-snap can't kick off a competing snap.
     if (this.lenis.isLocked) return false
+    // Nothing scrollable (every axis `overflow: hidden`) ⇒ nothing to snap to.
+    if (!this.lenis.isScrollable) return false
     return true
   }
 
