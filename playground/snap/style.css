@@ -19,11 +19,6 @@ html {
 
 /* ─── chrome: fixed header, HUD, raw-point marker ─── */
 
-/* keep the playground nav clickable above the demo header */
-nav {
-  z-index: 20;
-}
-
 #header {
   position: fixed;
   top: 0;

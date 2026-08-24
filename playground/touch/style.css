@@ -9,15 +9,13 @@ body {
   -webkit-text-size-adjust: 100%;
 }
 
-/* hide global nav on this page, it overlaps the split */
-body > nav {
-  display: none !important;
-}
-
 .split {
   display: flex;
   width: 100vw;
   height: 100dvh;
+  /* clear the fixed global nav (3rem + 2px offset) */
+  box-sizing: border-box;
+  padding-top: calc(3rem + 4px);
 }
 
 .column {
@@ -40,7 +38,7 @@ body > nav {
 }
 
 .column-content {
-  padding: 3rem 1rem 1rem;
+  padding: 1rem;
 }
 
 .column-label {

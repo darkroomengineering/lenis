@@ -90,7 +90,8 @@ const { title } = Astro.props
     height: 3rem;
     display: flex;
     gap: 2px;
-    z-index: 1;
+    /* above every page's debug chrome (max z-index: 100) */
+    z-index: 1000;
   }
 
   a {
