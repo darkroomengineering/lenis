@@ -66,12 +66,37 @@ export default defineConfig([
     dts: false,
     sourcemap: false,
     clean: false,
-    deps: { neverBundle: ['lenis', 'lenis/vue', '#imports', '#app', '@nuxt/kit'] },
+    deps: {
+      neverBundle: ['lenis', 'lenis/vue', '#imports', '#app', '@nuxt/kit'],
+    },
   },
+
+  // Framer ESM (core + snap, comment-free, self-contained)
+  ...[false, true].map((minify) => ({
+    ...shared,
+    entry: {
+      [minify ? 'lenis-framer.min' : 'lenis-framer']: 'packages/core/framer.ts',
+    },
+    dts: false,
+    sourcemap: false,
+    clean: false,
+    minify,
+    outputOptions: { comments: false },
+    plugins: [
+      {
+        name: 'strip-region-markers',
+        renderChunk: (code: string) =>
+          code.replace(/^\/\/#(end)?region.*\n/gm, ''),
+      },
+    ],
+  })),
 
   // Browser IIFE builds
   { entry: { lenis: 'packages/core/browser.ts' }, ...iife('Lenis') },
   { entry: { lenis: 'packages/core/browser.ts' }, ...iife('Lenis', true) },
   { entry: { 'lenis-snap': 'packages/snap/browser.ts' }, ...iife('Snap') },
-  { entry: { 'lenis-snap': 'packages/snap/browser.ts' }, ...iife('Snap', true) },
+  {
+    entry: { 'lenis-snap': 'packages/snap/browser.ts' },
+    ...iife('Snap', true),
+  },
 ])
