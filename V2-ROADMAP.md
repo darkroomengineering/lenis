@@ -262,7 +262,7 @@ Warn in development mode when `infinite` is used on `html`/`body` (causes flicke
 
 #### Examples to release (feature showcases)
 
-- ⏳ **Infinite two-axis grid + snap** — the v2 headline demo: `orientation: 'both'` + `infinite: true`, snap to cells. Reference: [oneupstudio.it](https://www.oneupstudio.it/)
+- ⏳ **Infinite two-axis grid + snap** — the v2 headline demo: `orientation: 'both'` + `infinite: true`, snap to cells. References: [oneupstudio.it](https://www.oneupstudio.it/), [infinite-liquid-glass.shader.se](https://infinite-liquid-glass.shader.se/)
 - 🚧 **Stacked cards** — 100vh `sticky top: 0` wrappers, 4/3 cards, snap to each (`playground/sticky-cards` has the mechanics; needs the visual pass). Reference: [stackhealth.darkroom.engineering](https://stackhealth.darkroom.engineering/)
 - ⏳ **Autoscroll (cinema)** — auto-advancing reel, pauses on interaction. Reference: [mhvkj4-3000.csb.app](https://mhvkj4-3000.csb.app/)
 - 🚧 **Slideshow** — snap-centered slides with proportional custom scrollbar (`playground/slideshow` has the mechanics; needs the visual pass). Reference: [ciaoenergy.com](https://www.ciaoenergy.com/)
