@@ -47,6 +47,14 @@ export type GestureData = {
   deltaY: number
   event: WheelEvent | TouchEvent | PointerEvent
   type: 'wheel' | 'touch' | 'drag'
+  /**
+   * Set on the `'gesture'` event: `true` when the instance let this gesture
+   * through untouched — aimed at a nested scroller or `data-lenis-prevent`
+   * element, zoom (ctrl + wheel), off-axis, or the instance is locked / not
+   * scrollable. Observers reacting to input (e.g. lenis/snap) should skip
+   * those. Absent in the `onGesture` option, which runs before that decision.
+   */
+  ignored?: boolean
 }
 
 export type Orientation = 'vertical' | 'horizontal' | 'both'

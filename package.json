@@ -86,6 +86,10 @@
       "types": "./dist/lenis-snap.d.ts",
       "default": "./dist/lenis-snap.mjs"
     },
+    "./snap/react": {
+      "types": "./dist/lenis-snap-react.d.ts",
+      "default": "./dist/lenis-snap-react.mjs"
+    },
     "./vue": {
       "types": "./dist/lenis-vue.d.ts",
       "default": "./dist/lenis-vue.mjs"

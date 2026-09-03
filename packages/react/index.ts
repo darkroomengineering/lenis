@@ -5,5 +5,6 @@ export {
   ReactLenis as Lenis,
   ReactLenis,
 } from './src/provider'
+export { ROOT_KEY } from './src/store'
 export * from './src/types'
 export { useLenis } from './src/use-lenis'

@@ -1,7 +1,7 @@
 import { version } from '../../../package.json'
 import { Axis } from './axis'
-import { debounce } from './debounce'
-import { Emitter } from './emitter'
+import { debounce } from '../../utils/debounce'
+import { Emitter } from '../../utils/emitter'
 import { GesturesHandler } from './gestures-handler'
 import { clamp } from './maths'
 import { ScrollingBox } from './scrolling-box'
@@ -704,7 +704,15 @@ export class Lenis {
     const data = this.options.onGesture?.(_data, this) ?? _data
 
     if (data === false) return
-    this.emitter.emit('gesture', data)
+
+    // Emitted once per gesture, once this instance has decided what to do with
+    // it. `ignored: true` marks input it lets through untouched — aimed at a
+    // nested scroller or `data-lenis-prevent` element, zoom, off-axis, a locked
+    // or non-scrollable instance — so observers (lenis/snap) can skip it. A
+    // copy: an adopted child's emit must not leak its flag into ours.
+    const emitGesture = (ignored = false): void => {
+      this.emitter.emit('gesture', { ...data, ignored })
+    }
 
     let { deltaX, deltaY, event, type } = data
 
@@ -713,9 +721,9 @@ export class Lenis {
     this.isDrag = type === 'drag'
 
     // keep zoom feature
-    if (event.ctrlKey) return
+    if (event.ctrlKey) return emitGesture(true)
     // @ts-expect-error
-    if (event.lenisStopPropagation) return
+    if (event.lenisStopPropagation) return emitGesture(true)
 
     // If the touch grabbed an iOS text-selection handle, let the OS adjust the
     // selection instead of scrolling. Latched on touchstart, held until touchend.
@@ -727,7 +735,7 @@ export class Lenis {
       }
       if (this._isDraggingSelection) {
         if (event.type === 'touchend') this._isDraggingSelection = false
-        return
+        return emitGesture(true)
       }
     }
 
@@ -754,14 +762,15 @@ export class Lenis {
       this.isScrollable &&
       !this.isLocked
 
+    // Taps and zero-delta releases are ours (a slow touch/drag ends with one,
+    // and lenis/snap snaps on it) — not ignored, just nothing to scroll.
     if (isTapToStop) {
+      emitGesture()
       this.reset()
       return
     }
 
-    if (isClickOrTap) {
-      return
-    }
+    if (isClickOrTap) return emitGesture()
 
     // catch if scrolling on nested scroll elements. This must run before the
     // unknown-gesture bail-out below: an off-axis gesture (e.g. a horizontal
@@ -785,7 +794,7 @@ export class Lenis {
         (this.isTouch && node.hasAttribute?.('data-lenis-prevent-touch')) ||
         (this.isWheel && node.hasAttribute?.('data-lenis-prevent-wheel'))
       )
-        return
+        return emitGesture(true)
 
       if (
         this.options.nested.mode !== 'none' &&
@@ -806,7 +815,7 @@ export class Lenis {
         ) {
           this.adoptNestedScroller(node, data)
         }
-        return
+        return emitGesture(true)
       }
     }
 
@@ -815,16 +824,16 @@ export class Lenis {
       (this.options.gestureOrientation === 'vertical' && deltaY === 0) ||
       (this.options.gestureOrientation === 'horizontal' && deltaX === 0)
 
-    if (isUnknownGesture) {
-      return
-    }
+    if (isUnknownGesture) return emitGesture(true)
 
     if (!this.isScrollable || this.isLocked) {
       if (event.cancelable) {
         event.preventDefault() // this will stop forwarding the event to the parent, this is problematic
       }
-      return
+      return emitGesture(true)
     }
+
+    emitGesture()
 
     const isSmooth =
       (this.options.touch.smooth && this.isTouch) ||

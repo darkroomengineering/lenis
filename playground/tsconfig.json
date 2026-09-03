@@ -9,6 +9,7 @@
       "lenis": ["../dist/lenis.d.ts"],
       "lenis/react": ["../dist/lenis-react.d.ts"],
       "lenis/snap": ["../dist/lenis-snap.d.ts"],
+      "lenis/snap/react": ["../dist/lenis-snap-react.d.ts"],
       "lenis/vue": ["../dist/lenis-vue.d.ts"]
     }
   }

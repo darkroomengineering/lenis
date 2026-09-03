@@ -1,5 +1,5 @@
-import { debounce } from './debounce'
-import { Emitter } from './emitter'
+import { debounce } from '../../utils/debounce'
+import { Emitter } from '../../utils/emitter'
 import type { DimensionsOptions } from './types'
 
 // Technical explanation

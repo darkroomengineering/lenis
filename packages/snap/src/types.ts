@@ -21,12 +21,15 @@ export type SnapItem = {
   lock?: boolean
   /**
    * Per-target callback, fired when the scroll lands on this point (same
-   * timing as `onSnapComplete`). Stripped from callback payloads.
+   * timing as the `'complete'` event). Stripped from callback payloads.
    */
   onSnap?: OnSnapCallback
 }
 
 export type OnSnapCallback = (item: SnapItem & { index?: number }) => void
+
+/** `'start'`: the scroll starts moving toward a target. `'complete'`: it landed. */
+export type SnapEvent = 'start' | 'complete'
 
 export type SnapOptions = {
   /**
@@ -95,12 +98,4 @@ export type SnapOptions = {
    * @description The debounce delay (in ms) to prevent snapping too often.
    */
   debounce?: number
-  /**
-   * @description Called when the snap starts
-   */
-  onSnapStart?: OnSnapCallback
-  /**
-   * @description Called when the snap completes
-   */
-  onSnapComplete?: OnSnapCallback
 }

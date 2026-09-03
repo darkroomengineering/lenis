@@ -274,7 +274,9 @@ matching state holds.
 
 ### `on(event, callback)` / `off(event, callback)`
 **Rule:** subscribe / unsubscribe to `'scroll'` (`(lenis) => void`) or `'gesture'`
-(`(data) => void`). `on` returns an unsubscribe function.
+(`(data) => void`). `on` returns an unsubscribe function. `data.ignored` is `true` for
+gestures the instance let through (nested scroller, `data-lenis-prevent`, zoom, off-axis,
+locked / not scrollable) — skip those when reacting to input.
 
 ### `raf(time)`
 **Rule:** advance the animation by the clock `time` (ms). Called automatically when

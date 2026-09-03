@@ -32,6 +32,13 @@
     },
     "packages/snap": {
       "name": "lenis-snap",
+      "devDependencies": {
+        "@types/react": "^19.0.7",
+        "react": "^19.0.0",
+      },
+    },
+    "packages/utils": {
+      "name": "lenis-utils",
     },
     "packages/vue": {
       "name": "lenis-vue",
@@ -1255,6 +1262,8 @@
     "lenis-react": ["lenis-react@workspace:packages/react"],
 
     "lenis-snap": ["lenis-snap@workspace:packages/snap"],
+
+    "lenis-utils": ["lenis-utils@workspace:packages/utils"],
 
     "lenis-vue": ["lenis-vue@workspace:packages/vue"],
 

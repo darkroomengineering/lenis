@@ -281,7 +281,7 @@ Scroll state properties (`scroll`, `velocity`, `direction`, …) read the *activ
 | Event     | Callback Arguments                                            |
 |-----------|---------------------------------------------------------------|
 | `scroll`  | Lenis instance                                                |
-| `gesture` | `{deltaX, deltaY, event, type}` (replaces v1 `virtual-scroll`) |
+| `gesture` | `{deltaX, deltaY, event, type, ignored}` (replaces v1 `virtual-scroll`). `ignored` is `true` when the instance let the gesture through — a nested scroller or `data-lenis-prevent` element under the pointer, zoom, off-axis, locked or not scrollable — skip those when reacting to input |
 
 
 <br/>

@@ -59,6 +59,10 @@ One snap per flick, viewport-sized cards:
 
 Element snap positions honor the CSS `scroll-margin` of each added element (outsets its snap area, read live) and the wrapper's CSS `scroll-padding` (insets the viewport, re-read on `resize()`) — same semantics as native scroll snap. For strictness, CSS `mandatory` ⇒ `distanceThreshold: Infinity`, `proximity` ⇒ the default `'50%'`.
 
+### React
+
+See [lenis/snap/react](./react/README.md): `<ReactLenisSnap {...options} />` attaches a Snap to the nearest `<ReactLenis>` (the page's when placed next to `<ReactLenis root />` — no nesting; `rootContext` makes it the root Snap for the hooks anywhere), `useLenisSnapAdd({ align })` returns a ref callback that registers the element while it's attached, `useLenisSnap({ onComplete })` subscribes to its events.
+
 ## Options
 
 - `mode`: `'closest' | 'directional'` (default: `'directional'`). How a gesture maps to a snap target. Both modes measure from the scroll's natural resting position (`targetScroll` — where the in-flight inertia will land, wrapped in infinite mode).
@@ -67,12 +71,20 @@ Element snap positions honor the CSS `scroll-margin` of each added element (outs
 - `lock`: `boolean` (default: unset). Locked targets grab, like CSS `scroll-snap-stop: always`: the moment one is picked in the gesture's direction of travel, the snap fires immediately — no `debounce` wait — and holds the scroll until it lands (gestures can't interrupt it). `true` makes every target grab; when set (true or false) it overrides any per-element `lock`; leave unset to let each element decide.
 - `distanceThreshold`: `string | number | [x, y]` (default: `'50%'`). Per-axis "max reach" from the scroll's natural resting position (both modes). Percentages resolve against the viewport (per axis). Pass `Infinity` to disable the gate entirely (always snap to the nearest target).
 - `debounce`: `number` (default: 500). Delay after the last gesture before snapping. Touch and mouse-drag gestures only ever trigger a snap on release — never while the finger/pointer is held.
-- `onSnapStart`: `function`. Callback when snap starts.
-- `onSnapComplete`: `function`. Callback when snap completes.
 - `lerp`: `number` Lerp value for snapping. (default: lenis lerp). 
 - `easing`: `function`. Easing function for snapping. (default: lenis easing).
 - `duration`: `number`. Duration for snapping. (default: lenis duration).
 
+
+## Events
+
+```js
+const off = snap.on('start', ({ index }) => {}) // the scroll starts moving toward a target
+snap.on('complete', ({ index, x, y }) => {}) // it landed
+off() // or snap.off('complete', callback)
+```
+
+Callbacks receive the target: `{ index, x?, y?, lock? }`.
 
 ## Methods
 
@@ -83,4 +95,6 @@ Element snap positions honor the CSS `scroll-margin` of each added element (outs
 - `goTo(index: number)`: Go to a specific snap point.
 - `start()`: Start the snap.
 - `stop()`: Stop the snap.
-- `resize()`: Force recalculate the snap points.
+- `resize()`: Force recalculate the snap points.
+- `on(event, callback)`: Subscribe to `'start'` / `'complete'` (see [Events](#events)). Returns an unsubscribe function.
+- `off(event, callback)`: Unsubscribe.

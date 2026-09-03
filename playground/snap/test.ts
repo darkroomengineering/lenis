@@ -25,9 +25,9 @@ const snap = new Snap(lenis, {
   duration: 1,
 
   // debounce:100,
-  onSnapStart: (item) => hudLog('start', item),
-  onSnapComplete: (item) => hudLog('complete', item),
 })
+snap.on('start', (item) => hudLog('start', item))
+snap.on('complete', (item) => hudLog('complete', item))
 
 declare global {
   interface Window {

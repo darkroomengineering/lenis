@@ -1,4 +1,4 @@
-import { Emitter } from './emitter'
+import { Emitter } from '../../utils/emitter'
 import type { GestureCallback } from './types'
 
 const LINE_HEIGHT = 100 / 6

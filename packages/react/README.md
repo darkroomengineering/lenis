@@ -124,7 +124,7 @@ useLenis((lenis) => {
 
 - **No name** — uses the nearest `<ReactLenis>` (React context), falling back to
   the global `root` / `rootContext` instance.
-- **With a name** — targets that named instance directly, ignoring context.
+- **With a name** — targets that named instance directly, ignoring context. `ROOT_KEY` (`'root'`) is exported for an explicit root lookup: `useLenis(ROOT_KEY)`.
 
 ### Arguments
 

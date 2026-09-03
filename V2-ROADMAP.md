@@ -122,11 +122,16 @@ The CSS is the source of truth: Lenis observes the root's overflow and reacts. U
   - `scrollTo(t, { lock: true })` → `scrollTo(t, { onStart: () => lenis.lock(), onComplete: () => lenis.unlock() })`
   - `lenis.isStopped` → `!lenis.isScrollable`; `lenis.isTouching` → `lenis.isTouch`
 
+### lenis/snap
+
+- [x] Events: `snap.on('start' | 'complete', callback)` / `off` (an emitter, like core) replace the `onSnapStart` / `onSnapComplete` options — any number of subscribers, subscribe after construction.
+
 ### lenis/react
 
 - [x] Split `root` into two orthogonal props: `root` (target window, render no wrapper divs) and `rootContext` (register in the global store so `useLenis` reaches it anywhere). `rootContext` defaults to `root`. Removes the overloaded `root="asChild"` string.
 - [x] Use `useSyncExternalStore` for state management (`store.ts`)
 - [x] Named instances: `<ReactLenis name="sidebar">` → `useLenis('sidebar')`. The single-slot global store became a keyed registry; the global root is just the entry under `ROOT_KEY`, so `rootContext` and `name` share one mechanism.
+- [x] `lenis/snap/react`: `<ReactLenisSnap {...snapOptions}>` attaches a Snap to the nearest `<ReactLenis>` (the page's when placed next to `<ReactLenis root />`) with the same `rootContext` / `name` system as `<ReactLenis>` — context for the subtree, one keyed registry with the root Snap under `ROOT_KEY`. No `root` prop: a Snap targets nothing itself, it follows a Lenis. `useLenisSnap(name?, { onStart, onComplete })` returns the instance and subscribes to its events; `useLenisSnapAdd(name?, { align })` returns a ref callback that registers the element while attached — a callback ref, not a `RefObject`, so late mounts, swaps and detaches all re-register correctly. Playground: `playground/react-snap`.
 
 ---
 
@@ -166,7 +171,7 @@ new Lenis({
 })
 ```
 
-The `GestureData` payload includes `deltaX`, `deltaY`, the original `event`, and a `type: 'wheel' | 'touch'` discriminator so callers don't need to sniff `event.type`.
+The `GestureData` payload includes `deltaX`, `deltaY`, the original `event`, and a `type: 'wheel' | 'touch'` discriminator so callers don't need to sniff `event.type`. The `'gesture'` event payload also carries `ignored: true` for input the instance let through (nested scroller, `data-lenis-prevent`, zoom, off-axis, locked / not scrollable) — `lenis/snap` skips those, so wheeling inside a nested scroller no longer snaps the page.
 
 ### ✅ iOS-specific touch tuning
 
@@ -317,3 +322,4 @@ TBD — will provide a v1 → v2 migration guide covering:
 - Renamed properties: `limit` → `maxScroll`, `dimensions` → `scrollingBox` (class `Dimensions` → `ScrollingBox`)
 - Removed the `lenis-stopped` class
 - React package changes
+- `lenis/snap`: `onSnapStart` / `onSnapComplete` options → `snap.on('start' | 'complete', callback)`

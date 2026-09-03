@@ -1,9 +1,10 @@
 import type Lenis from 'lenis'
 import type { GestureData } from 'lenis'
-import { debounce } from './debounce'
+import { debounce } from '../../utils/debounce'
 import type { SnapElementOptions } from './element'
 import { SnapElement } from './element'
-import type { SnapItem, SnapOptions } from './types'
+import { Emitter } from '../../utils/emitter'
+import type { OnSnapCallback, SnapEvent, SnapItem, SnapOptions } from './types'
 import type { UID } from './uid'
 import { uid } from './uid'
 
@@ -39,6 +40,7 @@ export class Snap {
   elements = new Map<UID, SnapElement>()
   snaps = new Map<UID, SnapItem>()
   isStopped = false
+  private readonly emitter = new Emitter()
   onSnapDebounced: ((e: GestureData) => void) & { cancel: () => void }
   currentSnapIndex?: number
   /**
@@ -70,8 +72,6 @@ export class Snap {
       duration,
       distanceThreshold = '50%',
       debounce: debounceDelay = 300,
-      onSnapStart,
-      onSnapComplete,
     }: SnapOptions = {}
   ) {
     if (!window.lenis) {
@@ -88,8 +88,6 @@ export class Snap {
       lock,
       distanceThreshold,
       debounce: debounceDelay,
-      onSnapStart,
-      onSnapComplete,
     }
 
     this.onSnapDebounced = debounce(
@@ -127,6 +125,23 @@ export class Snap {
     this.elements.forEach((element) => {
       element.destroy()
     })
+    this.emitter.destroy()
+  }
+
+  /**
+   * Subscribe to a snap: `'start'` when the scroll starts moving toward a
+   * target, `'complete'` when it lands. The callback receives the target
+   * (`{ index, x?, y?, lock? }`). Returns an unsubscribe function.
+   *
+   * @example
+   * const off = snap.on('complete', ({ index }) => setActive(index))
+   */
+  on(event: SnapEvent, callback: OnSnapCallback): () => void {
+    return this.emitter.on(event, callback as (...args: unknown[]) => void)
+  }
+
+  off(event: SnapEvent, callback: OnSnapCallback): void {
+    this.emitter.off(event, callback as (...args: unknown[]) => void)
   }
 
   start() {
@@ -161,10 +176,7 @@ export class Snap {
     options?: Pick<SnapItem, 'onSnap'>
   ): () => void
   add(element: HTMLElement, options?: SnapElementOptions): () => void
-  add(
-    elements: Iterable<HTMLElement>,
-    options?: SnapElementOptions
-  ): () => void
+  add(elements: Iterable<HTMLElement>, options?: SnapElementOptions): () => void
   add(
     target:
       | number
@@ -182,7 +194,10 @@ export class Snap {
         id,
         new SnapElement(target, options, this.lenis.rootElement)
       )
-      return () => this.elements.delete(id)
+      return () => {
+        this.elements.get(id)?.destroy()
+        this.elements.delete(id)
+      }
     }
 
     if (typeof target === 'object' && Symbol.iterator in target) {
@@ -344,20 +359,20 @@ export class Snap {
     const { onSnap, ...snapData } = currentSnap
 
     // `scrollTo` runs the 2D target as one operation, firing onStart/onComplete
-    // once for the whole snap — so onSnapStart/onSnapComplete fire once each.
+    // once for the whole snap — so 'start' / 'complete' emit once each.
     this.lenis.scrollTo(target, {
       duration: this.options.duration,
       easing: this.options.easing,
       lerp: this.options.lerp,
       lock,
       onStart: () => {
-        this.options.onSnapStart?.({
+        this.emitter.emit('start', {
           index: clamped,
           ...snapData,
         })
       },
       onComplete: () => {
-        this.options.onSnapComplete?.({
+        this.emitter.emit('complete', {
           index: clamped,
           ...snapData,
         })
@@ -435,6 +450,10 @@ export class Snap {
   }
 
   private onGesture = (e: GestureData) => {
+    // Input this Lenis let through (a nested scroller, data-lenis-prevent,
+    // zoom, off-axis, locked…) is not ours to snap on — and must not restart
+    // the debounce of a snap a real gesture already queued.
+    if (e.ignored) return
     // A `lock` target grabs (CSS `scroll-snap-stop: always`): the moment it's
     // the pick, snap immediately — no debounce wait — and hold until landed.
     // Always direction-gated (pickDirectional), even in 'closest' mode: a

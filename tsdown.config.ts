@@ -47,6 +47,16 @@ export default defineConfig([
     deps: { neverBundle: ['react', 'lenis'] },
   },
 
+  // Snap React ESM
+  {
+    ...shared,
+    entry: { 'lenis-snap-react': 'packages/snap/react/index.ts' },
+    dts: { resolver: 'tsc' },
+    clean: false,
+    banner: '"use client";',
+    deps: { neverBundle: ['react', 'lenis', 'lenis/snap', 'lenis/react'] },
+  },
+
   // Vue ESM
   {
     ...shared,

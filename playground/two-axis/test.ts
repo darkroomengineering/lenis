@@ -24,13 +24,9 @@ const snap = new Snap(lenis, {
   mode: 'directional', // one snap per flick (former `type: 'lock'`)
   // lock: true,
   // debounce: 500,
-  onSnapComplete: (data) => {
-    console.log('complete', data)
-  },
-  onSnapStart: (data) => {
-    console.log('start', data)
-  },
 })
+snap.on('start', (data) => console.log('start', data))
+snap.on('complete', (data) => console.log('complete', data))
 
 // // Each cell of the 5×5 grid is one viewport (100vw × 100svh). Each cell
 // // becomes a single 2D snap target at its top-left corner — `align: 'start'`

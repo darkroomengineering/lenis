@@ -1,4 +1,4 @@
-import { debounce } from './debounce'
+import { debounce } from '../../utils/debounce'
 import type { OnSnapCallback, SnapAlign } from './types'
 
 function removeParentSticky(element: HTMLElement) {
