@@ -7,6 +7,6 @@ export {
   SnapContext,
   type SnapContextValue,
   type SnapRef,
-  useLenisSnap,
-  useLenisSnapAdd,
+  useSnap,
+  useSnapAdd,
 } from './src/snap'

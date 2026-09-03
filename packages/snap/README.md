@@ -61,7 +61,7 @@ Element snap positions honor the CSS `scroll-margin` of each added element (outs
 
 ### React
 
-See [lenis/snap/react](./react/README.md): `<ReactLenisSnap {...options} />` attaches a Snap to the nearest `<ReactLenis>` (the page's when placed next to `<ReactLenis root />` — no nesting; `rootContext` makes it the root Snap for the hooks anywhere), `useLenisSnapAdd({ align })` returns a ref callback that registers the element while it's attached, `useLenisSnap({ onComplete })` subscribes to its events.
+See [lenis/snap/react](./react/README.md): `<ReactLenisSnap {...options} />` attaches a Snap to the nearest `<ReactLenis>` (the page's when placed next to `<ReactLenis root />` — no nesting; `rootContext` makes it the root Snap for the hooks anywhere), `useSnapAdd({ align })` returns a ref callback that registers the element while it's attached, `useSnap({ onComplete })` subscribes to its events.
 
 ## Options
 

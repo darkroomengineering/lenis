@@ -51,14 +51,14 @@ function useRegistry(key: string) {
 
 export type ReactLenisSnapProps = SnapOptions & {
   /**
-   * Use this instance as the root Snap: `useLenisSnap()` / `useLenisSnapAdd()`
+   * Use this instance as the root Snap: `useSnap()` / `useSnapAdd()`
    * resolve to it from anywhere in the app, outside this component's subtree.
    * @default false
    */
   rootContext?: boolean
   /**
    * Register this instance under a name so it can be reached from anywhere via
-   * `useLenisSnap(name)`, independent of the provider subtree.
+   * `useSnap(name)`, independent of the provider subtree.
    */
   name?: string
   children?: ReactNode
@@ -73,7 +73,7 @@ export type ReactLenisSnapProps = SnapOptions & {
  * @example
  * <ReactLenis root />
  * <ReactLenisSnap rootContext mode="directional" lock />
- * <Slide /> // useLenisSnapAdd({ align: 'center' }), anywhere
+ * <Slide /> // useSnapAdd({ align: 'center' }), anywhere
  */
 export function ReactLenisSnap({
   children,
@@ -97,7 +97,7 @@ export function ReactLenisSnap({
     }
   }, [lenis, JSON.stringify(options)])
 
-  // Publish to the registry so useLenisSnap() / useLenisSnap(name) can reach
+  // Publish to the registry so useSnap() / useSnap(name) can reach
   // this instance from outside its subtree. `rootContext` -> ROOT_KEY, `name`
   // -> its own key; both are entries in one registry.
   useEffect(() => {
@@ -139,23 +139,23 @@ export type SnapCallbacks = {
  * Without a name it targets the nearest `<ReactLenisSnap>` (React context) and
  * falls back to the root Snap (`<ReactLenisSnap rootContext>`).
  * Pass a name to reach a specific instance from anywhere in the app
- * (`<ReactLenisSnap name="sidebar">` → `useLenisSnap('sidebar')`), ignoring
+ * (`<ReactLenisSnap name="sidebar">` → `useSnap('sidebar')`), ignoring
  * context.
  *
  * @example <caption>Accessor</caption>
- *          const snap = useLenisSnap()
- *          const sidebar = useLenisSnap('sidebar')
+ *          const snap = useSnap()
+ *          const sidebar = useSnap('sidebar')
  *
  * @example <caption>Events</caption>
- *          useLenisSnap({ onComplete: ({ index }) => setActive(index) })
- *          useLenisSnap('sidebar', { onStart, onComplete })
+ *          useSnap({ onComplete: ({ index }) => setActive(index) })
+ *          useSnap('sidebar', { onStart, onComplete })
  */
-export function useLenisSnap(callbacks?: SnapCallbacks): Snap | undefined
-export function useLenisSnap(
+export function useSnap(callbacks?: SnapCallbacks): Snap | undefined
+export function useSnap(
   name: string,
   callbacks?: SnapCallbacks
 ): Snap | undefined
-export function useLenisSnap(
+export function useSnap(
   a?: string | SnapCallbacks,
   b?: SnapCallbacks
 ): Snap | undefined {
@@ -187,13 +187,13 @@ export function useLenisSnap(
   return snap
 }
 
-/** Ref callback returned by `useLenisSnapAdd` — pass it as `ref`. */
+/** Ref callback returned by `useSnapAdd` — pass it as `ref`. */
 export type SnapRef = (element: HTMLElement | null) => (() => void) | undefined
 
 /**
  * Hook form of `snap.add(element, options)`: returns a ref callback that
  * registers the element it's attached to as a snap target, and removes it on
- * detach. Resolves the instance like `useLenisSnap` (nearest provider, root
+ * detach. Resolves the instance like `useSnap` (nearest provider, root
  * Snap, or by name).
  *
  * A callback ref rather than a `RefObject`: React calls it on every attach,
@@ -201,18 +201,18 @@ export type SnapRef = (element: HTMLElement | null) => (() => void) | undefined
  * correctly — a `RefObject` gives no such signal.
  *
  * @example
- * const setSnapRef = useLenisSnapAdd({ align: 'center' })
+ * const setSnapRef = useSnapAdd({ align: 'center' })
  * return <section ref={setSnapRef} />
  *
  * @example
- * const setSnapRef = useLenisSnapAdd('sidebar', { align: 'start', lock: true })
+ * const setSnapRef = useSnapAdd('sidebar', { align: 'start', lock: true })
  */
-export function useLenisSnapAdd(options?: SnapElementOptions): SnapRef
-export function useLenisSnapAdd(
+export function useSnapAdd(options?: SnapElementOptions): SnapRef
+export function useSnapAdd(
   name: string,
   options?: SnapElementOptions
 ): SnapRef
-export function useLenisSnapAdd(
+export function useSnapAdd(
   a?: string | SnapElementOptions,
   b?: SnapElementOptions
 ): SnapRef {

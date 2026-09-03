@@ -3,13 +3,13 @@ import { ReactLenis } from 'lenis/react'
 import type Snap from 'lenis/snap'
 import {
   ReactLenisSnap,
-  useLenisSnap,
-  useLenisSnapAdd,
+  useSnap,
+  useSnapAdd,
 } from 'lenis/snap/react'
 import { useEffect, useState } from 'react'
 
-// /react-snap — lenis/snap/react: <ReactLenisSnap> + useLenisSnapAdd(options)
-// + useLenisSnap({ onStart, onComplete }).
+// /react-snap — lenis/snap/react: <ReactLenisSnap> + useSnapAdd(options)
+// + useSnap({ onStart, onComplete }).
 // Page: `<ReactLenis root />` + `<ReactLenisSnap rootContext />`, both
 // self-closing siblings — everything resolves through the root registry.
 // Sidebar: a scoped Lenis with its own Snap — items resolve it via context.
@@ -80,7 +80,7 @@ function Section({
   lock?: boolean
 }) {
   // no provider above: the global root Snap
-  const setSnapRef = useLenisSnapAdd({ align, lock })
+  const setSnapRef = useSnapAdd({ align, lock })
 
   return (
     <section ref={setSnapRef} className="section">
@@ -93,7 +93,7 @@ function Section({
 
 function Item({ label }: { label: string }) {
   // inside the sidebar's <ReactLenisSnap>: that one, via context
-  const setSnapRef = useLenisSnapAdd({ align: 'start' })
+  const setSnapRef = useSnapAdd({ align: 'start' })
 
   return (
     <div ref={setSnapRef} className="item">
@@ -111,11 +111,11 @@ function Hud({
 }) {
   const [last, setLast] = useState('—')
   // global root entry + its events
-  const snap = useLenisSnap({
+  const snap = useSnap({
     onComplete: (item) => setLast(`#${item.index} @ ${item.y}`),
   })
-  const named = useLenisSnap('page') // the same instance, by name
-  const sidebar = useLenisSnap('sidebar') // the scoped one, from outside its tree
+  const named = useSnap('page') // the same instance, by name
+  const sidebar = useSnap('sidebar') // the scoped one, from outside its tree
 
   useEffect(() => {
     if (snap) window.snap = snap
