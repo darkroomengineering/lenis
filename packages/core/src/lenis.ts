@@ -1,7 +1,7 @@
 import { version } from '../../../package.json'
-import { Axis } from './axis'
 import { debounce } from '../../utils/debounce'
 import { Emitter } from '../../utils/emitter'
+import { Axis } from './axis'
 import { GesturesHandler } from './gestures-handler'
 import { clamp } from './maths'
 import { ScrollingBox } from './scrolling-box'
@@ -826,14 +826,18 @@ export class Lenis {
 
     if (isUnknownGesture) return emitGesture(true)
 
+    // Emit before the lock gate: an observer may lock in response (a lenis/snap
+    // grab starts its own scrollTo) and the gate then swallows this very
+    // gesture instead of applying it on top — which would cancel that scrollTo
+    // and leave the lock held. The flag reflects the pre-emit decision.
+    emitGesture(!this.isScrollable || this.isLocked)
+
     if (!this.isScrollable || this.isLocked) {
       if (event.cancelable) {
         event.preventDefault() // this will stop forwarding the event to the parent, this is problematic
       }
-      return emitGesture(true)
+      return
     }
-
-    emitGesture()
 
     const isSmooth =
       (this.options.touch.smooth && this.isTouch) ||
