@@ -46,7 +46,8 @@ import Layout from '../layouts/Layout.astro'
           <p>
             Centered in the snapport. CSS scroll-margin-top: 48px outsets the
             snap area, shifting the resting point 24px up. Margins are read
-            live on every compute — edit it in devtools and snap again.
+            live on every compute — edit it in devtools and snap again. Lands
+            in 2s: a per-element duration overriding the instance's 1s.
           </p>
         </div>
       </section>
@@ -54,10 +55,10 @@ import Layout from '../layouts/Layout.astro'
         <div class="inner">
           <h2>3 · align ['start', 'end'] + scroll-margin-bottom</h2>
           <p>
-            250vh tall — in this vertical setup only the y align ('end')
-            applies: one snap where its bottom edge meets the viewport bottom,
-            inset by scroll-padding-bottom: 40px and pushed 24px further by
-            scroll-margin-bottom. The rest of it scrolls freely.
+            250vh tall — two snaps on the same element: one where its top
+            edge meets the viewport top, one where its bottom edge meets the
+            viewport bottom, inset by scroll-padding-bottom: 40px and pushed
+            24px further by scroll-margin-bottom. The middle scrolls freely.
           </p>
         </div>
       </section>
@@ -83,11 +84,11 @@ import Layout from '../layouts/Layout.astro'
       </section>
       <section class="section section-6">
         <div class="inner">
-          <h2>6 · align ['center', 'none']</h2>
+          <h2>6 · align &#123; x: 'center' &#125;</h2>
           <p>
-            y is 'none' (CSS scroll-snap-align: none) — in this vertical setup
-            the section contributes no snap at all. The scroll rests anywhere
-            here.
+            y omitted ⇒ 'none' (CSS scroll-snap-align: none) — in this vertical
+            setup the section contributes no snap at all. The scroll rests
+            anywhere here.
           </p>
         </div>
       </section>

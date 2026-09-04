@@ -4,6 +4,23 @@ import type { EasingFunction } from 'lenis'
 export type SnapAlign = 'start' | 'center' | 'end' | 'none'
 
 /**
+ * `align` option of `snap.add(element)`. A value or list applies to the
+ * active axis (vertical unless the parent Lenis is horizontal) — every entry
+ * adds one snap point for the same element (`['start', 'end']` snaps to both
+ * edges). `{ x, y }` aligns each axis on its own; an omitted axis is `'none'`.
+ * In `orientation: 'both'` a value or list applies to both axes and the x
+ * and y lists combine, every x with every y — `['start', 'end']` equals
+ * `{ x: ['start', 'end'], y: ['start', 'end'] }`, the four corners.
+ */
+export type SnapAlignOption =
+  | SnapAlign
+  | SnapAlign[]
+  | { x?: SnapAlign | SnapAlign[]; y?: SnapAlign | SnapAlign[] }
+
+/** A distance in px, or a percentage of the viewport on that axis. */
+export type SnapThreshold = number | `${number}%`
+
+/**
  * A 2D snap target. `x` and `y` are optional so 1D snaps (single axis) and 2D
  * snaps (`orientation: 'both'`) can share the same shape — an undefined
  * coordinate is left untouched when scrolling.
@@ -24,7 +41,21 @@ export type SnapItem = {
    * timing as the `'complete'` event). Stripped from callback payloads.
    */
   onSnap?: OnSnapCallback
+  /**
+   * Per-target animation overrides: win over the instance-level `lerp` /
+   * `duration` / `easing` when snapping to this target. Stripped from
+   * callback payloads.
+   */
+  lerp?: number
+  duration?: number
+  easing?: EasingFunction
 }
+
+/** Per-target options every `snap.add` form accepts: grab, callback, animation overrides. */
+export type SnapTargetOptions = Pick<
+  SnapItem,
+  'lock' | 'onSnap' | 'lerp' | 'duration' | 'easing'
+>
 
 export type OnSnapCallback = (item: SnapItem & { index?: number }) => void
 
@@ -83,16 +114,13 @@ export type SnapOptions = {
    * - Scalar (`number` or `'50%'`): applied to both axes. Percentages scale
    *   against each axis's viewport dimension independently (`x` → width,
    *   `y` → height), so `'50%'` is "half a viewport on each axis".
-   * - Tuple `[x, y]`: separate value per axis. Each entry follows the same
-   *   number-or-percentage rule.
+   * - `{ x, y }`: separate value per axis, same number-or-percentage rule.
+   *   An omitted axis uses the default.
    *
    * Coordinates left `undefined` on a snap item skip their axis check
    * (always pass).
    */
-  distanceThreshold?:
-    | number
-    | `${number}%`
-    | [number | `${number}%`, number | `${number}%`]
+  distanceThreshold?: SnapThreshold | { x?: SnapThreshold; y?: SnapThreshold }
   /**
    * @default 500
    * @description The debounce delay (in ms) to prevent snapping too often.

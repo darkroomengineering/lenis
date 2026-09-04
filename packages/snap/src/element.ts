@@ -1,5 +1,5 @@
 import { debounce } from '../../utils/debounce'
-import type { OnSnapCallback, SnapAlign } from './types'
+import type { SnapAlign, SnapAlignOption, SnapTargetOptions } from './types'
 
 function removeParentSticky(element: HTMLElement) {
   const position = getComputedStyle(element).position
@@ -44,22 +44,18 @@ function offsetLeft(element: HTMLElement, accumulator = 0) {
 }
 
 /**
- * Each element produces a single 2D snap target. The `align` option controls
- * how that target is anchored on each axis:
+ * Each element produces one snap target per `align` entry, on the active
+ * axis (vertical unless the parent Lenis is horizontal). In 2D (`'both'`) a
+ * value or list applies to both axes and the x and y lists combine, every x
+ * with every y — `['start', 'end']` is the four corners:
  *
- *   align: 'center'                  // both axes centered
- *   align: ['start']                 // both axes start (shorthand)
- *   align: ['start', 'end']          // x = start, y = end
- *   align: ['none', 'center']        // x skipped, y centered
- *
- * Extra entries are ignored; missing entries fall back to the first.
+ *   align: 'center'                    // one point, centered
+ *   align: ['start', 'center', 'end']  // three points on the same element
+ *   align: { x: 'start', y: 'end' }    // per axis (2D: x = start, y = end)
+ *   align: { x: ['start', 'end'] }     // x only — an omitted axis is 'none'
  */
-export type SnapElementOptions = {
-  align?: SnapAlign | SnapAlign[]
-  /** Grab: snap here the instant this element is picked in the gesture's direction (no debounce wait) and hold until landed. Overridden by the instance-level `lock`. */
-  lock?: boolean
-  /** Fired when the scroll lands on this element's snap point. */
-  onSnap?: OnSnapCallback
+export type SnapElementOptions = SnapTargetOptions & {
+  align?: SnapAlignOption
   ignoreSticky?: boolean
   ignoreTransform?: boolean
 }
@@ -79,12 +75,8 @@ type Rect = {
 export class SnapElement {
   element: HTMLElement
   options: SnapElementOptions
-  /** [xAlign, yAlign] — both always defined. */
-  align: [SnapAlign, SnapAlign]
-  /** Per-element lock, hoisted from options like `align`. */
-  lock?: boolean
-  /** Per-element snap callback, hoisted from options like `align`. */
-  onSnap?: OnSnapCallback
+  /** `[xAlign, yAlign]` pairs — every pair adds a snap point. */
+  align: [SnapAlign, SnapAlign][]
   // @ts-expect-error
   rect: Rect = {}
   wrapperResizeObserver: ResizeObserver
@@ -95,23 +87,25 @@ export class SnapElement {
     element: HTMLElement,
     {
       align = 'start',
-      lock,
-      onSnap,
       ignoreSticky = true,
       ignoreTransform = false,
+      ...target
     }: SnapElementOptions = {},
     // The Lenis scroll container — rects are expressed in its scroll space.
     private wrapper: HTMLElement = document.documentElement
   ) {
     this.element = element
-    this.options = { align, lock, onSnap, ignoreSticky, ignoreTransform }
+    this.options = { align, ignoreSticky, ignoreTransform, ...target }
 
-    const list = Array.isArray(align) ? align : [align]
-    const xAlign = (list[0] ?? 'start') as SnapAlign
-    const yAlign = (list[1] ?? list[0] ?? 'start') as SnapAlign
-    this.align = [xAlign, yAlign]
-    this.lock = lock
-    this.onSnap = onSnap
+    const toList = (value: SnapAlign | SnapAlign[] = 'none') =>
+      Array.isArray(value) ? value : [value]
+    const { x, y } =
+      typeof align === 'object' && !Array.isArray(align)
+        ? align
+        : { x: align, y: align }
+    this.align = toList(x).flatMap((xAlign) =>
+      toList(y).map((yAlign): [SnapAlign, SnapAlign] => [xAlign, yAlign])
+    )
 
     this.debouncedWrapperResize = debounce(this.onWrapperResize, 500)
 

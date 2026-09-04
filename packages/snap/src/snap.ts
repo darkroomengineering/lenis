@@ -4,7 +4,15 @@ import { debounce } from '../../utils/debounce'
 import type { SnapElementOptions } from './element'
 import { SnapElement } from './element'
 import { Emitter } from '../../utils/emitter'
-import type { OnSnapCallback, SnapEvent, SnapItem, SnapOptions } from './types'
+import type {
+  OnSnapCallback,
+  SnapAlign,
+  SnapEvent,
+  SnapItem,
+  SnapOptions,
+  SnapTargetOptions,
+  SnapThreshold,
+} from './types'
 import type { UID } from './uid'
 import { uid } from './uid'
 
@@ -13,6 +21,28 @@ import { uid } from './uid'
 // - arrow, spacebar
 
 type RequiredPick<T, F extends keyof T> = Omit<T, F> & Required<Pick<T, F>>
+
+const DEFAULT_DISTANCE_THRESHOLD: SnapThreshold = '50%'
+
+/**
+ * The per-target options set on `options` — undefined keys left out so they
+ * don't leak into event payloads.
+ */
+function targetOptions({
+  lock,
+  onSnap,
+  lerp,
+  duration,
+  easing,
+}: SnapTargetOptions): SnapTargetOptions {
+  const out: SnapTargetOptions = {}
+  if (lock !== undefined) out.lock = lock
+  if (onSnap) out.onSnap = onSnap
+  if (lerp !== undefined) out.lerp = lerp
+  if (duration !== undefined) out.duration = duration
+  if (easing) out.easing = easing
+  return out
+}
 
 /**
  * Snap class. Every snap target is a 2D point `{ x?, y? }` — `undefined`
@@ -32,8 +62,11 @@ type RequiredPick<T, F extends keyof T> = Omit<T, F> & Required<Pick<T, F>>
  * // 2D: explicit point
  * snap.add({ x: 500, y: 800 })
  *
- * // Element-driven: align[0] = xAlign, align[1] = yAlign
+ * // Element-driven: one point per align entry, on the active axis
  * snap.add(section, { align: ['start', 'end'] })
+ *
+ * // Per axis (2D)
+ * snap.add(cell, { align: { x: 'start', y: 'center' } })
  */
 export class Snap {
   options: RequiredPick<SnapOptions, 'debounce' | 'mode'>
@@ -70,7 +103,7 @@ export class Snap {
       lock,
       easing,
       duration,
-      distanceThreshold = '50%',
+      distanceThreshold = DEFAULT_DISTANCE_THRESHOLD,
       debounce: debounceDelay = 300,
     }: SnapOptions = {}
   ) {
@@ -158,11 +191,16 @@ export class Snap {
    *
    * Points: a number anchors on the active axis (vertical unless the parent
    * Lenis is horizontal); an object `{ x?, y? }` sets each axis explicitly.
-   * `options.onSnap` fires when the scroll lands on this point.
    *
-   * Elements: each produces a single 2D target derived from its rect and
-   * the `align` option — a single value applied to both axes (`'center'`,
-   * `['start']`) or a tuple `[xAlign, yAlign]` (`['start', 'end']`).
+   * Every form takes the per-target options: `onSnap` fires when the scroll
+   * lands on the target, `lock` makes it grab, and `lerp` / `duration` /
+   * `easing` override the instance's animation for that target.
+   *
+   * Elements: each produces one target per `align` entry, derived from its
+   * rect on the active axis — a value (`'center'`), a list (`['start', 'end']`
+   * snaps to both edges), or `{ x, y }` to align each axis on its own (an
+   * omitted axis is `'none'`). In `orientation: 'both'` a value or list
+   * applies to both axes and the x and y lists combine, every x with every y.
    *
    * @example
    * snap.add(500)                          // { y: 500 } (or { x: 500 } if horizontal)
@@ -170,10 +208,13 @@ export class Snap {
    * snap.add(500, { onSnap })              // with callback
    * snap.add(section, { align: 'center' })
    * snap.add(document.querySelectorAll('.section'), { align: 'start' })
+   * snap.add(section, { align: ['start', 'end'] })  // two points
+   * snap.add(cell, { align: { x: 'start', y: 'center' } })
+   * snap.add(section, { align: 'center', duration: 2 })  // slower than the instance
    */
   add(
     point: number | Pick<SnapItem, 'x' | 'y'>,
-    options?: Pick<SnapItem, 'onSnap'>
+    options?: SnapTargetOptions
   ): () => void
   add(element: HTMLElement, options?: SnapElementOptions): () => void
   add(elements: Iterable<HTMLElement>, options?: SnapElementOptions): () => void
@@ -183,7 +224,7 @@ export class Snap {
       | Pick<SnapItem, 'x' | 'y'>
       | HTMLElement
       | Iterable<HTMLElement>,
-    options: Pick<SnapItem, 'onSnap'> | SnapElementOptions = {}
+    options: SnapElementOptions = {}
   ): () => void {
     const id = uid()
 
@@ -205,26 +246,28 @@ export class Snap {
       return () => removers.forEach((remove) => remove())
     }
 
-    const item: SnapItem =
+    const point =
       typeof target === 'number'
         ? this.lenis.options.orientation === 'horizontal'
           ? { x: target }
           : { y: target }
-        : { ...target }
-    if (options.onSnap) item.onSnap = options.onSnap
-    this.snaps.set(id, item)
+        : target
+    this.snaps.set(id, { ...point, ...targetOptions(options) })
     return () => this.snaps.delete(id)
   }
 
   /**
-   * Compute every 2D snap target. Elements contribute one point each (their
-   * `align`-resolved coordinates); raw `snap.add` items pass through as-is.
+   * Compute every 2D snap target. Elements contribute one point per `align`
+   * entry; raw `snap.add` items pass through as-is.
    * Identical points are deduped so the cursor / proximity math sees a clean
    * sequence even when many elements share the same column/row.
    */
   private computeSnaps = (): SnapItem[] => {
-    const horizontalOnly = this.lenis.options.orientation === 'horizontal'
-    const isTwoAxis = this.lenis.options.orientation === 'both'
+    // Only the axes the parent Lenis scrolls on are read: a vertical Lenis
+    // ignores x aligns, a horizontal one y aligns, `'both'` reads both.
+    const { orientation } = this.lenis.options
+    const readX = orientation === 'horizontal' || orientation === 'both'
+    const readY = orientation !== 'horizontal'
 
     const collected: SnapItem[] = []
 
@@ -232,9 +275,8 @@ export class Snap {
       collected.push(snap)
     }
 
-    this.elements.forEach(({ element, rect, align, lock, onSnap }) => {
-      const [xAlign, yAlign] = align
-      if (xAlign === 'none' && yAlign === 'none') return
+    this.elements.forEach(({ element, rect, align, options }) => {
+      const extra = targetOptions(options)
 
       // CSS `scroll-margin` outsets the element's snap area. Read fresh here
       // (not cached on the element) so style changes are picked up; margins
@@ -249,44 +291,44 @@ export class Snap {
 
       // Snap area (margin-outset rect) aligned against the snapport
       // (padding-inset viewport) — mirrors CSS scroll snap positioning.
-      const resolveX = () => {
-        const areaStart = rect.left - margin.left
-        const areaEnd = rect.right + margin.right
-        const portStart = this.padding.left
-        const portEnd = this.viewport.width - this.padding.right
-        if (xAlign === 'start') return areaStart - portStart
-        if (xAlign === 'center')
+      const resolve = (
+        align: SnapAlign,
+        areaStart: number,
+        areaEnd: number,
+        portStart: number,
+        portEnd: number
+      ) => {
+        if (align === 'start') return areaStart - portStart
+        if (align === 'center')
           return (areaStart + areaEnd) / 2 - (portStart + portEnd) / 2
         return areaEnd - portEnd
       }
-      const resolveY = () => {
-        const areaStart = rect.top - margin.top
-        const areaEnd = rect.bottom + margin.bottom
-        const portStart = this.padding.top
-        const portEnd = this.viewport.height - this.padding.bottom
-        if (yAlign === 'start') return areaStart - portStart
-        if (yAlign === 'center')
-          return (areaStart + areaEnd) / 2 - (portStart + portEnd) / 2
-        return areaEnd - portEnd
-      }
+      const resolveX = (xAlign: SnapAlign) =>
+        resolve(
+          xAlign,
+          rect.left - margin.left,
+          rect.right + margin.right,
+          this.padding.left,
+          this.viewport.width - this.padding.right
+        )
+      const resolveY = (yAlign: SnapAlign) =>
+        resolve(
+          yAlign,
+          rect.top - margin.top,
+          rect.bottom + margin.bottom,
+          this.padding.top,
+          this.viewport.height - this.padding.bottom
+        )
 
-      // In 1D mode only emit the active axis coord; in 2D emit both. An axis
-      // aligned 'none' contributes nothing.
-      let item: SnapItem
-      if (isTwoAxis) {
-        item = {}
-        if (xAlign !== 'none') item.x = Math.ceil(resolveX())
-        if (yAlign !== 'none') item.y = Math.ceil(resolveY())
-      } else if (horizontalOnly) {
-        if (xAlign === 'none') return
-        item = { x: Math.ceil(resolveX()) }
-      } else {
-        if (yAlign === 'none') return
-        item = { y: Math.ceil(resolveY()) }
+      // Every [x, y] align pair is one target. An axis aligned 'none' (or not
+      // read) stays undefined — untouched when scrolling; no axis ⇒ no target.
+      for (const [xAlign, yAlign] of align) {
+        const item: SnapItem = {}
+        if (readX && xAlign !== 'none') item.x = Math.ceil(resolveX(xAlign))
+        if (readY && yAlign !== 'none') item.y = Math.ceil(resolveY(yAlign))
+        if (item.x === undefined && item.y === undefined) continue
+        collected.push(Object.assign(item, extra))
       }
-      if (lock !== undefined) item.lock = lock
-      if (onSnap) item.onSnap = onSnap
-      collected.push(item)
     })
 
     // A stopped axis (`overflow: hidden` ⇒ not scrollable) is dropped from every
@@ -355,15 +397,17 @@ export class Snap {
     // Instance `lock` (when set) overrides the target's own `lock`.
     const lock = this.options.lock ?? currentSnap.lock ?? false
 
-    // Callback payloads carry the snap's data, not its function.
-    const { onSnap, ...snapData } = currentSnap
+    // Callback payloads carry the snap's coordinates (and lock), not its
+    // callback or animation overrides.
+    const { onSnap, lerp, duration, easing, ...snapData } = currentSnap
 
     // `scrollTo` runs the 2D target as one operation, firing onStart/onComplete
     // once for the whole snap — so 'start' / 'complete' emit once each.
+    // Per-target animation overrides win over the instance's.
     this.lenis.scrollTo(target, {
-      duration: this.options.duration,
-      easing: this.options.easing,
-      lerp: this.options.lerp,
+      duration: duration ?? this.options.duration,
+      easing: easing ?? this.options.easing,
+      lerp: lerp ?? this.options.lerp,
       lock,
       onStart: () => {
         this.emitter.emit('start', {
@@ -388,31 +432,29 @@ export class Snap {
    * Resolve a single threshold entry against a base dimension. Percentages
    * scale against `base`; numbers pass through as pixels.
    */
-  private resolveThresholdValue(
-    value: number | `${number}%` | undefined,
-    base: number
-  ): number {
-    if (typeof value === 'string' && value.endsWith('%')) {
-      return (Number(value.replace('%', '')) / 100) * base
+  private resolveThresholdValue(value: SnapThreshold, base: number): number {
+    if (typeof value === 'string') {
+      return (Number.parseFloat(value) / 100) * base
     }
-    if (typeof value === 'number') return value
-    return base
+    return value
   }
 
   /**
    * Threshold expressed as per-axis pixel values. Scalar / percentage inputs
-   * resolve against each axis's viewport dimension independently. Pass
-   * `Infinity` (per axis or scalar) to disable the gate entirely.
+   * resolve against each axis's viewport dimension independently; an axis
+   * omitted from `{ x, y }` uses the default. Pass `Infinity` (per axis or
+   * scalar) to disable the gate entirely.
    */
   private get resolvedThreshold(): { x: number; y: number } {
     const { distanceThreshold } = this.options
-    const [xRaw, yRaw] = Array.isArray(distanceThreshold)
-      ? distanceThreshold
-      : [distanceThreshold, distanceThreshold]
+    const { x = DEFAULT_DISTANCE_THRESHOLD, y = DEFAULT_DISTANCE_THRESHOLD } =
+      typeof distanceThreshold === 'object'
+        ? distanceThreshold
+        : { x: distanceThreshold, y: distanceThreshold }
 
     return {
-      x: this.resolveThresholdValue(xRaw, this.viewport.width),
-      y: this.resolveThresholdValue(yRaw, this.viewport.height),
+      x: this.resolveThresholdValue(x, this.viewport.width),
+      y: this.resolveThresholdValue(y, this.viewport.height),
     }
   }
 
@@ -445,7 +487,8 @@ export class Snap {
   private get hasLocks(): boolean {
     if (this.options.lock !== undefined) return this.options.lock
     for (const snap of this.snaps.values()) if (snap.lock) return true
-    for (const element of this.elements.values()) if (element.lock) return true
+    for (const element of this.elements.values())
+      if (element.options.lock) return true
     return false
   }
 

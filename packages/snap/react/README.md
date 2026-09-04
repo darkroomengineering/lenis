@@ -119,7 +119,7 @@ Hook form of `snap.add(element, options)`. Returns a **ref callback**: the eleme
 
 ```jsx
 const setSnapRef = useSnapAdd({ align: 'center' })
-const setSnapRef = useSnapAdd('sidebar', { align: ['start', 'none'], lock: true })
+const setSnapRef = useSnapAdd('sidebar', { align: { x: 'start' }, lock: true })
 
 <section ref={setSnapRef} />
 ```
@@ -127,7 +127,7 @@ const setSnapRef = useSnapAdd('sidebar', { align: ['start', 'none'], lock: true 
 | Arg | Type | Description |
 |-----|------|-------------|
 | `name` _(optional, first)_ | `string` | Target a named instance instead of the context/root. |
-| `options` | [`SnapElementOptions`](../README.md#methods) | `align` (`'start' \| 'center' \| 'end' \| 'none'` or `[xAlign, yAlign]`), `lock`, `onSnap`, `ignoreSticky`, `ignoreTransform`. |
+| `options` | [`SnapElementOptions`](../README.md#methods) | `align` (`'start' \| 'center' \| 'end' \| 'none'`, a list — one snap point per entry — or `{ x, y }` per axis), `lock`, `onSnap`, `lerp` / `duration` / `easing` (per-target animation overrides), `ignoreSticky`, `ignoreTransform`. |
 
 It's a callback ref rather than a `RefObject` on purpose: React calls it on every attach, swap and detach, so a late mount, a conditional element or a changed `align` re-registers correctly. To also keep your own ref, merge them:
 

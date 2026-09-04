@@ -6,8 +6,8 @@ import Snap from 'lenis/snap'
 //
 // Use cases on show, one per section (explanations live in the page itself):
 //  - raw point            snap.add(500) — the dashed marker line
-//  - align variants       center (2), end (3), batch center (4+5)
-//  - align 'none'         (6) contributes no snap on y
+//  - align variants       center (2), ['start', 'end'] on one element (3), batch center (4+5)
+//  - align { x } only     (6) y omitted ⇒ 'none' — contributes no snap on y
 //  - CSS scroll-margin    (2, 3) outsets a snap area, read live each compute
 //  - CSS scroll-padding   html — insets the snapport for every element snap
 //  - per-element lock     (7) grabs: snaps the instant it's picked, holds until landed
@@ -43,23 +43,25 @@ const $ = (selector: string) => document.querySelector<HTMLElement>(selector)!
 snap.add(500, { onSnap: (item) => hudLog('onSnap raw', item) })
 
 // 2 — center align; CSS scroll-margin-top: 48px shifts the snap up 24px;
-// per-element onSnap fires on arrival
+// per-element onSnap fires on arrival; per-element duration (2s, instance: 1s)
 snap.add($('.section-2'), {
   align: 'center',
+  duration: 2,
   onSnap: (item) => hudLog('onSnap §2', item),
 })
 
-// 3 — end align on y; CSS scroll-margin-bottom pushes the snap 24px further
+// 3 — two snaps on one element: top edge and bottom edge; CSS
+// scroll-margin-bottom pushes the 'end' snap 24px further
 snap.add($('.section-3'), { align: ['start', 'end'] })
 
 // 4+5 — batch registration, center; only global scroll-padding applies
 snap.add(
   document.querySelectorAll<HTMLElement>('.section-4, .section-5'),
-  { align: ['center'] }
+  { align: 'center' }
 )
 
-// 6 — y 'none': contributes no snap in this vertical setup
-snap.add($('.section-6'), { align: ['center', 'none'] })
+// 6 — y omitted ⇒ 'none': contributes no snap in this vertical setup
+snap.add($('.section-6'), { align: { x: 'center' } })
 
 // 7 — per-element lock: grabs — snaps here the instant this section is picked
 // in the gesture's direction (no debounce wait), uninterruptible until landed
@@ -137,6 +139,7 @@ function verifyCSSInterop() {
       'section-2 center (scroll-margin-top)',
       expectedY($('.section-2'), 'center'),
     ],
+    ['section-3 start', expectedY($('.section-3'), 'start')],
     ['section-3 end (scroll-margin-bottom)', expectedY($('.section-3'), 'end')],
     [
       'section-4 center (scroll-padding only)',
@@ -156,7 +159,7 @@ function verifyCSSInterop() {
       console.error(`✗ ${name}: expected ~${Math.round(expected)}, got`, ys)
     }
   }
-  // section-6 (y 'none') must not contribute — exactly the 6 targets above
+  // section-6 (y 'none') must not contribute — exactly the 7 targets above
   if (snaps.length !== cases.length) {
     pass = false
     console.error(

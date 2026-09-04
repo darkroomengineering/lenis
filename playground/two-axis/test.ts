@@ -29,10 +29,10 @@ snap.on('start', (data) => console.log('start', data))
 snap.on('complete', (data) => console.log('complete', data))
 
 // // Each cell of the 5×5 grid is one viewport (100vw × 100svh). Each cell
-// // becomes a single 2D snap target at its top-left corner — `align: 'start'`
-// // applies to both axes.
+// // becomes a single 2D snap target at its center — `align: 'center'` applies
+// // to both axes (`{ x, y }` to align each on its own).
 const cells = document.querySelectorAll<HTMLElement>('#grid .inner-cell')
-snap.add(cells, { align: ['center', 'center'] })
+snap.add(cells, { align: 'center' })
 
 const tweak = document.querySelector<HTMLElement>('#tweak')
 if (!tweak)
