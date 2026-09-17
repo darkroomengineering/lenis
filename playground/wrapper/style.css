@@ -1,0 +1,51 @@
+/* percentage chain so #scroller can be height: 100% */
+html,
+body {
+  height: 100%;
+}
+
+#scroller {
+  height: 100%;
+  overflow-y: auto;
+}
+
+section {
+  min-height: 100vh;
+  padding: 6rem 2rem 2rem;
+  font-family: monospace;
+}
+
+section:nth-child(odd) {
+  background-color: #0e0e0e;
+  color: white;
+}
+
+section h2 {
+  font-size: 3rem;
+  margin: 0 0 1rem;
+}
+
+section p {
+  max-width: 60ch;
+}
+
+/* Base UI dialog (unstyled) */
+.backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgb(0 0 0 / 0.5);
+}
+
+.popup {
+  pointer-events: auto; /* portal is pointer-events: none */
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  translate: -50% -50%;
+  width: 20rem;
+  max-height: 50vh;
+  overflow: auto;
+  padding: 1rem;
+  background: #fff;
+  color: #0e0e0e;
+}

@@ -1,0 +1,34 @@
+---
+import Modal from '~/wrapper/modal'
+import '~/wrapper/style.css'
+import Layout from '../layouts/Layout.astro'
+---
+
+<Layout title="Lenis Wrapper">
+  <div id="scroller">
+    <div id="content">
+      <section>
+        <h2>wrapper: #scroller</h2>
+        <Modal client:only="react" />
+        <p></p>
+      </section>
+      <section>
+        <h2>two</h2>
+        <p></p>
+      </section>
+      <section>
+        <h2>three</h2>
+        <p></p>
+      </section>
+      <section>
+        <h2>four</h2>
+        <p></p>
+      </section>
+      <section>
+        <h2>five</h2>
+        <p></p>
+      </section>
+    </div>
+  </div>
+  <script src="../../wrapper/test.ts"></script>
+</Layout>

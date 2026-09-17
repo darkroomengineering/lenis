@@ -13,6 +13,7 @@
     "@astrojs/check": "^0.9.4",
     "@astrojs/react": "^4.1.6",
     "@astrojs/vue": "^5.0.6",
+    "@base-ui-components/react": "^1.0.0-rc.0",
     "@types/react": "^19.0.7",
     "@types/react-dom": "^19.0.3",
     "astro": "^5.1.8",
