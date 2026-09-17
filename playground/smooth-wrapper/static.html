@@ -1,0 +1,169 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>smooth-wrapper</title>
+    <style>
+      html,
+      body {
+        margin: 0;
+      }
+
+      #smooth-wrapper {
+        position: fixed;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+      }
+
+      section {
+        height: 100vh;
+        box-sizing: border-box;
+        padding: 1rem;
+        font: 700 10vw/1 system-ui, sans-serif;
+      }
+
+      section:nth-of-type(odd) {
+        background: #eee;
+      }
+
+      /* IntersectionObserver: lime outline while ≥50% visible */
+      .in-view {
+        outline: 8px solid lime;
+        outline-offset: -8px;
+      }
+
+      /* sticky inside content — sticks to the wrapper (its scroll container) */
+      .sticky {
+        position: sticky;
+        top: 0;
+        background: #f0f;
+        font-size: 1rem;
+      }
+
+      /* fixed inside content — no transform above it, so viewport-relative */
+      .fixed {
+        position: fixed;
+        right: 1rem;
+        bottom: 1rem;
+        background: #ff0;
+        font-size: 1rem;
+      }
+
+      /* scroll-driven animations: red = wrapper timeline (visual), blue =
+         scroll(root) (target). Blue leads red while lerping. A bare scroll()
+         on a position: fixed element resolves to root, so name the timeline. */
+      body {
+        timeline-scope: --smooth;
+      }
+      #smooth-wrapper {
+        scroll-timeline: --smooth y;
+      }
+      #progress,
+      #progress-root {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 6px;
+        transform-origin: 0 0;
+        animation: grow linear both;
+      }
+      #progress {
+        background: red;
+        animation-timeline: --smooth;
+      }
+      #progress-root {
+        top: 6px;
+        background: blue;
+        animation-timeline: scroll(root);
+      }
+      @keyframes grow {
+        from {
+          transform: scaleX(0);
+        }
+        to {
+          transform: scaleX(1);
+        }
+      }
+
+      #nav {
+        position: fixed;
+        top: 1rem;
+        right: 1rem;
+        font: 1rem system-ui, sans-serif;
+      }
+
+    </style>
+  </head>
+  <body>
+    <div id="smooth-wrapper">
+      <div id="smooth-content">
+        <!-- ALL YOUR CONTENT HERE -->
+        <div id="progress"></div>
+        <section id="s1">1</section>
+        <section id="s2"><div class="sticky">sticky</div>2</section>
+        <section id="s3">3 <input placeholder="focus me" /></section>
+        <section id="s4">
+          4
+          <iframe id="iframe-short" srcdoc="<p style=font:2rem/1.5 system-ui>short iframe: wheel here should scroll the page</p>" style="width: 100%; height: 30vh; border: 4px solid #0af"></iframe>
+          <iframe id="iframe-tall" srcdoc="<div style=height:3000px;background:linear-gradient(#0af,#f0a)><p style=font:2rem/1.5 system-ui>tall iframe: scrolls itself first, then chains to the page</p></div>" style="width: 100%; height: 30vh; border: 4px solid #f0a"></iframe>
+        </section>
+        <section id="s5">5</section>
+        <section id="s6">6</section>
+        <div class="fixed">fixed (inside)</div>
+      </div>
+    </div>
+    <!-- position: fixed elements can go outside -->
+    <div id="progress-root"></div>
+    <nav id="nav"><a href="#s6">#s6</a></nav>
+
+    <script>
+      const wrapper = document.getElementById('smooth-wrapper')
+      const content = document.getElementById('smooth-content')
+
+      // body height mirrors the wrapper's scrollable extent, so window max
+      // scroll == wrapper max scrollTop by construction
+      new ResizeObserver(() => {
+        document.body.style.height = wrapper.scrollHeight + 'px'
+      }).observe(content)
+
+      let target = 0
+      let scroll = 0
+      let raf = 0
+
+      function update() {
+        scroll += (target - scroll) * 0.1
+        if (Math.abs(target - scroll) < 0.5) scroll = target
+        wrapper.scrollTo(0, scroll)
+        raf = scroll === target ? 0 : requestAnimationFrame(update)
+      }
+
+      addEventListener('scroll', () => {
+        target = scrollY
+        if (!raf) raf = requestAnimationFrame(update)
+      })
+
+      // the browser moved the wrapper itself (find, focus, anchor, scroll
+      // anchoring): adopt it as the new position and bring the window along
+      wrapper.addEventListener('scroll', () => {
+        if (Math.abs(wrapper.scrollTop - scroll) < 1) return // our own write
+        scroll = target = wrapper.scrollTop
+        window.scrollTo(0, scroll)
+      })
+
+      // IntersectionObserver fixture
+      const io = new IntersectionObserver(
+        (entries) => {
+          for (const e of entries) {
+            e.target.classList.toggle('in-view', e.isIntersecting)
+          }
+        },
+        { threshold: 0.5 }
+      )
+      for (const s of document.querySelectorAll('section')) io.observe(s)
+    </script>
+  </body>
+</html>
