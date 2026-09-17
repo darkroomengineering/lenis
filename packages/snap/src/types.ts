@@ -20,6 +20,9 @@ export type SnapAlignOption =
 /** A distance in px, or a percentage of the viewport on that axis. */
 export type SnapThreshold = number | `${number}%`
 
+/** Way the scroll travels: `1` toward larger scroll values, `-1` toward smaller. */
+export type SnapDirection = -1 | 1
+
 /**
  * A 2D snap target. `x` and `y` are optional so 1D snaps (single axis) and 2D
  * snaps (`orientation: 'both'`) can share the same shape — an undefined
@@ -37,6 +40,16 @@ export type SnapItem = {
    */
   lock?: boolean
   /**
+   * One-way target: only a candidate when the scroll has to travel this way
+   * to reach it — `1` toward larger scroll values, `-1` toward smaller.
+   * `{ x, y }` sets each axis; a scalar applies to both. Lets a tall
+   * element's `'start'` (`1`) and `'end'` (`-1`) catch you on entry while
+   * you scroll freely inside it. Coincident targets whose directions differ
+   * merge into one reachable both ways. Applies to gesture picks only —
+   * `goTo` / `next` / `previous` ignore it.
+   */
+  direction?: SnapDirection | { x?: SnapDirection; y?: SnapDirection }
+  /**
    * Per-target callback, fired when the scroll lands on this point (same
    * timing as the `'complete'` event). Stripped from callback payloads.
    */
@@ -51,10 +64,10 @@ export type SnapItem = {
   easing?: EasingFunction
 }
 
-/** Per-target options every `snap.add` form accepts: grab, callback, animation overrides. */
+/** Per-target options every `snap.add` form accepts: grab, one-way direction, callback, animation overrides. */
 export type SnapTargetOptions = Pick<
   SnapItem,
-  'lock' | 'onSnap' | 'lerp' | 'duration' | 'easing'
+  'lock' | 'direction' | 'onSnap' | 'lerp' | 'duration' | 'easing'
 >
 
 export type OnSnapCallback = (item: SnapItem & { index?: number }) => void

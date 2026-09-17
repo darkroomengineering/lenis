@@ -71,7 +71,12 @@ snap.add($('.section-7'), { align: 'start', lock: true })
 
 // TS-private internals, runtime-accessible — playground introspection only
 const internals = snap as unknown as {
-  computeSnaps(): { x?: number; y?: number; lock?: boolean }[]
+  computeSnaps(): {
+    x?: number
+    y?: number
+    lock?: boolean
+    direction?: unknown
+  }[]
 }
 
 const hudState = $('#hud-state')
@@ -185,7 +190,24 @@ function verifyCSSInterop() {
     )
 }
 
+// Coincident one-way targets pointing opposite ways (a viewport-sized slide's
+// 'start' 1 and 'end' -1) must merge into one target reachable both ways —
+// otherwise `snap.add(slides, { align: 'end', direction: -1 })` on such
+// slides would kill forward navigation.
+function verifyDirectionMerge() {
+  const removers = [
+    snap.add(2000, { direction: 1 }),
+    snap.add(2000, { direction: -1 }),
+  ]
+  const merged = internals.computeSnaps().filter((s) => s.y === 2000)
+  removers.forEach((remove) => remove())
+  if (merged.length === 1 && merged[0]!.direction === undefined)
+    console.log('✓ direction: coincident 1 / -1 targets merge unrestricted')
+  else console.error('✗ direction merge', merged)
+}
+
 verifyCSSInterop()
+verifyDirectionMerge()
 window.addEventListener('resize', () => {
   snap.resize()
   verifyCSSInterop()

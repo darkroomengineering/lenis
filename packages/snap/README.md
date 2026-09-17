@@ -58,6 +58,11 @@ One snap per flick, viewport-sized cards:
       lock: true,          // grab: snap the instant a card is picked, hold until it lands
       distanceThreshold: '100%', // reach the adjacent (viewport-sized) card
     })
+
+    // A slide taller than the viewport: one-way edges catch you on entry
+    // only, so inside it you scroll freely instead of being pulled to an edge
+    snap.add(tallSlide, { align: 'start', direction: 1 })  // scrolling down onto it
+    snap.add(tallSlide, { align: 'end', direction: -1 })   // scrolling back up onto it
 ```
 
 ### CSS interop
@@ -95,8 +100,8 @@ Callbacks receive the target: `{ index, x?, y?, lock? }`.
 
 ## Methods
 
-- `add(point: number | { x?: number, y?: number }, options?)`: Add a snap point. A number anchors the active axis (`{ y }`, or `{ x }` when the parent Lenis is horizontal); an object sets each axis explicitly. Takes the same per-target options as elements: `onSnap`, `lock`, `lerp`, `duration`, `easing`.
-- `add(element: HTMLElement | HTMLElement[] | NodeListOf<HTMLElement>, options?: SnapElementOptions)`: Add one or more elements to snap to. `options.align` controls where the element lands: `'start' | 'center' | 'end' | 'none'` on the active axis (vertical unless Lenis is horizontal; both axes when `orientation: 'both'`). A list adds one snap point per entry on the same element (`['start', 'end']` snaps to both edges). `{ x, y }` aligns each axis on its own (`{ x: 'start', y: 'center' }`; an omitted axis is `'none'`). In `orientation: 'both'` a value or list applies to both axes and the x and y lists combine, every x with every y (`['start', 'end']` equals `{ x: ['start', 'end'], y: ['start', 'end'] }`, the four corners). `'none'` skips that axis (like CSS `scroll-snap-align: none`). `options.lock` makes this element grab — snap fires the instant it's picked in the gesture's direction, no debounce wait, and holds the scroll until it lands (overridden by the instance-level `lock`). `options.onSnap` is a per-element callback fired when the scroll lands on its snap point. `options.lerp`, `options.duration` and `options.easing` override the instance-level animation for this element's targets.
+- `add(point: number | { x?: number, y?: number }, options?)`: Add a snap point. A number anchors the active axis (`{ y }`, or `{ x }` when the parent Lenis is horizontal); an object sets each axis explicitly. Takes the same per-target options as elements: `onSnap`, `lock`, `direction`, `lerp`, `duration`, `easing`.
+- `add(element: HTMLElement | HTMLElement[] | NodeListOf<HTMLElement>, options?: SnapElementOptions)`: Add one or more elements to snap to. `options.align` controls where the element lands: `'start' | 'center' | 'end' | 'none'` on the active axis (vertical unless Lenis is horizontal; both axes when `orientation: 'both'`). A list adds one snap point per entry on the same element (`['start', 'end']` snaps to both edges). `{ x, y }` aligns each axis on its own (`{ x: 'start', y: 'center' }`; an omitted axis is `'none'`). In `orientation: 'both'` a value or list applies to both axes and the x and y lists combine, every x with every y (`['start', 'end']` equals `{ x: ['start', 'end'], y: ['start', 'end'] }`, the four corners). `'none'` skips that axis (like CSS `scroll-snap-align: none`). `options.lock` makes this element grab — snap fires the instant it's picked in the gesture's direction, no debounce wait, and holds the scroll until it lands (overridden by the instance-level `lock`). `options.direction` (`1 | -1 | { x?, y? }`) makes the target one-way: only picked when the scroll has to travel that way to reach it — `1` toward larger scroll values, `-1` toward smaller (both modes; `goTo` / `next` / `previous` ignore it). Coincident targets with different directions merge into one reachable both ways. `options.onSnap` is a per-element callback fired when the scroll lands on its snap point. `options.lerp`, `options.duration` and `options.easing` override the instance-level animation for this element's targets.
 - `next()`: Go to the next snap point.
 - `previous()`: Go to the previous snap point.
 - `goTo(index: number)`: Go to a specific snap point.

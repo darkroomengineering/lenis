@@ -30,6 +30,7 @@ const DEFAULT_DISTANCE_THRESHOLD: SnapThreshold = '50%'
  */
 function targetOptions({
   lock,
+  direction,
   onSnap,
   lerp,
   duration,
@@ -37,11 +38,19 @@ function targetOptions({
 }: SnapTargetOptions): SnapTargetOptions {
   const out: SnapTargetOptions = {}
   if (lock !== undefined) out.lock = lock
+  if (direction !== undefined) out.direction = direction
   if (onSnap) out.onSnap = onSnap
   if (lerp !== undefined) out.lerp = lerp
   if (duration !== undefined) out.duration = duration
   if (easing) out.easing = easing
   return out
+}
+
+/** A target's one-way `direction` per axis; `undefined` ⇒ reachable both ways. */
+function directionOf({ direction }: SnapItem) {
+  return typeof direction === 'object'
+    ? direction
+    : { x: direction, y: direction }
 }
 
 /**
@@ -193,8 +202,10 @@ export class Snap {
    * Lenis is horizontal); an object `{ x?, y? }` sets each axis explicitly.
    *
    * Every form takes the per-target options: `onSnap` fires when the scroll
-   * lands on the target, `lock` makes it grab, and `lerp` / `duration` /
-   * `easing` override the instance's animation for that target.
+   * lands on the target, `lock` makes it grab, `direction` (`1` / `-1`) makes
+   * it one-way — only picked when the scroll has to travel that way to reach
+   * it — and `lerp` / `duration` / `easing` override the instance's animation
+   * for that target.
    *
    * Elements: each produces one target per `align` entry, derived from its
    * rect on the active axis — a value (`'center'`), a list (`['start', 'end']`
@@ -211,6 +222,7 @@ export class Snap {
    * snap.add(section, { align: ['start', 'end'] })  // two points
    * snap.add(cell, { align: { x: 'start', y: 'center' } })
    * snap.add(section, { align: 'center', duration: 2 })  // slower than the instance
+   * snap.add(tall, { align: 'end', direction: -1 })      // only when scrolling back up onto it
    */
   add(
     point: number | Pick<SnapItem, 'x' | 'y'>,
@@ -362,6 +374,18 @@ export class Snap {
       const last = snaps[snaps.length - 1]
       if (!last || last.x !== item.x || last.y !== item.y) {
         snaps.push(item)
+      } else {
+        // Same point, different one-way rules (a viewport-sized slide's
+        // 'start' 1 and 'end' -1 coincide) ⇒ reachable both ways. Copy:
+        // `last` may be a stored raw target.
+        // ponytail: any axis differs ⇒ both axes unrestricted; merge per axis
+        // if 2D one-way grids ever need it
+        const a = directionOf(last)
+        const b = directionOf(item)
+        if (a.x !== b.x || a.y !== b.y) {
+          const { direction, ...merged } = last
+          snaps[snaps.length - 1] = merged
+        }
       }
     }
     return snaps
@@ -585,6 +609,8 @@ export class Snap {
       if (snap.x !== undefined && Math.abs(dx) > threshold.x) continue
       if (snap.y !== undefined && Math.abs(dy) > threshold.y) continue
 
+      if (!this.isReachable(snap, dx, dy)) continue
+
       const distance = Math.hypot(dx, dy)
       if (distance < bestDistance) {
         bestDistance = distance
@@ -592,6 +618,20 @@ export class Snap {
       }
     }
     return bestIndex
+  }
+
+  /**
+   * One-way gate: a `direction` target is only a candidate when the scroll
+   * has to travel that way, per axis, to reach it. `dx` / `dy` are the
+   * offsets from the resting point; an axis you're already on (<1px) passes.
+   */
+  private isReachable(snap: SnapItem, dx: number, dy: number): boolean {
+    const { x, y } = directionOf(snap)
+    if (x !== undefined && Math.abs(dx) >= 1 && Math.sign(dx) !== x)
+      return false
+    if (y !== undefined && Math.abs(dy) >= 1 && Math.sign(dy) !== y)
+      return false
+    return true
   }
 
   /**
@@ -661,6 +701,8 @@ export class Snap {
       // we don't leap past plausible neighbours into a far-off target.
       if (snap.x !== undefined && Math.abs(dx) > threshold.x) continue
       if (snap.y !== undefined && Math.abs(dy) > threshold.y) continue
+
+      if (!this.isReachable(snap, dx, dy)) continue
 
       const distance = Math.hypot(dx, dy)
       if (distance < bestDistance) {

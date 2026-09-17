@@ -16,13 +16,19 @@ const snap = new Snap(lenis, {
 })
 
 const slides = document.querySelectorAll<HTMLElement>('.slide')
-snap.add(Array.from(slides), { align: 'start' })
-
-// Each element makes one snap target, so the tall 3rd slide (300vh) gets a
-// second one at its bottom edge — `'end'` aligns the section's bottom with the
-// viewport's bottom.
 const section3 = document.querySelector<HTMLElement>('.slide-3')!
-snap.add(section3, { align: 'end' })
+snap.add(
+  Array.from(slides).filter((slide) => slide !== section3),
+  { align: 'start' }
+)
+
+// The tall 3rd slide (300vh) is one-way at both edges: `direction` makes a
+// target catch only when the scroll has to travel that way to reach it —
+// `'start'` (1) grabs when scrolling down from slide 2, `'end'` (-1, bottom
+// edge aligned with the viewport's bottom) when scrolling back up from
+// slide 4. Inside the slide neither edge pulls, so you read it freely.
+snap.add(section3, { align: 'start', direction: 1 })
+snap.add(section3, { align: 'end', direction: -1 })
 
 // Custom scrollbar: one segment per slide, sized by `flex-grow` = the slide's
 // own pixel height, so segment heights mirror section heights (the 300vh 3rd
