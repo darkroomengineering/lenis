@@ -30,7 +30,7 @@ Everything else virtual scroll does with the input, smoothing, multipliers, iner
 - The platform stays intact on iOS: toolbar collapse, pull-to-refresh, overscroll navigation, rubber-band and selection handles all work. Confirmed on device.
 - `scrollY` is right. The body mirrors the window in the same frame, so window scroll listeners, IntersectionObserver, ScrollTrigger on its default scroller and `scroll(root)` timelines all read the painted position without knowing sync exists.
 - Perfect scroll sync. `on("scroll")` fires after the axis advanced and before the body write and the paint, so a consumer reads the exact value that frame paints with. Measured: same-frame every frame, where a scroll listener trails by one frame.
-- Sync, not smoothing. There is no lerp in `lenis/sync` at all: the body mirrors the scroller every frame, the feel is exactly the platform's, and DOM and canvas read one value. A programmatic `scrollTo` can still animate over a `duration`.
+- Sync, not smoothing. There is no lerp in `lenis/sync` at all: the body mirrors the scroller every frame, the feel is exactly the platform's, and DOM and canvas read one value. `scrollTo` jumps.
 - The DOM stays real: `position: sticky`, `position: fixed`, IntersectionObserver and scroll-driven animations through a named timeline on `body` all work.
 - Browser-initiated scrolls reconcile. Anchors, focus, `scrollIntoView` and scroll anchoring move the body; `lenis/sync` adopts the position and brings the window along.
 - Third-party scroll locks compose. Base UI locks `html`, the target freezes, the body has nothing to follow, and the styles are restored on close. Verified.

@@ -1,7 +1,7 @@
 import { Axis, type AxisHost } from '../../core/src/axis'
 import { clamp } from '../../core/src/maths'
 import { ScrollingBox } from '../../core/src/scrolling-box'
-import type { DimensionsOptions, EasingFunction } from '../../core/src/types'
+import type { DimensionsOptions } from '../../core/src/types'
 import { Emitter } from '../../utils/emitter'
 
 // How it works (ScrollSmoother-style, see SMOOTH-WRAPPER.md):
@@ -13,8 +13,8 @@ import { Emitter } from '../../utils/emitter'
 //   hidden — sticky rather than fixed so the browser's scroll-into-view walk,
 //   find-in-page included, can continue past it to the root), while <html>
 //   gets the content height and keeps the page scrollbar. No markup needed.
-//   Each frame the wrapper is scrolled toward the window position with
-//   scrollTo. Invariant: window position == target, wrapper position == scroll
+//   The wrapper is written to the scroller's position in the same frame as
+//   the scroll event, verbatim. Invariant: wrapper position == scroller position
 // - a wrapper scroll Lenis didn't write (focus, anchor, scrollIntoView, scroll
 //   anchoring) is adopted, and the window is brought along
 // - nested: any overflow: auto element can be the native scroller instead of
@@ -22,8 +22,6 @@ import { Emitter } from '../../utils/emitter'
 //   of the scroller) and appends a spacer that gives the scroller the
 //   content's range, the way html's height does for the page. Two elements,
 //   one option, no CSS
-
-const defaultEasing = (t: number) => Math.min(1, 1.001 - 2 ** (-10 * t))
 
 export type LenisSyncOptions = {
   /**
@@ -53,12 +51,6 @@ export type LenisSyncOptions = {
 
 export type LenisSyncScrollToOptions = {
   offset?: number
-  /** Jump instead of animating @default false */
-  immediate?: boolean
-  /** Animate over a duration (in s); without it, or `easing`, the scroll jumps */
-  duration?: number
-  easing?: EasingFunction
-  onComplete?: (lenis: LenisSync) => void
 }
 
 export class LenisSync implements AxisHost {
@@ -76,7 +68,8 @@ export class LenisSync implements AxisHost {
   private readonly emitter = new Emitter()
   private readonly abortController = new AbortController()
   private rafId = 0
-  private time = 0
+  /** A scroll event moved the wrapper this frame (velocity settles on idle frames) */
+  private moved = false
   /** Undoes the inline styles applied to the wrapper (and html for body) */
   private restoreStyles?: () => void
   /** Nested only: the sibling that gives the scroller the content's range */
@@ -156,10 +149,7 @@ export class LenisSync implements AxisHost {
 
   // ─── loop ───
 
-  raf = (time: number) => {
-    const deltaTime = (time - (this.time || time)) * 0.001
-    this.time = time
-
+  raf = (_time?: number) => {
     // ponytail: without a content element there is nothing to observe, so
     // poll the scrollable extent once per frame (a layout read only when
     // dirty). Compared against our own last value: the dimensions cache is
@@ -177,7 +167,14 @@ export class LenisSync implements AxisHost {
     if (this.scrollerPosition !== this.y.rawTargetScroll)
       this.onScrollerScroll()
 
-    if (this.y.advance(deltaTime)) this.y.setScroll(this.y.scroll)
+    // velocity: scroll events fire before raf, so a frame without one means
+    // the scroller stopped — settle the history slot and say so once
+    if (this.moved) {
+      this.moved = false
+    } else if (this.y.rawLastScroll !== this.y.rawScroll) {
+      this.y.rawLastScroll = this.y.rawScroll
+      this.emit()
+    }
 
     if (this.options.autoRaf) this.rafId = requestAnimationFrame(this.raf)
   }
@@ -190,9 +187,8 @@ export class LenisSync implements AxisHost {
   // ─── scrollTo ───
 
   /**
-   * Scroll to a number, `'top'` / `'bottom'`, a CSS selector, an element, or
-   * `{ y }`. The window jumps to the target at once (that is the invariant);
-   * the wrapper animates toward it.
+   * Jump to a number, `'top'` / `'bottom'`, a CSS selector, an element, or
+   * `{ y }`. Scroller and wrapper move together, at once: sync never animates.
    */
   scrollTo(
     target:
@@ -203,13 +199,7 @@ export class LenisSync implements AxisHost {
       | { x?: number; y?: number },
     options: LenisSyncScrollToOptions = {}
   ) {
-    const {
-      offset = 0,
-      immediate = false,
-      duration,
-      easing,
-      onComplete,
-    } = options
+    const { offset = 0 } = options
 
     let value: number | undefined
     if (typeof target === 'number') value = target
@@ -223,18 +213,8 @@ export class LenisSync implements AxisHost {
 
     value = clamp(0, value + offset, this.limit)
     this.writeScroller(value)
-
-    const animated = duration !== undefined || easing !== undefined
-
-    if (immediate || !animated) {
-      this.teleport(value)
-      this.emit()
-      onComplete?.(this)
-    } else if (value === this.y.rawTargetScroll) {
-      onComplete?.(this)
-    } else {
-      this.animateTo(value, { duration, easing }, () => onComplete?.(this))
-    }
+    this.teleport(value)
+    this.emit()
   }
 
   private elementTop(element: Element | null) {
@@ -276,12 +256,6 @@ export class LenisSync implements AxisHost {
 
   get limit() {
     return this.y.maxScroll
-  }
-
-  // ponytail: no 'native' state — the browser drives and nothing animates
-  // outside a programmatic scrollTo. Add a settle debounce if consumers need it.
-  get isScrolling(): 'smooth' | false {
-    return this.y.animate.isRunning ? 'smooth' : false
   }
 
   get rootElement() {
@@ -369,8 +343,12 @@ export class LenisSync implements AxisHost {
     const target = clamp(0, this.scrollerPosition, this.limit)
     if (target === this.y.rawTargetScroll) return // echo of our own scroller write
 
-    // verbatim: mirror the scroller in this same frame
-    this.teleport(target)
+    // verbatim: mirror the scroller in this same frame. Rotate the history
+    // slot first so velocity and direction derive, as core's native path does
+    this.y.rawLastScroll = this.y.rawScroll
+    this.y.rawScroll = this.y.rawTargetScroll = target
+    this.y.setScroll(target)
+    this.moved = true
     this.emit()
   }
 
@@ -387,33 +365,7 @@ export class LenisSync implements AxisHost {
 
   /** Jump the axis to `value` with zero velocity and write it to the wrapper */
   private teleport(value: number) {
-    this.y.animate.stop()
     this.y.rawScroll = this.y.rawTargetScroll = this.y.rawLastScroll = value
     this.y.setScroll(value)
-  }
-
-  /** Programmatic only: a time-based animation toward `target` */
-  private animateTo(
-    target: number,
-    { duration, easing }: { duration?: number; easing?: EasingFunction },
-    onComplete?: () => void
-  ) {
-    this.y.rawTargetScroll = target
-
-    // duration without easing, or easing without duration: fill the other in
-    if (duration !== undefined) easing ??= defaultEasing
-    else duration = 1
-
-    this.y.animate.fromTo(this.y.rawScroll, target, {
-      duration,
-      easing,
-      onUpdate: (value, completed) => {
-        // rotate the history slot, then write — velocity/direction derive
-        this.y.rawLastScroll = this.y.rawScroll
-        this.y.rawScroll = value
-        this.emit()
-        if (completed) onComplete?.()
-      },
-    })
   }
 }
