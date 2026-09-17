@@ -135,8 +135,9 @@ export type SnapOptions = {
    */
   distanceThreshold?: SnapThreshold | { x?: SnapThreshold; y?: SnapThreshold }
   /**
-   * @default 500
-   * @description The debounce delay (in ms) to prevent snapping too often.
+   * @default 300
+   * @description Wheel only: how long (ms) after the last wheel event the
+   * gesture counts as over. Touch and drag snap immediately on release.
    */
   debounce?: number
 }

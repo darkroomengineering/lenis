@@ -22,6 +22,8 @@ import { uid } from './uid'
 
 type RequiredPick<T, F extends keyof T> = Omit<T, F> & Required<Pick<T, F>>
 
+const RELEASE_EVENTS = new Set(['touchend', 'pointerup', 'pointercancel'])
+
 const DEFAULT_DISTANCE_THRESHOLD: SnapThreshold = '50%'
 
 /**
@@ -485,15 +487,9 @@ export class Snap {
   /** Common gate shared by the immediate (lock) and debounced snap paths. */
   private shouldSnap(e: GestureData): boolean {
     if (this.isStopped) return false
-    if (e.event.type === 'touchmove') return false
-    // drag-to-scroll: snap only on release — never while the pointer is held
-    // (a mid-drag pause longer than the debounce must not kick off a snap)
-    if (
-      e.type === 'drag' &&
-      e.event.type !== 'pointerup' &&
-      e.event.type !== 'pointercancel'
-    )
-      return false
+    // touch / drag: snap only on release — never while the finger / pointer
+    // is held (a mid-gesture pause must not kick off a snap)
+    if (e.type !== 'wheel' && !RELEASE_EVENTS.has(e.event.type)) return false
     // Lenis locked (locked snap in flight, or a manual `lenis.lock()`) ⇒
     // core swallows gestures, so acting on them here would act on ghost
     // input — a flick mid-snap can't kick off a competing snap.
@@ -542,7 +538,15 @@ export class Snap {
         }
       }
     }
-    this.onSnapDebounced(e)
+    // Wheel has no end event: the debounce is what tells us the gesture is
+    // over. Touch / drag end explicitly (touchend / pointerup) — and core has
+    // already folded the release fling into targetScroll — so snap right there.
+    if (e.type === 'wheel') {
+      this.onSnapDebounced(e)
+    } else {
+      this.onSnapDebounced.cancel()
+      this.onSnap(e)
+    }
   }
 
   private onSnap = (e: GestureData) => {
