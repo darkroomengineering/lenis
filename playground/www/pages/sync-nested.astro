@@ -1,0 +1,35 @@
+---
+import '~/sync-nested/style.css'
+import Layout from '../layouts/Layout.astro'
+---
+
+<Layout title="Lenis Sync nested">
+  <main>
+    <h1>lenis/sync on a nested panel</h1>
+    <p>
+      The page is a plain page. The panel below is an <code>overflow: auto</code>
+      element that scrolls natively and owns the target; sync pins its child and
+      gives it the range, no CSS on the child. Wheel past the panel's end
+      chains to the page, as it would anywhere.
+    </p>
+    <p><a href="#n5">anchor to #n5 inside the panel</a></p>
+
+    <!-- two elements: the scroller and its child. sync pins the child and
+         adds the range itself -->
+    <div id="outer">
+      <div id="inner">
+        <section id="n1">1</section>
+        <section id="n2"><div class="sticky">sticky</div>2</section>
+        <section id="n3">3 <input placeholder="focus me" /></section>
+        <section id="n4">4</section>
+        <section id="n5">5</section>
+        <section id="n6">6</section>
+      </div>
+    </div>
+
+    <div class="filler"></div>
+    <p>end of page</p>
+  </main>
+  <div id="readout"></div>
+  <script src="../../sync-nested/test.ts"></script>
+</Layout>

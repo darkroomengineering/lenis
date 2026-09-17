@@ -1,0 +1,52 @@
+/* nested: #outer is the native scroller (overflow: auto); its child #inner is
+   pinned and mirrored by sync, which also adds the range. No CSS on #inner. */
+
+main {
+  max-width: 48rem;
+  margin: 0 auto;
+  padding: 6rem 1rem;
+  font: 1rem/1.5 system-ui, sans-serif;
+}
+
+#outer {
+  height: 60vh;
+  overflow: auto;
+  border: 4px solid #0e0e0e; /* borders are fine now: the pinned child is 100% of the content box */
+}
+
+#inner section {
+  height: 60vh;
+  box-sizing: border-box;
+  padding: 1rem;
+  font: 700 4rem/1 system-ui, sans-serif;
+}
+
+#inner section:nth-of-type(odd) {
+  background: #eee;
+}
+
+.in-view {
+  outline: 8px solid lime;
+  outline-offset: -8px;
+}
+
+/* sticky inside the pinned wrapper: sticks to #inner, its scroll container */
+.sticky {
+  position: sticky;
+  top: 0;
+  background: #f0f;
+  font-size: 1rem;
+}
+
+.filler {
+  height: 100vh;
+  background: repeating-linear-gradient(#fff 0 3rem, #f5f5f5 3rem 6rem);
+}
+
+#readout {
+  position: fixed;
+  bottom: 1rem;
+  left: 1rem;
+  font: 1rem monospace;
+  background: #fff;
+}
