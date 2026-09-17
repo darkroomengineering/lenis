@@ -28,22 +28,27 @@ Everything else virtual scroll does with the input, smoothing, multipliers, iner
 - No markup. `body` is the wrapper and `html` carries the content height and the page scrollbar. `lenis/sync` applies the four inline styles itself and restores them on destroy. The same HTML serves core on desktop.
 - Nothing is intercepted. Touch stays native: no `preventDefault`, no delta extraction, no inertia emulation.
 - The platform stays intact on iOS: toolbar collapse, pull-to-refresh, overscroll navigation, rubber-band and selection handles all work. Confirmed on device.
-- `scrollY` is right. With `lerp: 0` the body mirrors the window in the same frame, so window scroll listeners, IntersectionObserver, ScrollTrigger on its default scroller and `scroll(root)` timelines all read the painted position without knowing sync exists.
+- `scrollY` is right. The body mirrors the window in the same frame, so window scroll listeners, IntersectionObserver, ScrollTrigger on its default scroller and `scroll(root)` timelines all read the painted position without knowing sync exists.
 - Perfect scroll sync. `on("scroll")` fires after the axis advanced and before the body write and the paint, so a consumer reads the exact value that frame paints with. Measured: same-frame every frame, where a scroll listener trails by one frame.
-- Sync, not smoothing. `lerp` is 0: the body mirrors the window every frame, the feel is exactly the platform's, and DOM and canvas read one value.
+- Sync, not smoothing. There is no lerp in `lenis/sync` at all: the body mirrors the scroller every frame, the feel is exactly the platform's, and DOM and canvas read one value. A programmatic `scrollTo` can still animate over a `duration`.
 - The DOM stays real: `position: sticky`, `position: fixed`, IntersectionObserver and scroll-driven animations through a named timeline on `body` all work.
 - Browser-initiated scrolls reconcile. Anchors, focus, `scrollIntoView` and scroll anchoring move the body; `lenis/sync` adopts the position and brings the window along.
 - Third-party scroll locks compose. Base UI locks `html`, the target freezes, the body has nothing to follow, and the styles are restored on close. Verified.
 - The target runs on the compositor. A busy main thread delays only the mirror, never the gesture.
 - Small: about 2 KB gzipped, built from the same axis, dimensions and emitter as core, with the same consumer API: `scroll`, `velocity`, `direction`, `progress`, `scrollTo`, `on("scroll")`.
 
-**Drawbacks**
+**Drawbacks**, most critical first
 
-- No infinite scroll. Neither scroller can move past the content height.
-- No gesture-level snap steering. Snap works from the release and the window's `scrollend`.
-- Vertical only, for now.
+1. **No infinite scroll.** Structural: neither scroller can move past the content height. Use core.
+2. **Body-level CSS can break the page silently.** Sync owns `html` and `body` inline, and three site patterns fight it: a flex or grid body shell whose children can shrink collapses them into the `100dvh` box and nothing scrolls; an iOS scroll-lock library that pins `body` with `position: fixed; top: -scrollY` doubles the offset while locked; a site that uses `body` as its own scroller gets rewired to the window. Documentation and a boot-time warning; not fixable in code.
+3. **A nested panel needs a single child to pin.** Structural for the mirror. Today several children fail silently by pinning the first one; a guard that throws is pending. The page never has this problem, `body` is the box.
+4. **Site CSS on `body` shortens the range.** A default 8px margin leaves the body 8px high at the end; a `min-height: 100vh` from a reset clips the bottom of the content. Measured. Fixable by owning `margin` and `min-height` inline, pending.
+5. **`100dvh` has a floor.** Safari before 15.4 and Chrome before 108 reject it, the body keeps its auto height and sync degrades to a plain page with `scroll` stuck at 0. Fixable with a `100vh` write first, pending.
+6. **No gesture-level control.** Snap works from the release and the scroller's `scrollend`, not from the gesture; no multipliers, no inertia curves. By design, and core has them.
+7. **Vertical only, for now.**
+8. **Small consumer-visible gaps.** `scroll` reads 0 between construction and the first frame, which only matters with `autoRaf: false`; `scroll-padding` must move from `html` to `body` for anchor offsets; print needs a stylesheet that resets the body.
 
-Not goals, so not counted: smoothing, per-gesture multipliers and inertia curves, a desktop scrollbar. Minor and accepted: print needs a stylesheet that resets the body; if you opt into a `lerp`, anything reading `scrollY` runs one step ahead of the body. A sticky body is in flow, so a modal that hides the page scrollbar and reserves a gutter no longer shifts anything, measured with Base UI on a classic-scrollbar desktop.
+Not goals, so not counted: smoothing, per-gesture multipliers and inertia curves, a desktop scrollbar. A sticky body is in flow, so a modal that hides the page scrollbar and reserves a gutter no longer shifts anything, measured with Base UI on a classic-scrollbar desktop.
 
 **Find-in-page, the sticky path.** Chrome only search-scrolls containers the user can scroll, skips the rest and keeps climbing, but a `position: fixed` box ends the climb. A `position: sticky` body does not: pinned at `top: 0` with a `100dvh` height inside an `html` that owns the scroll, it behaves exactly like the fixed one (pinning, body scrolling, sticky and fixed children, max scroll all measured identical) and lets the walk reach the root, where the window scrolls by the delta and the mirror reveals the match at the exact spot. The old objection to sticky, a body that is itself a scroll container capturing a sticky child, cannot occur here because body is the sticky box and html is its scroller. `lenis/sync` styles the body sticky for this reason. Confirmed with a real Ctrl+F: find-in-page works.
 

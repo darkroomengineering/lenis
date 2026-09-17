@@ -1,6 +1,6 @@
-import LenisSync from 'lenis/sync'
+import Sync from 'lenis/sync'
 
-const lenis = new LenisSync()
+const lenis = new Sync()
 
 // exposed for headless tests
 Object.assign(window, { lenisSync: lenis })

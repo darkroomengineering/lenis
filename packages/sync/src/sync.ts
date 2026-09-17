@@ -25,10 +25,6 @@ import { Emitter } from '../../utils/emitter'
 
 const defaultEasing = (t: number) => Math.min(1, 1.001 - 2 ** (-10 * t))
 
-// 0 and 1 both mean 1:1. Animate's damp with lerp 1 still leaves 37% of the
-// distance per frame, so 1 is treated as a jump as well.
-const isSmooth = (lerp: number) => lerp > 0 && lerp < 1
-
 export type LenisSyncOptions = {
   /**
    * The native scroller that owns the input and the target: `window` for the
@@ -50,15 +46,6 @@ export type LenisSyncOptions = {
    * per frame.
    */
   content?: HTMLElement | Element
-  /**
-   * Smoothing for wheel, keyboard and scrollbar. `0` (default) mirrors the
-   * window every frame: pure scroll sync, no smoothing. `0 < lerp < 1` lerps
-   * toward the window position.
-   * @default 0
-   */
-  lerp?: number
-  /** Same for touch. `0` (default) keeps the platform's own inertia @default { lerp: 0 } */
-  touch?: { lerp?: number }
   /** Run the animation loop internally; pass `false` to drive it with `raf(time)` @default true */
   autoRaf?: boolean
   dimensions?: DimensionsOptions
@@ -68,9 +55,7 @@ export type LenisSyncScrollToOptions = {
   offset?: number
   /** Jump instead of animating @default false */
   immediate?: boolean
-  /** `0 < lerp < 1` animates; otherwise the scroll jumps unless `duration` or `easing` is given @default options.lerp */
-  lerp?: number
-  /** Switches to a time-based animation (in s) */
+  /** Animate over a duration (in s); without it, or `easing`, the scroll jumps */
   duration?: number
   easing?: EasingFunction
   onComplete?: (lenis: LenisSync) => void
@@ -82,8 +67,6 @@ export class LenisSync implements AxisHost {
     scroller: Window | HTMLElement
     content?: HTMLElement | Element
     infinite: false
-    lerp: number
-    touch: { lerp: number }
     autoRaf: boolean
     dimensions?: DimensionsOptions
   }
@@ -94,8 +77,6 @@ export class LenisSync implements AxisHost {
   private readonly abortController = new AbortController()
   private rafId = 0
   private time = 0
-  /** Lerp of the current input; swapped by passive wheel/keyboard/touch tags */
-  private inputLerp: number
   /** Undoes the inline styles applied to the wrapper (and html for body) */
   private restoreStyles?: () => void
   /** Nested only: the sibling that gives the scroller the content's range */
@@ -110,8 +91,6 @@ export class LenisSync implements AxisHost {
       ? document.body
       : ((scroller as HTMLElement).firstElementChild as HTMLElement),
     content,
-    lerp = 0.1,
-    touch,
     autoRaf = true,
     // no content element to observe: read the extent fresh on every access,
     // so `limit` never lags a content change
@@ -135,16 +114,9 @@ export class LenisSync implements AxisHost {
       scroller,
       content,
       infinite: false,
-      lerp,
-      touch: { lerp: touch?.lerp ?? 0 },
       autoRaf,
       dimensions,
     }
-    // no input seen yet: window scrolls are the browser's own (scroll
-    // restoration, a hash in the URL) and are mirrored verbatim. The first
-    // wheel, key or touch switches to the configured lerp.
-    this.inputLerp = 0
-
     this.scrollingBox = new ScrollingBox(wrapper, content, dimensions)
     this.scrollingBox.on('resize', this.onResize)
     this.onResize()
@@ -154,10 +126,6 @@ export class LenisSync implements AxisHost {
     const { signal } = this.abortController
     scroller.addEventListener('scroll', this.onScrollerScroll, { signal })
     wrapper.addEventListener('scroll', this.onWrapperScroll, { signal })
-    // passive tags only, nothing is intercepted
-    addEventListener('wheel', this.tagPointer, { passive: true, signal })
-    addEventListener('keydown', this.tagPointer, { signal })
-    addEventListener('touchstart', this.tagTouch, { passive: true, signal })
 
     if (autoRaf) this.rafId = requestAnimationFrame(this.raf)
   }
@@ -238,7 +206,6 @@ export class LenisSync implements AxisHost {
     const {
       offset = 0,
       immediate = false,
-      lerp = this.options.lerp,
       duration,
       easing,
       onComplete,
@@ -257,8 +224,7 @@ export class LenisSync implements AxisHost {
     value = clamp(0, value + offset, this.limit)
     this.writeScroller(value)
 
-    const animated =
-      duration !== undefined || easing !== undefined || isSmooth(lerp)
+    const animated = duration !== undefined || easing !== undefined
 
     if (immediate || !animated) {
       this.teleport(value)
@@ -267,9 +233,7 @@ export class LenisSync implements AxisHost {
     } else if (value === this.y.rawTargetScroll) {
       onComplete?.(this)
     } else {
-      this.animateTo(value, { lerp, duration, easing }, () =>
-        onComplete?.(this)
-      )
+      this.animateTo(value, { duration, easing }, () => onComplete?.(this))
     }
   }
 
@@ -314,8 +278,8 @@ export class LenisSync implements AxisHost {
     return this.y.maxScroll
   }
 
-  // ponytail: no 'native' state — with lerp 0 (default) the browser drives and
-  // nothing animates. Add a settle debounce if consumers need it.
+  // ponytail: no 'native' state — the browser drives and nothing animates
+  // outside a programmatic scrollTo. Add a settle debounce if consumers need it.
   get isScrolling(): 'smooth' | false {
     return this.y.animate.isRunning ? 'smooth' : false
   }
@@ -405,13 +369,9 @@ export class LenisSync implements AxisHost {
     const target = clamp(0, this.scrollerPosition, this.limit)
     if (target === this.y.rawTargetScroll) return // echo of our own scroller write
 
-    if (isSmooth(this.inputLerp)) {
-      this.animateTo(target, { lerp: this.inputLerp })
-    } else {
-      // no smoothing: mirror the window in this same frame
-      this.teleport(target)
-      this.emit()
-    }
+    // verbatim: mirror the scroller in this same frame
+    this.teleport(target)
+    this.emit()
   }
 
   private onWrapperScroll = () => {
@@ -425,14 +385,6 @@ export class LenisSync implements AxisHost {
     this.emit()
   }
 
-  private tagPointer = () => {
-    this.inputLerp = this.options.lerp
-  }
-
-  private tagTouch = () => {
-    this.inputLerp = this.options.touch.lerp
-  }
-
   /** Jump the axis to `value` with zero velocity and write it to the wrapper */
   private teleport(value: number) {
     this.y.animate.stop()
@@ -440,23 +392,19 @@ export class LenisSync implements AxisHost {
     this.y.setScroll(value)
   }
 
+  /** Programmatic only: a time-based animation toward `target` */
   private animateTo(
     target: number,
-    {
-      lerp,
-      duration,
-      easing,
-    }: { lerp?: number; duration?: number; easing?: EasingFunction },
+    { duration, easing }: { duration?: number; easing?: EasingFunction },
     onComplete?: () => void
   ) {
     this.y.rawTargetScroll = target
 
-    // time-based when either is given, mirroring core
+    // duration without easing, or easing without duration: fill the other in
     if (duration !== undefined) easing ??= defaultEasing
-    else if (easing !== undefined) duration = 1
+    else duration = 1
 
     this.y.animate.fromTo(this.y.rawScroll, target, {
-      lerp: duration === undefined ? lerp : undefined,
       duration,
       easing,
       onUpdate: (value, completed) => {
