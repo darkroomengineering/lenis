@@ -1,7 +1,17 @@
 import { Animate } from './animate'
-import type { Lenis } from './lenis'
 import { modulo } from './maths'
+import type { ScrollingBox } from './scrolling-box'
 import type { ScrollToOptions } from './types'
+
+/**
+ * What an axis needs from its owner: `Lenis`, or any host with the same three
+ * members (`lenis/light` drives one axis from a fixed wrapper).
+ */
+export interface AxisHost {
+  options: { wrapper: Window | HTMLElement | Element; infinite: boolean }
+  scrollingBox: ScrollingBox
+  scrollTo(target: { x?: number; y?: number }, options?: object): unknown
+}
 
 /**
  * A single scroll axis (`x` or `y`). `Lenis` owns one per direction; in single-axis
@@ -36,7 +46,7 @@ export class Axis {
   constructor(
     /** Which axis this represents */
     readonly axis: 'x' | 'y',
-    private readonly lenis: Lenis
+    private readonly lenis: AxisHost
   ) {}
 
   /** @internal */

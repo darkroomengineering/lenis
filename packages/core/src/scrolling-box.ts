@@ -51,6 +51,11 @@ export class ScrollingBox {
   on(
     event: 'overflow style changed',
     callback: (changed: { x: boolean; y: boolean }) => void
+  ): () => void
+  on(event: 'resize', callback: () => void): () => void
+  on(
+    event: 'overflow style changed' | 'resize',
+    callback: ((changed: { x: boolean; y: boolean }) => void) | (() => void)
   ) {
     return this.emitter.on(event, callback as (...args: unknown[]) => void)
   }
@@ -127,6 +132,7 @@ export class ScrollingBox {
     this.onWrapperResize()
     this.onContentResize()
     this.onOverflowStyleChange()
+    this.emitter.emit('resize')
   }
 
   private onWrapperResize = () => {
