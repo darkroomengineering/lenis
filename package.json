@@ -86,9 +86,9 @@
       "types": "./dist/lenis-snap.d.ts",
       "default": "./dist/lenis-snap.mjs"
     },
-    "./light": {
-      "types": "./dist/lenis-light.d.ts",
-      "default": "./dist/lenis-light.mjs"
+    "./sync": {
+      "types": "./dist/lenis-sync.d.ts",
+      "default": "./dist/lenis-sync.mjs"
     },
     "./snap/react": {
       "types": "./dist/lenis-snap-react.d.ts",

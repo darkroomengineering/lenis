@@ -30,7 +30,7 @@ export default defineConfig([
     entry: {
       lenis: 'packages/core/index.ts',
       'lenis-snap': 'packages/snap/index.ts',
-      'lenis-light': 'packages/light/index.ts',
+      'lenis-sync': 'packages/sync/index.ts',
     },
     dts: true,
     clean: true,

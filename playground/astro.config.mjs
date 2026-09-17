@@ -19,7 +19,7 @@ export default defineConfig({
         'lenis/snap/react': path.resolve(root, 'dist/lenis-snap-react.mjs'),
         'lenis/snap': path.resolve(root, 'dist/lenis-snap.mjs'),
         'lenis/vue': path.resolve(root, 'dist/lenis-vue.mjs'),
-        'lenis/light': path.resolve(root, 'dist/lenis-light.mjs'),
+        'lenis/sync': path.resolve(root, 'dist/lenis-sync.mjs'),
         lenis: path.resolve(root, 'dist/lenis.mjs'),
       },
     },

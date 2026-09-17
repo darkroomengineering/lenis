@@ -1,0 +1,44 @@
+---
+import Modal from '~/sync/modal'
+import '~/sync/style.css'
+import Layout from '../layouts/Layout.astro'
+---
+
+<Layout title="Lenis Sync">
+  <!-- no wrapper: body is the wrapper, html carries the height and the scrollbar -->
+  <div id="progress"></div>
+  <section id="s1">1 <Modal client:only="react" /></section>
+  <section id="s2">
+    <div class="sticky">sticky</div>
+    2
+    <div class="sync-row">
+      <div id="sync-lenis" class="sync-box">lenis.on('scroll')<br />same frame</div>
+      <div id="sync-dom" class="sync-box">body 'scroll' event<br />one frame late</div>
+    </div>
+  </section>
+  <section id="s3">3 <input placeholder="focus me" /></section>
+  <section id="s4">
+    4
+    <iframe
+      id="iframe-short"
+      srcdoc="<p style=font:2rem/1.5,system-ui>short iframe: wheel here should scroll the page</p>"
+      style="border: 4px solid #0af"></iframe>
+    <iframe
+      id="iframe-tall"
+      srcdoc="<div style=height:3000px;background:linear-gradient(#0af,#f0a)><p style=font:2rem/1.5,system-ui>tall iframe: scrolls itself first, then chains to the page</p></div>"
+      style="border: 4px solid #f0a"></iframe>
+  </section>
+  <section id="s5">5</section>
+  <section id="s6">6</section>
+  <div class="fixed">fixed (inside body)</div>
+  <div id="progress-root"></div>
+  <a id="anchor" href="#s6">#s6</a>
+  <!-- #canvas: fixed above the content, like a WebGL canvas. Ghosts sit at
+       content coordinates inside it and are offset by -scroll -->
+  <div id="canvas">
+    <div id="ghost-lenis" class="ghost"></div>
+    <div id="ghost-dom" class="ghost"></div>
+  </div>
+  <div id="readout"></div>
+  <script src="../../sync/test.ts"></script>
+</Layout>

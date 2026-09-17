@@ -1,9 +1,9 @@
-import LenisLight from 'lenis/light'
+import LenisSync from 'lenis/sync'
 
-const lenis = new LenisLight()
+const lenis = new LenisSync()
 
 // exposed for headless tests
-Object.assign(window, { lenisLight: lenis })
+Object.assign(window, { lenisSync: lenis })
 
 const readout = document.getElementById('readout')!
 lenis.on('scroll', ({ scroll, targetScroll, velocity }) => {

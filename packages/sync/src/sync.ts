@@ -8,9 +8,13 @@ import { Emitter } from '../../utils/emitter'
 // - the window scrolls natively. Body height mirrors the content and nothing
 //   is intercepted, so wheel, touch, keyboard, scrollbar, iframes and every
 //   platform gesture stay the browser's
-// - the wrapper (position: fixed; inset: 0; overflow: hidden) is what the user
-//   sees. Each frame it is scrolled toward the window position with scrollTo.
-//   Invariant: window position == target, wrapper position == scroll
+// - the wrapper is what the user sees. By default it is <body>, which sync
+//   makes a pinned 100dvh box itself (position: sticky; top: 0; overflow:
+//   hidden — sticky rather than fixed so the browser's scroll-into-view walk,
+//   find-in-page included, can continue past it to the root), while <html>
+//   gets the content height and keeps the page scrollbar. No markup needed.
+//   Each frame the wrapper is scrolled toward the window position with
+//   scrollTo. Invariant: window position == target, wrapper position == scroll
 // - a wrapper scroll Lenis didn't write (focus, anchor, scrollIntoView, scroll
 //   anchoring) is adopted, and the window is brought along
 
@@ -20,10 +24,20 @@ const defaultEasing = (t: number) => Math.min(1, 1.001 - 2 ** (-10 * t))
 // distance per frame, so 1 is treated as a jump as well.
 const isSmooth = (lerp: number) => lerp > 0 && lerp < 1
 
-export type LenisLightOptions = {
-  /** The fixed, `overflow: hidden` element that shows the content @default #smooth-wrapper */
+export type LenisSyncOptions = {
+  /**
+   * The element sync scrolls, what the user sees. Defaults to `body`, which
+   * sync styles itself (a pinned `position: sticky` box, `overflow: hidden`,
+   * with `html` carrying the content height). Pass your own fixed or sticky,
+   * `overflow: hidden` element to keep control of the styles.
+   * @default document.body
+   */
   wrapper?: HTMLElement | Element
-  /** The wrapper's child holding the page content; its height sizes the body @default #smooth-content */
+  /**
+   * Optional element whose size drives the content height through a
+   * ResizeObserver. Without it the wrapper's `scrollHeight` is checked once
+   * per frame.
+   */
   content?: HTMLElement | Element
   /**
    * Smoothing for wheel, keyboard and scrollbar. `0` (default) mirrors the
@@ -39,7 +53,7 @@ export type LenisLightOptions = {
   dimensions?: DimensionsOptions
 }
 
-export type LenisLightScrollToOptions = {
+export type LenisSyncScrollToOptions = {
   offset?: number
   /** Jump instead of animating @default false */
   immediate?: boolean
@@ -48,13 +62,13 @@ export type LenisLightScrollToOptions = {
   /** Switches to a time-based animation (in s) */
   duration?: number
   easing?: EasingFunction
-  onComplete?: (lenis: LenisLight) => void
+  onComplete?: (lenis: LenisSync) => void
 }
 
-export class LenisLight implements AxisHost {
+export class LenisSync implements AxisHost {
   readonly options: {
     wrapper: HTMLElement | Element
-    content: HTMLElement | Element
+    content?: HTMLElement | Element
     infinite: false
     lerp: number
     touch: { lerp: number }
@@ -70,20 +84,22 @@ export class LenisLight implements AxisHost {
   private time = 0
   /** Lerp of the current input; swapped by passive wheel/keyboard/touch tags */
   private inputLerp: number
+  /** Undoes the inline html/body styles applied when body is the wrapper */
+  private restoreStyles?: () => void
+  /** Last scrollable extent written to html (content-less change detection) */
+  private lastScrollHeight = 0
 
   constructor({
-    wrapper = document.getElementById('smooth-wrapper') as HTMLElement,
-    content = document.getElementById('smooth-content') as HTMLElement,
-    lerp = 0,
+    wrapper = document.body,
+    content,
+    lerp = 0.1,
     touch,
     autoRaf = true,
-    dimensions,
-  }: LenisLightOptions = {}) {
-    if (!(wrapper && content)) {
-      throw new Error(
-        'lenis/light: wrapper and content are required (#smooth-wrapper > #smooth-content)'
-      )
-    }
+    // no content element to observe: read the extent fresh on every access,
+    // so `limit` never lags a content change
+    dimensions = content ? undefined : { debounce: 0 },
+  }: LenisSyncOptions = {}) {
+    if (wrapper === document.body) this.styleBody()
 
     this.options = {
       wrapper,
@@ -121,16 +137,17 @@ export class LenisLight implements AxisHost {
     this.y.destroy()
     this.scrollingBox.destroy()
     this.emitter.destroy()
-    document.body.style.height = ''
+    document.documentElement.style.height = ''
+    this.restoreStyles?.()
   }
 
   // ─── events ───
 
-  on(event: 'scroll', callback: (lenis: LenisLight) => void) {
+  on(event: 'scroll', callback: (lenis: LenisSync) => void) {
     return this.emitter.on(event, callback as (...args: unknown[]) => void)
   }
 
-  off(event: 'scroll', callback: (lenis: LenisLight) => void) {
+  off(event: 'scroll', callback: (lenis: LenisSync) => void) {
     this.emitter.off(event, callback as (...args: unknown[]) => void)
   }
 
@@ -143,6 +160,17 @@ export class LenisLight implements AxisHost {
   raf = (time: number) => {
     const deltaTime = (time - (this.time || time)) * 0.001
     this.time = time
+
+    // ponytail: without a content element there is nothing to observe, so
+    // poll the scrollable extent once per frame (a layout read only when
+    // dirty). Compared against our own last value: the dimensions cache is
+    // refreshed silently by every `limit` read, so it can't be the reference.
+    if (
+      !this.options.content &&
+      this.options.wrapper.scrollHeight !== this.lastScrollHeight
+    ) {
+      this.resize()
+    }
 
     if (this.y.advance(deltaTime)) this.y.setScroll(this.y.scroll)
 
@@ -168,7 +196,7 @@ export class LenisLight implements AxisHost {
       | HTMLElement
       | Element
       | { x?: number; y?: number },
-    options: LenisLightScrollToOptions = {}
+    options: LenisSyncScrollToOptions = {}
   ) {
     const {
       offset = 0,
@@ -260,9 +288,40 @@ export class LenisLight implements AxisHost {
   // ─── internals ───
 
   private onResize = () => {
-    // body height mirrors the wrapper's scrollable extent, so the window's max
-    // scroll equals the wrapper's by construction
-    document.body.style.height = `${this.scrollingBox.scrollHeight}px`
+    // html carries the content height (and so the page scrollbar): the
+    // window's max scroll equals the wrapper's by construction
+    this.lastScrollHeight = this.scrollingBox.scrollHeight!
+    document.documentElement.style.height = `${this.lastScrollHeight}px`
+  }
+
+  /** body as the wrapper: a pinned viewport-high box, html owns the page scroll */
+  private styleBody() {
+    const html = document.documentElement.style
+    const body = document.body.style
+    const previous = {
+      htmlOverflow: html.overflow,
+      position: body.position,
+      top: body.top,
+      height: body.height,
+      overflow: body.overflow,
+    }
+    // html must own a non-visible overflow, otherwise body's `hidden` would
+    // propagate to the viewport and kill the page scroll
+    html.overflow = 'auto'
+    // sticky, not fixed: a fixed box ends the browser's scroll-into-view walk
+    // (find-in-page, focus) before it reaches the root; a sticky one lets the
+    // window scroll, and the mirror turns that into the body revealing it
+    body.position = 'sticky'
+    body.top = '0'
+    body.height = '100dvh'
+    body.overflow = 'hidden'
+    this.restoreStyles = () => {
+      html.overflow = previous.htmlOverflow
+      body.position = previous.position
+      body.top = previous.top
+      body.height = previous.height
+      body.overflow = previous.overflow
+    }
   }
 
   private onWindowScroll = () => {

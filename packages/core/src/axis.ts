@@ -5,7 +5,7 @@ import type { ScrollToOptions } from './types'
 
 /**
  * What an axis needs from its owner: `Lenis`, or any host with the same three
- * members (`lenis/light` drives one axis from a fixed wrapper).
+ * members (`lenis/sync` drives one axis from a fixed wrapper).
  */
 export interface AxisHost {
   options: { wrapper: Window | HTMLElement | Element; infinite: boolean }
