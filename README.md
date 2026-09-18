@@ -61,6 +61,7 @@ Your support helps us smooth out the internet one library at a time—and lets u
 - [lenis/vue](https://github.com/darkroomengineering/lenis/tree/main/packages/vue/README.md)
 - [lenis/framer](https://lenis.framer.website/)
 - [lenis/snap](https://github.com/darkroomengineering/lenis/tree/main/packages/snap/README.md)
+- [lenis/sync](https://github.com/darkroomengineering/lenis/tree/main/packages/sync/README.md) — scroll sync with native touch, no smoothing
 
 <br/>
 
@@ -226,6 +227,8 @@ new Lenis({
 ```
 
 Both `wheel` and `touch` also accept `duration`/`easing` instead of `lerp` to switch to time-based animation. At runtime, `lenis.isWheel` / `lenis.isTouch` tell you which input drove the last gesture.
+
+If what you need on touch is scroll sync rather than smoothing — DOM and canvas reading one value, painted in the same frame, with the platform's own gestures intact — use [lenis/sync](https://github.com/darkroomengineering/lenis/tree/main/packages/sync/README.md) instead of `touch.smooth`. It never intercepts input, so the iOS toolbar, pull-to-refresh, overscroll navigation and selection handles keep working.
 
 <br/>
 
@@ -428,7 +431,7 @@ new Lenis({
 - capped to 60fps on Safari ([source](https://bugs.webkit.org/show_bug.cgi?id=173434)) and 30fps on low power mode
 - smooth scroll will stop working over iframe since they don't forward wheel events
 - position fixed seems to lag on MacOS Safari pre-M1 ([source](https://github.com/darkroomengineering/lenis/issues/103))
-- touch events may behave unexpectedly when `touch.smooth` is enabled on iOS < 16
+- touch events may behave unexpectedly when `touch.smooth` is enabled on iOS < 16 — for scroll sync with native touch, see [lenis/sync](https://github.com/darkroomengineering/lenis/tree/main/packages/sync/README.md)
 - nested scroll containers require proper configuration to work correctly
 
 <br/>

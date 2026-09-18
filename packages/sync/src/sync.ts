@@ -4,48 +4,45 @@ import { ScrollingBox } from '../../core/src/scrolling-box'
 import type { DimensionsOptions } from '../../core/src/types'
 import { Emitter } from '../../utils/emitter'
 
-// How it works (ScrollSmoother-style, see SMOOTH-WRAPPER.md):
-// - the window scrolls natively. Body height mirrors the content and nothing
-//   is intercepted, so wheel, touch, keyboard, scrollbar, iframes and every
-//   platform gesture stay the browser's
-// - the wrapper is what the user sees. By default it is <body>, which sync
-//   makes a pinned 100dvh box itself (position: sticky; top: 0; overflow:
-//   hidden — sticky rather than fixed so the browser's scroll-into-view walk,
-//   find-in-page included, can continue past it to the root), while <html>
-//   gets the content height and keeps the page scrollbar. No markup needed.
-//   The wrapper is written to the scroller's position in the same frame as
-//   the scroll event, verbatim. Invariant: wrapper position == scroller position
-// - a wrapper scroll Lenis didn't write (focus, anchor, scrollIntoView, scroll
-//   anchoring) is adopted, and the window is brought along
-// - nested: any overflow: auto element can be the native scroller instead of
-//   the window. Its child is the wrapper: sync pins it (sticky, height 100%
-//   of the scroller) and appends a spacer that gives the scroller the
-//   content's range, the way html's height does for the page. Two elements,
-//   one option, no CSS
+// How it works (ScrollSmoother-style, see SMOOTH-WRAPPER.md). Same words as
+// core: `wrapper` is the scroll container, `content` is what's inside it.
+// - the wrapper scrolls natively (the window by default, or any overflow:
+//   auto element). Nothing is intercepted, so wheel, touch, keyboard,
+//   scrollbar, iframes and every platform gesture stay the browser's. It owns
+//   the input and the target
+// - the content is what the user sees: <body> for the window, the single
+//   child of an element wrapper. Sync pins it itself (position: sticky; top:
+//   0; overflow: hidden, one viewport of the wrapper high — sticky rather
+//   than fixed so the browser's scroll-into-view walk, find-in-page included,
+//   can continue past it to the root) and gives the wrapper the content's
+//   range: <html> gets the content height for the page, a spacer sync appends
+//   does it for a panel. No markup, no CSS
+// - on every scroll event the content is written to the wrapper's position,
+//   in the same frame, verbatim. Invariant: content position == wrapper position
+// - a content scroll the browser applied itself (focus, anchor, scrollIntoView,
+//   scroll anchoring) is adopted, and the wrapper is brought along
 
 export type LenisSyncOptions = {
   /**
-   * The native scroller that owns the input and the target: `window` for the
-   * page, or an `overflow: auto` element for a nested panel.
+   * The native scroll container, exactly as in Lenis: `window` for the page,
+   * or an `overflow: auto` element for a nested panel. It owns the input.
    * @default window
    */
-  scroller?: Window | HTMLElement
+  wrapper?: Window | HTMLElement
   /**
-   * The element sync scrolls, what the user sees: the scroller's child. Sync
-   * pins it itself (`position: sticky`, `overflow: hidden`, one viewport of
-   * the scroller high) and gives the scroller the content's range, through
-   * `html`'s height for the page or a spacer it appends for a panel.
-   * @default body for the window, the scroller's first element child otherwise
+   * The box sync pins inside the wrapper and mirrors to its position. `body`
+   * for the window; for an element wrapper, pass its single child. Sync styles
+   * it itself and restores the styles on `destroy`.
+   * @default document.body (window wrapper only)
    */
-  wrapper?: HTMLElement | Element
-  /**
-   * Optional element whose size drives the content height through a
-   * ResizeObserver. Without it the wrapper's `scrollHeight` is checked once
-   * per frame.
-   */
-  content?: HTMLElement | Element
-  /** Run the animation loop internally; pass `false` to drive it with `raf(time)` @default true */
+  content?: HTMLElement
+  /** Run the loop internally; pass `false` to drive it with `raf()` @default true */
   autoRaf?: boolean
+  /**
+   * Same as Lenis (`mode`, `autoResize`, `debounce`). Defaults to
+   * `{ debounce: 0 }` so `limit` is always fresh. `autoResize: false` turns
+   * off the per-frame extent check; call `resize()` yourself.
+   */
   dimensions?: DimensionsOptions
 }
 
@@ -53,14 +50,12 @@ export type LenisSyncScrollToOptions = {
   offset?: number
 }
 
-export class LenisSync implements AxisHost {
+export class LenisSync {
   readonly options: {
-    wrapper: HTMLElement | Element
-    scroller: Window | HTMLElement
-    content?: HTMLElement | Element
-    infinite: false
+    wrapper: Window | HTMLElement
+    content: HTMLElement
     autoRaf: boolean
-    dimensions?: DimensionsOptions
+    dimensions: DimensionsOptions
   }
   readonly scrollingBox: ScrollingBox
   /** The vertical scroll axis (the only one, for now) */
@@ -68,28 +63,27 @@ export class LenisSync implements AxisHost {
   private readonly emitter = new Emitter()
   private readonly abortController = new AbortController()
   private rafId = 0
-  /** A scroll event moved the wrapper this frame (velocity settles on idle frames) */
+  /** A scroll event moved the content this frame (velocity settles on idle frames) */
   private moved = false
-  /** Undoes the inline styles applied to the wrapper (and html for body) */
+  /** Undoes the inline styles applied to the content (and html for body) */
   private restoreStyles?: () => void
-  /** Nested only: the sibling that gives the scroller the content's range */
+  /** Element wrapper only: the sibling that gives the wrapper the content's range */
   private spacer?: HTMLElement
   private lastClientHeight = 0
-  /** Last scrollable extent written to html (content-less change detection) */
+  /** Last scrollable extent written (change detection, see `raf`) */
   private lastScrollHeight = 0
 
   constructor({
-    scroller = window,
-    wrapper = scroller === window
-      ? document.body
-      : ((scroller as HTMLElement).firstElementChild as HTMLElement),
+    wrapper = window,
     content,
     autoRaf = true,
-    // no content element to observe: read the extent fresh on every access,
-    // so `limit` never lags a content change
-    dimensions = content ? undefined : { debounce: 0 },
+    dimensions,
   }: LenisSyncOptions = {}) {
-    if (wrapper === document.body) {
+    if (wrapper === window) {
+      content ??= document.body
+      if (content !== document.body) {
+        throw new Error('lenis/sync: for the window, content is body')
+      }
       // html gets the content height first, while body is still in flow, so
       // no layout ever sees a 100dvh document and clamps the window to 0.
       // Scroll restoration already ran on the plain page and survives this;
@@ -97,28 +91,44 @@ export class LenisSync implements AxisHost {
       document.documentElement.style.height = `${document.body.scrollHeight}px`
       this.styleBody()
     } else {
-      if (!wrapper)
-        throw new Error('lenis/sync: the scroller has no child to pin')
-      this.styleWrapper(wrapper as HTMLElement, scroller as HTMLElement)
+      if (!content || content.parentElement !== wrapper) {
+        throw new Error(
+          'lenis/sync: pass `content`, the single child of an element wrapper'
+        )
+      }
+      this.styleContent(content, wrapper)
     }
 
+    // merged over the default like core does, so `{ autoResize: false }`
+    // keeps `debounce: 0` and `limit` stays fresh
     this.options = {
       wrapper,
-      scroller,
       content,
-      infinite: false,
       autoRaf,
-      dimensions,
+      dimensions: { ...dimensions },
     }
-    this.scrollingBox = new ScrollingBox(wrapper, content, dimensions)
+
+    // measures the content box (read mode: nothing to observe inside it)
+    this.scrollingBox = new ScrollingBox(
+      content,
+      undefined,
+      this.options.dimensions
+    )
     this.scrollingBox.on('resize', this.onResize)
     this.onResize()
 
-    this.y = new Axis('y', this)
+    // Axis calls the element it reads and writes `wrapper`, because in core
+    // the scroll container is what moves. Here that element is the content.
+    const host: AxisHost = {
+      options: { wrapper: content, infinite: false },
+      scrollingBox: this.scrollingBox,
+      scrollTo: (target, options) => this.scrollTo(target, options),
+    }
+    this.y = new Axis('y', host)
 
     const { signal } = this.abortController
-    scroller.addEventListener('scroll', this.onScrollerScroll, { signal })
     wrapper.addEventListener('scroll', this.onWrapperScroll, { signal })
+    content.addEventListener('scroll', this.onContentScroll, { signal })
 
     if (autoRaf) this.rafId = requestAnimationFrame(this.raf)
   }
@@ -150,25 +160,25 @@ export class LenisSync implements AxisHost {
   // ─── loop ───
 
   raf = (_time?: number) => {
-    // ponytail: without a content element there is nothing to observe, so
-    // poll the scrollable extent once per frame (a layout read only when
-    // dirty). Compared against our own last value: the dimensions cache is
-    // refreshed silently by every `limit` read, so it can't be the reference.
+    // ponytail: nothing observes the content, so poll its extent once per
+    // frame (a layout read only when dirty). Compared against our own last
+    // value: the dimensions cache is refreshed silently by every `limit`
+    // read, so it can't be the reference.
+    const { content, dimensions } = this.options
     if (
-      !this.options.content &&
-      (this.options.wrapper.scrollHeight !== this.lastScrollHeight ||
-        this.options.wrapper.clientHeight !== this.lastClientHeight)
+      dimensions.autoResize !== false &&
+      (content.scrollHeight !== this.lastScrollHeight ||
+        content.clientHeight !== this.lastClientHeight)
     ) {
       this.resize()
     }
 
     // restoration can land after boot without a scroll event: catch any
-    // silent scroller change (reading the offset is not a layout read)
-    if (this.scrollerPosition !== this.y.rawTargetScroll)
-      this.onScrollerScroll()
+    // silent wrapper change (reading the offset is not a layout read)
+    if (this.wrapperPosition !== this.y.rawTargetScroll) this.onWrapperScroll()
 
     // velocity: scroll events fire before raf, so a frame without one means
-    // the scroller stopped — settle the history slot and say so once
+    // the wrapper stopped — settle the history slot and say so once
     if (this.moved) {
       this.moved = false
     } else if (this.y.rawLastScroll !== this.y.rawScroll) {
@@ -179,7 +189,7 @@ export class LenisSync implements AxisHost {
     if (this.options.autoRaf) this.rafId = requestAnimationFrame(this.raf)
   }
 
-  /** Force a dimensions recalculation (also resizes the body) */
+  /** Force a dimensions recalculation (also resizes the wrapper's range) */
   resize() {
     this.scrollingBox.resize()
   }
@@ -188,7 +198,7 @@ export class LenisSync implements AxisHost {
 
   /**
    * Jump to a number, `'top'` / `'bottom'`, a CSS selector, an element, or
-   * `{ y }`. Scroller and wrapper move together, at once: sync never animates.
+   * `{ y }`. Wrapper and content move together, at once: sync never animates.
    */
   scrollTo(
     target:
@@ -212,28 +222,28 @@ export class LenisSync implements AxisHost {
     if (value === undefined) return
 
     value = clamp(0, value + offset, this.limit)
-    this.writeScroller(value)
+    this.writeWrapper(value)
     this.teleport(value)
     this.emit()
   }
 
   private elementTop(element: Element | null) {
-    // viewport coords relative to the pinned wrapper, plus its scroll offset
+    // viewport coords relative to the pinned content, plus its scroll offset
     return element
       ? element.getBoundingClientRect().top -
-          this.options.wrapper.getBoundingClientRect().top +
+          this.options.content.getBoundingClientRect().top +
           this.y.actualScroll
       : undefined
   }
 
   // ─── getters ───
 
-  /** Smoothed scroll value (the wrapper's position) */
+  /** The content's position, the value the current frame paints with */
   get scroll() {
     return this.y.scroll
   }
 
-  /** Where the scroll is heading (the window's position) */
+  /** The wrapper's position; equal to `scroll` once the frame's event has run */
   get targetScroll() {
     return this.y.targetScroll
   }
@@ -258,57 +268,37 @@ export class LenisSync implements AxisHost {
     return this.y.maxScroll
   }
 
+  /** The pinned content box */
   get rootElement() {
-    return this.options.wrapper as HTMLElement
+    return this.options.content
   }
 
   // ─── internals ───
 
   private onResize = () => {
-    // html carries the content height (and so the page scrollbar): the
-    // window's max scroll equals the wrapper's by construction
     this.lastScrollHeight = this.scrollingBox.scrollHeight!
     this.lastClientHeight = this.scrollingBox.height!
     if (this.spacer) {
-      // the scroller's range: the content minus the one viewport that is pinned
+      // the wrapper's range: the content minus the one viewport that is pinned
       this.spacer.style.height = `${this.lastScrollHeight - this.lastClientHeight}px`
     } else {
+      // html carries the content height (and so the page scrollbar): the
+      // window's max scroll equals the content's by construction
       document.documentElement.style.height = `${this.lastScrollHeight}px`
     }
   }
 
-  /** A nested panel: pin the wrapper inside its scroller, add the range with a spacer */
-  private styleWrapper(wrapper: HTMLElement, scroller: HTMLElement) {
-    const style = wrapper.style
-    const previous = {
-      position: style.position,
-      top: style.top,
-      height: style.height,
-      overflow: style.overflow,
-    }
-    style.position = 'sticky'
-    style.top = '0'
-    style.height = '100%' // one viewport of the scroller, whatever its size
-    style.overflow = 'hidden'
-    this.spacer = document.createElement('div')
-    scroller.append(this.spacer)
-    this.restoreStyles = () => {
-      Object.assign(style, previous)
-      this.spacer?.remove()
-    }
+  /** The wrapper's position, the target */
+  private get wrapperPosition() {
+    const { wrapper } = this.options
+    return wrapper === window ? scrollY : (wrapper as HTMLElement).scrollTop
   }
 
-  /** The native scroller's position, the target */
-  private get scrollerPosition() {
-    const { scroller } = this.options
-    return scroller === window ? scrollY : (scroller as HTMLElement).scrollTop
+  private writeWrapper(value: number) {
+    this.options.wrapper.scrollTo({ top: value, behavior: 'instant' })
   }
 
-  private writeScroller(value: number) {
-    this.options.scroller.scrollTo({ top: value, behavior: 'instant' })
-  }
-
-  /** body as the wrapper: a pinned viewport-high box, html owns the page scroll */
+  /** body as the content: a pinned viewport-high box, html owns the page scroll */
   private styleBody() {
     const html = document.documentElement.style
     const body = document.body.style
@@ -338,12 +328,33 @@ export class LenisSync implements AxisHost {
     }
   }
 
-  private onScrollerScroll = () => {
-    // the offset goes negative during iOS rubber-band
-    const target = clamp(0, this.scrollerPosition, this.limit)
-    if (target === this.y.rawTargetScroll) return // echo of our own scroller write
+  /** An element wrapper: pin its content, add the range with a spacer */
+  private styleContent(content: HTMLElement, wrapper: HTMLElement) {
+    const style = content.style
+    const previous = {
+      position: style.position,
+      top: style.top,
+      height: style.height,
+      overflow: style.overflow,
+    }
+    style.position = 'sticky'
+    style.top = '0'
+    style.height = '100%' // one viewport of the wrapper, whatever its size
+    style.overflow = 'hidden'
+    this.spacer = document.createElement('div')
+    wrapper.append(this.spacer)
+    this.restoreStyles = () => {
+      Object.assign(style, previous)
+      this.spacer?.remove()
+    }
+  }
 
-    // verbatim: mirror the scroller in this same frame. Rotate the history
+  private onWrapperScroll = () => {
+    // the offset goes negative during iOS rubber-band
+    const target = clamp(0, this.wrapperPosition, this.limit)
+    if (target === this.y.rawTargetScroll) return // echo of our own wrapper write
+
+    // verbatim: mirror the wrapper in this same frame. Rotate the history
     // slot first so velocity and direction derive, as core's native path does
     this.y.rawLastScroll = this.y.rawScroll
     this.y.rawScroll = this.y.rawTargetScroll = target
@@ -352,18 +363,18 @@ export class LenisSync implements AxisHost {
     this.emit()
   }
 
-  private onWrapperScroll = () => {
+  private onContentScroll = () => {
     const actual = this.y.actualScroll
     if (Math.abs(actual - this.y.rawScroll) < 1) return // our own write
 
-    // the browser moved the wrapper itself (focus, anchor, scrollIntoView,
-    // scroll anchoring): adopt it and bring the window along
+    // the browser moved the content itself (focus, anchor, scrollIntoView,
+    // scroll anchoring): adopt it and bring the wrapper along
     this.teleport(actual)
-    this.writeScroller(actual)
+    this.writeWrapper(actual)
     this.emit()
   }
 
-  /** Jump the axis to `value` with zero velocity and write it to the wrapper */
+  /** Jump the axis to `value` with zero velocity and write it to the content */
   private teleport(value: number) {
     this.y.rawScroll = this.y.rawTargetScroll = this.y.rawLastScroll = value
     this.y.setScroll(value)

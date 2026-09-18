@@ -1,5 +1,6 @@
-/* nested: #outer is the native scroller (overflow: auto); its child #inner is
-   pinned and mirrored by sync, which also adds the range. No CSS on #inner. */
+/* nested: #outer is the wrapper (overflow: auto, scrolls natively); its child
+   #inner is the content sync pins and mirrors, adding the range itself. No CSS
+   on #inner. */
 
 main {
   max-width: 48rem;

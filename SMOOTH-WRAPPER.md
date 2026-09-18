@@ -10,13 +10,13 @@ The same decision is also where most of the hard problems come from. Every gestu
 
 Smooth wrapper flips the ownership. The browser scrolls the page, natively, with nothing intercepted. Lenis scrolls a fixed, `overflow: hidden` wrapper toward the page position every frame. The window is the target, the wrapper is what you see, and both are real scroll containers.
 
-There is no markup to add. `body` is the wrapper and `html` is the scroller: `lenis/sync` sets `overflow: auto` and the content height on `html`, pins `body` as a sticky `100dvh` box with `overflow: hidden`, and restores all of it on destroy.
+There is no markup to add, and the words are Lenis' own: the `wrapper` is the scroll container, the `content` is what's inside it. For the page the wrapper is the window and the content is `body`: `lenis/sync` sets `overflow: auto` and the content height on `html`, pins `body` as a sticky `100dvh` box with `overflow: hidden`, and restores all of it on destroy. For a panel the wrapper is the `overflow: auto` element and the content is its single child.
 
 That flip fixes the touch problem at the root rather than by emulation. Wheel, touch, keyboard, scrollbar and iframes behave as on a plain page. On iOS the toolbar collapses, pull-to-refresh, overscroll navigation, rubber-band and selection handles all work, because the page really is scrolling. The wrapper runs with no lerp: the feel is the platform's own inertia, and DOM and canvas read one shared scroll value. Inside the wrapper the DOM stays real: sticky, fixed, IntersectionObserver and scroll-driven animations keep working, and when the browser scrolls the wrapper itself, for an anchor, a focused input or scroll anchoring, Lenis adopts it and moves the page along. Because the page scroll runs on the compositor, a busy main thread delays only the visual catch-up, never the gesture or the scrollbar. Everything above the scroll position is unchanged: `scroll`, `velocity`, events, `scrollTo`, snap and the React and Vue bindings read from the same place they always did.
 
 ## Its limits
 
-Infinite scroll is gone, because neither scroller can move past the content height. The page has to be wrapped, so this is a root-level tool and not a one-liner on any element. It is vertical only for now. And snapping has to work from the release and the page's `scrollend`, not from the gesture.
+Infinite scroll is gone, because nothing can move past the content height. The page has to be wrapped, so this is a root-level tool and not a one-liner on any element. It is vertical only for now. And snapping has to work from the release and the page's `scrollend`, not from the gesture.
 
 Everything else virtual scroll does with the input, smoothing, multipliers, inertia curves, gesture-level snap steering, is not a goal here. Those belong to core, and on desktop you use core.
 
@@ -30,7 +30,7 @@ Everything else virtual scroll does with the input, smoothing, multipliers, iner
 - The platform stays intact on iOS: toolbar collapse, pull-to-refresh, overscroll navigation, rubber-band and selection handles all work. Confirmed on device.
 - `scrollY` is right. The body mirrors the window in the same frame, so window scroll listeners, IntersectionObserver, ScrollTrigger on its default scroller and `scroll(root)` timelines all read the painted position without knowing sync exists.
 - Perfect scroll sync. `on("scroll")` fires after the axis advanced and before the body write and the paint, so a consumer reads the exact value that frame paints with. Measured: same-frame every frame, where a scroll listener trails by one frame.
-- Sync, not smoothing. There is no lerp in `lenis/sync` at all: the body mirrors the scroller every frame, the feel is exactly the platform's, and DOM and canvas read one value. `scrollTo` jumps.
+- Sync, not smoothing. There is no lerp in `lenis/sync` at all: the body mirrors the window every frame, the feel is exactly the platform's, and DOM and canvas read one value. `scrollTo` jumps.
 - The DOM stays real: `position: sticky`, `position: fixed`, IntersectionObserver and scroll-driven animations through a named timeline on `body` all work.
 - Browser-initiated scrolls reconcile. Anchors, focus, `scrollIntoView` and scroll anchoring move the body; `lenis/sync` adopts the position and brings the window along.
 - Third-party scroll locks compose. Base UI locks `html`, the target freezes, the body has nothing to follow, and the styles are restored on close. Verified.
@@ -39,12 +39,12 @@ Everything else virtual scroll does with the input, smoothing, multipliers, iner
 
 **Drawbacks**, most critical first
 
-1. **No infinite scroll.** Structural: neither scroller can move past the content height. Use core.
+1. **No infinite scroll.** Structural: nothing can move past the content height. Use core.
 2. **Body-level CSS can break the page silently.** Sync owns `html` and `body` inline, and three site patterns fight it: a flex or grid body shell whose children can shrink collapses them into the `100dvh` box and nothing scrolls; an iOS scroll-lock library that pins `body` with `position: fixed; top: -scrollY` doubles the offset while locked; a site that uses `body` as its own scroller gets rewired to the window. Documentation and a boot-time warning; not fixable in code.
-3. **A nested panel needs a single child to pin.** Structural for the mirror. Today several children fail silently by pinning the first one; a guard that throws is pending. The page never has this problem, `body` is the box.
+3. **A nested panel needs a single child to pass as `content`.** Structural for the mirror. A missing or misplaced content throws. The page never has this problem, `body` is the box.
 4. **Site CSS on `body` shortens the range.** A default 8px margin leaves the body 8px high at the end; a `min-height: 100vh` from a reset clips the bottom of the content. Measured. Fixable by owning `margin` and `min-height` inline, pending.
 5. **`100dvh` has a floor.** Safari before 15.4 and Chrome before 108 reject it, the body keeps its auto height and sync degrades to a plain page with `scroll` stuck at 0. Fixable with a `100vh` write first, pending.
-6. **No gesture-level control.** Snap works from the release and the scroller's `scrollend`, not from the gesture; no multipliers, no inertia curves. By design, and core has them.
+6. **No gesture-level control.** Snap works from the release and the wrapper's `scrollend`, not from the gesture; no multipliers, no inertia curves. By design, and core has them.
 7. **Vertical only, for now.**
 8. **Small consumer-visible gaps.** `scroll` reads 0 between construction and the first frame, which only matters with `autoRaf: false`; `scroll-padding` must move from `html` to `body` for anchor offsets; print needs a stylesheet that resets the body.
 

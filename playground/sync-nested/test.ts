@@ -3,10 +3,10 @@ import LenisSync from 'lenis/sync'
 const outer = document.getElementById('outer')!
 const inner = document.getElementById('inner')!
 
-// the panel scrolls natively (it owns the input); sync pins its child and
-// mirrors it. The page stays a plain page: wheel past the panel's end
-// chains to it.
-const lenis = new LenisSync({ scroller: outer })
+// the panel is the wrapper (it scrolls natively and owns the input), its
+// child is the content sync pins and mirrors. The page stays a plain page:
+// wheel past the panel's end chains to it.
+const lenis = new LenisSync({ wrapper: outer, content: inner })
 
 // exposed for headless tests
 Object.assign(window, { lenisSyncNested: lenis })
