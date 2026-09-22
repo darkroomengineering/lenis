@@ -7,15 +7,25 @@ import Layout from '../layouts/Layout.astro'
 <Layout title="Lenis Sync">
   <!-- no wrapper: body is the wrapper, html carries the height and the scrollbar -->
   <div id="progress"></div>
-  <section id="s1">1 <Modal client:only="react" /></section>
-  <section id="s2">
+  <!-- #canvas-sticky: inside the content, first in flow, height 0. Sticks to
+       the top of body's scrollport and rides a rubber-band with the boxes on
+       the compositor, so its ghost wants the clamped value -->
+  <div id="canvas-sticky">
+    <div id="ghost-sticky" class="ghost"></div>
+  </div>
+  <!-- synced boxes on the first slide: overscroll at the top is where a
+       rubber-band shows whether the ghosts follow -->
+  <section id="s1">
     <div class="sticky">sticky</div>
-    2
+    1
     <div class="sync-row">
       <div id="sync-lenis" class="sync-box">lenis.on('scroll')<br />same frame</div>
       <div id="sync-dom" class="sync-box">body 'scroll' event<br />one frame late</div>
+      <div id="sync-raf" class="sync-box">raf polls body.scrollTop<br />same frame</div>
+      <div id="sync-sticky" class="sync-box">sticky canvas in body<br />clamped scroll</div>
     </div>
   </section>
+  <section id="s2">2 <Modal client:only="react" /></section>
   <section id="s3">3 <input placeholder="focus me" /></section>
   <section id="s4">
     4
@@ -34,10 +44,12 @@ import Layout from '../layouts/Layout.astro'
   <div id="progress-root"></div>
   <a id="anchor" href="#s6">#s6</a>
   <!-- #canvas: fixed above the content, like a WebGL canvas. Ghosts sit at
-       content coordinates inside it and are offset by -scroll -->
+       content coordinates inside it and are offset by -scroll. Not bounced
+       by a rubber-band on iOS: only the unclamped lenis ghost can follow -->
   <div id="canvas">
     <div id="ghost-lenis" class="ghost"></div>
     <div id="ghost-dom" class="ghost"></div>
+    <div id="ghost-raf" class="ghost"></div>
   </div>
   <div id="readout"></div>
   <script src="../../sync/test.ts"></script>

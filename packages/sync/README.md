@@ -81,7 +81,7 @@ There is no `lerp`, no `duration`, no `smooth`. sync never animates.
 
 | Property | Description |
 | --- | --- |
-| `scroll` | The content's position, the value the current frame paints with |
+| `scroll` | The content's position, the value the current frame paints with. Past `[0, limit]` during a rubber-band (iOS, Safari): the content is clamped by the browser but a fixed canvas is not bounced, so draw it from `scroll` to follow |
 | `targetScroll` | The wrapper's position, equal to `scroll` once the frame's event has run |
 | `actualScroll` | The content's position as the browser reports it |
 | `velocity` | Delta since the last scroll event; settles to `0` on the first idle frame |

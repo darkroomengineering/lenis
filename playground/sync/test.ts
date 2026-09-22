@@ -14,9 +14,10 @@ lenis.on('scroll', ({ scroll, targetScroll, velocity }) => {
 // Same approach as SnapElement: cache each box's rect in content coordinates
 // through the offsetParent chain (scroll-independent, no layout read per
 // frame), then extrapolate its on-screen position as rect.top - scroll.
-// Both pairs get the same numbers; they differ in *when*: lenis.on fires
+// All pairs get the same numbers; they differ in *when*: lenis.on fires
 // inside the raf before paint, the wrapper's scroll event fires in the next
-// rendering update (one frame late).
+// rendering update (one frame late), and a raf poll reads the mirror write
+// of this frame (scroll steps run before raf callbacks) so it is on time too.
 const wrapper = lenis.rootElement
 
 function offsetTop(element: HTMLElement, accumulator = 0): number {
@@ -71,9 +72,28 @@ const viaDom = new SyncedGhost(
   document.getElementById('sync-dom')!,
   document.getElementById('ghost-dom')!
 )
+const viaRaf = new SyncedGhost(
+  document.getElementById('sync-raf')!,
+  document.getElementById('ghost-raf')!
+)
+const viaSticky = new SyncedGhost(
+  document.getElementById('sync-sticky')!,
+  document.getElementById('ghost-sticky')!
+)
 
 lenis.on('scroll', ({ scroll }) => viaLenis.update(scroll))
 wrapper.addEventListener('scroll', () => viaDom.update(wrapper.scrollTop))
+// no event at all: read the position every frame. Registered after the
+// Sync raf, so it runs after it in the same frame
+;(function poll() {
+  viaRaf.update(wrapper.scrollTop)
+  requestAnimationFrame(poll)
+})()
+// the sticky canvas rides a rubber-band with the content, so it wants the
+// clamped value, what body.scrollTop is; `scroll` unclamped would move it twice
+lenis.on('scroll', ({ scroll, limit }) =>
+  viaSticky.update(Math.min(Math.max(scroll, 0), limit))
+)
 
 // IntersectionObserver fixture
 const io = new IntersectionObserver(

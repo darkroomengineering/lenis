@@ -93,6 +93,7 @@ iframe {
 /* synced pairs: boxes in the content, ghosts in a fixed #canvas layer */
 .sync-row {
   display: flex;
+  flex-wrap: wrap;
   gap: 2rem;
   margin-top: 2rem;
 }
@@ -115,9 +116,27 @@ iframe {
   background: #06c;
 }
 
+#sync-raf {
+  background: #c60;
+}
+
+#sync-sticky {
+  background: #808;
+}
+
 #canvas {
   position: fixed;
   inset: 0;
+  pointer-events: none;
+}
+
+/* in the content: sticks for the whole range since its containing block is
+   body's full content box; height 0 so it takes no space */
+#canvas-sticky {
+  position: sticky;
+  top: 0;
+  height: 0;
+  z-index: 1;
   pointer-events: none;
 }
 

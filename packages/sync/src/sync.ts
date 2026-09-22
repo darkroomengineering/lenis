@@ -238,7 +238,10 @@ export class LenisSync {
 
   // ─── getters ───
 
-  /** The content's position, the value the current frame paints with */
+  /**
+   * The content's position, the value the current frame paints with. Past
+   * `[0, limit]` during a rubber-band (iOS, Safari), see `onWrapperScroll`
+   */
   get scroll() {
     return this.y.scroll
   }
@@ -350,8 +353,11 @@ export class LenisSync {
   }
 
   private onWrapperScroll = () => {
-    // the offset goes negative during iOS rubber-band
-    const target = clamp(0, this.wrapperPosition, this.limit)
+    // not clamped: the offset goes past the range during a rubber-band
+    // (iOS, Safari) and `scroll` carries it, as core's native path does. The
+    // content write clamps itself; a fixed canvas is not bounced by the
+    // browser, so it needs the excess to follow the content
+    const target = this.wrapperPosition
     if (target === this.y.rawTargetScroll) return // echo of our own wrapper write
 
     // verbatim: mirror the wrapper in this same frame. Rotate the history
@@ -365,7 +371,8 @@ export class LenisSync {
 
   private onContentScroll = () => {
     const actual = this.y.actualScroll
-    if (Math.abs(actual - this.y.rawScroll) < 1) return // our own write
+    // our own write, clamped by the browser during a rubber-band
+    if (Math.abs(actual - clamp(0, this.y.rawScroll, this.limit)) < 1) return
 
     // the browser moved the content itself (focus, anchor, scrollIntoView,
     // scroll anchoring): adopt it and bring the wrapper along
