@@ -221,7 +221,7 @@ Read `lenis.scroll` (or `animatedScroll`) inside the render callback that runs a
 |---|---|
 | Nothing scrolls smoothly | Make sure exactly one driver calls `raf` (or `autoRaf: true`), and that the page scrolls natively without Lenis. |
 | Modal, dropdown, or code block will not scroll | `allowNestedScroll: true` (simplest, walks the DOM on each event), or mark the element with `data-lenis-prevent` (cheaper). Variants: `data-lenis-prevent-wheel`, `-touch`, `-vertical`, `-horizontal`. The `prevent: (node) => boolean` option handles elements you cannot mark up. |
-| Anchor links jump or do nothing | `anchors: true`, or `anchors: { offset: 80 }` for a fixed header. |
+| Anchor links jump or do nothing | `anchors: true`. For an 80px fixed header, set `scroll-padding-top: 80px` on `html` (Lenis honors it and `scroll-margin-top`) or pass `anchors: { offset: -80 }`. `offset` is added to the target position, so it must be negative to stop above it. |
 | Scroll locks when `overflow: hidden` is set on `<html>` for a modal | `autoToggle: true` with the recommended CSS, or call `lenis.stop()` and `lenis.start()` yourself. |
 | Inertia carries over after client-side navigation | `stopInertiaOnNavigate: true`, and `lenis.scrollTo(0, { immediate: true })` on route change if the router does not reset scroll. |
 | ScrollTrigger positions are wrong or lag | Follow the GSAP section exactly: `lenis.on('scroll', ScrollTrigger.update)`, ticker `raf(time * 1000)`, `lagSmoothing(0)`, and no second driver. |
@@ -232,8 +232,8 @@ Read `lenis.scroll` (or `animatedScroll`) inside the render callback that runs a
 
 ## Options you will reach for
 
-- `lerp` (default `0.1`): smoothing strength from 0 to 1. Lower values feel smoother and slower. When set, it overrides `duration` and `easing`.
-- `duration` and `easing`: time-based animation, used only when `lerp` is not set.
+- `lerp` (default `0.1`): smoothing strength from 0 to 1. Lower values feel smoother and slower. Applies only when `duration` is not set.
+- `duration` (seconds) and `easing`: time-based animation. Setting either one switches Lenis to it and `lerp` is ignored; a missing half gets a default (`duration: 1` or the built-in easing).
 - `wheelMultiplier`, `touchMultiplier`: input speed.
 - `orientation` (`'vertical'` or `'horizontal'`) and `gestureOrientation` (`'vertical'`, `'horizontal'`, `'both'`).
 - `syncTouch`: smooth touch input as well. Off by default because native touch scrolling already feels right, and it can be unstable on iOS before 16.
