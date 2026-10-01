@@ -243,6 +243,11 @@ export class Lenis {
   destroy() {
     this.emitter.destroy()
 
+    if (this._resetVelocityTimeout !== null) {
+      clearTimeout(this._resetVelocityTimeout)
+      this._resetVelocityTimeout = null
+    }
+
     this.options.wrapper.removeEventListener('scroll', this.onNativeScroll)
 
     this.options.wrapper.removeEventListener('scrollend', this.onScrollEnd, {
