@@ -1,0 +1,45 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+  "name": "lenis",
+  "version": "1.3.26",
+  "description": "Set up and debug Lenis smooth scroll with guidance from its authors: the recommended CSS, the frame loop, GSAP ScrollTrigger, Tempus ordering, React, Next.js, Vue, and Nuxt.",
+  "author": {
+    "name": "Darkroom Engineering",
+    "url": "https://darkroom.engineering"
+  },
+  "homepage": "https://github.com/darkroomengineering/lenis",
+  "repository": "https://github.com/darkroomengineering/lenis",
+  "license": "MIT",
+  "keywords": [
+    "lenis",
+    "smooth-scroll",
+    "scroll",
+    "gsap",
+    "scrolltrigger",
+    "react",
+    "nextjs",
+    "vue",
+    "webgl"
+  ],
+  "extensions": {
+    "com.openai": {
+      "interface": {
+        "displayName": "Lenis",
+        "shortDescription": "Smooth scroll, set up right",
+        "longDescription": "Lenis is the smooth scroll library by Darkroom Engineering. This plugin teaches your assistant how its authors set it up: import the recommended CSS, drive the frame loop from exactly one place, sync GSAP ScrollTrigger, run Lenis first in the Tempus order so WebGL never lags the DOM, and handle nested scroll, anchors, snap, and reduced motion. Works for vanilla JavaScript, React, Next.js, Vue, and Nuxt.",
+        "developerName": "Darkroom Engineering",
+        "category": "Developer Tools",
+        "capabilities": ["Read", "Write"],
+        "websiteURL": "https://darkroom.engineering",
+        "defaultPrompt": [
+          "Set up Lenis smooth scroll in this app.",
+          "Sync Lenis with GSAP ScrollTrigger.",
+          "Why does my WebGL lag behind the page when I scroll?"
+        ],
+        "brandColor": "#FF98A2",
+        "composerIcon": "./assets/icon.png",
+        "logo": "./assets/icon.png"
+      }
+    }
+  }
+}
