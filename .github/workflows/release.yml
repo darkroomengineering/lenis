@@ -8,7 +8,7 @@ name: Release
 # Prerequisites (one-time setup on npmjs.com, see SECURITY.md):
 #   - Configure `lenis` with a Trusted Publisher pointing at:
 #       repository:    darkroomengineering/lenis
-#       workflow file: .github/workflows/release.yml
+#       workflow file: release.yml (filename only)
 #   - Revoke every classic / automation npm token after the first successful run.
 
 on:

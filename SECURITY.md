@@ -55,7 +55,7 @@ After completion, audit them annually.
    - Settings → Publishing access → "Enable Trusted Publisher"
    - Publisher: GitHub Actions
    - Repository: `darkroomengineering/lenis`
-   - Workflow filename: `.github/workflows/release.yml`
+   - Workflow filename: `release.yml` (the filename only, not the path)
    - Environment name: *(leave blank unless using GitHub Environments)*
 3. **After the first OIDC-based publish succeeds** and the latest
    version shows a provenance attestation, set the Publishing access
@@ -85,10 +85,11 @@ After completion, audit them annually.
 ## Release flow (for maintainers)
 
 ```bash
-bun run version:patch      # or version:minor / version:major
-git add package.json
-git commit -m "v$(node -p "require('./package.json').version")"
-git tag "v$(node -p "require('./package.json').version")"
+bun run version:patch      # or version:minor / version:major / version:dev
+VERSION="v$(node -p "require('./package.json').version")"
+git add -u                 # package.json plus the files `bun run readme` updated
+git commit -m "$VERSION"
+git tag -a "$VERSION" -m "$VERSION"   # annotated, so --follow-tags pushes it
 git push --follow-tags
 ```
 
