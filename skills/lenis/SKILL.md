@@ -1,6 +1,6 @@
 ---
 name: lenis
-description: Set up and debug Lenis smooth scroll (vanilla JS, React, Next.js, Vue, Nuxt) from the library's authors, Darkroom Engineering. Covers the recommended CSS, the frame loop, GSAP ScrollTrigger sync, Tempus ordering, WebGL scroll sync, nested scroll, anchors, snap, and reduced motion. Use when a task mentions Lenis, smooth scroll, `scroll-behavior: smooth`, ScrollTrigger lagging or jittering, or scroll-synced WebGL.
+description: Set up and debug Lenis smooth scroll (vanilla JS, React, Next.js, Vue, Nuxt) from the library's authors, Darkroom Engineering. Covers the recommended CSS, the frame loop, GSAP ScrollTrigger sync, Tempus ordering, WebGL scroll sync, per-frame performance in scroll callbacks, sticky pinning, nested scroll, anchors, snap, and reduced motion. Use when a task mentions Lenis, smooth scroll, `scroll-behavior: smooth`, ScrollTrigger lagging or jittering, scroll-synced WebGL, or a scroll-driven section that stutters.
 license: MIT
 ---
 
@@ -209,11 +209,29 @@ useEffect(() => {
 useTempus(({ time }) => gsap.updateRoot(time / 1000), { order: 10 })
 ```
 
-A suggested order table: Lenis `-1`, WebGL render `1`, other animation `0` to `10`, GSAP `10`, batched DOM writes last.
+Give every Tempus callback an explicit `order`, and keep the full list in one comment next to the Lenis setup so the next person sees it:
+
+```ts
+// Tempus order: Lenis -1, WebGL render 1, scroll followers 2, GSAP 10
+```
+
+A pinned section hides a wrong order, because nothing moves relative to the canvas while it is pinned. Test on a free-scrolling section with a fast wheel flick.
 
 ## WebGL scroll sync
 
-Read `lenis.scroll` (or `animatedScroll`) inside the render callback that runs after Lenis, not from a `scroll` event listener that sets state. For pixel-snapped DOM and WebGL layers, derive both from the same rounded value, for example `Math.round(lenis.scroll)`. One layer flooring and the other rounding makes sticky elements shake by 1px.
+Read `lenis.scroll` (or `animatedScroll`) inside the render callback that runs after Lenis, not from a `scroll` event listener that sets state.
+
+- **Place WebGL objects from a DOM box.** Size and position a plain element with CSS, measure its rect on resize, and place the object from that rect and `lenis.scroll`. Do not recompute size from section widths or design constants inside the frame loop.
+- **Use the same rounding everywhere.** Two scroll-derived values that must cancel out, such as a sticky offset and a WebGL element's position, must use the same rounding and be written on the same event. If one floors `lenis.scroll` and the other rounds it, they disagree by 1px whenever the fraction is 0.5 or more, and pinned WebGL shakes at the end of every smooth scroll. Derive both from `Math.round(lenis.scroll)`, and re-apply on every Lenis `scroll` event rather than only when a progress value changes. To check: `lenis.scrollTo(N, { immediate: true })`, then `N + 0.5`, and compare screenshots. The element must not move.
+
+## Work inside scroll callbacks
+
+`useLenis` callbacks, `lenis.on('scroll')` handlers, and Tempus or GSAP ticker callbacks run every frame. Code that is fine on a fast laptop can stutter on slower machines and 4K displays.
+
+- **No layout reads.** No `getBoundingClientRect`, `offsetHeight`, `clientWidth` or `scrollTop` inside the callback. A read after a style write forces a synchronous layout. Measure on resize (a `ResizeObserver`), cache the result, and derive positions from the cached rect plus the scroll. If a read cannot be avoided, do all reads before any writes in that frame.
+- **Animate `transform` and `opacity`.** A CSS custom property written every frame restyles every descendant that uses it. If you need one, round it to the precision the CSS uses, skip the write when the value has not changed, and set it on the smallest element that needs it. Never feed a per-frame value into `top`, `height`, `padding` or `font-size`.
+- **Skip hidden work.** Opacity 0 and off-screen elements still cost style writes. Write only while an element is visible, plus one final write to hide it.
+- **Pin with `position: sticky`, not JavaScript.** Lenis keeps native scroll, so sticky works and moves in the same frame as the page. A `translateY` that follows the scroll 1:1 can trail by a frame; delete it and let the document move the element. Use `position: sticky; top: 0; height: 100svh`, set how long it holds with the parent's height, and use `overflow: clip` instead of `overflow: hidden` on ancestors, because `hidden` stops sticky from pinning.
 
 ## Common problems
 
@@ -226,6 +244,9 @@ Read `lenis.scroll` (or `animatedScroll`) inside the render callback that runs a
 | Inertia carries over after client-side navigation | `stopInertiaOnNavigate: true`, and `lenis.scrollTo(0, { immediate: true })` on route change if the router does not reset scroll. |
 | ScrollTrigger positions are wrong or lag | Follow the GSAP section exactly: `lenis.on('scroll', ScrollTrigger.update)`, ticker `raf(time * 1000)`, `lagSmoothing(0)`, and no second driver. |
 | WebGL lags one frame behind the DOM | The renderer runs before Lenis. Put Lenis at Tempus order `-1` and the renderer after it. |
+| Pinned WebGL element shakes by 1px when scrolling stops | Two scroll values use different rounding. Derive both from `Math.round(lenis.scroll)` and write them on the same event. |
+| Scroll-linked section stutters, with long "Recalculate style" tasks in DevTools | Layout reads or custom property writes in a scroll callback. See "Work inside scroll callbacks". |
+| Sticky element does not pin | An ancestor has `overflow: hidden` or `auto`. Use `overflow: clip`. |
 | Smooth scroll stops over an iframe | Iframes do not forward wheel events. The recommended CSS disables pointer events on iframes while Lenis is scrolling. |
 | CSS `scroll-snap` does not work | Lenis does not support CSS scroll snap. Use `lenis/snap` (`new Snap(lenis)`, then `snap.add(px)` or `snap.addElements(nodes, { align: 'start' })`). |
 | Scroll feels less smooth on Safari | Safari caps `requestAnimationFrame` at 60fps, or 30fps in Low Power Mode. That is a browser limit. |
@@ -275,6 +296,7 @@ For GSAP in Vue, pass `:options="{ autoRaf: false }"` and a template ref, then r
 1. `lenis/dist/lenis.css` is imported once.
 2. Exactly one driver calls `lenis.raf`, with milliseconds.
 3. GSAP setups have `ScrollTrigger.update` on scroll and `lagSmoothing(0)`.
-4. Tempus setups run Lenis at order `-1`, before every consumer of the scroll value.
-5. Nested scroll areas and modals still scroll.
-6. `respectReducedMotion` is left at its default.
+4. Tempus setups run Lenis at order `-1`, before every consumer of the scroll value, and every callback has an explicit order.
+5. Scroll callbacks contain no layout reads, and per-frame writes go to `transform` or `opacity`.
+6. Nested scroll areas and modals still scroll.
+7. `respectReducedMotion` is left at its default.
