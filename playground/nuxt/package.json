@@ -9,7 +9,7 @@
   },
   "dependencies": {
     "lenis": "*",
-    "nuxt": "^3.15.3",
+    "nuxt": "^3.21.9",
     "vue": "latest",
     "vue-router": "latest",
     "gsap": "latest"
