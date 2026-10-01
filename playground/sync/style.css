@@ -39,7 +39,8 @@ section:nth-of-type(odd) {
 html {
   timeline-scope: --smooth;
 }
-body {
+body,
+body::part(content) {
   scroll-timeline: --smooth y;
 }
 #progress,

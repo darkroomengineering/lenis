@@ -6,7 +6,12 @@ const inner = document.getElementById('inner')!
 // the panel is the wrapper (it scrolls natively and owns the input), its
 // child is the content sync pins and mirrors. The page stays a plain page:
 // wheel past the panel's end chains to it.
-const lenis = new LenisSync({ wrapper: outer, content: inner })
+// ?shadow: the structure lives in a shadow root on the panel (research)
+const lenis = new LenisSync({
+  wrapper: outer,
+  content: inner,
+  shadow: new URLSearchParams(location.search).has('shadow'),
+})
 
 // exposed for headless tests
 Object.assign(window, { lenisSyncNested: lenis })
@@ -23,6 +28,6 @@ const io = new IntersectionObserver(
       e.target.classList.toggle('in-view', e.isIntersecting)
     }
   },
-  { root: inner, threshold: 0.5 }
+  { root: lenis.rootElement, threshold: 0.5 }
 )
 for (const s of inner.querySelectorAll('section')) io.observe(s)
