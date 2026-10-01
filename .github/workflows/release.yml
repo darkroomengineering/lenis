@@ -60,7 +60,7 @@ jobs:
 
       # Trusted Publishing requires npm >= 11.5.1; Node 22 ships with npm 10.x.
       - name: Upgrade npm to a Trusted-Publishing-capable version
-        run: npm install -g npm@latest
+        run: npm install -g npm@11.21.0
 
       # Refuse to publish if the git tag and package.json version disagree.
       # Prevents an attacker who can push a tag from publishing an arbitrary version.
@@ -86,5 +86,10 @@ jobs:
             exit 1
           fi
 
+      # Prereleases (e.g. 1.3.27-dev.0) go to the `dev` dist-tag so they never become `latest`.
       - name: Publish to npm
-        run: npm publish --provenance --access public
+        run: |
+          case "${GITHUB_REF_NAME}" in
+            *-*) npm publish --provenance --access public --tag dev ;;
+            *) npm publish --provenance --access public ;;
+          esac

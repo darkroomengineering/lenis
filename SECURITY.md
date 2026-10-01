@@ -32,13 +32,13 @@ The protections in this repository:
 - **Workflow integrity.** All GitHub Actions are pinned to commit SHAs
   (not floating tags). Dependabot updates SHAs in PRs that go through
   CODEOWNERS review.
-- **Local `npm publish` is removed.** `package.json` no longer carries
-  `publish:main` / `publish:dev` scripts. There is no sanctioned path
-  to publish from a developer machine.
+- **No local publish path.** `package.json` has no publish scripts, and
+  there is no sanctioned way to publish from a developer machine.
 - **CODEOWNERS** requires review on `.github/`, `package.json`, `.npmrc`,
   and this file — anything that could weaken the pipeline.
 - **`files` allowlist** in `package.json` limits the published tarball
-  to `dist/` only; nothing else from the working tree is shipped.
+  to `dist/` plus the `README.md`, `LICENSE`, and `package.json` that npm
+  always includes; nothing else from the working tree is shipped.
 
 ## One-time setup (must be done outside the repository)
 
@@ -93,7 +93,9 @@ git push --follow-tags
 ```
 
 The tag push triggers `.github/workflows/release.yml`, which builds and
-publishes. Nothing else publishes; if you ever feel the urge to run
+publishes. Prerelease tags such as `v1.3.27-dev.0` (from
+`bun run version:dev`) publish under the `dev` dist-tag, everything else
+under `latest`. Nothing else publishes; if you ever feel the urge to run
 `npm publish` locally, stop and investigate why the workflow isn't
 working instead.
 
