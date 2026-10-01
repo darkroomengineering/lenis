@@ -1,12 +1,30 @@
-# To get started with Dependabot version updates, you'll need to specify which
-# package ecosystems to update and where the package manifests are located.
-# Please see the documentation for all configuration options:
-# https://help.github.com/github/administering-a-repository/configuration-options-for-dependency-updates
-
-
 version: 2
 updates:
-  - package-ecosystem: "github-actions" # See documentation for possible values
-    directory: "/" # Location of package manifests
+  # Track new versions of GitHub Actions. Dependabot rewrites SHA-pinned actions
+  # back to the new SHA, preserving the pinning policy in release.yml.
+  - package-ecosystem: "github-actions"
+    directory: "/"
     schedule:
       interval: "daily"
+    groups:
+      actions:
+        patterns:
+          - "*"
+
+  # Track advisories on npm dev dependencies. Grouped to reduce PR noise.
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 5
+    groups:
+      dev-dependencies:
+        dependency-type: "development"
+        update-types:
+          - "minor"
+          - "patch"
+    ignore:
+      # Peer deps — bumping these in this repo doesn't change what consumers get.
+      - dependency-name: "react"
+      - dependency-name: "vue"
+      - dependency-name: "@nuxt/kit"
