@@ -84,13 +84,23 @@ After completion, audit them annually.
 
 ## Release flow (for maintainers)
 
+`main` only accepts changes through a reviewed pull request, so a release
+takes two steps: merge the version bump, then tag the merged commit.
+
 ```bash
+# 1. Bump the version on a branch and open a PR
+git switch -c release/next
 bun run version:patch      # or version:minor / version:major / version:dev
 VERSION="v$(node -p "require('./package.json').version")"
 git add -u                 # package.json plus the files `bun run readme` updated
 git commit -m "$VERSION"
-git tag -a "$VERSION" -m "$VERSION"   # annotated, so --follow-tags pushes it
-git push --follow-tags
+git push -u origin HEAD    # open the PR and merge it after review
+
+# 2. After the PR merges, tag the merged commit on main
+git switch main && git pull
+VERSION="v$(node -p "require('./package.json').version")"
+git tag -a "$VERSION" -m "$VERSION"
+git push origin "$VERSION"
 ```
 
 The tag push triggers `.github/workflows/release.yml`, which builds and
