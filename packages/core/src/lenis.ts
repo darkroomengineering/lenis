@@ -1,5 +1,6 @@
 import { version } from '../../../package.json'
 import { Animate } from './animate'
+import { AutoScrollDetection } from './auto-scroll-detection'
 import { Dimensions } from './dimensions'
 import { Emitter } from './emitter'
 import { clamp, modulo } from './maths'
@@ -101,6 +102,7 @@ export class Lenis {
   // These are instanciated in the constructor as they need information from the options
   readonly dimensions: Dimensions // This is not private because it's used in the Snap class
   private readonly virtualScroll: VirtualScroll
+  private readonly autoScrollDetection: AutoScrollDetection
 
   constructor({
     wrapper = window,
@@ -215,10 +217,10 @@ export class Lenis {
       )
     }
 
-    this.options.wrapper.addEventListener(
-      'pointerdown',
-      this.onPointerDown as EventListener
+    this.autoScrollDetection = new AutoScrollDetection(
+      this.options.wrapper as HTMLElement
     )
+    this.autoScrollDetection.on('toggle', () => this.reset())
 
     // Setup virtual scroll instance
     this.virtualScroll = new VirtualScroll(eventsTarget as HTMLElement, {
@@ -249,10 +251,7 @@ export class Lenis {
       capture: true,
     })
 
-    this.options.wrapper.removeEventListener(
-      'pointerdown',
-      this.onPointerDown as EventListener
-    )
+    this.autoScrollDetection.destroy()
 
     if (this.options.anchors || this.options.stopInertiaOnNavigate) {
       this.options.wrapper.removeEventListener(
@@ -400,12 +399,6 @@ export class Lenis {
     }
   }
 
-  private onPointerDown = (event: PointerEvent | MouseEvent) => {
-    if (event.button === 1) {
-      this.reset()
-    }
-  }
-
   // iOS renders text-selection handles at the start and end points of the
   // selection. A touch starting within a handle-sized radius of either point is
   // the user grabbing a handle, not scrolling.
@@ -452,6 +445,12 @@ export class Lenis {
 
     const isTouch = event.type.includes('touch')
     const isWheel = event.type.includes('wheel')
+
+    // wheel events during the browser's middle-click autoscroll would fight
+    // the native scrolling, let the browser handle them instead (#528).
+    if (isWheel && this.autoScrollDetection.isEnabled) {
+      return
+    }
 
     // If the touch grabbed an iOS text-selection handle, let the OS adjust the
     // selection instead of scrolling. Latched on touchstart, held until touchend.
