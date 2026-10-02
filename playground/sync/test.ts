@@ -1,6 +1,9 @@
 import Sync from 'lenis/sync'
 
-const lenis = new Sync()
+// ?shadow: the structure lives in a shadow root on body (research)
+const lenis = new Sync({
+  shadow: new URLSearchParams(location.search).has('shadow'),
+})
 
 // exposed for headless tests
 Object.assign(window, { lenisSync: lenis })

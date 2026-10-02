@@ -21,6 +21,22 @@ import { Emitter } from '../../utils/emitter'
 //   in the same frame, verbatim. Invariant: content position == wrapper position
 // - a content scroll the browser applied itself (focus, anchor, scrollIntoView,
 //   scroll anchoring) is adopted, and the wrapper is brought along
+//
+// `shadow: true` (research): the same mechanism without touching the site's
+// markup or inline styles. Sync attaches a shadow root to the wrapper (body
+// for the window) and builds the structure there, the site's children are
+// slotted in untouched:
+//   host (body / panel)
+//     #shadow-root
+//       .track       block, content.scrollHeight high: the wrapper's range
+//         .content   sticky, one viewport high, overflow hidden: what moves
+//           .layout  auto height, takes over the host's layout
+//             <slot> the site's children, any number of them
+// The layout box mirrors the host's display, alignment and min-height in JS
+// and inherits gap and grid tracks through the boxes above it, so a flex or
+// grid body keeps laying out its children. It has an auto height, unlike the
+// content, so flex children never shrink into the viewport. Whatever sits above the track (body
+// padding, margins) scrolls natively and is subtracted as `offset`.
 
 export type LenisSyncOptions = {
   /**
@@ -44,6 +60,14 @@ export type LenisSyncOptions = {
    * off the per-frame extent check; call `resize()` yourself.
    */
   dimensions?: DimensionsOptions
+  /**
+   * Research: build the wrapper/content structure in a shadow root attached
+   * to the wrapper (body for the window) instead of styling the site's own
+   * elements. `content` is ignored. A shadow root can't be removed, so
+   * `destroy` leaves a bare `<slot>`, which renders as if there were none.
+   * @default false
+   */
+  shadow?: boolean
 }
 
 export type LenisSyncScrollToOptions = {
@@ -56,6 +80,7 @@ export class LenisSync {
     content: HTMLElement
     autoRaf: boolean
     dimensions: DimensionsOptions
+    shadow: boolean
   }
   readonly scrollingBox: ScrollingBox
   /** The vertical scroll axis (the only one, for now) */
@@ -72,14 +97,29 @@ export class LenisSync {
   private lastClientHeight = 0
   /** Last scrollable extent written (change detection, see `raf`) */
   private lastScrollHeight = 0
+  /** Shadow mode: the block that gives the wrapper the content's range */
+  private track?: HTMLElement
+  /** Shadow mode: the track's top in the wrapper's scroll coordinates */
+  private offset = 0
+  /** Shadow mode: watches html and body for scroll locks */
+  private hostObserver?: MutationObserver
+  /** Shadow mode: the auto-height box that lays out the slotted children */
+  private layout?: HTMLElement
+  /** Shadow mode, element wrapper: last wrapper height given to the content */
+  private lastWrapperHeight = 0
 
   constructor({
     wrapper = window,
     content,
     autoRaf = true,
     dimensions,
+    shadow = false,
   }: LenisSyncOptions = {}) {
-    if (wrapper === window) {
+    if (shadow) {
+      content = this.styleShadow(
+        wrapper === window ? document.body : (wrapper as HTMLElement)
+      )
+    } else if (wrapper === window) {
       content ??= document.body
       if (content !== document.body) {
         throw new Error('lenis/sync: for the window, content is body')
@@ -106,6 +146,7 @@ export class LenisSync {
       content,
       autoRaf,
       dimensions: { ...dimensions },
+      shadow,
     }
 
     // measures the content box (read mode: nothing to observe inside it)
@@ -129,12 +170,27 @@ export class LenisSync {
     const { signal } = this.abortController
     wrapper.addEventListener('scroll', this.onWrapperScroll, { signal })
     content.addEventListener('scroll', this.onContentScroll, { signal })
+    if (shadow) {
+      // media queries can change the host's layout: mirror it again
+      addEventListener('resize', this.mirrorLayout, { signal })
+      // scroll-lock libraries pin body with `position: fixed; top: -scrollY`
+      // and restore the scroll on unlock: the track moves, the window range
+      // collapses, so re-read where the track sits and mirror again
+      this.hostObserver = new MutationObserver(this.onHostChange)
+      for (const element of [document.documentElement, document.body]) {
+        this.hostObserver.observe(element, {
+          attributes: true,
+          attributeFilter: ['style', 'class'],
+        })
+      }
+    }
 
     if (autoRaf) this.rafId = requestAnimationFrame(this.raf)
   }
 
   destroy() {
     this.abortController.abort()
+    this.hostObserver?.disconnect()
     cancelAnimationFrame(this.rafId)
     this.y.destroy()
     this.scrollingBox.destroy()
@@ -164,7 +220,18 @@ export class LenisSync {
     // frame (a layout read only when dirty). Compared against our own last
     // value: the dimensions cache is refreshed silently by every `limit`
     // read, so it can't be the reference.
-    const { content, dimensions } = this.options
+    const { content, dimensions, wrapper } = this.options
+    // shadow mode, element wrapper: the content is one wrapper high in px
+    // (a percentage would resolve against the track), so follow the wrapper
+    if (
+      this.track &&
+      wrapper !== window &&
+      dimensions.autoResize !== false &&
+      (wrapper as HTMLElement).clientHeight !== this.lastWrapperHeight
+    ) {
+      this.lastWrapperHeight = (wrapper as HTMLElement).clientHeight
+      content.style.height = `${this.lastWrapperHeight}px`
+    }
     if (
       dimensions.autoResize !== false &&
       (content.scrollHeight !== this.lastScrollHeight ||
@@ -281,7 +348,12 @@ export class LenisSync {
   private onResize = () => {
     this.lastScrollHeight = this.scrollingBox.scrollHeight!
     this.lastClientHeight = this.scrollingBox.height!
-    if (this.spacer) {
+    if (this.track) {
+      // the content's full height: it stays pinned for exactly its range,
+      // whatever surrounds the track (body padding, margins) scrolls natively
+      this.track.style.height = `${this.lastScrollHeight}px`
+      this.offset = this.trackTop()
+    } else if (this.spacer) {
       // the wrapper's range: the content minus the one viewport that is pinned
       this.spacer.style.height = `${this.lastScrollHeight - this.lastClientHeight}px`
     } else {
@@ -291,14 +363,105 @@ export class LenisSync {
     }
   }
 
-  /** The wrapper's position, the target */
+  /**
+   * The wrapper's position in content coordinates, the target. Shadow mode
+   * subtracts what sits above the track: before it, the content scrolls
+   * natively and the value goes negative, as during a rubber-band
+   */
   private get wrapperPosition() {
     const { wrapper } = this.options
-    return wrapper === window ? scrollY : (wrapper as HTMLElement).scrollTop
+    return (
+      (wrapper === window ? scrollY : (wrapper as HTMLElement).scrollTop) -
+      this.offset
+    )
   }
 
   private writeWrapper(value: number) {
-    this.options.wrapper.scrollTo({ top: value, behavior: 'instant' })
+    this.options.wrapper.scrollTo({
+      top: value + this.offset,
+      behavior: 'instant',
+    })
+  }
+
+  /** Shadow mode: the track's top in the wrapper's scroll coordinates */
+  private trackTop() {
+    const { wrapper } = this.options
+    const top = this.track!.getBoundingClientRect().top
+    if (wrapper === window) return top + scrollY
+    const element = wrapper as HTMLElement
+    return (
+      top -
+      element.getBoundingClientRect().top -
+      element.clientTop +
+      element.scrollTop
+    )
+  }
+
+  /**
+   * Shadow mode: build track > content > slot in a shadow root on `host`.
+   * Nothing on the site's elements is styled. Returns the content
+   */
+  private styleShadow(host: HTMLElement) {
+    // read while the page is still plain, so the track starts as tall as the
+    // document and no layout clamps a restored scroll position (see the html
+    // height note in the window path)
+    const initialHeight = host.scrollHeight
+
+    let root = host.shadowRoot
+    if (root && !ownRoots.has(root)) {
+      throw new Error('lenis/sync: the wrapper already has a shadow root')
+    }
+    // throws NotSupportedError for elements that can't host one (ul, td…)
+    root ??= host.attachShadow({ mode: 'open' })
+    ownRoots.add(root)
+
+    const isWindow = host === document.body
+    root.innerHTML = `<style>${shadowCSS}</style><div class="track" part="track"><div class="content" part="content"><div class="layout" part="layout"><slot></slot></div></div></div>`
+    this.track = root.querySelector<HTMLElement>('.track')!
+    const content = root.querySelector<HTMLElement>('.content')!
+    this.track.style.height = `${initialHeight}px`
+    if (isWindow) {
+      content.style.height = '100dvh'
+    } else {
+      this.lastWrapperHeight = host.clientHeight
+      content.style.height = `${this.lastWrapperHeight}px`
+    }
+    this.layout = content.firstElementChild as HTMLElement
+    this.mirrorLayout()
+
+    this.restoreStyles = () => {
+      // can't detach a shadow root: a bare default slot renders the light
+      // children exactly as without one
+      root.innerHTML = '<slot></slot>'
+      this.track = this.layout = undefined
+    }
+    return content
+  }
+
+  /**
+   * Shadow mode: the layout box lays out the site's children, so it takes the
+   * host's layout. Keywords only (computed values stay responsive-safe, this
+   * reruns on resize); gap and grid tracks are inherited in CSS
+   */
+  private mirrorLayout = () => {
+    const { layout, track } = this
+    if (!layout || !track) return
+    const host = track.getRootNode() as ShadowRoot
+    const computed = getComputedStyle(host.host)
+    for (const property of mirroredProperties) {
+      layout.style.setProperty(property, computed.getPropertyValue(property))
+    }
+    // min-height (sticky footers): the host's, minus its own padding and
+    // border when it is border-box, the layout box has neither
+    let minHeight = Number.parseFloat(computed.minHeight) || 0
+    if (computed.boxSizing === 'border-box') {
+      minHeight -=
+        Number.parseFloat(computed.paddingTop) +
+        Number.parseFloat(computed.paddingBottom) +
+        Number.parseFloat(computed.borderTopWidth) +
+        Number.parseFloat(computed.borderBottomWidth)
+    }
+    layout.style.minHeight = minHeight > 0 ? `${minHeight}px` : ''
   }
 
   /** body as the content: a pinned viewport-high box, html owns the page scroll */
@@ -369,6 +532,15 @@ export class LenisSync {
     this.emit()
   }
 
+  /** Shadow mode: html or body attributes changed (scroll lock, theme…) */
+  private onHostChange = () => {
+    this.mirrorLayout()
+    const offset = this.trackTop()
+    if (offset === this.offset) return
+    this.offset = offset
+    this.onWrapperScroll()
+  }
+
   private onContentScroll = () => {
     const actual = this.y.actualScroll
     // our own write, clamped by the browser during a rubber-band
@@ -387,3 +559,60 @@ export class LenisSync {
     this.y.setScroll(value)
   }
 }
+
+/** Shadow roots sync created, safe to reuse after a `destroy` */
+const ownRoots = new WeakSet<ShadowRoot>()
+
+/** Host layout keywords the layout box copies (see `mirrorLayout`) */
+const mirroredProperties = [
+  'display',
+  'flex-direction',
+  'flex-wrap',
+  'align-items',
+  'align-content',
+  'justify-content',
+  'justify-items',
+]
+
+const shadowCSS = `
+.track {
+  display: block;
+  position: relative;
+  box-sizing: content-box;
+  width: 100%;
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  /* a single item of whatever layout the host has */
+  flex: none;
+  align-self: stretch;
+  justify-self: stretch;
+  grid-column: 1 / -1;
+  /* no effect on a block box, passed through to the content */
+  gap: inherit;
+  grid-template: inherit;
+  grid-auto-flow: inherit;
+  grid-auto-rows: inherit;
+  grid-auto-columns: inherit;
+}
+.content {
+  display: block;
+  position: sticky;
+  top: 0;
+  width: 100%;
+  overflow: hidden;
+  box-sizing: border-box;
+  gap: inherit;
+  grid-template: inherit;
+  grid-auto-flow: inherit;
+  grid-auto-rows: inherit;
+  grid-auto-columns: inherit;
+}
+.layout {
+  gap: inherit;
+  grid-template: inherit;
+  grid-auto-flow: inherit;
+  grid-auto-rows: inherit;
+  grid-auto-columns: inherit;
+}
+`
