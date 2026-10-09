@@ -1,0 +1,253 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>KODO Pulse 01</title>
+    <meta
+      name="description"
+      content="Concept sneaker drop site with Lenis smooth scrolling."
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;500;600&display=swap"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/lenis@1.3.26/dist/lenis.css"
+      integrity="sha384-gvLq/iOMNnPchdosgVym5huSVkKipHCQaqSw2Eg0V52Mzmlf169ZOsXcNc2cNu8x"
+      crossorigin="anonymous"
+    />
+    <link rel="stylesheet" href="./style.css" />
+  </head>
+  <body>
+    <a class="skip" href="#shop">Skip to shop</a>
+    <div class="progress" aria-hidden="true"><span></span></div>
+
+    <header class="nav">
+      <a class="nav__logo" href="#top" aria-label="KODO, back to top"
+        >KODO<sup>®</sup></a
+      >
+      <nav aria-label="Primary">
+        <a href="#tech">Tech</a>
+        <a href="#colorways">Colorways</a>
+        <a href="#shop">Shop</a>
+      </nav>
+      <button class="nav__bag" type="button" aria-label="Bag, 0 items">
+        Bag <span data-bag-count>0</span>
+      </button>
+    </header>
+
+    <main>
+      <!-- HERO -->
+      <section class="hero" id="top" tabindex="-1">
+        <div class="hero__word" aria-hidden="true">Pulse 01 — Pulse 01 —</div>
+        <div class="hero__glow" aria-hidden="true"></div>
+        <div class="hero__shadow" aria-hidden="true"><span></span></div>
+        <div class="hero__shoe">
+          <div class="hero__intro">
+            <div class="hero__float">
+              <div
+                class="hero__tilt"
+                data-shoe="KODO Pulse 01 sneaker, side view"
+              ></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="hero__top">
+          <p class="eyebrow"><span class="dot"></span>Drop 014 — Limited run</p>
+          <p class="eyebrow">FW26 · Releases 11.14</p>
+        </div>
+
+        <div class="hero__copy">
+          <h1 class="hero__title">
+            <span class="mask"><span>Run on</span></span>
+            <span class="mask"><span>rhythm.</span></span>
+          </h1>
+        </div>
+
+        <div class="hero__meta">
+          <p class="hero__lede">
+            Pulse 01. A 212-gram racer tuned to the beat of your stride.
+          </p>
+          <div class="hero__cta">
+            <span class="price">$180</span>
+            <a class="btn" href="#shop">Shop the drop</a>
+          </div>
+        </div>
+      </section>
+
+      <!-- TAPE -->
+      <div class="tape" aria-hidden="true">
+        <div class="marquee marquee--a">
+          <div
+            class="marquee__track"
+            data-marquee="New drop ✦ Pulse 01 ✦ 212 grams ✦ 32 mm foam ✦"
+          ></div>
+        </div>
+        <div class="marquee marquee--b">
+          <div
+            class="marquee__track"
+            data-marquee="Lighter ✦ Faster ✦ Louder ✦ Run on rhythm ✦"
+          ></div>
+        </div>
+      </div>
+
+      <!-- ANATOMY (pinned exploded view) -->
+      <section class="anatomy" id="tech" tabindex="-1">
+        <div class="anatomy__sticky">
+          <div class="anatomy__head">
+            <p class="eyebrow">01 — Anatomy</p>
+            <h2 class="h2">Four layers.<br />Zero dead weight.</h2>
+          </div>
+          <div class="anatomy__stage" data-shoe-exploded></div>
+          <ol class="anatomy__list">
+            <li data-layer="outsole">
+              <span class="num">01</span>
+              <h3>GripLock outsole</h3>
+              <p>Rubber lugs placed only where pressure maps say you land.</p>
+            </li>
+            <li data-layer="midsole">
+              <span class="num">02</span>
+              <h3>Rebound foam</h3>
+              <p>32 mm of supercritical foam with a visible air pod in the heel.</p>
+            </li>
+            <li data-layer="upper">
+              <span class="num">03</span>
+              <h3>Mono-knit upper</h3>
+              <p>One continuous yarn, zoned for stretch at the toe and lock at the heel.</p>
+            </li>
+            <li data-layer="laces">
+              <span class="num">04</span>
+              <h3>Flat-lock laces</h3>
+              <p>Ribbed so they stay tied through the very last mile.</p>
+            </li>
+          </ol>
+          <p class="anatomy__counter" aria-hidden="true">
+            <span data-anatomy-step>00</span><small> / 04</small>
+          </p>
+        </div>
+      </section>
+
+      <!-- STATS -->
+      <section class="stats" aria-label="Specs">
+        <div class="stat">
+          <p class="stat__num"><span data-count="212">212</span><small>g</small></p>
+          <p class="stat__label">Weight, men's US 9</p>
+        </div>
+        <div class="stat">
+          <p class="stat__num"><span data-count="32">32</span><small>mm</small></p>
+          <p class="stat__label">Heel stack height</p>
+        </div>
+        <div class="stat">
+          <p class="stat__num"><span data-count="8">8</span><small>mm</small></p>
+          <p class="stat__label">Heel-to-toe drop</p>
+        </div>
+        <div class="stat">
+          <p class="stat__num"><span data-count="72">72</span><small>%</small></p>
+          <p class="stat__label">Energy return</p>
+        </div>
+      </section>
+
+      <!-- COLORWAYS (pinned horizontal scroll) -->
+      <section class="colorways" id="colorways" tabindex="-1">
+        <div class="colorways__sticky">
+          <div class="colorways__track" data-cw-track>
+            <div class="cw-intro">
+              <p class="eyebrow">02 — Colorways</p>
+              <h2 class="h2">Five ways<br />to move.</h2>
+              <p class="cw-intro__body">
+                Same platform, five moods. Pick one and the whole page follows.
+              </p>
+            </div>
+            <!-- cards are rendered from COLORWAYS in main.js -->
+          </div>
+          <div class="colorways__foot" aria-hidden="true">
+            <span><span data-cw-index>01</span> / 05</span>
+            <div class="colorways__bar"><span></span></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- STATEMENT (pinned word reveal) -->
+      <section class="statement">
+        <div class="statement__sticky">
+          <p class="statement__text" data-words>
+            Every stride hands back 72% of the energy you put in. Less weight.
+            More bounce. Built for the miles nobody else sees.
+          </p>
+        </div>
+      </section>
+
+      <!-- SHOP -->
+      <section class="shop" id="shop" tabindex="-1">
+        <div class="shop__visual">
+          <div class="shop__circle"></div>
+          <svg class="shop__ring" viewBox="0 0 200 200" aria-hidden="true">
+            <defs>
+              <path
+                id="ring-path"
+                d="M100,100 m-92,0 a92,92 0 1,1 184,0 a92,92 0 1,1 -184,0"
+              />
+            </defs>
+            <text>
+              <textPath href="#ring-path" textLength="576" lengthAdjust="spacing">
+                KODO ✦ PULSE 01 ✦ DROP 014 ✦ ENERGY RETURN 72% ✦
+              </textPath>
+            </text>
+          </svg>
+          <div class="shop__shoe">
+            <div data-shoe="KODO Pulse 01 in the selected colorway"></div>
+          </div>
+        </div>
+
+        <form class="shop__panel" data-shop novalidate>
+          <p class="eyebrow">03 — The drop</p>
+          <h2 class="h2">Pulse 01</h2>
+          <p class="shop__price">$180 <span>· Free returns for 30 days</span></p>
+
+          <fieldset>
+            <legend>Colorway — <span data-cw-name>Volt Rush</span></legend>
+            <div class="swatches" data-swatches></div>
+          </fieldset>
+
+          <fieldset>
+            <legend>Size (US)</legend>
+            <div class="sizes" data-sizes></div>
+          </fieldset>
+
+          <p class="shop__error" data-shop-error role="alert"></p>
+          <button class="btn btn--wide" type="submit">Add to bag</button>
+          <p class="shop__countdown">Drops in <span data-countdown>—</span></p>
+        </form>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <div class="footer__row">
+        <p>Built for the long way home.</p>
+        <button class="footer__top" type="button" data-top>Back to top ↑</button>
+      </div>
+      <p class="footer__brand" aria-label="KODO">
+        <span aria-hidden="true">K</span><span aria-hidden="true">O</span
+        ><span aria-hidden="true">D</span><span aria-hidden="true">O</span>
+      </p>
+      <p class="footer__note">
+        Concept site. KODO is a fictional brand. Smooth scroll by
+        <a href="https://github.com/darkroomengineering/lenis">Lenis</a>.
+      </p>
+    </footer>
+
+    <div class="toast" role="status" aria-live="polite"></div>
+
+    <script
+      src="https://cdn.jsdelivr.net/npm/lenis@1.3.26/dist/lenis.min.js"
+      integrity="sha384-jqpi9VmOdhyLoLURgjCn7EpnG9BbnHW57ibIZoeaIU+erWDH3k8fQQg0xH2ySjnw"
+      crossorigin="anonymous"
+    ></script>
+    <script src="./main.js"></script>
+  </body>
+</html>
