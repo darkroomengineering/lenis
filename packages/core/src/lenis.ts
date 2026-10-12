@@ -404,7 +404,7 @@ export class Lenis {
    * Scroll to a target value
    *
    * @param target Numeric target, scroll-keyword (`'top'`, `'bottom'`, …), CSS selector,
-   *               `HTMLElement`, or `{ x?, y? }` to drive each axis independently.
+   *               `Element`, or `{ x?, y? }` to drive each axis independently.
    *               A bare number / element / selector targets the active axis (the vertical
    *               one in `orientation: 'both'` mode); pass `{ x, y }` to scroll both at once.
    * @param options The options for the scroll
@@ -415,7 +415,7 @@ export class Lenis {
    * lenis.scrollTo({ x: 200, y: 800 })       // 2D, dispatches to both axes
    */
   scrollTo(
-    target: number | string | HTMLElement,
+    target: number | string | Element,
     options?: ScrollToOptions
   ): Promise<boolean>
   scrollTo(
@@ -423,7 +423,7 @@ export class Lenis {
     options?: ScrollToOptions
   ): Promise<boolean>
   scrollTo(
-    _target: number | string | HTMLElement | { x?: number; y?: number },
+    _target: number | string | Element | { x?: number; y?: number },
     options: ScrollToOptions = {}
   ): Promise<boolean> {
     return this.dispatchScrollTo(
@@ -1211,18 +1211,18 @@ export class Lenis {
    * Returns `[]` when there's nothing to scroll (e.g. unresolved selector).
    */
   private resolveScrollTargets(
-    _target: number | string | HTMLElement | { x?: number; y?: number },
+    _target: number | string | Element | { x?: number; y?: number },
     options: ScrollToOptions
   ): { axis: Axis; target: number }[] {
     // Per-axis offset: a scalar applies to every axis, `{ x?, y? }` per axis.
     const offsetFor = (axis: Axis) => this.resolveOffset(options.offset, axis)
     const active = this.activeAxis
 
-    // 2D dispatch — bare `{ x?, y? }` object (excluding HTMLElement).
+    // 2D dispatch — bare `{ x?, y? }` object (excluding HTML and SVG elements).
     if (
       typeof _target === 'object' &&
       _target !== null &&
-      !(_target instanceof HTMLElement)
+      !(_target instanceof Element)
     ) {
       const { x, y } = _target
       const targets: { axis: Axis; target: number }[] = []
@@ -1244,7 +1244,7 @@ export class Lenis {
       }
     }
 
-    // Resolve a selector / HTMLElement to a `node`
+    // Resolve a selector / Element to a `node`
     let node: Element | null = null
     if (typeof _target === 'string') {
       // getElementById accepts any valid HTML id (e.g. `#footnote-†`),
@@ -1259,7 +1259,7 @@ export class Lenis {
         console.warn('Lenis: Target not found', _target)
         return []
       }
-    } else if (_target instanceof HTMLElement && _target.nodeType) {
+    } else if (_target instanceof Element) {
       node = _target
     }
 
