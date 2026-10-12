@@ -1,0 +1,32 @@
+---
+import Layout from '../layouts/Layout.astro'
+---
+
+<Layout title="Lenis - scroll target regression checks">
+  <h1>Scroll target regression checks</h1>
+  <p>Checks SVG, HTML, selector and coordinate targets on all three orientations.</p>
+  <p id="summary" role="status">Running...</p>
+  <pre id="results"></pre>
+  <div id="wrapper">
+    <div id="content">
+      <svg id="svg-target" width="1600" height="1600" aria-label="Scroll targets">
+        <g id="svg-group">
+          <rect id="svg-rect" x="500" y="600" width="40" height="40" fill="red"></rect>
+        </g>
+        <circle id="svg-circle" cx="800" cy="1000" r="20" fill="blue"></circle>
+      </svg>
+      <div id="html-target">HTML target</div>
+    </div>
+  </div>
+</Layout>
+
+<style>
+  #wrapper { width: 320px; height: 220px; overflow: auto; position: relative; }
+  #content { width: 2000px; height: 2000px; position: relative; }
+  #svg-target { position: absolute; left: 100px; top: 200px; }
+  #html-target { position: absolute; left: 450px; top: 650px; }
+</style>
+
+<script>
+  import '../../scroll-targets/test'
+</script>
