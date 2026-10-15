@@ -742,7 +742,7 @@ export class Lenis {
    * })
    */
   scrollTo(
-    _target: number | string | HTMLElement,
+    _target: number | string | Element,
     {
       offset = 0,
       immediate = false,
@@ -771,7 +771,7 @@ export class Lenis {
 
     if ((this.isStopped || this.isLocked) && !force) return
 
-    let target: number | string | HTMLElement = _target
+    let target: number | string | Element = _target
     let adjustedOffset = offset
 
     // keywords
@@ -802,7 +802,7 @@ export class Lenis {
             console.warn('Lenis: Target not found', target)
           }
         }
-      } else if (target instanceof HTMLElement && target?.nodeType) {
+      } else if (target instanceof Element) {
         // Node element
         node = target
       }
