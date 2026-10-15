@@ -2,6 +2,7 @@ import fs from 'node:fs'
 import packageJson from '../package.json' with { type: 'json' }
 
 const readmePath = './README.md'
+const pluginPath = './plugin.json'
 
 function updateVersion() {
   return new Promise((resolve, reject) => {
@@ -28,6 +29,16 @@ function updateVersion() {
   })
 }
 
+// keep the agent plugin manifest on the published version
+function updatePluginVersion() {
+  const plugin = fs.readFileSync(pluginPath, 'utf8')
+  fs.writeFileSync(
+    pluginPath,
+    plugin.replace(/"version": "[^"]+"/, `"version": "${packageJson.version}"`)
+  )
+}
+
 if (!packageJson.version.includes('-dev')) {
   updateVersion()
+  updatePluginVersion()
 }

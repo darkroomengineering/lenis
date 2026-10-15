@@ -1,0 +1,12 @@
+{
+  "name": "darkroomengineering",
+  "interface": { "displayName": "Darkroom Engineering" },
+  "plugins": [
+    {
+      "name": "lenis",
+      "source": { "source": "local", "path": "./" },
+      "policy": { "installation": "AVAILABLE", "authentication": "ON_INSTALL" },
+      "category": "Developer Tools"
+    }
+  ]
+}
