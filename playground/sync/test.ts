@@ -5,7 +5,27 @@ import Lenis from 'lenis'
 // every same-frame pair below stays glued.
 const native = new URLSearchParams(location.search).has('native')
 
-const lenis = new Lenis({ touch: { smooth: !native }, anchors: true })
+// Overscroll: a touch whose first move pushes out of the range (pulling down
+// at the top, up at the end) is left to the browser for the whole gesture, so
+// it gets the native rubber-band and pull-to-refresh. Decided once per
+// gesture: the browser commits to scrolling or not on the first touchmove.
+// ponytail: that gesture is native end to end (its fling too, one frame
+// late), and a Lenis glide still stops dead at the edge. Core overscroll
+// would need the bounce drawn with a transform, see V2-ROADMAP.
+let overscrolling: boolean | undefined
+const lenis = new Lenis({
+  touch: { smooth: !native },
+  anchors: true,
+  onGesture: ({ type, event, deltaY }, lenis) => {
+    if (type !== 'touch') return
+    if (event.type === 'touchstart') overscrolling = undefined
+    else
+      overscrolling ??=
+        (deltaY < 0 && lenis.scroll <= 0) ||
+        (deltaY > 0 && lenis.scroll >= lenis.maxScroll - 1)
+    if (overscrolling) return false
+  },
+})
 
 // exposed for headless tests
 Object.assign(window, { lenis })
@@ -98,8 +118,8 @@ addEventListener('scroll', () => viaDom.update(scrollY))
   viaRaf.update(scrollY)
   requestAnimationFrame(poll)
 })()
-// the sticky canvas rides a native rubber-band (?native on iOS) with the
-// content, so it wants the clamped value; an unclamped one would move it twice
+// the sticky canvas rides a native rubber-band with the content, so it wants
+// the clamped value; `scroll` follows scrollY unclamped and would move it twice
 lenis.on('scroll', ({ scroll, maxScroll }) =>
   viaSticky.update(Math.min(Math.max(scroll, 0), maxScroll))
 )
