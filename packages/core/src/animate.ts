@@ -47,6 +47,11 @@ export class Animate {
       completed = linearProgress >= 1
       const easedProgress = completed ? 1 : this.easing(linearProgress)
       this.value = this.from + (this.to - this.from) * easedProgress
+    } else if (this.lerp && this.lerp >= 1) {
+      // no smoothing: land on the target this frame, settle on the next — so
+      // the jump is seen as motion (velocity) before the animation completes
+      completed = this.value === this.to
+      this.value = this.to
     } else if (this.lerp) {
       this.value = damp(this.value, this.to, this.lerp * 60, deltaTime)
       if (

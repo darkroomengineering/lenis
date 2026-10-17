@@ -123,24 +123,16 @@ export interface WheelOptions {
 }
 
 export interface TouchOptions {
-  /** Mimic touch device scroll while allowing scroll sync @default false */
+  /** Drive touch scrolling with iOS (UIScrollView) physics while keeping it synced on the main thread @default false */
   smooth?: boolean
-  /** Linear interpolation intensity (0-1) @default 0.1 */
-  lerp?: number
   /** Multiplier for touch events @default 1 */
   multiplier?: number
-  /** Strength of touch inertia @default 2 */
-  inertia?: number
-  duration?: number
-  easing?: EasingFunction
-  ios?: {
-    /** Strength of touch inertia @default 1.7 */
-    inertia?: number
-    /** Linear interpolation intensity (0-1) @default 0.05 */
-    lerp?: number
-    duration?: number
-    easing?: EasingFunction
-  }
+  /**
+   * Release momentum decay per millisecond, like `UIScrollView.DecelerationRate`:
+   * `0.998` (normal) or `0.99` (fast — Safari's rate on scroll-snapping pages)
+   * @default 0.998
+   */
+  decelerationRate?: number
 }
 
 export interface DragOptions {
@@ -148,12 +140,8 @@ export interface DragOptions {
   enabled?: boolean
   /** Multiplier for drag movement @default 1 */
   multiplier?: number
-  /** Strength of the release fling @default 2 */
-  inertia?: number
-  /** Linear interpolation intensity applied to the release fling (0-1) @default 0.1 */
-  lerp?: number
-  duration?: number
-  easing?: EasingFunction
+  /** Release momentum decay per millisecond, see {@link TouchOptions.decelerationRate} @default 0.998 */
+  decelerationRate?: number
 }
 
 export interface ProgrammaticOptions {

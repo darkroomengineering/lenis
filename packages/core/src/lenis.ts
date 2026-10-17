@@ -3,6 +3,7 @@ import { debounce } from '../../utils/debounce'
 import { Emitter } from '../../utils/emitter'
 import { Axis } from './axis'
 import { GesturesHandler } from './gestures-handler'
+import { glide, MIN_FLING_VELOCITY, VelocityTracker } from './inertia'
 import { clamp } from './maths'
 import { ScrollingBox } from './scrolling-box'
 import type {
@@ -51,6 +52,11 @@ export class Lenis {
   private _rafId: number | null = null
   private _isDragging = false // true while a mouse drag is scrolling (drag option)
   private _isDraggingSelection = false // true while a touch is dragging an iOS selection handle
+  // release velocity of the held touch/drag, per axis
+  private readonly velocityTrackers = {
+    x: new VelocityTracker(),
+    y: new VelocityTracker(),
+  }
   // Safari shipped `scrollend` late — where it's missing, Lenis synthesizes one
   // on the native path so consumers get the event everywhere.
   private readonly supportsScrollend = 'onscrollend' in window
@@ -192,21 +198,14 @@ export class Lenis {
       },
       touch: {
         smooth: false,
-        lerp: 0.1,
         multiplier: 1,
-        inertia: 2,
-        ...touch,
-        ...(this.isIOS &&
-          (touch?.ios ?? {
-            inertia: 1.7,
-            lerp: 0.05,
-          })), // overwrite default values if iOS
+        decelerationRate: 0.998,
+        ...touch, // overwrite default values
       },
       drag: {
         enabled: false,
         multiplier: 1,
-        inertia: 1.7,
-        lerp: 0.1,
+        decelerationRate: 0.998,
         ...drag, // overwrite default values
       },
       programmatic: {
@@ -236,24 +235,6 @@ export class Lenis {
     ) {
       this.options.wheel.duration ??= 1
       this.options.wheel.easing ??= defaultEasing
-    }
-
-    // set default duration and easing if not provided
-    if (
-      this.options.touch?.duration !== undefined ||
-      this.options.touch?.easing !== undefined
-    ) {
-      this.options.touch.duration ??= 1
-      this.options.touch.easing ??= defaultEasing
-    }
-
-    // set default duration and easing if not provided
-    if (
-      this.options.drag?.duration !== undefined ||
-      this.options.drag?.easing !== undefined
-    ) {
-      this.options.drag.duration ??= 1
-      this.options.drag.easing ??= defaultEasing
     }
 
     this.scrollingBox = new ScrollingBox(
@@ -750,6 +731,11 @@ export class Lenis {
       deltaY *= this.options.drag.multiplier!
     }
 
+    if (event.type === 'touchstart' || event.type === 'pointerdown') {
+      this.velocityTrackers.x.reset(event.timeStamp)
+      this.velocityTrackers.y.reset(event.timeStamp)
+    }
+
     const isClickOrTap = deltaX === 0 && deltaY === 0
 
     // touch: a tap stops the inertia; drag: grabbing the page stops the fling
@@ -875,20 +861,10 @@ export class Lenis {
       axes = [{ axis: this.activeAxis, delta }]
     }
 
-    // Release inertia: on touchend/pointerup the raw delta is replaced by a
-    // fling based on each driven axis's own velocity.
     const isRelease =
       event.type === 'touchend' ||
       event.type === 'pointerup' ||
       event.type === 'pointercancel'
-    const pointerOptions = this.isDrag ? this.options.drag : this.options.touch
-    if (isRelease) {
-      const inertia = pointerOptions.inertia!
-      for (const entry of axes) {
-        entry.delta =
-          Math.sign(entry.delta) * Math.abs(entry.axis.velocity) ** inertia
-      }
-    }
 
     // An axis "consumes" the gesture if it's scrollable AND mid-range or pushing
     // further into the boundary in the delta's direction.
@@ -919,19 +895,57 @@ export class Lenis {
       event.preventDefault()
     }
 
-    const pointerConfig = isRelease
+    if (isRelease) {
+      // UIScrollView's release: under MIN_FLING_VELOCITY (both axes together)
+      // the scroll stops where the finger left it — the held tracking settles
+      // on its own — otherwise each axis glides on its decay curve.
+      const releases = axes.map(({ axis }) =>
+        this.velocityTrackers[axis.axis].release(event.timeStamp)
+      )
+      if (
+        this.prefersReducedMotion ||
+        Math.hypot(...releases.map((r) => r.latest)) < MIN_FLING_VELOCITY
+      )
+        return
+
+      const { decelerationRate } = this.isDrag
+        ? this.options.drag
+        : this.options.touch
+      axes.forEach(({ axis }, i) => {
+        const { velocity } = releases[i]!
+        // without rubber-banding the glide stops at the limit, still at speed
+        let room = Number.POSITIVE_INFINITY
+        if (!this.options.infinite) {
+          room =
+            velocity > 0
+              ? axis.maxScroll - axis.rawTargetScroll
+              : axis.rawTargetScroll
+        }
+        const fling = glide(velocity, decelerationRate!, room)
+        if (fling && axis.isScrollable) {
+          this.scrollAxisTo(axis, axis.rawTargetScroll + fling.distance, {
+            programmatic: false,
+            duration: fling.duration,
+            easing: fling.easing,
+          })
+        }
+      })
+      return
+    }
+
+    if (!this.isWheel) {
+      for (const { axis, delta } of axes) {
+        this.velocityTrackers[axis.axis].add(delta, event.timeStamp)
+      }
+    }
+
+    const config = this.isWheel
       ? {
-          lerp: pointerOptions.lerp,
-          duration: pointerOptions.duration,
-          easing: pointerOptions.easing,
+          lerp: this.options.wheel.lerp,
+          duration: this.options.wheel.duration,
+          easing: this.options.wheel.easing,
         }
       : { lerp: 1 } // 1:1 finger/pointer tracking while the gesture is held
-    const wheelConfig = {
-      lerp: this.options.wheel.lerp,
-      duration: this.options.wheel.duration,
-      easing: this.options.wheel.easing,
-    }
-    const config = this.isWheel ? wheelConfig : pointerConfig
 
     // Drive each axis independently. The isScrollable/isLocked gate above covers
     // the instance; in 2D a non-scrollable axis still has to be skipped here.
@@ -1529,6 +1543,9 @@ export class Lenis {
         if (!completed) this.emit()
 
         if (completed) {
+          // write the last step before re-syncing from the DOM: `reset` reads
+          // the browser's scroll, which still holds the previous frame's value
+          axis.setScroll(axis.scroll)
           axis.reset()
           if (!this.isAnyAxisAnimating) this.isScrolling = false
           this.emit()

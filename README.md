@@ -185,7 +185,7 @@ That's it, your page now has smooth scrolling — the defaults already handle mo
 | `autoRaf`               | `boolean`                  | `true`                                                     | Automatically run the `requestAnimationFrame` loop. Set to `false` to drive it yourself via `lenis.raf(time)`.                                                                                                                                                |
 | `content`               | `HTMLElement`              | `undefined`                                                | The element that contains the scrolled content, usually `wrapper`'s direct child (`document.documentElement` when `wrapper` is `window`). Providing it enables `ResizeObserver`-based dimensions (`dimensions.mode: 'observe'`).                              |
 | `dimensions`            | `object`                   | `{ autoResize: true, debounce: 500, mode: content ? 'observe' : 'read' }` | How scroll dimensions are computed. `'observe'` uses `ResizeObserver` (requires `content`), `'read'` reads `scrollWidth`/`scrollHeight` directly (⚠️ can cause reflows). With `autoResize: false` you must call `.resize()` manually.          |
-| `drag`                  | `object`                   | `{ enabled: false, multiplier: 1, inertia: 2, lerp: 0.1 }` | Scroll by dragging with the mouse, like a touch surface — grab the page, fling it, inertia on release. Enable with `drag: { enabled: true }`. Clicks still work (a 4px threshold separates them from drags), and form fields, editable content, media controls and `draggable` elements keep their native drag behavior — but dragging elsewhere scrolls instead of selecting page text. Pairs well with `orientation: 'both'`. |
+| `drag`                  | `object`                   | `{ enabled: false, multiplier: 1, decelerationRate: 0.998 }` | Scroll by dragging with the mouse, like a touch surface — grab the page, fling it, iOS momentum on release (see [Wheel, touch & iOS](#wheel-touch--ios)). Enable with `drag: { enabled: true }`. Clicks still work (a 4px threshold separates them from drags), and form fields, editable content, media controls and `draggable` elements keep their native drag behavior — but dragging elsewhere scrolls instead of selecting page text. Pairs well with `orientation: 'both'`. |
 | `eventsTarget`          | `HTMLElement, Window`      | `wrapper`                                                  | The element that will listen to `wheel` and `touch` events.                                                                                                                                                                                                   |
 | `gestureOrientation`    | `string`                   | `'vertical'` if `orientation` is `vertical`, else `'both'` | The orientation of the gestures. Can be `vertical`, `horizontal` or `both`. Has no effect when `orientation: 'both'`.                                                                                                                                         |
 | `infinite`              | `boolean`                  | `false`                                                    | Enable infinite scrolling! `touch: { smooth: true }` is required on touch devices ([See example](https://codepen.io/ClementRoche/pen/OJqBLod)).                                                                                                               |
@@ -195,7 +195,7 @@ That's it, your page now has smooth scrolling — the defaults already handle mo
 | `programmatic`          | `object`                   | `{ lerp: 0.1 }`                                            | Default animation for programmatic scrolls (`scrollTo`, anchors): `lerp`, `duration`, `easing`. Setting `duration`/`easing` switches to time-based animation. Per-call `scrollTo` options still override these.                                                |
 | `respectReducedMotion`  | `boolean`                  | `true`                                                     | Honor the user's `prefers-reduced-motion` setting: smoothing is disabled and programmatic scrolls are instant, while scroll keeps running on the main thread ([see Reduced motion](#reduced-motion)).                                                          |
 | `stopInertiaOnNavigate` | `boolean`                  | `true`                                                     | Stop scroll inertia when an internal link is clicked.                                                                                                                                                                                                         |
-| `touch`                 | `object`                   | `{ smooth: false, lerp: 0.1, multiplier: 1, inertia: 2 }`  | Touch scroll behavior (replaces v1 `syncTouch*`/`touchMultiplier`), see [Wheel, touch & iOS](#wheel-touch--ios).                                                                                                                                              |
+| `touch`                 | `object`                   | `{ smooth: false, multiplier: 1, decelerationRate: 0.998 }` | Touch scroll behavior (replaces v1 `syncTouch*`/`touchMultiplier`), see [Wheel, touch & iOS](#wheel-touch--ios).                                                                                                                                              |
 | `wheel`                 | `object`                   | `{ smooth: true, lerp: 0.1, multiplier: 1 }`               | Wheel scroll behavior (replaces v1 `smoothWheel`/`wheelMultiplier`/`lerp`), see [Wheel, touch & iOS](#wheel-touch--ios).                                                                                                                                      |
 | `wrapper`               | `HTMLElement, Window`      | `window`                                                   | The element that will be used as the scroll container.                                                                                                                                                                                                        |
 <br/>
@@ -211,21 +211,20 @@ new Lenis({
 })
 ```
 
-Set `touch: { smooth: true }` to let Lenis drive touch scrolling too — it mimics native touch scroll while keeping it synced (required for `infinite` on touch devices, can be unstable on iOS<16). It's tuned by `lerp`, `multiplier` and `inertia` (release momentum strength).
-
-Touch physics feel different on iOS, so on iOS devices (iPhone, and iPad even when it reports as macOS) Lenis swaps in iOS-specific touch values — `{ inertia: 1.7, lerp: 0.05 }` by default. Pass `touch.ios` to override them; keys you set replace the iOS defaults, anything else falls back to your base `touch` values:
+Set `touch: { smooth: true }` to let Lenis drive touch scrolling too, keeping it synced on the main thread (required for `infinite` on touch devices, can be unstable on iOS<16). It reproduces iOS's `UIScrollView`: the page follows the finger 1:1, and on release it glides with the same momentum — release velocity estimated like `UIPanGestureRecognizer`, exponential decay at `decelerationRate` per millisecond, no fling under 250px/s or after a pause. The glide is refresh-rate independent, and `targetScroll` holds where it will land as soon as the finger lifts:
 
 ```js
 new Lenis({
   touch: {
     smooth: true,
-    inertia: 2, // Android & others
-    ios: { inertia: 1.5, lerp: 0.06 }, // iPhone & iPad
+    decelerationRate: 0.998, // UIScrollView's normal rate — 0.99 is the fast one, Safari's on scroll-snapping pages
   },
 })
 ```
 
-Both `wheel` and `touch` also accept `duration`/`easing` instead of `lerp` to switch to time-based animation. At runtime, `lenis.isWheel` / `lenis.isTouch` tell you which input drove the last gesture.
+Rubber-banding at the edges isn't reproduced yet: the glide stops at the scroll limit.
+
+`wheel` also accepts `duration`/`easing` instead of `lerp` to switch to time-based animation. At runtime, `lenis.isWheel` / `lenis.isTouch` tell you which input drove the last gesture.
 
 <br/>
 
@@ -396,7 +395,7 @@ Note: the `lenis-stopped` class is no longer applied.
 
 ### Reduced motion
 
-By default, Lenis honors the user's [`prefers-reduced-motion`](https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-reduced-motion) setting: when it is set to `reduce`, smoothing is disabled (`lerp` is forced to `1` so the scroll tracks the input device 1:1, ignoring `duration`/`easing`) and programmatic scrolls (`scrollTo`, anchor links) jump instantly to their target. Lenis keeps running so WebGL/DOM synchronization stays intact, and the preference is picked up live without a reload. You can check `lenis.prefersReducedMotion` to adapt your own animations.
+By default, Lenis honors the user's [`prefers-reduced-motion`](https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-reduced-motion) setting: when it is set to `reduce`, smoothing is disabled (`lerp` is forced to `1` so the scroll tracks the input device 1:1, ignoring `duration`/`easing`, and touch/drag releases don't fling) and programmatic scrolls (`scrollTo`, anchor links) jump instantly to their target. Lenis keeps running so WebGL/DOM synchronization stays intact, and the preference is picked up live without a reload. You can check `lenis.prefersReducedMotion` to adapt your own animations.
 
 You can opt out (not recommended) with:
 

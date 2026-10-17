@@ -37,12 +37,7 @@ function createLenis(touchSmooth: boolean) {
     content: lenisContent,
     touch: {
       smooth: touchSmooth,
-      // inertia: 2,
-      // lerp: 0.1,
-      // ios: {
-      //   inertia: 1.7,
-      //   lerp: 0.05,
-      // },
+      // decelerationRate: 0.998, // 0.99 = UIScrollView's fast rate
     },
   })
   // Expose for quick console poking on the phone (if remote-debugged)

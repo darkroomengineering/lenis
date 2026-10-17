@@ -63,14 +63,8 @@ new Lenis({
   },
   touch: {
     smooth: true,
-    lerp: 0.1,
     multiplier: 1,
-    inertia: 2,
-    // optional fine-tuning overrides that only apply on iOS
-    ios: {
-      lerp: 0.05,
-      inertia: 1.7,
-    },
+    decelerationRate: 0.998, // iOS UIScrollView physics, see below
   },
   dimensions: {
     mode: 'observe',
@@ -83,9 +77,9 @@ new Lenis({
 | v1 | v2 | Reason |
 |----|-----|--------|
 | `syncTouch` | `touch.smooth` | Mirrors `wheel.smooth`, clearer intent |
-| `syncTouchLerp` | `touch.lerp` | Grouped under `touch` |
+| `syncTouchLerp` | `touch.decelerationRate` | Release momentum is iOS's exponential decay, see below |
 | `touchMultiplier` | `touch.multiplier` | Grouped under `touch` |
-| `touchInertiaExponent` | `touch.inertia` | Grouped under `touch` |
+| `touchInertiaExponent` | `touch.decelerationRate` | Same — the `velocity ** inertia` fling was refresh-rate dependent |
 | `smoothWheel` | `wheel.smooth` | Grouped under `wheel` |
 | `wheelMultiplier` | `wheel.multiplier` | Grouped under `wheel` |
 | `lerp` | `wheel.lerp` | Grouped under `wheel` |
@@ -173,21 +167,16 @@ new Lenis({
 
 The `GestureData` payload includes `deltaX`, `deltaY`, the original `event`, and a `type: 'wheel' | 'touch'` discriminator so callers don't need to sniff `event.type`. The `'gesture'` event payload also carries `ignored: true` for input the instance let through (nested scroller, `data-lenis-prevent`, zoom, off-axis, locked / not scrollable) — `lenis/snap` skips those, so wheeling inside a nested scroller no longer snaps the page.
 
-### ✅ iOS-specific touch tuning
+### ✅ iOS touch physics
 
-iOS devices have subtly different touch physics than Android. `touch.ios` provides a fine-tuning escape hatch for `lerp`, `inertia`, `duration`, and `easing` on iOS only:
+`touch.smooth` (and `drag`) reproduce `UIScrollView`, so a JS-driven touch scroll feels native while staying synced on the main thread. Replaces `touch.lerp` / `inertia` / `duration` / `easing` / `ios`, whose `|velocity| ** inertia` fling used per-frame velocity: the same flick went 3–4× shorter at 120Hz than at 60Hz.
 
-```ts
-new Lenis({
-  touch: {
-    smooth: true,
-    inertia: 2,            // applies everywhere
-    ios: { inertia: 1.7 }, // iOS-only override on top
-  },
-})
-```
+- **Held**: 1:1 — the finger's travel lands the same frame (`lerp: 1` now means no smoothing instead of a λ=60 damp that trailed the finger by ~16ms)
+- **Release velocity** (`inertia.ts`): per-event samples from `event.timeStamp`, blended like `UIPanGestureRecognizer` (`0.2·sample + 0.8·previous`) then `UIScrollView` (`0.25·latest + 0.75·previous`); no fling under 0.25px/ms (both axes together) or after a 40ms pause
+- **Glide**: velocity decays by `decelerationRate` per ms (`0.998` normal, `0.99` fast — Safari's on scroll-snapping pages), stops under 0.01px/ms. Run as a `duration` + `easing` (`(1 − qᵖ)/(1 − q)`), so it's refresh-rate independent and `targetScroll` is the landing point from the moment the finger lifts
+- Constants from Telegram-iOS's decoded `UIScrollView` (CoreList/ScrollPhysics, validated against a swizzled `UIScrollView`) and WebKit's `WKWebViewIOS.mm` for Safari's rate
 
-iOS detection handles the iPadOS 13+ desktop-UA case via `navigator.maxTouchPoints`.
+Not yet: rubber-banding / bounce at the edges (the glide stops at the limit, still at speed — needs overscroll drawn with a transform since `scrollTo` clamps), the 10pt pan hysteresis (needs a `preventDefault` story for the slop), the repeated-flick multiplier (up to 16×), and device testing.
 
 ### 🚧 Multi-axis scrolling
 
@@ -207,7 +196,7 @@ Remaining before stable:
 
 ### 🚧 Drag-to-scroll
 
-Mouse drag as a first-class input — grab the page and fling it, like a touch surface. Lives in core: `GesturesHandler` emits `type: 'drag'` gestures into the same pipeline as wheel/touch, so axis routing, nested-scroll/`data-lenis-prevent`, release inertia (touch fling math) and reduced-motion all apply for free. Config joins the other input groups: `drag: { enabled, multiplier, inertia, lerp, duration, easing }` (default disabled), with `lenis.isDrag` / `lenis.isDragging` state and cursor/selection styling via the `lenis-draggable` / `lenis-dragging` classes in `lenis.css`. 4px threshold keeps clicks and text selection native; the trailing click after a real drag is swallowed. Completes the multi-axis story — a mouse can't scroll a 2D canvas without it. `playground/drag` exercises it (and `playground/snap` runs the grab → fling → snap chain); `playground/drag-edges` is the readiness gauntlet — form controls & selection, gesture latch, iframe crossing, outside-window release, pointer types — and doubles as the cross-browser validation script.
+Mouse drag as a first-class input — grab the page and fling it, like a touch surface. Lives in core: `GesturesHandler` emits `type: 'drag'` gestures into the same pipeline as wheel/touch, so axis routing, nested-scroll/`data-lenis-prevent`, release inertia (touch fling math) and reduced-motion all apply for free. Config joins the other input groups: `drag: { enabled, multiplier, decelerationRate }` (default disabled), with `lenis.isDrag` / `lenis.isDragging` state and cursor/selection styling via the `lenis-draggable` / `lenis-dragging` classes in `lenis.css`. 4px threshold keeps clicks and text selection native; the trailing click after a real drag is swallowed. Completes the multi-axis story — a mouse can't scroll a 2D canvas without it. `playground/drag` exercises it (and `playground/snap` runs the grab → fling → snap chain); `playground/drag-edges` is the readiness gauntlet — form controls & selection, gesture latch, iframe crossing, outside-window release, pointer types — and doubles as the cross-browser validation script.
 
 ### ✅ Nested smooth scroll (recursive adoption)
 
