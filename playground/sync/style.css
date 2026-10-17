@@ -1,0 +1,142 @@
+section {
+  height: 100vh;
+  padding: 4rem 1rem 1rem;
+  font: 700 10vw/1 system-ui, sans-serif;
+}
+
+section:nth-of-type(odd) {
+  background: #eee;
+}
+
+/* IntersectionObserver: lime outline while ≥50% visible */
+.in-view {
+  outline: 8px solid lime;
+  outline-offset: -8px;
+}
+
+.sticky {
+  position: sticky;
+  top: 3.5rem;
+  background: #f0f;
+  font-size: 1rem;
+}
+
+.fixed {
+  position: fixed;
+  right: 1rem;
+  bottom: 2rem;
+  background: #ff0;
+  font-size: 1rem;
+}
+
+/* progress bars: red = lenis.on('scroll') (main thread), blue =
+   scroll(root) (compositor). Glued when Lenis drives the scroll. */
+#progress,
+#progress-root {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 6px;
+  transform-origin: 0 0;
+}
+#progress {
+  bottom: 6px;
+  background: red;
+  transform: scaleX(0);
+}
+#progress-root {
+  background: blue;
+  animation: grow linear both;
+  animation-timeline: scroll(root);
+}
+@keyframes grow {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
+#hud {
+  position: fixed;
+  top: 3.5rem;
+  right: 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: end;
+  gap: 0.25rem;
+  font: 0.8rem monospace;
+  z-index: 2;
+}
+
+#hud a,
+#readout {
+  background: #fff;
+}
+
+iframe {
+  width: 100%;
+  height: 30vh;
+}
+
+/* synced pairs: boxes in the content, ghosts in a fixed #canvas layer */
+.sync-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-top: 2rem;
+}
+
+.sync-box {
+  width: 150px;
+  height: 150px;
+  display: grid;
+  place-items: center;
+  font: 0.75rem/1.4 monospace;
+  color: #fff;
+  text-align: center;
+}
+
+#sync-lenis {
+  background: #0a0;
+}
+
+#sync-dom {
+  background: #06c;
+}
+
+#sync-raf {
+  background: #c60;
+}
+
+#sync-sticky {
+  background: #808;
+}
+
+#canvas {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+}
+
+/* in the content: sticks for the whole range since its containing block is
+   body's full content box; height 0 so it takes no space */
+#canvas-sticky {
+  position: sticky;
+  top: 0;
+  height: 0;
+  z-index: 1;
+  pointer-events: none;
+}
+
+/* anchored at the canvas origin; size and position come from the cached rect */
+.ghost {
+  position: absolute;
+  top: 0;
+  left: 0;
+  box-sizing: border-box;
+  border: 4px solid red;
+  will-change: transform;
+}

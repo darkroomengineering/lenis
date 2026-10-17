@@ -1,0 +1,56 @@
+---
+import '~/sync/style.css'
+import Layout from '../layouts/Layout.astro'
+---
+
+<Layout title="Lenis — Sync">
+  <!-- #canvas-sticky: inside the content, first in flow, height 0. Sticks to
+       the top of the viewport and rides a native rubber-band with the boxes,
+       so its ghost wants the clamped value -->
+  <div id="canvas-sticky">
+    <div id="ghost-sticky" class="ghost"></div>
+  </div>
+  <!-- synced boxes on the first slide: overscroll at the top is where a
+       rubber-band shows whether the ghosts follow -->
+  <section id="s1">
+    <div class="sticky">sticky</div>
+    1
+    <div class="sync-row">
+      <div id="sync-lenis" class="sync-box">lenis.on('scroll')<br />same frame</div>
+      <div id="sync-dom" class="sync-box">window 'scroll' event<br />one frame late</div>
+      <div id="sync-raf" class="sync-box">raf polls scrollY<br />same frame</div>
+      <div id="sync-sticky" class="sync-box">sticky canvas<br />clamped scroll</div>
+    </div>
+  </section>
+  <section id="s2">2</section>
+  <section id="s3">3 <input placeholder="focus me" /></section>
+  <section id="s4">
+    4
+    <iframe
+      id="iframe-short"
+      srcdoc="<p style=font:2rem/1.5,system-ui>short iframe: wheel here should scroll the page</p>"
+      style="border: 4px solid #0af"></iframe>
+    <iframe
+      id="iframe-tall"
+      srcdoc="<div style=height:3000px;background:linear-gradient(#0af,#f0a)><p style=font:2rem/1.5,system-ui>tall iframe: scrolls itself first, then chains to the page</p></div>"
+      style="border: 4px solid #f0a"></iframe>
+  </section>
+  <section id="s5">5</section>
+  <section id="s6">6</section>
+  <div class="fixed">fixed</div>
+  <div id="progress"></div>
+  <div id="progress-root"></div>
+  <div id="hud">
+    <a id="mode"></a>
+    <a href="#s6">#s6</a>
+    <div id="readout"></div>
+  </div>
+  <!-- #canvas: fixed above the content, like a WebGL canvas. Ghosts sit at
+       content coordinates inside it and are offset by -scroll -->
+  <div id="canvas">
+    <div id="ghost-lenis" class="ghost"></div>
+    <div id="ghost-dom" class="ghost"></div>
+    <div id="ghost-raf" class="ghost"></div>
+  </div>
+  <script src="../../sync/test.ts"></script>
+</Layout>
