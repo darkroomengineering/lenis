@@ -1,3 +1,7 @@
+html {
+  overscroll-behavior: unset;
+}
+
 section {
   height: 100vh;
   padding: 4rem 1rem 1rem;
