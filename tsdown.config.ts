@@ -43,7 +43,7 @@ export default defineConfig([
     entry: { 'lenis-react': 'packages/react/index.ts' },
     dts: { resolver: 'tsc' },
     clean: false,
-    banner: '"use client";',
+    banner: { js: '"use client";' },
     deps: { neverBundle: ['react', 'lenis'] },
   },
 
