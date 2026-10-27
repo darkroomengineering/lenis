@@ -175,7 +175,7 @@ export class Snap {
 
       align.forEach((align) => {
         if (align === 'start') {
-          value = rect.top
+          value = isHorizontal ? rect.left : rect.top
         } else if (align === 'center') {
           value = isHorizontal
             ? rect.left + rect.width / 2 - this.viewport.width / 2
