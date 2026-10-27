@@ -143,7 +143,10 @@ export class Snap {
 
     this.elements.set(id, new SnapElement(element, options))
 
-    return () => this.elements.delete(id)
+    return () => {
+      this.elements.get(id)?.destroy()
+      return this.elements.delete(id)
+    }
   }
 
   addElements(
