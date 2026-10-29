@@ -1,4 +1,4 @@
-import Lenis, { type ScrollCallback } from 'lenis'
+import Lenis from 'lenis'
 import {
   createContext,
   type ForwardRefExoticComponent,
@@ -11,9 +11,92 @@ import {
   useState,
 } from 'react'
 import { getRegistryStore, ROOT_KEY } from './store'
-import type { LenisContextValue, LenisProps, LenisRef } from './types'
+import type {
+  LenisContextValue,
+  LenisInstance,
+  LenisProps,
+  LenisRef,
+  LenisScrollCallback,
+} from './types'
 
 export const LenisContext = createContext<LenisContextValue | null>(null)
+
+/**
+ * What a provider does with its instance, Lenis or LenisSync: runs the
+ * `useLenis` callbacks on its scroll and publishes it to the registry.
+ */
+export function useProvideLenis(
+  lenis: LenisInstance | undefined,
+  rootContext: boolean,
+  name: string | undefined
+) {
+  // Handle callbacks
+  const callbacksRefs = useRef<
+    {
+      callback: LenisScrollCallback
+      priority: number
+    }[]
+  >([])
+
+  const addCallback: LenisContextValue['addCallback'] = useCallback(
+    (callback, priority) => {
+      callbacksRefs.current.push({ callback, priority })
+      callbacksRefs.current.sort((a, b) => a.priority - b.priority)
+    },
+    []
+  )
+
+  const removeCallback: LenisContextValue['removeCallback'] = useCallback(
+    (callback) => {
+      callbacksRefs.current = callbacksRefs.current.filter(
+        (cb) => cb.callback !== callback
+      )
+    },
+    []
+  )
+
+  // Publish to the named registry so useLenis() / useLenis(name) can reach
+  // this instance from outside its subtree. `rootContext` -> the global
+  // ROOT_KEY entry, `name` -> its own key; both are entries in one registry.
+  useEffect(() => {
+    if (!lenis) return
+
+    const keys: string[] = []
+    if (rootContext) keys.push(ROOT_KEY)
+    if (name && name !== ROOT_KEY) keys.push(name)
+    if (keys.length === 0) return
+
+    const value = { lenis, addCallback, removeCallback }
+    for (const key of keys) {
+      getRegistryStore(key).set(value)
+    }
+
+    return () => {
+      for (const key of keys) {
+        getRegistryStore(key).set(null)
+      }
+    }
+  }, [rootContext, name, lenis, addCallback, removeCallback])
+
+  // Setup callback listeners
+  useEffect(() => {
+    if (!lenis) return
+
+    const onScroll: LenisScrollCallback = (data) => {
+      for (const { callback } of callbacksRefs.current) {
+        callback(data)
+      }
+    }
+
+    lenis.on('scroll', onScroll)
+
+    return () => {
+      lenis.off('scroll', onScroll)
+    }
+  }, [lenis])
+
+  return { addCallback, removeCallback }
+}
 
 /**
  * React component to setup a Lenis instance
@@ -69,70 +152,11 @@ export const ReactLenis: ForwardRefExoticComponent<
       }
     }, [JSON.stringify({ ...options, wrapper: null, content: null })])
 
-    // Handle callbacks
-    const callbacksRefs = useRef<
-      {
-        callback: ScrollCallback
-        priority: number
-      }[]
-    >([])
-
-    const addCallback: LenisContextValue['addCallback'] = useCallback(
-      (callback, priority) => {
-        callbacksRefs.current.push({ callback, priority })
-        callbacksRefs.current.sort((a, b) => a.priority - b.priority)
-      },
-      []
+    const { addCallback, removeCallback } = useProvideLenis(
+      lenis,
+      rootContext,
+      name
     )
-
-    const removeCallback: LenisContextValue['removeCallback'] = useCallback(
-      (callback) => {
-        callbacksRefs.current = callbacksRefs.current.filter(
-          (cb) => cb.callback !== callback
-        )
-      },
-      []
-    )
-
-    // Publish to the named registry so useLenis() / useLenis(name) can reach
-    // this instance from outside its subtree. `rootContext` -> the global
-    // ROOT_KEY entry, `name` -> its own key; both are entries in one registry.
-    useEffect(() => {
-      if (!lenis) return
-
-      const keys: string[] = []
-      if (rootContext) keys.push(ROOT_KEY)
-      if (name && name !== ROOT_KEY) keys.push(name)
-      if (keys.length === 0) return
-
-      const value = { lenis, addCallback, removeCallback }
-      for (const key of keys) {
-        getRegistryStore(key).set(value)
-      }
-
-      return () => {
-        for (const key of keys) {
-          getRegistryStore(key).set(null)
-        }
-      }
-    }, [rootContext, name, lenis, addCallback, removeCallback])
-
-    // Setup callback listeners
-    useEffect(() => {
-      if (!lenis) return
-
-      const onScroll: ScrollCallback = (data) => {
-        for (const { callback } of callbacksRefs.current) {
-          callback(data)
-        }
-      }
-
-      lenis.on('scroll', onScroll)
-
-      return () => {
-        lenis.off('scroll', onScroll)
-      }
-    }, [lenis])
 
     if (!children) return null
 
