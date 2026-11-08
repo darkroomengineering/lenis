@@ -15,6 +15,19 @@ import type {
 } from './types'
 import { VirtualScroll } from './virtual-scroll'
 
+// keys the browser scrolls the page with
+const SCROLL_KEYS = new Set([
+  ' ',
+  'PageUp',
+  'PageDown',
+  'Home',
+  'End',
+  'ArrowUp',
+  'ArrowDown',
+  'ArrowLeft',
+  'ArrowRight',
+])
+
 // Technical explanation
 // - listen to 'wheel' events
 // - prevent 'wheel' event to prevent scroll
@@ -35,6 +48,8 @@ export class Lenis {
   private _resetVelocityTimeout: ReturnType<typeof setTimeout> | null = null
   private _rafId: number | null = null
   private _isDraggingSelection = false // true while a touch is dragging an iOS selection handle
+  private _lastKnownScroll = 0 // last scroll position lenis wrote, or read from the browser
+  private _expectAnchorJump = false // the browser's own jump to an anchor lenis is animating to
   // `.matches` is read at scroll time so preference changes apply live, no listener needed
   private readonly reducedMotionMediaQuery = window.matchMedia(
     '(prefers-reduced-motion: reduce)'
@@ -130,6 +145,7 @@ export class Lenis {
     naiveDimensions = __experimental__naiveDimensions,
     stopInertiaOnNavigate = false,
     respectReducedMotion = true,
+    cancelOnNativeScroll = false,
   }: LenisOptions = {}) {
     // Set version (deprecated)
     window.lenisVersion = version
@@ -190,6 +206,7 @@ export class Lenis {
       naiveDimensions,
       stopInertiaOnNavigate,
       respectReducedMotion,
+      cancelOnNativeScroll,
     }
 
     // Setup dimensions instance
@@ -200,6 +217,7 @@ export class Lenis {
 
     // Set the initial scroll value for all scroll information
     this.targetScroll = this.animatedScroll = this.actualScroll
+    this._lastKnownScroll = this.animatedScroll
 
     // Add event listeners
     this.options.wrapper.addEventListener('scroll', this.onNativeScroll)
@@ -219,6 +237,10 @@ export class Lenis {
       'pointerdown',
       this.onPointerDown as EventListener
     )
+
+    if (this.options.cancelOnNativeScroll) {
+      window.addEventListener('keydown', this.onKeyDown)
+    }
 
     // Setup virtual scroll instance
     this.virtualScroll = new VirtualScroll(eventsTarget as HTMLElement, {
@@ -258,6 +280,8 @@ export class Lenis {
       'pointerdown',
       this.onPointerDown as EventListener
     )
+
+    window.removeEventListener('keydown', this.onKeyDown)
 
     if (this.options.anchors || this.options.stopInertiaOnNavigate) {
       this.options.wrapper.removeEventListener(
@@ -353,6 +377,12 @@ export class Lenis {
     } else {
       this.options.wrapper.scrollTo({ top: scroll, behavior: 'instant' })
     }
+
+    if (this.options.cancelOnNativeScroll) {
+      // read back what the browser applied (rounded to device pixels, clamped
+      // to the limit) so onNativeScroll compares like with like
+      this._lastKnownScroll = this.actualScroll
+    }
   }
 
   private onClick = (event: PointerEvent | MouseEvent) => {
@@ -387,6 +417,16 @@ export class Lenis {
         const target = decodeURIComponent(anchorElementUrl.hash)
 
         this.scrollTo(target, options)
+
+        // the browser still jumps to the hash natively after this click, and
+        // not always before the next frame: that jump must not cancel the
+        // animation lenis just started
+        if (this.options.cancelOnNativeScroll && this.isSmooth) {
+          this._expectAnchorJump = true
+          setTimeout(() => {
+            this._expectAnchorJump = false
+          }, 300)
+        }
         return
       }
     }
@@ -409,6 +449,23 @@ export class Lenis {
     if (event.button === 1) {
       this.reset()
     }
+  }
+
+  // Keyboard scrolling is animated by the browser, and it shifts that animation
+  // by whatever lenis writes in between. Stop before the next write so the key
+  // lands exactly where the browser meant (#528).
+  private onKeyDown = (event: KeyboardEvent) => {
+    if (!this.isSmooth || this.isLocked || event.defaultPrevented) return
+    if (!SCROLL_KEYS.has(event.key)) return
+
+    const target = event.target
+    if (
+      target instanceof HTMLElement &&
+      (target.isContentEditable || target.closest('input, textarea, select'))
+    )
+      return
+
+    this.reset()
   }
 
   // iOS renders text-selection handles at the start and end points of the
@@ -609,6 +666,7 @@ export class Lenis {
   resize() {
     this.dimensions.resize()
     this.animatedScroll = this.targetScroll = this.actualScroll
+    this._lastKnownScroll = this.animatedScroll
     this.emit()
   }
 
@@ -627,9 +685,28 @@ export class Lenis {
       return
     }
 
+    // The position is not the last one lenis knows about: something else
+    // scrolled during the animation (scrollbar drag, keyboard, middle-click
+    // autoscroll, find in page, anchor jump, script). Let it win instead of
+    // animating back to the previous target (#528).
+    if (
+      this.options.cancelOnNativeScroll &&
+      this.isScrolling === 'smooth' &&
+      !this.isLocked &&
+      this.actualScroll !== this._lastKnownScroll
+    ) {
+      if (this._expectAnchorJump) {
+        this._expectAnchorJump = false
+      } else {
+        this.animate.stop()
+        this.isScrolling = false // handled as a native scroll below
+      }
+    }
+
     if (this.isScrolling === false || this.isScrolling === 'native') {
       const lastScroll = this.animatedScroll
       this.animatedScroll = this.targetScroll = this.actualScroll
+      this._lastKnownScroll = this.animatedScroll
       this.lastVelocity = this.velocity
       this.velocity = this.animatedScroll - lastScroll
       this.direction = Math.sign(
@@ -657,6 +734,7 @@ export class Lenis {
     this.isLocked = false
     this.isScrolling = false
     this.animatedScroll = this.targetScroll = this.actualScroll
+    this._lastKnownScroll = this.animatedScroll
     this.lastVelocity = this.velocity = 0
     this.animate.stop()
   }
