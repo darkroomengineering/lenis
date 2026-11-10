@@ -23,7 +23,7 @@ window.addEventListener('scroll', (_e) => {
   // console.log('window scroll', e)
 })
 
-window.addEventListener('scrollend', (e) => {
+window.addEventListener('scrollend', (_e) => {
   // console.log('window scrollend', e)
 })
 
