@@ -6,6 +6,8 @@
       "name": "lenis",
       "devDependencies": {
         "@biomejs/biome": "^2.4.2",
+        "@vitest/browser-playwright": "5.0.3",
+        "playwright": "^1.65.0",
         "typescript": "^5.7.3",
         "vite": "catalog:",
         "vite-plus": "catalog:",
@@ -773,6 +775,8 @@
     "@vitejs/plugin-vue-jsx": ["@vitejs/plugin-vue-jsx@4.2.0", "", { "dependencies": { "@babel/core": "^7.27.1", "@babel/plugin-transform-typescript": "^7.27.1", "@rolldown/pluginutils": "^1.0.0-beta.9", "@vue/babel-plugin-jsx": "^1.4.0" }, "peerDependencies": { "vite": "^5.0.0 || ^6.0.0", "vue": "^3.0.0" } }, "sha512-DSTrmrdLp+0LDNF77fqrKfx7X0ErRbOcUAgJL/HbSesqQwoUvUQ4uYQqaex+rovqgGcoPqVk+AwUh3v9CuiYIw=="],
 
     "@vitest/browser": ["@vitest/browser@5.0.3", "", { "dependencies": { "@blazediff/core": "1.10.0", "@vitest/mocker": "5.0.3", "@vitest/ui": "5.0.3", "@vitest/utils": "5.0.3", "magic-string": "^1.2.3", "pngjs": "^7.0.0", "sirv": "^3.0.2", "tinyrainbow": "^3.1.1", "ws": "^8.21.3" }, "peerDependencies": { "vitest": "5.0.3" } }, "sha512-7KHIkVA/gTRxQV9qPa9qLK+g5INZG6iRrlwXSFG5EKsOomW3UzzW7wsdt1Yp5PufzQ43lniuONlb4lUVCC2qSg=="],
+
+    "@vitest/browser-playwright": ["@vitest/browser-playwright@5.0.3", "", { "dependencies": { "@vitest/browser": "5.0.3", "@vitest/mocker": "5.0.3", "tinyrainbow": "^3.1.1" }, "peerDependencies": { "playwright": "*", "vitest": "5.0.3" } }, "sha512-rYBHwIFL/ZtI6dl0rbrAatScXCrvX+TL2BX2AGOigkC1Y6u3rIWw8KMQJJMS4drSa1ksMCmZU2wpgwdE7kqu3g=="],
 
     "@vitest/browser-preview": ["@vitest/browser-preview@5.0.3", "", { "dependencies": { "@testing-library/dom": "^10.4.1", "@testing-library/user-event": "^14.6.6", "@vitest/browser": "5.0.3" }, "peerDependencies": { "vitest": "5.0.3" } }, "sha512-jfnEBv5yDRPR1MeiTlTW5bcZoPsiI7MBhpZR8IJiSxVhdK6Pa4gPk3tLHTRxVHy24kkWxY2TnUbnszU3J1bQJw=="],
 
@@ -1707,6 +1711,10 @@
     "playground": ["playground@workspace:playground"],
 
     "playground-nuxt": ["playground-nuxt@workspace:playground/nuxt"],
+
+    "playwright": ["playwright@1.65.0", "", { "dependencies": { "playwright-core": "1.65.0" }, "bin": { "playwright": "cli.js" } }, "sha512-F3AMWcR44qMBt4kq+6Kb6mX7bjGXshktKFOPULd7reED6ZJWevjbNRqysP7q+AATE9kdPEZBibex1BYsvpVoeA=="],
+
+    "playwright-core": ["playwright-core@1.65.0", "", { "bin": { "playwright-core": "cli.js" } }, "sha512-vNSKgH6YqtN7cdT/L334zo0a+YwkrpicyrHJlWWPIm/Q+Nn2SWInil01oT0mbu96U4GgoRtCYQD9CzJQgju+lA=="],
 
     "pngjs": ["pngjs@7.0.0", "", {}, "sha512-LKWqWJRhstyYo9pGvgor/ivk2w94eSjE3RGVuzLGlr3NmD8bf7RcYGze1mNdEHRP6TRP6rMuDHk5t44hnTRyow=="],
 

@@ -1,4 +1,5 @@
 import { defineConfig } from 'vite-plus'
+import { playwright } from 'vite-plus/test/browser-playwright'
 import tsdownConfig from './tsdown.config.js'
 
 export default defineConfig({
@@ -9,4 +10,17 @@ export default defineConfig({
     options: { typeAware: true, typeCheck: true },
   },
   pack: tsdownConfig,
+  test: {
+    include: ['packages/**/*.test.ts'],
+    browser: {
+      enabled: true,
+      headless: true,
+      provider: playwright(),
+      instances: [
+        { browser: 'chromium' },
+        { browser: 'firefox' },
+        { browser: 'webkit' },
+      ],
+    },
+  },
 })

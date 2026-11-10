@@ -49,3 +49,6 @@ dist/
 
 .tldr/
 .tldrignore
+
+# vitest failure screenshots
+.vitest/
