@@ -51,7 +51,7 @@
   ],
   "devDependencies": {
     "@biomejs/biome": "^2.4.2",
-    "@vitest/browser-playwright": "5.0.3",
+    "@vitest/browser-playwright": "5.1.0",
     "playwright": "^1.65.0",
     "typescript": "^5.7.3",
     "vite": "catalog:",
@@ -77,8 +77,8 @@
     "vite": "catalog:"
   },
   "catalog": {
-    "vite": "npm:@voidzero-dev/vite-plus-core@1.1.0",
-    "vite-plus": "1.1.0"
+    "vite": "npm:@voidzero-dev/vite-plus-core@1.5.1",
+    "vite-plus": "1.5.1"
   },
   "unpkg": "./dist/lenis.mjs",
   "main": "./dist/lenis.mjs",
