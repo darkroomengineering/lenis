@@ -36,6 +36,7 @@
     "dev:build": "vp pack --watch",
     "dev:playground": "bun --filter playground dev",
     "dev:nuxt": "bun --filter playground-nuxt dev",
+    "check": "vp check",
     "test": "vp test run",
     "readme": "node ./scripts/update-readme.js",
     "version:dev": "npm version prerelease --preid dev --force --no-git-tag-version",
@@ -50,7 +51,6 @@
     "dist"
   ],
   "devDependencies": {
-    "@biomejs/biome": "^2.4.2",
     "@vitest/browser-playwright": "5.1.0",
     "playwright": "^1.65.0",
     "typescript": "^5.7.3",

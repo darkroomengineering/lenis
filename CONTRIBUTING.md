@@ -30,4 +30,4 @@ At the same time the playground will automatically reload when you change the co
 
   - Provide a detailed description of the bug in the PR. Codepen demo preferred.
 
-- Make sure to enable biome in your editor to format the code.
+- Run `bun run check` before you push. It checks format, lint and types. `bun run check --fix` fixes format and lint.
