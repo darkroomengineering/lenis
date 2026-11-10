@@ -16,6 +16,12 @@ jobs:
   ci:
     runs-on: ubuntu-latest
     timeout-minutes: 15
+    # The image ships the browsers and their system packages. Its version must
+    # match the `playwright` version in package.json.
+    container:
+      image: mcr.microsoft.com/playwright:v1.65.0-noble
+      # Firefox does not start as root in the runner's home directory
+      options: --user 1001
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -33,9 +39,6 @@ jobs:
 
       - name: Build
         run: vp pack
-
-      - name: Install browsers
-        run: vp exec playwright install --with-deps chromium firefox webkit
 
       - name: Test
         run: vp test run

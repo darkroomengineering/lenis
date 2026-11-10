@@ -6,7 +6,7 @@
       "name": "lenis",
       "devDependencies": {
         "@vitest/browser-playwright": "5.1.0",
-        "playwright": "^1.65.0",
+        "playwright": "1.65.0",
         "typescript": "^5.7.3",
         "vite": "catalog:",
         "vite-plus": "catalog:",
