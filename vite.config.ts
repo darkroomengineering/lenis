@@ -25,7 +25,21 @@ const iife = (globalName: string, minify = false) =>
   }) as const
 
 export default defineConfig({
-  fmt: {},
+  fmt: {
+    printWidth: 80,
+    singleQuote: true,
+    semi: false,
+    trailingComma: 'es5',
+    sortPackageJson: false,
+    sortImports: {},
+    ignorePatterns: [
+      '**/*.md',
+      '**/*.mdx',
+      '.github',
+      '**/public',
+      '**/*.html',
+    ],
+  },
   lint: {
     jsPlugins: [{ name: 'vite-plus', specifier: 'vite-plus/oxlint-plugin' }],
     rules: { 'vite-plus/prefer-vite-plus-imports': 'error' },
@@ -74,14 +88,19 @@ export default defineConfig({
       dts: false,
       sourcemap: false,
       clean: false,
-      deps: { neverBundle: ['lenis', 'lenis/vue', '#imports', '#app', '@nuxt/kit'] },
+      deps: {
+        neverBundle: ['lenis', 'lenis/vue', '#imports', '#app', '@nuxt/kit'],
+      },
     },
 
     // Browser IIFE builds
     { entry: { lenis: 'packages/core/browser.ts' }, ...iife('Lenis') },
     { entry: { lenis: 'packages/core/browser.ts' }, ...iife('Lenis', true) },
     { entry: { 'lenis-snap': 'packages/snap/browser.ts' }, ...iife('Snap') },
-    { entry: { 'lenis-snap': 'packages/snap/browser.ts' }, ...iife('Snap', true) },
+    {
+      entry: { 'lenis-snap': 'packages/snap/browser.ts' },
+      ...iife('Snap', true),
+    },
   ],
   test: {
     include: ['packages/**/*.test.ts'],

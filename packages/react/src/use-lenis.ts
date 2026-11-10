@@ -1,6 +1,7 @@
 import type Lenis from 'lenis'
 import type { ScrollCallback } from 'lenis'
 import { useContext, useEffect } from 'react'
+
 import { LenisContext, rootLenisContextStore } from './provider'
 import { useStore } from './store'
 import type { LenisContextValue } from './types'

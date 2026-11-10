@@ -1,5 +1,6 @@
 import { afterEach, beforeEach, expect, test } from 'vite-plus/test'
 import { userEvent } from 'vite-plus/test/browser'
+
 import Lenis from '../index'
 
 let lenis: Lenis | undefined
