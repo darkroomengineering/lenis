@@ -44,6 +44,8 @@ export default defineConfig({
     plugins: ['typescript', 'unicorn', 'oxc', 'react'],
     jsPlugins: [{ name: 'vite-plus', specifier: 'vite-plus/oxlint-plugin' }],
     categories: { correctness: 'error' },
+    // needs the types that `nuxt prepare` generates
+    ignorePatterns: ['playground/nuxt'],
     rules: {
       'vite-plus/prefer-vite-plus-imports': 'error',
       eqeqeq: 'error',

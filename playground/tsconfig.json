@@ -4,7 +4,11 @@
     "jsx": "react-jsx",
     "jsxImportSource": "react",
     "paths": {
-      "~/*": ["./*"]
+      "~/*": ["./*"],
+      "lenis": ["../packages/core/index.ts"],
+      "lenis/react": ["../packages/react/index.ts"],
+      "lenis/snap": ["../packages/snap/index.ts"],
+      "lenis/vue": ["../packages/vue/index.ts"]
     }
   }
 }
