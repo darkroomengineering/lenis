@@ -1,7 +1,7 @@
 {
   "recommendations": [
     // Formatting & Linting
-    "biomejs.biome",
+    "VoidZero.vite-plus-extension-pack",
 
     // CSS & Styling
     "bradlc.vscode-tailwindcss",

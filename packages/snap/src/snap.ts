@@ -1,5 +1,6 @@
 import type Lenis from 'lenis'
 import type { VirtualScrollData } from 'lenis'
+
 import { debounce } from './debounce'
 import type { SnapElementOptions } from './element'
 import { SnapElement } from './element'

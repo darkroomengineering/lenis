@@ -1,4 +1,5 @@
 import vuePlugin from 'lenis/vue'
+
 import type { Plugin } from '#app'
 import { defineNuxtPlugin } from '#imports'
 

@@ -17,6 +17,7 @@ import {
   shallowRef,
   watch,
 } from 'vue'
+
 import { globalAddCallback, globalLenis, globalRemoveCallback } from './store'
 
 export const LenisSymbol: InjectionKey<ShallowRef<Lenis | undefined>> =

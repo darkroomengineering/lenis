@@ -17,6 +17,7 @@ const nuxtModule = defineNuxtModule<ModuleOptions>({
   // Default configuration options of the Nuxt module
   defaults: {},
   setup(_options, _nuxt) {
+    // oxlint-disable-next-line typescript/unbound-method -- Nuxt's resolve does not use `this`
     const { resolve } = createResolver(import.meta.url)
 
     addPlugin({

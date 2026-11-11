@@ -10,6 +10,7 @@ import {
   useRef,
   useState,
 } from 'react'
+
 import { Store } from './store'
 import type { LenisContextValue, LenisProps, LenisRef } from './types'
 
