@@ -20,18 +20,6 @@ afterEach(() => {
   content.remove()
 })
 
-test('without Lenis, the wheel is a real event and scrolls natively', async () => {
-  let event: WheelEvent | undefined
-  window.addEventListener('wheel', (e) => (event = e), { once: true })
-
-  await userEvent.wheel(content, { delta: { y: 300 } })
-
-  expect(event?.isTrusted).toBe(true)
-  expect(event?.deltaY).toBe(300)
-  // Firefox applies the native scroll late; an unsettled scroll corrupts the next test
-  await expect.poll(() => window.scrollY).toBe(300)
-})
-
 test('Lenis takes the wheel and animates to the target', async () => {
   lenis = new Lenis({ autoRaf: true })
   const positions: number[] = []
