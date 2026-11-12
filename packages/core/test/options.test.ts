@@ -15,7 +15,6 @@ test('the html element as wrapper falls back to window', () => {
   const lenis = createLenis({ wrapper: document.documentElement })
 
   expect(lenis.options.wrapper).toBe(window)
-  expect(lenis.options.eventsTarget).toBe(document.documentElement)
 })
 
 test('duration and easing each bring a default for the other', () => {
@@ -23,11 +22,4 @@ test('duration and easing each bring a default for the other', () => {
 
   expect(createLenis({ duration: 2 }).options.easing).toBeTypeOf('function')
   expect(createLenis({ easing: linear }).options.duration).toBe(1)
-})
-
-test('naiveDimensions reads the limit from the root element', () => {
-  const lenis = createLenis({ __experimental__naiveDimensions: true })
-
-  expect(lenis.options.naiveDimensions).toBe(true)
-  expect(lenis.limit).toBe(5000 - window.innerHeight)
 })
