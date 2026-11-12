@@ -3,6 +3,8 @@ import { Animate } from './animate'
 import { Dimensions } from './dimensions'
 import { Emitter } from './emitter'
 import { clamp, modulo } from './maths'
+import { resolveOptions, resolveTiming } from './options'
+import type { ResolvedOptions } from './options'
 import type {
   LenisEvent,
   LenisOptions,
@@ -22,10 +24,6 @@ import { VirtualScroll } from './virtual-scroll'
 // - add delta to targetScroll
 // - animate scroll to targetScroll (smooth context)
 // - if animation is not running, listen to 'scroll' events (native context)
-
-type OptionalPick<T, F extends keyof T> = Omit<T, F> & Partial<Pick<T, F>>
-
-const defaultEasing = (t: number) => Math.min(1, 1.001 - 2 ** (-10 * t))
 
 export class Lenis {
   private _isScrolling: Scrolling = false // true when scroll is animating
@@ -78,14 +76,7 @@ export class Lenis {
   /**
    * The options passed to the lenis instance
    */
-  options: OptionalPick<
-    Required<LenisOptions>,
-    | 'duration'
-    | 'easing'
-    | 'prevent'
-    | 'virtualScroll'
-    | '__experimental__naiveDimensions'
-  >
+  options: ResolvedOptions
   /**
    * The target scroll value
    */
@@ -102,35 +93,20 @@ export class Lenis {
   readonly dimensions: Dimensions // This is not private because it's used in the Snap class
   private readonly virtualScroll: VirtualScroll
 
-  constructor({
-    wrapper = window,
-    content = document.documentElement,
-    eventsTarget = wrapper,
-    smoothWheel = true,
-    syncTouch = false,
-    syncTouchLerp = 0.075,
-    touchInertiaExponent = 1.7,
-    duration, // in seconds
-    easing,
-    lerp = 0.1,
-    infinite = false,
-    orientation = 'vertical', // vertical, horizontal
-    gestureOrientation = orientation === 'horizontal' ? 'both' : 'vertical', // vertical, horizontal, both
-    touchMultiplier = 1,
-    wheelMultiplier = 1,
-    autoResize = true,
-    prevent,
-    virtualScroll,
-    overscroll = true,
-    autoRaf = false,
-    anchors = false,
-    autoToggle = false, // https://caniuse.com/?search=transition-behavior
-    allowNestedScroll = false,
-    __experimental__naiveDimensions = false,
-    naiveDimensions = __experimental__naiveDimensions,
-    stopInertiaOnNavigate = false,
-    respectReducedMotion = true,
-  }: LenisOptions = {}) {
+  constructor(options: LenisOptions = {}) {
+    this.options = resolveOptions(options)
+
+    const {
+      wrapper,
+      content,
+      eventsTarget,
+      orientation,
+      syncTouch,
+      autoResize,
+      touchMultiplier,
+      wheelMultiplier,
+    } = this.options
+
     // Set version (deprecated)
     window.lenisVersion = version
 
@@ -149,48 +125,6 @@ export class Lenis {
     }
 
     this.isIos = /(iPad|iPhone|iPod)/g.test(navigator.userAgent)
-
-    // Check if wrapper is <html>, fallback to window
-    if (!wrapper || wrapper === document.documentElement) {
-      wrapper = window
-    }
-
-    // flip to easing/time based animation if at least one of them is provided
-    if (typeof duration === 'number' && typeof easing !== 'function') {
-      easing = defaultEasing
-    } else if (typeof easing === 'function' && typeof duration !== 'number') {
-      duration = 1
-    }
-
-    // Setup options
-    this.options = {
-      wrapper,
-      content,
-      eventsTarget,
-      smoothWheel,
-      syncTouch,
-      syncTouchLerp,
-      touchInertiaExponent,
-      duration,
-      easing,
-      lerp,
-      infinite,
-      gestureOrientation,
-      orientation,
-      touchMultiplier,
-      wheelMultiplier,
-      autoResize,
-      prevent,
-      virtualScroll,
-      overscroll,
-      autoRaf,
-      anchors,
-      autoToggle,
-      allowNestedScroll,
-      naiveDimensions,
-      stopInertiaOnNavigate,
-      respectReducedMotion,
-    }
 
     // Setup dimensions instance
     this.dimensions = new Dimensions(wrapper, content, { autoResize })
@@ -886,16 +820,8 @@ export class Lenis {
       this.targetScroll = target
     }
 
-    // flip to easing/time based animation if at least one of them is provided
-    if (typeof duration === 'number' && typeof easing !== 'function') {
-      easing = defaultEasing
-    } else if (typeof easing === 'function' && typeof duration !== 'number') {
-      duration = 1
-    }
-
     this.animate.fromTo(this.animatedScroll, target, {
-      duration,
-      easing,
+      ...resolveTiming(duration, easing),
       lerp,
       onStart: () => {
         // started
