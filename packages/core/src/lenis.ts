@@ -5,6 +5,7 @@ import { Emitter } from './emitter'
 import { clamp, modulo } from './maths'
 import { resolveOptions, resolveTiming } from './options'
 import type { ResolvedOptions } from './options'
+import { resolveScrollTarget } from './scroll-target'
 import type {
   LenisEvent,
   LenisOptions,
@@ -705,77 +706,9 @@ export class Lenis {
 
     if ((this.isStopped || this.isLocked) && !force) return
 
-    let target: number | string | Element = _target
-    let adjustedOffset = offset
+    let target = resolveScrollTarget(this, _target, offset)
 
-    // keywords
-    if (
-      typeof target === 'string' &&
-      ['top', 'left', 'start', '#'].includes(target)
-    ) {
-      target = 0
-    } else if (
-      typeof target === 'string' &&
-      ['bottom', 'right', 'end'].includes(target)
-    ) {
-      target = this.limit
-    } else {
-      let node: Element | null = null
-
-      if (typeof target === 'string') {
-        // getElementById accepts any valid HTML id (e.g. `#footnote-†`),
-        // querySelector would reject it as an invalid CSS selector
-        node = target.startsWith('#')
-          ? document.getElementById(target.slice(1))
-          : document.querySelector(target)
-
-        if (!node) {
-          if (target === '#top') {
-            target = 0
-          } else {
-            console.warn('Lenis: Target not found', target)
-          }
-        }
-      } else if (target instanceof Element) {
-        // Node element
-        node = target
-      }
-
-      if (node) {
-        if (this.options.wrapper !== window) {
-          // nested scroll offset correction
-          const wrapperRect = this.rootElement.getBoundingClientRect()
-          adjustedOffset -= this.isHorizontal
-            ? wrapperRect.left
-            : wrapperRect.top
-        }
-
-        const rect = node.getBoundingClientRect()
-
-        // Account for scroll-margin CSS property on the target element
-        const targetStyle = getComputedStyle(node)
-        const scrollMargin = this.isHorizontal
-          ? Number.parseFloat(targetStyle.scrollMarginLeft)
-          : Number.parseFloat(targetStyle.scrollMarginTop)
-
-        // Account for scroll-padding CSS property on the scroll container
-        const containerStyle = getComputedStyle(this.rootElement)
-        const scrollPadding = this.isHorizontal
-          ? Number.parseFloat(containerStyle.scrollPaddingLeft)
-          : Number.parseFloat(containerStyle.scrollPaddingTop)
-
-        target =
-          (this.isHorizontal ? rect.left : rect.top) +
-          this.animatedScroll -
-          (Number.isNaN(scrollMargin) ? 0 : scrollMargin) -
-          (Number.isNaN(scrollPadding) ? 0 : scrollPadding)
-      }
-    }
-
-    if (typeof target !== 'number') return
-
-    target += adjustedOffset
-    // target = Math.round(target)
+    if (target === undefined) return
 
     if (this.options.infinite) {
       if (programmatic) {
