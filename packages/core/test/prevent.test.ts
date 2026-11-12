@@ -83,3 +83,38 @@ test('with allowNestedScroll, overscroll-behavior: contain keeps the wheel at th
 
   expect(wheel(scroller, vertical).defaultPrevented).toBe(false)
 })
+
+test('with allowNestedScroll, a sideways scroller keeps the sideways wheel only', () => {
+  createLenis({ allowNestedScroll: true })
+  const scroller = addBlock(
+    'top: 0; width: 200px; height: 200px; overflow-x: auto; overflow-y: hidden'
+  )
+  const inner = document.createElement('div')
+  inner.style.cssText = 'width: 1000px; height: 100px'
+  scroller.append(inner)
+
+  expect(wheel(scroller, mostlySideways).defaultPrevented).toBe(false)
+  expect(wheel(scroller, vertical).defaultPrevented).toBe(true)
+})
+
+test('with allowNestedScroll, a box that cannot scroll never keeps the wheel', () => {
+  createLenis({ allowNestedScroll: true })
+  const box = addBlock(
+    'top: 0; width: 200px; height: 200px; overflow: auto; overscroll-behavior: contain'
+  )
+
+  expect(wheel(box, vertical).defaultPrevented).toBe(true)
+})
+
+test('with allowNestedScroll, an axis with overflow: hidden does not keep the wheel', () => {
+  createLenis({ allowNestedScroll: true })
+  const scroller = addBlock(
+    'top: 0; width: 200px; height: 200px; overflow-x: hidden; overflow-y: auto'
+  )
+  const inner = document.createElement('div')
+  inner.style.cssText = 'width: 1000px; height: 1000px'
+  scroller.append(inner)
+
+  expect(wheel(scroller, mostlySideways).defaultPrevented).toBe(true)
+  expect(wheel(scroller, vertical).defaultPrevented).toBe(false)
+})
