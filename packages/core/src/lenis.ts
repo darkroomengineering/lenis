@@ -2,11 +2,12 @@ import { version } from '../../../package.json'
 import { Animate } from './animate'
 import { Dimensions } from './dimensions'
 import { Emitter } from './emitter'
+import { isGesturePrevented } from './gesture'
 import { clamp, modulo } from './maths'
-import { hasNestedScroll } from './nested-scroll'
 import { resolveOptions, resolveTiming } from './options'
 import type { ResolvedOptions } from './options'
 import { resolveScrollTarget } from './scroll-target'
+import { isTouchOnSelectionHandle } from './selection-handle'
 import type {
   LenisEvent,
   LenisOptions,
@@ -347,34 +348,6 @@ export class Lenis {
     }
   }
 
-  // iOS renders text-selection handles at the start and end points of the
-  // selection. A touch starting within a handle-sized radius of either point is
-  // the user grabbing a handle, not scrolling.
-  private isTouchOnSelectionHandle(event: TouchEvent) {
-    const selection = window.getSelection()
-    if (!selection || selection.isCollapsed || selection.rangeCount === 0)
-      return false
-
-    const touch = event.targetTouches[0] ?? event.changedTouches[0]
-    if (!touch) return false
-
-    const rects = selection.getRangeAt(0).getClientRects()
-    if (rects.length === 0) return false
-
-    const first = rects[0]!
-    const last = rects[rects.length - 1]!
-    const HANDLE_RADIUS = 40 // px — handles are large, finger-sized touch targets
-
-    const nearStart =
-      Math.hypot(touch.clientX - first.left, touch.clientY - first.top) <=
-      HANDLE_RADIUS
-    const nearEnd =
-      Math.hypot(touch.clientX - last.right, touch.clientY - last.bottom) <=
-      HANDLE_RADIUS
-
-    return nearStart || nearEnd
-  }
-
   private onVirtualScroll = (data: VirtualScrollData) => {
     if (
       typeof this.options.virtualScroll === 'function' &&
@@ -398,7 +371,7 @@ export class Lenis {
     // selection instead of scrolling. Latched on touchstart, held until touchend.
     if (isTouch && this.isIos) {
       if (event.type === 'touchstart') {
-        this._isDraggingSelection = this.isTouchOnSelectionHandle(
+        this._isDraggingSelection = isTouchOnSelectionHandle(
           event as TouchEvent
         )
       }
@@ -440,35 +413,7 @@ export class Lenis {
       return
     }
 
-    // catch if scrolling on nested scroll elements
-    let composedPath = event.composedPath()
-    composedPath = composedPath.slice(0, composedPath.indexOf(this.rootElement)) // remove parents elements
-
-    const prevent = this.options.prevent
-
-    const gestureOrientation =
-      Math.abs(deltaX) >= Math.abs(deltaY) ? 'horizontal' : 'vertical'
-
-    if (
-      composedPath.find(
-        (node) =>
-          node instanceof HTMLElement &&
-          ((typeof prevent === 'function' && prevent?.(node)) ||
-            node.hasAttribute?.('data-lenis-prevent') ||
-            (gestureOrientation === 'vertical' &&
-              node.hasAttribute?.('data-lenis-prevent-vertical')) ||
-            (gestureOrientation === 'horizontal' &&
-              node.hasAttribute?.('data-lenis-prevent-horizontal')) ||
-            (isTouch && node.hasAttribute?.('data-lenis-prevent-touch')) ||
-            (isWheel && node.hasAttribute?.('data-lenis-prevent-wheel')) ||
-            (this.options.allowNestedScroll &&
-              hasNestedScroll(node, {
-                deltaX,
-                deltaY,
-              })))
-      )
-    )
-      return
+    if (isGesturePrevented(this, data)) return
 
     if (this.isStopped || this.isLocked) {
       if (event.cancelable) {
