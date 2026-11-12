@@ -3,6 +3,7 @@ import { Animate } from './animate'
 import { Dimensions } from './dimensions'
 import { Emitter } from './emitter'
 import { isGesturePrevented } from './gesture'
+import { getAnchorTarget, isPageNavigation } from './links'
 import { clamp, modulo } from './maths'
 import { resolveOptions, resolveTiming } from './options'
 import type { ResolvedOptions } from './options'
@@ -293,52 +294,19 @@ export class Lenis {
   }
 
   private onClick = (event: PointerEvent | MouseEvent) => {
-    const path = event.composedPath()
+    const { anchors, stopInertiaOnNavigate } = this.options
 
-    // filter anchor elements (elements with a valid href attribute)
-    const linkElements = path.filter(
-      (node) => node instanceof HTMLAnchorElement && node.href
-    ) as HTMLAnchorElement[]
-    const linkElementsUrls = linkElements.map(
-      (element) => new URL(element.href)
-    )
+    if (anchors) {
+      const target = getAnchorTarget(event)
 
-    const currentUrl = new URL(window.location.href)
-
-    if (this.options.anchors) {
-      const anchorElementUrl = linkElementsUrls.find(
-        (targetUrl) =>
-          currentUrl.host === targetUrl.host &&
-          currentUrl.pathname === targetUrl.pathname &&
-          targetUrl.hash
-      )
-
-      if (anchorElementUrl) {
-        const options =
-          typeof this.options.anchors === 'object' && this.options.anchors
-            ? this.options.anchors
-            : undefined
-
-        // hash is URL-encoded (e.g. `#footnote-%E2%80%A0`); decode so it
-        // matches the raw HTML id in scrollTo's getElementById
-        const target = decodeURIComponent(anchorElementUrl.hash)
-
-        this.scrollTo(target, options)
+      if (target) {
+        this.scrollTo(target, typeof anchors === 'object' ? anchors : undefined)
         return
       }
     }
 
-    if (this.options.stopInertiaOnNavigate) {
-      const hasPageLinkElementUrl = linkElementsUrls.some(
-        (targetUrl) =>
-          currentUrl.host === targetUrl.host &&
-          currentUrl.pathname !== targetUrl.pathname
-      )
-
-      if (hasPageLinkElementUrl) {
-        this.reset()
-        return
-      }
+    if (stopInertiaOnNavigate && isPageNavigation(event)) {
+      this.reset()
     }
   }
 
