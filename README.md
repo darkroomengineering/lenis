@@ -238,7 +238,7 @@ That's it, your page now has smooth scrolling and should handle most of the usua
 | `animatedScroll`        | `number`          | Current scroll value                                                       |
 | `className` (getter)    | `string`          | `rootElement` className                                                    |
 | `dimensions`            | `object`          | Dimensions instance                                                        |
-| `direction`             | `number`          | `1`: scrolling up, `-1`: scrolling down                                    |
+| `direction`             | `number`          | `1`: scrolling down, `-1`: scrolling up                                    |
 | `isHorizontal` (getter) | `boolean`         | Whether or not the instance is horizontal                                  |
 | `isScrolling` (getter)  | `boolean, string` | Whether or not the scroll is being animated, `smooth`, `native` or `false` |
 | `isStopped` (getter)    | `boolean`         | Whether or not the user should be able to scroll                           |
