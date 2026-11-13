@@ -2,7 +2,13 @@ import { version } from '../../../package.json'
 import { Animate } from './animate'
 import { Dimensions } from './dimensions'
 import { Emitter } from './emitter'
+import { isGesturePrevented } from './gesture'
+import { getAnchorTarget, isPageNavigation } from './links'
 import { clamp, modulo } from './maths'
+import { resolveOptions, resolveTiming } from './options'
+import type { ResolvedOptions } from './options'
+import { resolveScrollTarget } from './scroll-target'
+import { isTouchOnSelectionHandle } from './selection-handle'
 import type {
   LenisEvent,
   LenisOptions,
@@ -22,10 +28,6 @@ import { VirtualScroll } from './virtual-scroll'
 // - add delta to targetScroll
 // - animate scroll to targetScroll (smooth context)
 // - if animation is not running, listen to 'scroll' events (native context)
-
-type OptionalPick<T, F extends keyof T> = Omit<T, F> & Partial<Pick<T, F>>
-
-const defaultEasing = (t: number) => Math.min(1, 1.001 - 2 ** (-10 * t))
 
 export class Lenis {
   private _isScrolling: Scrolling = false // true when scroll is animating
@@ -78,14 +80,7 @@ export class Lenis {
   /**
    * The options passed to the lenis instance
    */
-  options: OptionalPick<
-    Required<LenisOptions>,
-    | 'duration'
-    | 'easing'
-    | 'prevent'
-    | 'virtualScroll'
-    | '__experimental__naiveDimensions'
-  >
+  options: ResolvedOptions
   /**
    * The target scroll value
    */
@@ -102,35 +97,20 @@ export class Lenis {
   readonly dimensions: Dimensions // This is not private because it's used in the Snap class
   private readonly virtualScroll: VirtualScroll
 
-  constructor({
-    wrapper = window,
-    content = document.documentElement,
-    eventsTarget = wrapper,
-    smoothWheel = true,
-    syncTouch = false,
-    syncTouchLerp = 0.075,
-    touchInertiaExponent = 1.7,
-    duration, // in seconds
-    easing,
-    lerp = 0.1,
-    infinite = false,
-    orientation = 'vertical', // vertical, horizontal
-    gestureOrientation = orientation === 'horizontal' ? 'both' : 'vertical', // vertical, horizontal, both
-    touchMultiplier = 1,
-    wheelMultiplier = 1,
-    autoResize = true,
-    prevent,
-    virtualScroll,
-    overscroll = true,
-    autoRaf = false,
-    anchors = false,
-    autoToggle = false, // https://caniuse.com/?search=transition-behavior
-    allowNestedScroll = false,
-    __experimental__naiveDimensions = false,
-    naiveDimensions = __experimental__naiveDimensions,
-    stopInertiaOnNavigate = false,
-    respectReducedMotion = true,
-  }: LenisOptions = {}) {
+  constructor(options: LenisOptions = {}) {
+    this.options = resolveOptions(options)
+
+    const {
+      wrapper,
+      content,
+      eventsTarget,
+      orientation,
+      syncTouch,
+      autoResize,
+      touchMultiplier,
+      wheelMultiplier,
+    } = this.options
+
     // Set version (deprecated)
     window.lenisVersion = version
 
@@ -149,48 +129,6 @@ export class Lenis {
     }
 
     this.isIos = /(iPad|iPhone|iPod)/g.test(navigator.userAgent)
-
-    // Check if wrapper is <html>, fallback to window
-    if (!wrapper || wrapper === document.documentElement) {
-      wrapper = window
-    }
-
-    // flip to easing/time based animation if at least one of them is provided
-    if (typeof duration === 'number' && typeof easing !== 'function') {
-      easing = defaultEasing
-    } else if (typeof easing === 'function' && typeof duration !== 'number') {
-      duration = 1
-    }
-
-    // Setup options
-    this.options = {
-      wrapper,
-      content,
-      eventsTarget,
-      smoothWheel,
-      syncTouch,
-      syncTouchLerp,
-      touchInertiaExponent,
-      duration,
-      easing,
-      lerp,
-      infinite,
-      gestureOrientation,
-      orientation,
-      touchMultiplier,
-      wheelMultiplier,
-      autoResize,
-      prevent,
-      virtualScroll,
-      overscroll,
-      autoRaf,
-      anchors,
-      autoToggle,
-      allowNestedScroll,
-      naiveDimensions,
-      stopInertiaOnNavigate,
-      respectReducedMotion,
-    }
 
     // Setup dimensions instance
     this.dimensions = new Dimensions(wrapper, content, { autoResize })
@@ -356,52 +294,19 @@ export class Lenis {
   }
 
   private onClick = (event: PointerEvent | MouseEvent) => {
-    const path = event.composedPath()
+    const { anchors, stopInertiaOnNavigate } = this.options
 
-    // filter anchor elements (elements with a valid href attribute)
-    const linkElements = path.filter(
-      (node) => node instanceof HTMLAnchorElement && node.href
-    ) as HTMLAnchorElement[]
-    const linkElementsUrls = linkElements.map(
-      (element) => new URL(element.href)
-    )
+    if (anchors) {
+      const target = getAnchorTarget(event)
 
-    const currentUrl = new URL(window.location.href)
-
-    if (this.options.anchors) {
-      const anchorElementUrl = linkElementsUrls.find(
-        (targetUrl) =>
-          currentUrl.host === targetUrl.host &&
-          currentUrl.pathname === targetUrl.pathname &&
-          targetUrl.hash
-      )
-
-      if (anchorElementUrl) {
-        const options =
-          typeof this.options.anchors === 'object' && this.options.anchors
-            ? this.options.anchors
-            : undefined
-
-        // hash is URL-encoded (e.g. `#footnote-%E2%80%A0`); decode so it
-        // matches the raw HTML id in scrollTo's getElementById
-        const target = decodeURIComponent(anchorElementUrl.hash)
-
-        this.scrollTo(target, options)
+      if (target) {
+        this.scrollTo(target, typeof anchors === 'object' ? anchors : undefined)
         return
       }
     }
 
-    if (this.options.stopInertiaOnNavigate) {
-      const hasPageLinkElementUrl = linkElementsUrls.some(
-        (targetUrl) =>
-          currentUrl.host === targetUrl.host &&
-          currentUrl.pathname !== targetUrl.pathname
-      )
-
-      if (hasPageLinkElementUrl) {
-        this.reset()
-        return
-      }
+    if (stopInertiaOnNavigate && isPageNavigation(event)) {
+      this.reset()
     }
   }
 
@@ -409,34 +314,6 @@ export class Lenis {
     if (event.button === 1) {
       this.reset()
     }
-  }
-
-  // iOS renders text-selection handles at the start and end points of the
-  // selection. A touch starting within a handle-sized radius of either point is
-  // the user grabbing a handle, not scrolling.
-  private isTouchOnSelectionHandle(event: TouchEvent) {
-    const selection = window.getSelection()
-    if (!selection || selection.isCollapsed || selection.rangeCount === 0)
-      return false
-
-    const touch = event.targetTouches[0] ?? event.changedTouches[0]
-    if (!touch) return false
-
-    const rects = selection.getRangeAt(0).getClientRects()
-    if (rects.length === 0) return false
-
-    const first = rects[0]!
-    const last = rects[rects.length - 1]!
-    const HANDLE_RADIUS = 40 // px — handles are large, finger-sized touch targets
-
-    const nearStart =
-      Math.hypot(touch.clientX - first.left, touch.clientY - first.top) <=
-      HANDLE_RADIUS
-    const nearEnd =
-      Math.hypot(touch.clientX - last.right, touch.clientY - last.bottom) <=
-      HANDLE_RADIUS
-
-    return nearStart || nearEnd
   }
 
   private onVirtualScroll = (data: VirtualScrollData) => {
@@ -462,7 +339,7 @@ export class Lenis {
     // selection instead of scrolling. Latched on touchstart, held until touchend.
     if (isTouch && this.isIos) {
       if (event.type === 'touchstart') {
-        this._isDraggingSelection = this.isTouchOnSelectionHandle(
+        this._isDraggingSelection = isTouchOnSelectionHandle(
           event as TouchEvent
         )
       }
@@ -504,35 +381,7 @@ export class Lenis {
       return
     }
 
-    // catch if scrolling on nested scroll elements
-    let composedPath = event.composedPath()
-    composedPath = composedPath.slice(0, composedPath.indexOf(this.rootElement)) // remove parents elements
-
-    const prevent = this.options.prevent
-
-    const gestureOrientation =
-      Math.abs(deltaX) >= Math.abs(deltaY) ? 'horizontal' : 'vertical'
-
-    if (
-      composedPath.find(
-        (node) =>
-          node instanceof HTMLElement &&
-          ((typeof prevent === 'function' && prevent?.(node)) ||
-            node.hasAttribute?.('data-lenis-prevent') ||
-            (gestureOrientation === 'vertical' &&
-              node.hasAttribute?.('data-lenis-prevent-vertical')) ||
-            (gestureOrientation === 'horizontal' &&
-              node.hasAttribute?.('data-lenis-prevent-horizontal')) ||
-            (isTouch && node.hasAttribute?.('data-lenis-prevent-touch')) ||
-            (isWheel && node.hasAttribute?.('data-lenis-prevent-wheel')) ||
-            (this.options.allowNestedScroll &&
-              this.hasNestedScroll(node, {
-                deltaX,
-                deltaY,
-              })))
-      )
-    )
-      return
+    if (isGesturePrevented(this, data)) return
 
     if (this.isStopped || this.isLocked) {
       if (event.cancelable) {
@@ -771,77 +620,9 @@ export class Lenis {
 
     if ((this.isStopped || this.isLocked) && !force) return
 
-    let target: number | string | Element = _target
-    let adjustedOffset = offset
+    let target = resolveScrollTarget(this, _target, offset)
 
-    // keywords
-    if (
-      typeof target === 'string' &&
-      ['top', 'left', 'start', '#'].includes(target)
-    ) {
-      target = 0
-    } else if (
-      typeof target === 'string' &&
-      ['bottom', 'right', 'end'].includes(target)
-    ) {
-      target = this.limit
-    } else {
-      let node: Element | null = null
-
-      if (typeof target === 'string') {
-        // getElementById accepts any valid HTML id (e.g. `#footnote-†`),
-        // querySelector would reject it as an invalid CSS selector
-        node = target.startsWith('#')
-          ? document.getElementById(target.slice(1))
-          : document.querySelector(target)
-
-        if (!node) {
-          if (target === '#top') {
-            target = 0
-          } else {
-            console.warn('Lenis: Target not found', target)
-          }
-        }
-      } else if (target instanceof Element) {
-        // Node element
-        node = target
-      }
-
-      if (node) {
-        if (this.options.wrapper !== window) {
-          // nested scroll offset correction
-          const wrapperRect = this.rootElement.getBoundingClientRect()
-          adjustedOffset -= this.isHorizontal
-            ? wrapperRect.left
-            : wrapperRect.top
-        }
-
-        const rect = node.getBoundingClientRect()
-
-        // Account for scroll-margin CSS property on the target element
-        const targetStyle = getComputedStyle(node)
-        const scrollMargin = this.isHorizontal
-          ? Number.parseFloat(targetStyle.scrollMarginLeft)
-          : Number.parseFloat(targetStyle.scrollMarginTop)
-
-        // Account for scroll-padding CSS property on the scroll container
-        const containerStyle = getComputedStyle(this.rootElement)
-        const scrollPadding = this.isHorizontal
-          ? Number.parseFloat(containerStyle.scrollPaddingLeft)
-          : Number.parseFloat(containerStyle.scrollPaddingTop)
-
-        target =
-          (this.isHorizontal ? rect.left : rect.top) +
-          this.animatedScroll -
-          (Number.isNaN(scrollMargin) ? 0 : scrollMargin) -
-          (Number.isNaN(scrollPadding) ? 0 : scrollPadding)
-      }
-    }
-
-    if (typeof target !== 'number') return
-
-    target += adjustedOffset
-    // target = Math.round(target)
+    if (target === undefined) return
 
     if (this.options.infinite) {
       if (programmatic) {
@@ -886,16 +667,8 @@ export class Lenis {
       this.targetScroll = target
     }
 
-    // flip to easing/time based animation if at least one of them is provided
-    if (typeof duration === 'number' && typeof easing !== 'function') {
-      easing = defaultEasing
-    } else if (typeof easing === 'function' && typeof duration !== 'number') {
-      duration = 1
-    }
-
     this.animate.fromTo(this.animatedScroll, target, {
-      duration,
-      easing,
+      ...resolveTiming(duration, easing),
       lerp,
       onStart: () => {
         // started
@@ -944,126 +717,6 @@ export class Lenis {
     requestAnimationFrame(() => {
       this._preventNextNativeScrollEvent = false
     })
-  }
-
-  private hasNestedScroll(
-    node: HTMLElement,
-    { deltaX, deltaY }: { deltaX: number; deltaY: number }
-  ) {
-    const time = Date.now()
-
-    // @ts-expect-error - _lenis is a custom cache property
-    if (!node._lenis) node._lenis = {}
-    // @ts-expect-error
-    const cache = node._lenis
-
-    let hasOverflowX: boolean | undefined
-    let hasOverflowY: boolean | undefined
-    let isScrollableX: boolean | undefined
-    let isScrollableY: boolean | undefined
-    let hasOverscrollBehaviorX: boolean | undefined
-    let hasOverscrollBehaviorY: boolean | undefined
-    let scrollWidth: number
-    let scrollHeight: number
-    let clientWidth: number
-    let clientHeight: number
-
-    if (time - (cache.time ?? 0) > 2000) {
-      cache.time = Date.now()
-
-      const computedStyle = window.getComputedStyle(node)
-      cache.computedStyle = computedStyle
-
-      hasOverflowX = ['auto', 'overlay', 'scroll'].includes(
-        computedStyle.overflowX
-      )
-      hasOverflowY = ['auto', 'overlay', 'scroll'].includes(
-        computedStyle.overflowY
-      )
-
-      hasOverscrollBehaviorX = ['auto'].includes(
-        computedStyle.overscrollBehaviorX
-      )
-      hasOverscrollBehaviorY = ['auto'].includes(
-        computedStyle.overscrollBehaviorY
-      )
-
-      cache.hasOverflowX = hasOverflowX
-      cache.hasOverflowY = hasOverflowY
-
-      if (!(hasOverflowX || hasOverflowY)) return false // if no overflow, it's not scrollable no matter what, early return saves some computations
-
-      scrollWidth = node.scrollWidth
-      scrollHeight = node.scrollHeight
-
-      clientWidth = node.clientWidth
-      clientHeight = node.clientHeight
-
-      isScrollableX = scrollWidth > clientWidth
-      isScrollableY = scrollHeight > clientHeight
-
-      cache.isScrollableX = isScrollableX
-      cache.isScrollableY = isScrollableY
-      cache.scrollWidth = scrollWidth
-      cache.scrollHeight = scrollHeight
-      cache.clientWidth = clientWidth
-      cache.clientHeight = clientHeight
-      cache.hasOverscrollBehaviorX = hasOverscrollBehaviorX
-      cache.hasOverscrollBehaviorY = hasOverscrollBehaviorY
-    } else {
-      isScrollableX = cache.isScrollableX
-      isScrollableY = cache.isScrollableY
-      hasOverflowX = cache.hasOverflowX
-      hasOverflowY = cache.hasOverflowY
-      scrollWidth = cache.scrollWidth
-      scrollHeight = cache.scrollHeight
-      clientWidth = cache.clientWidth
-      clientHeight = cache.clientHeight
-      hasOverscrollBehaviorX = cache.hasOverscrollBehaviorX
-      hasOverscrollBehaviorY = cache.hasOverscrollBehaviorY
-    }
-
-    if (!((hasOverflowX && isScrollableX) || (hasOverflowY && isScrollableY))) {
-      return false
-    }
-
-    const orientation =
-      Math.abs(deltaX) >= Math.abs(deltaY) ? 'horizontal' : 'vertical'
-
-    let scroll: number | undefined
-    let maxScroll: number | undefined
-    let delta: number | undefined
-    let hasOverflow: boolean | undefined
-    let isScrollable: boolean | undefined
-    let hasOverscrollBehavior: boolean | undefined
-
-    if (orientation === 'horizontal') {
-      scroll = Math.round(node.scrollLeft)
-      maxScroll = scrollWidth - clientWidth
-      delta = deltaX
-
-      hasOverflow = hasOverflowX
-      isScrollable = isScrollableX
-      hasOverscrollBehavior = hasOverscrollBehaviorX
-    } else if (orientation === 'vertical') {
-      scroll = Math.round(node.scrollTop)
-      maxScroll = scrollHeight - clientHeight
-      delta = deltaY
-
-      hasOverflow = hasOverflowY
-      isScrollable = isScrollableY
-      hasOverscrollBehavior = hasOverscrollBehaviorY
-    } else {
-      return false
-    }
-
-    if (!hasOverscrollBehavior && (scroll >= maxScroll || scroll <= 0)) {
-      return true
-    }
-
-    const willScroll = delta > 0 ? scroll < maxScroll : scroll > 0
-
-    return willScroll && hasOverflow && isScrollable
   }
 
   /**
