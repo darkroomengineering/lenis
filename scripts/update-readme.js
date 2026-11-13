@@ -1,4 +1,5 @@
 import fs from 'node:fs'
+
 import packageJson from '../package.json' with { type: 'json' }
 
 const readmePath = './README.md'

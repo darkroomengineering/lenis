@@ -23,7 +23,7 @@ window.addEventListener('scroll', (_e) => {
   // console.log('window scroll', e)
 })
 
-window.addEventListener('scrollend', (e) => {
+window.addEventListener('scrollend', (_e) => {
   // console.log('window scrollend', e)
 })
 
@@ -167,14 +167,6 @@ lenis.on('scroll', (_e) => {
 //   // e.deltaY *= 10
 //   // e.cancel = true
 // })
-// window.lenis = lenis
-
-declare global {
-  interface Window {
-    lenis: Lenis
-  }
-}
-
 // window.addEventListener('resize', () => {
 //   lenis.resize()
 

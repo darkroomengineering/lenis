@@ -12,6 +12,12 @@
     "moduleResolution": "Bundler",
     "lib": ["ESNext", "DOM"],
     "rootDir": ".",
+    "paths": {
+      "lenis": ["./packages/core/index.ts"],
+      "lenis/vue": ["./packages/vue/index.ts"],
+      "#imports": ["./packages/vue/nuxt/types/imports.d.ts"],
+      "#app": ["./packages/vue/nuxt/types/app.d.ts"]
+    },
     "jsx": "react-jsx",
 
     /* Strictness */

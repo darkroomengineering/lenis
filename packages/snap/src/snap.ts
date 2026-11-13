@@ -1,5 +1,6 @@
 import type Lenis from 'lenis'
 import type { VirtualScrollData } from 'lenis'
+
 import { debounce } from './debounce'
 import type { SnapElementOptions } from './element'
 import { SnapElement } from './element'
@@ -143,7 +144,10 @@ export class Snap {
 
     this.elements.set(id, new SnapElement(element, options))
 
-    return () => this.elements.delete(id)
+    return () => {
+      this.elements.get(id)?.destroy()
+      return this.elements.delete(id)
+    }
   }
 
   addElements(
@@ -175,7 +179,7 @@ export class Snap {
 
       align.forEach((align) => {
         if (align === 'start') {
-          value = rect.top
+          value = isHorizontal ? rect.left : rect.top
         } else if (align === 'center') {
           value = isHorizontal
             ? rect.left + rect.width / 2 - this.viewport.width / 2
