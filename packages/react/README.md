@@ -70,11 +70,14 @@ function App() {
   const lenisRef = useRef()
   
   useEffect(() => {
+    let rafId
+
     function update(time) {
       lenisRef.current?.lenis?.raf(time)
+      rafId = requestAnimationFrame(update)
     }
   
-    const rafId = requestAnimationFrame(update)
+    rafId = requestAnimationFrame(update)
   
     return () => cancelAnimationFrame(rafId)
   }, [])
