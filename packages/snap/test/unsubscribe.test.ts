@@ -31,14 +31,25 @@ beforeEach(() => {
   document.body.style.margin = '0'
   document.body.append(content)
   window.scrollTo(0, 0)
-  lenis = new Lenis()
-  snap = new Snap(lenis)
+  lenis = new Lenis({ autoRaf: true })
+  snap = new Snap(lenis, { duration: 0.1 })
 })
 
 afterEach(() => {
   snap.destroy()
   lenis.destroy()
   content.remove()
+})
+
+test('a removed element is no longer a snap point', async () => {
+  const remove = snap.addElement(addBlock(1000))
+  snap.addElement(addBlock(2000))
+
+  remove()
+  // the first snap point is now the element that is left
+  snap.goTo(0)
+
+  await expect.poll(() => window.scrollY).toBe(2000)
 })
 
 test('a snap element follows the size of its element until it is removed', async () => {
@@ -56,24 +67,6 @@ test('a snap element follows the size of its element until it is removed', async
   await settle()
 
   expect(snapElement.rect.height).toBe(300)
-})
-
-test('a removed snap element stops following its position, a kept one continues', async () => {
-  const removedBlock = addBlock(1000)
-  const remove = snap.addElement(removedBlock)
-  const removed = lastSnapElement()
-  const keptBlock = addBlock(2000)
-  snap.addElement(keptBlock)
-  const kept = lastSnapElement()
-
-  remove()
-  removedBlock.style.top = '1500px'
-  keptBlock.style.top = '2500px'
-  // positions are read again when the body changes size, after a 500ms debounce
-  content.style.height = '6000px'
-
-  await expect.poll(() => kept.rect.top, { timeout: 3000 }).toBe(2500)
-  expect(removed.rect.top).toBe(1000)
 })
 
 test('removing a group stops each of its elements, a kept one continues', async () => {

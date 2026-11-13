@@ -27,15 +27,19 @@ afterEach(() => {
   content.remove()
 })
 
-// where the element (left 2000, top 1000, 200 wide, 300 tall) must end up
-function snapPosition(orientation: 'vertical' | 'horizontal', align: string) {
+// how far the element is from the place in the viewport that `align` asks for
+function distanceFromAlign(
+  orientation: 'vertical' | 'horizontal',
+  align: 'start' | 'center' | 'end'
+) {
+  const rect = element.getBoundingClientRect()
   const [start, size, viewport] =
     orientation === 'horizontal'
-      ? [2000, 200, window.innerWidth]
-      : [1000, 300, window.innerHeight]
+      ? [rect.left, rect.width, window.innerWidth]
+      : [rect.top, rect.height, window.innerHeight]
 
   if (align === 'start') return start
-  if (align === 'center') return Math.ceil(start + size / 2 - viewport / 2)
+  if (align === 'center') return start + size / 2 - viewport / 2
   return start + size - viewport
 }
 
@@ -47,16 +51,22 @@ test.each([
   ['horizontal', 'center'],
   ['horizontal', 'end'],
 ] as const)(
-  'on a %s page, align %s snaps to the matching edge of the element',
+  'on a %s page, align %s lines the element up with the viewport',
   async (orientation, align) => {
+    let completed = false
     lenis = new Lenis({ autoRaf: true, orientation })
-    snap = new Snap(lenis, { duration: 0.1 })
+    snap = new Snap(lenis, {
+      duration: 0.1,
+      onSnapComplete: () => {
+        completed = true
+      },
+    })
     snap.addElement(element, { align })
 
     snap.goTo(0)
+    await expect.poll(() => completed).toBe(true)
 
-    const position = () =>
-      orientation === 'horizontal' ? window.scrollX : window.scrollY
-    await expect.poll(position).toBe(snapPosition(orientation, align))
+    // Snap rounds the position up to a full pixel
+    expect(Math.abs(distanceFromAlign(orientation, align))).toBeLessThan(1)
   }
 )
