@@ -233,6 +233,11 @@ export type LenisOptions = {
    * @default true
    */
   respectReducedMotion?: boolean
+  /**
+   * If `true`, Lenis will cancel its animation when the page is scrolled natively during it (scrollbar drag, keyboard, middle-click autoscroll, find in page, anchor jump, `window.scrollTo`...), instead of animating back to its previous target. Does not apply to scrolls started with `lock: true`
+   * @default false
+   */
+  cancelOnNativeScroll?: boolean
 }
 
 declare global {
