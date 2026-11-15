@@ -120,3 +120,15 @@ export function isScrollableElement(
 
   return Boolean(willScroll && hasOverflow && isScrollable)
 }
+
+/**
+ * Returns a copy of `options` without the keys whose value is `undefined`,
+ * so that spreading it over defaults keeps the default for those keys.
+ */
+export function defined<T extends object>(options?: T): Partial<T> {
+  if (!options) return {}
+
+  return Object.fromEntries(
+    Object.entries(options).filter(([, value]) => value !== undefined)
+  ) as Partial<T>
+}
