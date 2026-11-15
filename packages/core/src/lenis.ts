@@ -17,7 +17,7 @@ import type {
   ScrollToOptions,
   UserData,
 } from './types'
-import { isScrollableElement } from './utils'
+import { defined, isScrollableElement } from './utils'
 
 // How it works:
 // - GesturesHandler normalizes wheel/touch events into gestures
@@ -188,30 +188,32 @@ export class Lenis {
         smooth: true,
         lerp: 0.1,
         multiplier: 1,
-        ...wheel, // overwrite default values
+        ...defined(wheel), // overwrite default values
       },
       touch: {
         smooth: false,
         lerp: 0.1,
         multiplier: 1,
         inertia: 2,
-        ...touch,
+        ...defined(touch),
         ...(this.isIOS &&
-          (touch?.ios ?? {
-            inertia: 1.7,
-            lerp: 0.05,
-          })), // overwrite default values if iOS
+          defined(
+            touch?.ios ?? {
+              inertia: 1.7,
+              lerp: 0.05,
+            }
+          )), // overwrite default values if iOS
       },
       drag: {
         enabled: false,
         multiplier: 1,
         inertia: 1.7,
         lerp: 0.1,
-        ...drag, // overwrite default values
+        ...defined(drag), // overwrite default values
       },
       programmatic: {
         lerp: 0.1,
-        ...programmatic, // overwrite default values
+        ...defined(programmatic), // overwrite default values
       },
       infinite,
       gestureOrientation,
@@ -222,7 +224,7 @@ export class Lenis {
       anchors,
       nested: {
         mode: 'native',
-        ...nested, // overwrite default values
+        ...defined(nested), // overwrite default values
       },
       dimensions,
       stopInertiaOnNavigate,
