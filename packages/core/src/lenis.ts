@@ -266,6 +266,13 @@ export class Lenis {
       )
     }
 
+    if (this.options.autoToggle) {
+      this.rootElement.removeEventListener(
+        'transitionend',
+        this.onTransitionEnd
+      )
+    }
+
     this.virtualScroll.destroy()
     this.dimensions.destroy()
 
