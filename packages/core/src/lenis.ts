@@ -1529,6 +1529,10 @@ export class Lenis {
         if (!completed) this.emit()
 
         if (completed) {
+          // Write the final value before reset() reads the DOM back, as the
+          // immediate branch does. Otherwise reset() picks up the previous
+          // frame's position, which Safari floors, so it stops 1px short.
+          axis.setScroll(axis.scroll)
           axis.reset()
           if (!this.isAnyAxisAnimating) this.isScrolling = false
           this.emit()
