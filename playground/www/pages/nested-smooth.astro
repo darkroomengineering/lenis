@@ -1,0 +1,60 @@
+---
+import '~/nested-smooth/style.css'
+import Layout from '../layouts/Layout.astro'
+---
+
+<Layout title="Lenis nested smooth">
+  <main>
+    <header id="controls">
+      <strong>allowNestedScroll</strong>
+      <a href="?mode=false" data-mode="false">false</a>
+      <a href="?mode=true" data-mode="true">true</a>
+      <a href="?mode=smooth" data-mode="smooth">'smooth'</a>
+      <label><input type="checkbox" id="sync-touch" /> syncTouch</label>
+      <span id="status"></span>
+    </header>
+
+    <section class="row">
+      <div class="card">
+        <h2>Vertical scroller</h2>
+        <div class="scroller" id="vertical"><div class="list"></div></div>
+      </div>
+
+      <div class="card">
+        <h2>Nested inside a scroller</h2>
+        <div class="scroller" id="outer">
+          <p class="filler">Outer scroller, an inner one below.</p>
+          <div class="scroller inner" id="inner"><div class="list"></div></div>
+          <p class="filler">End of the outer scroller.</p>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>Table, scrolls both ways</h2>
+        <div class="scroller" id="table"><table></table></div>
+      </div>
+
+      <div class="card">
+        <h2>data-lenis-prevent (stays native)</h2>
+        <div class="scroller" id="prevented" data-lenis-prevent>
+          <div class="list"></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>Textarea (stays native)</h2>
+        <textarea id="textarea"></textarea>
+      </div>
+    </section>
+
+    <section class="card wide">
+      <h2>Horizontal carousel</h2>
+      <div class="scroller" id="carousel">
+        <div class="track"></div>
+      </div>
+    </section>
+
+    <section class="spacer">Page content, so the page scrolls too.</section>
+  </main>
+  <script src="../../nested-smooth/test.ts"></script>
+</Layout>

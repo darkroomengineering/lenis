@@ -210,10 +210,15 @@ export type LenisOptions = {
    */
   autoToggle?: boolean
   /**
-   * If `true`, Lenis will allow nested scroll
+   * How nested scrollable elements are handled.
+   * - `false`: nested scrollable elements are not detected
+   * - `true`: nested scrollable elements scroll natively
+   * - `'smooth'`: the first wheel (or touch, with `syncTouch`) on a nested
+   *   scrollable element mounts its own Lenis instance on it, with this
+   *   instance's config, so it scrolls smoothly too. Retrieve it with `Lenis.get(element)`
    * @default false
    */
-  allowNestedScroll?: boolean
+  allowNestedScroll?: boolean | 'smooth'
   /**
    * @deprecated use `naiveDimensions` instead
    */

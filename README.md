@@ -186,7 +186,7 @@ That's it, your page now has smooth scrolling and should handle most of the usua
 
 | Option                  | Type                       | Default                                            | Description                                                                                                                                                                                                                                                                          |
 |-------------------------|----------------------------|----------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `allowNestedScroll`     | `boolean`                  | `false`                                            | Automatically allow nested scrollable elements to scroll natively. This is the simplest way to handle nested scroll. ⚠️ Can create performance issues since it checks the DOM tree on every scroll event. If that's a concern, use `prevent` option instead.          |
+| `allowNestedScroll`     | `boolean \| 'smooth'`      | `false`                                            | Automatically allow nested scrollable elements to scroll natively. This is the simplest way to handle nested scroll. `'smooth'` smooth-scrolls them too, with their own Lenis instance (see [Nested scroll](#nested-scroll)). ⚠️ Can create performance issues since it checks the DOM tree on every scroll event. If that's a concern, use `prevent` option instead.          |
 | `anchors`               | `boolean, ScrollToOptions` | `false`                                            | Scroll to anchor links when clicked. If `true` is passed, it will enable anchor links with default options. If `ScrollToOptions` is passed, it will enable anchor links with the given options.                                                                                      |
 | `autoRaf`               | `boolean`                  | `false`                                            | Whether or not to automatically run `requestAnimationFrame` loop.                                                                                                                                                                                                                    |
 | `autoResize`            | `boolean`                  | `true`                                             | Resize instance automatically based on `ResizeObserver`. If `false` you must resize manually using `.resize()`.                                                                                                                                                                      |
@@ -292,6 +292,23 @@ const lenis = new Lenis({
 ```
 
 This automatically detects nested scrollable elements and lets them scroll natively. However, this can create performance issues since Lenis needs to check the DOM tree on every scroll event. If you experience performance problems, use `data-lenis-prevent` instead.
+
+#### Smooth nested scroll
+
+To make nested scrollable elements scroll smoothly too, use `allowNestedScroll: 'smooth'`:
+
+```js
+const lenis = new Lenis({
+  allowNestedScroll: 'smooth',
+})
+```
+
+The first wheel on a nested scrollable element (or touch, with `syncTouch`) mounts a Lenis instance on it with the same config, and that first gesture is already smooth. Nested elements inside it are handled the same way. When it reaches its end, the scroll carries on to the page, as with `overscroll`. Adopted instances are driven by the parent's `raf`, destroyed with it, and destroyed when their element leaves the DOM. Get one with `Lenis.get(element)`.
+
+- Elements with `data-lenis-prevent` (on them or an ancestor) or matched by `prevent` keep native scroll, and so do form fields and `contenteditable` elements.
+- An element with its own Lenis instance is not adopted again.
+- An element scrollable on both axes is smoothed vertically; its horizontal scroll stays native.
+- The `virtualScroll` callback and page-level options (`infinite`, `anchors`, `autoToggle`, `stopInertiaOnNavigate`) stay on the instance you created.
 
 #### Using HTML attributes
 
