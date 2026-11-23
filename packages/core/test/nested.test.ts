@@ -217,41 +217,37 @@ test("'smooth': wheels outside nested scrollers still drive the page", async () 
   expect(Lenis.get(scroller)).toBeUndefined()
 })
 
+// Desktop Firefox and WebKit have no Touch constructor, so this builds a plain
+// event with the touch lists Lenis reads
 function touch(target: Element, type: string, y: number) {
-  const point = new Touch({
-    identifier: 1,
-    target,
-    clientX: 100,
-    clientY: y,
+  const point = { identifier: 1, target, clientX: 100, clientY: y }
+  const event = new Event(type, {
+    bubbles: true,
+    cancelable: true,
+    composed: true,
   })
-  target.dispatchEvent(
-    new TouchEvent(type, {
-      bubbles: true,
-      cancelable: true,
-      composed: true,
-      touches: type === 'touchend' ? [] : [point],
-      targetTouches: type === 'touchend' ? [] : [point],
-      changedTouches: [point],
-    })
-  )
+  const touches = type === 'touchend' ? [] : [point]
+  Object.defineProperties(event, {
+    touches: { value: touches },
+    targetTouches: { value: touches },
+    changedTouches: { value: [point] },
+  })
+  target.dispatchEvent(event)
 }
 
-test.runIf(typeof Touch === 'function')(
-  "'smooth' with syncTouch: a touch adopts the scroller and the gesture carries on in it",
-  () => {
-    const lenis = createLenis({ allowNestedScroll: 'smooth', syncTouch: true })
-    const inner = scroller.firstElementChild!
+test("'smooth' with syncTouch: a touch adopts the scroller and the gesture carries on in it", () => {
+  const lenis = createLenis({ allowNestedScroll: 'smooth', syncTouch: true })
+  const inner = scroller.firstElementChild!
 
-    touch(inner, 'touchstart', 150)
-    touch(inner, 'touchmove', 140) // adopts, hands over 10px
-    touch(inner, 'touchmove', 120) // goes to the child's own listener
+  touch(inner, 'touchstart', 150)
+  touch(inner, 'touchmove', 140) // adopts, hands over 10px
+  touch(inner, 'touchmove', 120) // goes to the child's own listener
 
-    const child = Lenis.get(scroller)
-    expect(child).toBeDefined()
-    expect(child?.targetScroll).toBe(30)
-    expect(lenis.targetScroll).toBe(0)
-  }
-)
+  const child = Lenis.get(scroller)
+  expect(child).toBeDefined()
+  expect(child?.targetScroll).toBe(30)
+  expect(lenis.targetScroll).toBe(0)
+})
 
 test("'smooth' without syncTouch: touch is left native and nothing is adopted", () => {
   createLenis({ allowNestedScroll: 'smooth' })
