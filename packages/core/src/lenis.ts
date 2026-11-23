@@ -27,6 +27,11 @@ type OptionalPick<T, F extends keyof T> = Omit<T, F> & Partial<Pick<T, F>>
 
 const defaultEasing = (t: number) => Math.min(1, 1.001 - 2 ** (-10 * t))
 
+// Every live instance keyed by its root element: the lookup behind `Lenis.get`
+// and the guard that keeps `allowNestedScroll: 'smooth'` from adopting an
+// element twice (or one that already has a manual instance).
+const instancesRegistry = new WeakMap<Element, Lenis>()
+
 export class Lenis {
   private _isScrolling: Scrolling = false // true when scroll is animating
   private _isStopped = false // true if user should not be able to scroll - enable/disable programmatically
@@ -35,6 +40,11 @@ export class Lenis {
   private _resetVelocityTimeout: ReturnType<typeof setTimeout> | null = null
   private _rafId: number | null = null
   private _isDraggingSelection = false // true while a touch is dragging an iOS selection handle
+  // Instances adopted via `allowNestedScroll: 'smooth'`, advanced by this instance's raf
+  private readonly nestedInstances = new Set<Lenis>()
+  private _nestedSweepFrame = 0 // frame counter gating the disconnect sweep
+  // true on an instance created by `allowNestedScroll: 'smooth'`
+  private _isAdopted = false
   // `.matches` is read at scroll time so preference changes apply live, no listener needed
   private readonly reducedMotionMediaQuery = window.matchMedia(
     '(prefers-reduced-motion: reduce)'
@@ -101,6 +111,16 @@ export class Lenis {
   // These are instanciated in the constructor as they need information from the options
   readonly dimensions: Dimensions // This is not private because it's used in the Snap class
   private readonly virtualScroll: VirtualScroll
+
+  /**
+   * The Lenis instance mounted on `element`, created manually or adopted via
+   * `allowNestedScroll: 'smooth'`, if any
+   *
+   * @param element The wrapper element (use `document.documentElement` for the window instance)
+   */
+  static get(element: Element): Lenis | undefined {
+    return instancesRegistry.get(element)
+  }
 
   constructor({
     wrapper = window,
@@ -232,6 +252,8 @@ export class Lenis {
       this.rootElement.addEventListener('transitionend', this.onTransitionEnd)
     }
 
+    instancesRegistry.set(this.rootElement, this)
+
     if (this.options.autoRaf) {
       this._rafId = requestAnimationFrame(this.raf)
     }
@@ -241,6 +263,15 @@ export class Lenis {
    * Destroy the lenis instance, remove all event listeners and clean up the class name
    */
   destroy() {
+    // adopted nested instances live and die with their adopter
+    for (const child of this.nestedInstances) {
+      child.destroy()
+    }
+    this.nestedInstances.clear()
+    if (instancesRegistry.get(this.rootElement) === this) {
+      instancesRegistry.delete(this.rootElement)
+    }
+
     this.emitter.destroy()
 
     if (this._resetVelocityTimeout !== null) {
@@ -507,7 +538,28 @@ export class Lenis {
       (this.options.gestureOrientation === 'vertical' && deltaY === 0) ||
       (this.options.gestureOrientation === 'horizontal' && deltaX === 0)
 
-    if (isClickOrTap || isUnknownGesture) {
+    const isSmoothNested = this.options.allowNestedScroll === 'smooth'
+
+    if (isClickOrTap) {
+      return
+    }
+
+    // With `allowNestedScroll: 'smooth'` an off-axis gesture (e.g. a horizontal
+    // swipe on a vertical page) can be aimed at a nested scroller, so it has to
+    // reach the adoption logic below. It returns either way.
+    if (isUnknownGesture && !isSmoothNested) {
+      return
+    }
+
+    const gestureOrientation =
+      Math.abs(deltaX) >= Math.abs(deltaY) ? 'horizontal' : 'vertical'
+
+    // An adopted instance only takes gestures along its own axis. The others
+    // go through untouched: native scroll, or the parent instance.
+    if (
+      this._isAdopted &&
+      gestureOrientation !== (this.isHorizontal ? 'horizontal' : 'vertical')
+    ) {
       return
     }
 
@@ -517,29 +569,51 @@ export class Lenis {
 
     const prevent = this.options.prevent
 
-    const gestureOrientation =
-      Math.abs(deltaX) >= Math.abs(deltaY) ? 'horizontal' : 'vertical'
+    const isPrevented = (node: HTMLElement) =>
+      (typeof prevent === 'function' && prevent?.(node)) ||
+      node.hasAttribute?.('data-lenis-prevent') ||
+      (gestureOrientation === 'vertical' &&
+        node.hasAttribute?.('data-lenis-prevent-vertical')) ||
+      (gestureOrientation === 'horizontal' &&
+        node.hasAttribute?.('data-lenis-prevent-horizontal')) ||
+      (isTouch && node.hasAttribute?.('data-lenis-prevent-touch')) ||
+      (isWheel && node.hasAttribute?.('data-lenis-prevent-wheel'))
 
-    if (
-      composedPath.find(
-        (node) =>
-          node instanceof HTMLElement &&
-          ((typeof prevent === 'function' && prevent?.(node)) ||
-            node.hasAttribute?.('data-lenis-prevent') ||
-            (gestureOrientation === 'vertical' &&
-              node.hasAttribute?.('data-lenis-prevent-vertical')) ||
-            (gestureOrientation === 'horizontal' &&
-              node.hasAttribute?.('data-lenis-prevent-horizontal')) ||
-            (isTouch && node.hasAttribute?.('data-lenis-prevent-touch')) ||
-            (isWheel && node.hasAttribute?.('data-lenis-prevent-wheel')) ||
-            (this.options.allowNestedScroll &&
-              this.hasNestedScroll(node, {
-                deltaX,
-                deltaY,
-              })))
-      )
-    )
+    const nestedNode = composedPath.find(
+      (node) =>
+        node instanceof HTMLElement &&
+        (isPrevented(node) ||
+          (this.options.allowNestedScroll &&
+            this.hasNestedScroll(node, {
+              deltaX,
+              deltaY,
+            })))
+    ) as HTMLElement | undefined
+
+    if (nestedNode) {
+      // `allowNestedScroll: 'smooth'`: mount a Lenis instance on the nested
+      // scroller and hand it this gesture, so even the first tick is smooth.
+      // From the next gesture on, its own listeners run first and flag the
+      // event with `lenisStopPropagation`.
+      if (
+        isSmoothNested &&
+        ((isWheel && this.options.smoothWheel) ||
+          (isTouch && this.options.syncTouch)) &&
+        // a prevented node (the scroller itself or any ancestor up to this
+        // instance's root) keeps native scroll
+        !composedPath
+          .slice(composedPath.indexOf(nestedNode))
+          .some((node) => node instanceof HTMLElement && isPrevented(node)) &&
+        this.isNestedAdoptable(nestedNode)
+      ) {
+        this.adoptNestedScroller(nestedNode, data)
+      }
       return
+    }
+
+    if (isUnknownGesture) {
+      return
+    }
 
     if (this.isStopped || this.isLocked) {
       if (event.cancelable) {
@@ -573,8 +647,12 @@ export class Lenis {
       (this.options.wrapper !== window &&
         this.limit > 0 &&
         ((this.animatedScroll > 0 && this.animatedScroll < this.limit) ||
-          (this.animatedScroll === 0 && deltaY > 0) ||
-          (this.animatedScroll === this.limit && deltaY < 0)))
+          // adopted instances can be horizontal, so they compare their own
+          // axis; others keep comparing deltaY as they always have
+          (this.animatedScroll === 0 &&
+            (this._isAdopted ? delta : deltaY) > 0) ||
+          (this.animatedScroll === this.limit &&
+            (this._isAdopted ? delta : deltaY) < 0)))
     ) {
       // @ts-expect-error
       event.lenisStopPropagation = true
@@ -614,6 +692,7 @@ export class Lenis {
    * Force lenis to recalculate the dimensions
    */
   resize() {
+    this.sweepNestedInstances()
     this.dimensions.resize()
     this.animatedScroll = this.targetScroll = this.actualScroll
     this.emit()
@@ -722,6 +801,20 @@ export class Lenis {
     this.time = time
 
     this.animate.advance(deltaTime * 0.001)
+
+    // advance adopted nested instances on this clock (they never own a raf loop)
+    if (this.nestedInstances.size > 0) {
+      for (const child of this.nestedInstances) {
+        child.raf(time)
+      }
+
+      // destroy instances whose element left the DOM (unmounted modals,
+      // recycled list nodes), checked about once a second
+      if (++this._nestedSweepFrame >= 60) {
+        this._nestedSweepFrame = 0
+        this.sweepNestedInstances()
+      }
+    }
 
     if (this.options.autoRaf) {
       this._rafId = requestAnimationFrame(this.raf)
@@ -951,6 +1044,107 @@ export class Lenis {
     requestAnimationFrame(() => {
       this._preventNextNativeScrollEvent = false
     })
+  }
+
+  /**
+   * Destroy adopted instances whose element left the DOM. `destroy` cascades,
+   * so the adopted instances of an unmounted subtree go with it.
+   */
+  private sweepNestedInstances() {
+    for (const child of this.nestedInstances) {
+      if (!child.rootElement.isConnected) {
+        this.nestedInstances.delete(child)
+        child.destroy()
+      }
+    }
+  }
+
+  /** Whether a nested scroller can be adopted by `allowNestedScroll: 'smooth'` */
+  private isNestedAdoptable(element: HTMLElement) {
+    // one instance per element, manual instances included
+    if (instancesRegistry.has(element)) return false
+    // form fields and editable content keep their native scroll
+    if (
+      element instanceof HTMLInputElement ||
+      element instanceof HTMLTextAreaElement ||
+      element instanceof HTMLSelectElement ||
+      element.isContentEditable
+    )
+      return false
+
+    return true
+  }
+
+  /**
+   * `allowNestedScroll: 'smooth'`: mount a Lenis instance on the nested scroller
+   * the user just scrolled, with this instance's config (including
+   * `allowNestedScroll`, so it recurses), and hand it the in-flight gesture.
+   * The child is advanced by this instance's raf and destroyed with it.
+   */
+  private adoptNestedScroller(element: HTMLElement, data: VirtualScrollData) {
+    // orientation comes from the element's scrollable axis, not the parent.
+    // An element scrollable both ways is smoothed vertically; its horizontal
+    // gestures stay native.
+    const style = getComputedStyle(element)
+    const isScrollableX =
+      ['auto', 'overlay', 'scroll'].includes(style.overflowX) &&
+      element.scrollWidth > element.clientWidth
+    const isScrollableY =
+      ['auto', 'overlay', 'scroll'].includes(style.overflowY) &&
+      element.scrollHeight > element.clientHeight
+    const orientation =
+      isScrollableX && !isScrollableY ? 'horizontal' : 'vertical'
+
+    // the constructor sets this global for horizontal instances; an adopted
+    // carousel should not mark the page as horizontal
+    const isPageHorizontal = window.lenis?.horizontal
+
+    const child = new Lenis({
+      wrapper: element,
+      content: element.firstElementChild ?? element,
+      eventsTarget: element,
+      orientation,
+      gestureOrientation: orientation,
+      smoothWheel: this.options.smoothWheel,
+      syncTouch: this.options.syncTouch,
+      syncTouchLerp: this.options.syncTouchLerp,
+      touchInertiaExponent: this.options.touchInertiaExponent,
+      duration: this.options.duration,
+      easing: this.options.easing,
+      lerp: this.options.lerp,
+      touchMultiplier: this.options.touchMultiplier,
+      wheelMultiplier: this.options.wheelMultiplier,
+      autoResize: this.options.autoResize,
+      prevent: this.options.prevent,
+      overscroll: this.options.overscroll,
+      allowNestedScroll: this.options.allowNestedScroll,
+      naiveDimensions: this.options.naiveDimensions,
+      respectReducedMotion: this.options.respectReducedMotion,
+      // page-level concerns stay on the instance the user created
+      infinite: false,
+      anchors: false,
+      autoToggle: false,
+      stopInertiaOnNavigate: false,
+      // driven by this instance's raf: an own loop would outlive the element
+      autoRaf: false,
+    })
+    child._isAdopted = true
+
+    if (window.lenis) window.lenis.horizontal = isPageHorizontal
+
+    this.nestedInstances.add(child)
+
+    // For touch, seed the child's tracking with this instance's last touch
+    // position so its next touchmove delta is continuous (it never saw the
+    // touchstart).
+    if (data.event.type.includes('touch')) {
+      child.virtualScroll.touchStart.x = this.virtualScroll.touchStart.x
+      child.virtualScroll.touchStart.y = this.virtualScroll.touchStart.y
+      child.virtualScroll.lastDelta.x = this.virtualScroll.lastDelta.x
+      child.virtualScroll.lastDelta.y = this.virtualScroll.lastDelta.y
+    }
+
+    child.onVirtualScroll(data)
   }
 
   private hasNestedScroll(
