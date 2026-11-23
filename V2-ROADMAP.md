@@ -115,7 +115,7 @@ The CSS is the source of truth: Lenis observes the root's overflow and reacts. U
 - ✅ Removed `scrollTo`'s `force` option — `scrollTo` always executes now, so there's nothing to force past
 - ✅ Removed `scrollTo`'s `lock` option — compose `lenis.lock()` / `lenis.unlock()` via `onStart` / `onComplete` instead
 - ✅ `isLocked` narrowed — now only suppresses user wheel/touch input (and tap-to-stop); programmatic `scrollTo` is unaffected. Toggled solely via `lock()` / `unlock()` (no longer cleared by `reset()`)
-- ⏳ Document the pattern: set `overflow: hidden` / `clip` on the root to pause, remove it to resume
+- ✅ Document the pattern: set `overflow: hidden` / `clip` on the root to pause, remove it to resume (README "Pausing scroll")
 - Migration:
   - `start()` / `stop()` → flip a CSS overflow property
   - `scrollTo(t, { force: true })` → `scrollTo(t)`

@@ -433,9 +433,11 @@ export class Lenis {
   }
 
   /**
-   * Lock scrolling — user-initiated wheel/touch gestures are suppressed on both
-   * axes. Programmatic `scrollTo` still runs (matches the "scrollTo always runs"
-   * policy). Pair with {@link unlock}.
+   * Lock gestures — the user gestures Lenis would smooth scroll (wheel, touch,
+   * drag) are suppressed on both axes. Native scrolling (keyboard, scrollbar)
+   * and programmatic `scrollTo` still run. Not a replacement for v1 `stop()`:
+   * to pause scrolling, toggle the wrapper's CSS `overflow` (see
+   * {@link isScrollable}). Pair with {@link unlock}.
    */
   lock() {
     this.isLocked = true
@@ -654,7 +656,8 @@ export class Lenis {
   }
 
   /**
-   * Whether user-initiated scrolling is suppressed. Instance-wide and
+   * Whether Lenis-handled gestures (wheel, touch, drag) are suppressed. Native
+   * scrolling is unaffected; v1's `isStopped` is `!isScrollable`. Instance-wide and
    * all-or-nothing — both axes are locked together or neither is. Set via
    * {@link lock} / {@link unlock} or a `scrollTo({ lock: true })` (for the
    * lifetime of that scroll). Programmatic `scrollTo` runs regardless.
