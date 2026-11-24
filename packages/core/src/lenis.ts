@@ -46,6 +46,8 @@ export class Lenis {
   /** True while the lock is held by a `scrollTo({ lock: true })` operation (vs a manual `lock()`), so `reset` can release it if the operation is interrupted mid-flight. */
   private _scrollToLocked = false
   private _preventNextNativeScrollEvent = false
+  /** True once a native scroll event arrived during the current `'native'` phase. A gesture alone starts that phase too, and may never scroll the page (at a limit, cancelled). */
+  private _hasNativeScrolled = false
   /** Pending frame for a scrollend dispatch — one per frame at most. @see {@link scheduleScrollendEvent} */
   private _scrollendRafId: number | null = null
   private _rafId: number | null = null
@@ -615,6 +617,8 @@ export class Lenis {
   private set isScrolling(value: Scrolling) {
     if (this._isScrolling !== value) {
       this._isScrolling = value
+      // belongs to the 'native' phase that just ended
+      if (value !== 'native') this._hasNativeScrolled = false
       this.updateClassName()
     }
   }
@@ -854,6 +858,11 @@ export class Lenis {
       // a 2D scrollTo can be animating x even in single-axis mode
       this.x.animate.stop()
       this.y.animate.stop()
+      // A gesture that doesn't scroll the page (at a limit, cancelled, blocked
+      // by `touch-action`) brings no native scroll event, so nothing would end
+      // the 'native' state. Start the settle window from the gesture itself;
+      // scroll events that follow extend it as usual.
+      this.debouncedNativeScrollReset()
       // @ts-expect-error
       event.lenisStopPropagation = true
       return
@@ -1145,28 +1154,34 @@ export class Lenis {
 
       if (this.isScrollable) {
         this.isScrolling = 'native'
+        this._hasNativeScrolled = true
       }
 
       this.emit()
     }
   }
 
-  // Runs on every native scroll event, even ones onNativeScroll ignores:
-  // no event for 400ms → settle the whole system. Re-check the state at fire
-  // time — a lerp tail can move <1px/frame and stop producing native scroll
-  // events while a smooth scrollTo is still in flight.
+  // Runs on every native scroll event, even ones onNativeScroll ignores, and
+  // on every non-smoothed gesture, which may not scroll at all: nothing for
+  // 400ms → settle the whole system. Re-check the state at fire time — a lerp
+  // tail can move <1px/frame and stop producing native scroll events while a
+  // smooth scrollTo is still in flight.
   private debouncedNativeScrollReset = debounce(() => {
     if (this.isScrolling !== 'smooth') {
-      // read before `reset`, which clears `isScrolling` to false
-      const wasNative = this.isScrolling === 'native'
+      // read before `reset`, which ends the 'native' phase and clears it
+      const hasNativeScrolled = this._hasNativeScrolled
 
       this.reset()
       this.emit()
 
+      // Only when the page scrolled: a gesture that moved nothing has no end
+      // to announce, and a browser's own `scrollend` doesn't fire for it.
       // ponytail: reuses the 400ms settle window, so the polyfilled event lands
       // later than a browser's own (~100ms). Give it its own shorter debounce if
       // that latency shows up.
-      if (wasNative && !this.supportsScrollend) this.scheduleScrollendEvent()
+      if (hasNativeScrolled && !this.supportsScrollend) {
+        this.scheduleScrollendEvent()
+      }
     }
   }, 400)
 

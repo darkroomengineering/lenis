@@ -2,11 +2,14 @@ import { clamp, damp } from './maths'
 import type { EasingFunction, FromToOptions, OnUpdateCallback } from './types'
 
 // Lerping asymptotically approaches the target but never exactly reaches it,
-// so the raw value keeps trailing very long floating-point decimals. QUANTIZE
-// snaps both value and target to a coarse grid (1/QUANTIZE) when comparing, so
-// once they're within ~0.1 the animation is considered completed and snapped to
-// the exact target — preventing an effectively infinite, never-ending animation.
-const QUANTIZE = 10
+// so the raw value keeps trailing very long floating-point decimals. Once the
+// value is within EPSILON of the target the animation is considered completed
+// and snapped to the exact target — preventing an effectively infinite,
+// never-ending animation.
+// A distance, not a comparison of both values rounded to a grid: a target on a
+// grid boundary (100.05 on a 0.1 grid) approached from below never rounds like
+// its target does, so the animation never completed.
+const EPSILON = 0.05
 
 /**
  * Animate class to handle value animations with lerping or easing
@@ -49,10 +52,7 @@ export class Animate {
       this.value = this.from + (this.to - this.from) * easedProgress
     } else if (this.lerp) {
       this.value = damp(this.value, this.to, this.lerp * 60, deltaTime)
-      if (
-        Math.round(this.value * QUANTIZE) / QUANTIZE ===
-        Math.round(this.to * QUANTIZE) / QUANTIZE
-      ) {
+      if (Math.abs(this.to - this.value) < EPSILON) {
         this.value = this.to
         completed = true
       }
