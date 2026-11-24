@@ -1,6 +1,15 @@
 import { clamp, damp } from './maths'
 import type { EasingFunction, FromToOptions, OnUpdateCallback } from './types'
 
+// Lerping asymptotically approaches the target but never exactly reaches it.
+// Once the value is within EPSILON of the target the animation is considered
+// completed and snapped to the exact target — preventing an effectively
+// infinite, never-ending animation.
+// A distance, not a comparison of both values rounded: a target on a rounding
+// boundary (100.5) approached from below never rounds like its target does,
+// so the animation never completed.
+const EPSILON = 0.5
+
 /**
  * Animate class to handle value animations with lerping or easing
  *
@@ -41,13 +50,7 @@ export class Animate {
       this.value = this.from + (this.to - this.from) * easedProgress
     } else if (this.lerp) {
       this.value = damp(this.value, this.to, this.lerp * 60, deltaTime)
-      // `damp` approaches `to` without ever reaching it, so a target on a .5
-      // boundary approached from below never rounds like the target does
-      // (100.4999… vs 100.5). The distance check finishes those too.
-      if (
-        Math.round(this.value) === Math.round(this.to) ||
-        Math.abs(this.to - this.value) < 0.5
-      ) {
+      if (Math.abs(this.to - this.value) < EPSILON) {
         this.value = this.to
         completed = true
       }
