@@ -41,7 +41,13 @@ export class Animate {
       this.value = this.from + (this.to - this.from) * easedProgress
     } else if (this.lerp) {
       this.value = damp(this.value, this.to, this.lerp * 60, deltaTime)
-      if (Math.round(this.value) === Math.round(this.to)) {
+      // `damp` approaches `to` without ever reaching it, so a target on a .5
+      // boundary approached from below never rounds like the target does
+      // (100.4999… vs 100.5). The distance check finishes those too.
+      if (
+        Math.round(this.value) === Math.round(this.to) ||
+        Math.abs(this.to - this.value) < 0.5
+      ) {
         this.value = this.to
         completed = true
       }
