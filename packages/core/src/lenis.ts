@@ -629,6 +629,9 @@ export class Lenis {
     if (!isSmooth) {
       this.isScrolling = 'native'
       this.animate.stop()
+      // a gesture that does not scroll the page (at a limit, cancelled, or
+      // blocked by `touch-action`) brings no native scroll event to end it
+      this.settleNativeScrollLater()
       // @ts-expect-error
       event.lenisStopPropagation = true
       return
@@ -728,15 +731,34 @@ export class Lenis {
 
       this.emit()
 
-      if (this.velocity !== 0) {
-        this._resetVelocityTimeout = setTimeout(() => {
-          this.lastVelocity = this.velocity
-          this.velocity = 0
-          this.isScrolling = false
-          this.emit()
-        }, 400)
-      }
+      // also when the event did not move Lenis (`velocity === 0`), or
+      // `isScrolling` stays 'native' (#550)
+      this.settleNativeScrollLater()
     }
+  }
+
+  /**
+   * End a native scroll 400ms after the last native scroll event or
+   * non-smoothed gesture
+   */
+  private settleNativeScrollLater() {
+    if (this._resetVelocityTimeout !== null) {
+      clearTimeout(this._resetVelocityTimeout)
+    }
+
+    this._resetVelocityTimeout = setTimeout(() => {
+      this._resetVelocityTimeout = null
+
+      // a smooth scroll started since then, and its completion ends it
+      if (this.isScrolling === 'smooth') return
+      // nothing to end: no emit, as before when the page did not move
+      if (this.isScrolling === false && this.velocity === 0) return
+
+      this.lastVelocity = this.velocity
+      this.velocity = 0
+      this.isScrolling = false
+      this.emit()
+    }, 400)
   }
 
   private reset() {
