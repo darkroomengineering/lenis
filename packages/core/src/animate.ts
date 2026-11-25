@@ -8,7 +8,10 @@ import type { EasingFunction, FromToOptions, OnUpdateCallback } from './types'
 // A distance, not a comparison of both values rounded: a target on a rounding
 // boundary (100.5) approached from below never rounds like its target does,
 // so the animation never completed.
-const EPSILON = 0.05
+// Half a pixel keeps the completion timing the integer rounding had (v2 is
+// stricter, at 0.05): `onComplete`, `scrollend` and a `scrollTo` lock end on
+// the same frame as before.
+const EPSILON = 0.5
 
 /**
  * Animate class to handle value animations with lerping or easing
