@@ -65,7 +65,7 @@ lenis.on('scroll', ({ scroll, velocity, direction, progress }) => {
 A custom loop replaces `autoRaf`:
 
 ```js
-const lenis = new Lenis()
+const lenis = new Lenis({ autoRaf: false })
 
 function raf(time) {
   lenis.raf(time)
@@ -122,7 +122,7 @@ import Lenis from 'lenis'
 
 gsap.registerPlugin(ScrollTrigger)
 
-const lenis = new Lenis() // autoRaf stays false
+const lenis = new Lenis({ autoRaf: false }) // the GSAP ticker drives it
 
 lenis.on('scroll', ScrollTrigger.update)
 
@@ -238,9 +238,9 @@ Read `lenis.scroll` (or `animatedScroll`) inside the render callback that runs a
 | Symptom | Fix |
 |---|---|
 | Nothing scrolls smoothly | Make sure exactly one driver calls `raf` (or `autoRaf: true`), and that the page scrolls natively without Lenis. |
-| Modal, dropdown, or code block will not scroll | `allowNestedScroll: true` (simplest, walks the DOM on each event), or mark the element with `data-lenis-prevent` (cheaper). Variants: `data-lenis-prevent-wheel`, `-touch`, `-vertical`, `-horizontal`. The `prevent: (node) => boolean` option handles elements you cannot mark up. |
+| Modal, dropdown, or code block will not scroll | `allowNestedScroll: true` (simplest, walks the DOM on each event), or mark the element with `data-lenis-prevent` (cheaper). From 1.3.29, `allowNestedScroll: 'smooth'` smooth-scrolls the nested element too, with its own Lenis instance. Variants: `data-lenis-prevent-wheel`, `-touch`, `-vertical`, `-horizontal`. The `prevent: (node) => boolean` option handles elements you cannot mark up. |
 | Anchor links jump or do nothing | `anchors: true`. For an 80px fixed header, set `scroll-padding-top: 80px` on `html` (Lenis honors it and `scroll-margin-top`) or pass `anchors: { offset: -80 }`. `offset` is added to the target position, so it must be negative to stop above it. |
-| Scroll locks when `overflow: hidden` is set on `<html>` for a modal | `autoToggle: true` with the recommended CSS, or call `lenis.stop()` and `lenis.start()` yourself. |
+| Page still scrolls behind a modal that sets `overflow: hidden` on `<html>` | `autoToggle: true` with the recommended CSS (Safari > 17.3, Chrome > 116, Firefox > 128), or call `lenis.stop()` when the modal opens and `lenis.start()` when it closes. |
 | Inertia carries over after client-side navigation | `stopInertiaOnNavigate: true`, and `lenis.scrollTo(0, { immediate: true })` on route change if the router does not reset scroll. |
 | ScrollTrigger positions are wrong or lag | Follow the GSAP section exactly: `lenis.on('scroll', ScrollTrigger.update)`, ticker `raf(time * 1000)`, `lagSmoothing(0)`, and no second driver. |
 | WebGL lags one frame behind the DOM | The renderer runs before Lenis. Put Lenis at Tempus order `-1` and the renderer after it. |
@@ -248,7 +248,7 @@ Read `lenis.scroll` (or `animatedScroll`) inside the render callback that runs a
 | Scroll-linked section stutters, with long "Recalculate style" tasks in DevTools | Layout reads or custom property writes in a scroll callback. See "Work inside scroll callbacks". |
 | Sticky element does not pin | An ancestor has `overflow: hidden` or `auto`. Use `overflow: clip`. |
 | Smooth scroll stops over an iframe | Iframes do not forward wheel events. The recommended CSS disables pointer events on iframes while Lenis is scrolling. |
-| CSS `scroll-snap` does not work | Lenis does not support CSS scroll snap. Use `lenis/snap` (`new Snap(lenis)`, then `snap.add(px)` or `snap.addElements(nodes, { align: 'start' })`). |
+| CSS `scroll-snap` does not work | Lenis does not support CSS scroll snap. Use `lenis/snap` (`import Snap from 'lenis/snap'`, `new Snap(lenis)`, then `snap.add(px)` or `snap.addElements(nodes, { align: 'start' })`). |
 | Scroll feels less smooth on Safari | Safari caps `requestAnimationFrame` at 60fps, or 30fps in Low Power Mode. That is a browser limit. |
 
 ## Options you will reach for

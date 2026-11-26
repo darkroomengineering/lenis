@@ -1,8 +1,8 @@
 import { afterEach, beforeEach, expect, test } from 'vite-plus/test'
-import { userEvent } from 'vite-plus/test/browser'
 
 import Lenis from '../index'
 import type { LenisOptions } from '../index'
+import { wheel } from './helpers'
 
 const instances: Lenis[] = []
 let content: HTMLElement
@@ -47,7 +47,7 @@ afterEach(() => {
 test('default: the page takes the wheel over a nested scroller', async () => {
   const lenis = createLenis()
 
-  await userEvent.wheel(scroller, { delta: { y: 300 } })
+  await wheel(scroller, { y: 300 })
 
   expect(lenis.targetScroll).toBe(300)
   expect(Lenis.get(scroller)).toBeUndefined()
@@ -56,7 +56,7 @@ test('default: the page takes the wheel over a nested scroller', async () => {
 test('true: a nested scroller scrolls natively and is not adopted', async () => {
   const lenis = createLenis({ allowNestedScroll: true })
 
-  await userEvent.wheel(scroller, { delta: { y: 300 } })
+  await wheel(scroller, { y: 300 })
   await wait(300)
 
   expect(lenis.targetScroll).toBe(0)
@@ -70,7 +70,7 @@ test("'smooth': the first wheel adopts the scroller and animates it", async () =
   const positions: number[] = []
   scroller.addEventListener('scroll', () => positions.push(scroller.scrollTop))
 
-  await userEvent.wheel(scroller, { delta: { y: 300 } })
+  await wheel(scroller, { y: 300 })
 
   const child = Lenis.get(scroller)
   expect(child).toBeInstanceOf(Lenis)
@@ -87,9 +87,9 @@ test("'smooth': the first wheel adopts the scroller and animates it", async () =
 test("'smooth': later wheels go to the adopted instance, not a new one", async () => {
   createLenis({ allowNestedScroll: 'smooth' })
 
-  await userEvent.wheel(scroller, { delta: { y: 100 } })
+  await wheel(scroller, { y: 100 })
   const child = Lenis.get(scroller)
-  await userEvent.wheel(scroller, { delta: { y: 100 } })
+  await wheel(scroller, { y: 100 })
 
   expect(Lenis.get(scroller)).toBe(child)
   expect(child?.targetScroll).toBe(200)
@@ -99,13 +99,13 @@ test("'smooth': later wheels go to the adopted instance, not a new one", async (
 test("'smooth': the page takes over once the scroller reaches its end", async () => {
   const lenis = createLenis({ allowNestedScroll: 'smooth' })
 
-  await userEvent.wheel(scroller, { delta: { y: 300 } })
+  await wheel(scroller, { y: 300 })
   const child = Lenis.get(scroller)!
   child.scrollTo('bottom', { immediate: true })
   scroller.scrollTop = child.limit
   await wait(100)
 
-  await userEvent.wheel(scroller, { delta: { y: 300 } })
+  await wheel(scroller, { y: 300 })
 
   expect(lenis.targetScroll).toBe(300)
 })
@@ -114,7 +114,7 @@ test("'smooth': data-lenis-prevent keeps a scroller native", async () => {
   const lenis = createLenis({ allowNestedScroll: 'smooth' })
   scroller.setAttribute('data-lenis-prevent', '')
 
-  await userEvent.wheel(scroller, { delta: { y: 300 } })
+  await wheel(scroller, { y: 300 })
   await wait(300)
 
   expect(Lenis.get(scroller)).toBeUndefined()
@@ -128,7 +128,7 @@ test("'smooth': a prevented ancestor keeps a scroller native", async () => {
   scroller.replaceWith(wrapper)
   wrapper.append(scroller)
 
-  await userEvent.wheel(scroller, { delta: { y: 300 } })
+  await wheel(scroller, { y: 300 })
 
   expect(Lenis.get(scroller)).toBeUndefined()
   expect(lenis.targetScroll).toBe(0)
@@ -141,7 +141,7 @@ test("'smooth': the prevent option keeps a scroller native", async () => {
     prevent: (node) => node === scroller,
   })
 
-  await userEvent.wheel(scroller, { delta: { y: 300 } })
+  await wheel(scroller, { y: 300 })
 
   expect(Lenis.get(scroller)).toBeUndefined()
 })
@@ -153,7 +153,7 @@ test("'smooth': a manual instance on the scroller is not adopted again", async (
     content: scroller.firstElementChild!,
   })
 
-  await userEvent.wheel(scroller, { delta: { y: 300 } })
+  await wheel(scroller, { y: 300 })
 
   expect(Lenis.get(scroller)).toBe(manual)
   expect(manual.targetScroll).toBe(300)
@@ -162,7 +162,7 @@ test("'smooth': a manual instance on the scroller is not adopted again", async (
 test("'smooth': adopted instances are destroyed with their adopter", async () => {
   const lenis = createLenis({ allowNestedScroll: 'smooth' })
 
-  await userEvent.wheel(scroller, { delta: { y: 300 } })
+  await wheel(scroller, { y: 300 })
   expect(Lenis.get(scroller)).toBeDefined()
 
   lenis.destroy()
@@ -174,7 +174,7 @@ test("'smooth': adopted instances are destroyed with their adopter", async () =>
 test("'smooth': an adopted instance is destroyed once its element leaves the DOM", async () => {
   const lenis = createLenis({ allowNestedScroll: 'smooth' })
 
-  await userEvent.wheel(scroller, { delta: { y: 300 } })
+  await wheel(scroller, { y: 300 })
   const child = Lenis.get(scroller)
   expect(child).toBeDefined()
 
@@ -190,14 +190,14 @@ test("'smooth': a horizontal scroller is adopted horizontally and leaves vertica
   document.body.prepend(scroller)
   const lenis = createLenis({ allowNestedScroll: 'smooth' })
 
-  await userEvent.wheel(scroller, { delta: { x: 300, y: 1 } })
+  await wheel(scroller, { x: 300, y: 1 })
 
   const child = Lenis.get(scroller)
   expect(child?.isHorizontal).toBe(true)
   expect(child?.targetScroll).toBe(300)
   expect(window.lenis?.horizontal).toBeFalsy()
 
-  await userEvent.wheel(scroller, { delta: { y: 300 } })
+  await wheel(scroller, { y: 300 })
 
   expect(lenis.targetScroll).toBe(300)
   expect(child?.targetScroll).toBe(300)
@@ -211,7 +211,7 @@ test("'smooth': wheels outside nested scrollers still drive the page", async () 
   target.style.height = '100px'
   content.prepend(target)
 
-  await userEvent.wheel(target, { delta: { y: 300 } })
+  await wheel(target, { y: 300 })
 
   expect(lenis.targetScroll).toBe(300)
   expect(Lenis.get(scroller)).toBeUndefined()
