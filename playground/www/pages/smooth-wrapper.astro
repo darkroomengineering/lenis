@@ -1,0 +1,34 @@
+---
+import '~/smooth-wrapper/style.css'
+import Layout from '../layouts/Layout.astro'
+---
+
+<Layout title="Lenis Smooth wrapper">
+  <div id="smooth-wrapper">
+    <div id="smooth-content">
+      <!-- ALL YOUR CONTENT HERE -->
+      <div id="progress"></div>
+      <section id="s1">1</section>
+      <section id="s2"><div class="sticky">sticky</div>2</section>
+      <section id="s3">3 <input placeholder="focus me" /></section>
+      <section id="s4">
+        4
+        <iframe
+          id="iframe-short"
+          srcdoc="<p style=font:2rem/1.5,system-ui>short iframe: wheel here should scroll the page</p>"
+          style="border: 4px solid #0af"></iframe>
+        <iframe
+          id="iframe-tall"
+          srcdoc="<div style=height:3000px;background:linear-gradient(#0af,#f0a)><p style=font:2rem/1.5,system-ui>tall iframe: scrolls itself first, then chains to the page</p></div>"
+          style="border: 4px solid #f0a"></iframe>
+      </section>
+      <section id="s5">5</section>
+      <section id="s6">6</section>
+      <div class="fixed">fixed (inside)</div>
+    </div>
+  </div>
+  <!-- position: fixed elements can go outside -->
+  <div id="progress-root"></div>
+  <a id="anchor" href="#s6">#s6</a>
+  <script src="../../smooth-wrapper/test.ts"></script>
+</Layout>

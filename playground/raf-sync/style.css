@@ -1,0 +1,46 @@
+/* plain page: no wrapper, no lenis, the window scrolls */
+
+section {
+  height: 100vh;
+  padding: 1rem;
+  font: 700 10vw/1 system-ui, sans-serif;
+}
+
+section:nth-of-type(odd) {
+  background: #eee;
+}
+
+.box {
+  width: 160px;
+  height: 160px;
+  margin-top: 2rem;
+  display: grid;
+  place-items: center;
+  font: 0.8rem/1.4 monospace;
+  color: #fff;
+  text-align: center;
+  background: #c60;
+}
+
+#canvas {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+}
+
+/* anchored at the canvas origin; size and position come from the cached rect */
+.ghost {
+  position: absolute;
+  top: 0;
+  left: 0;
+  border: 4px solid red;
+  will-change: transform;
+}
+
+#readout {
+  position: fixed;
+  bottom: 1rem;
+  left: 1rem;
+  font: 1rem monospace;
+  background: #fff;
+}

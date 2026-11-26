@@ -1,11 +1,23 @@
 import type Lenis from 'lenis'
-import type { LenisOptions, ScrollCallback } from 'lenis'
+import type { LenisOptions } from 'lenis'
+import type LenisSync from 'lenis/sync'
+import type { LenisSyncOptions } from 'lenis/sync'
 import type { ComponentPropsWithoutRef, ReactNode } from 'react'
 
+/**
+ * What a provider exposes: `<ReactLenis>`'s Lenis or `<ReactLenisSync>`'s
+ * LenisSync. Both have `scroll`, `velocity`, `direction`, `progress`,
+ * `scrollTo` and the `scroll` event; narrow with `instanceof Lenis` before
+ * smooth-only API (`lock`, `stop`, `maxScroll`, lerped `scrollTo`).
+ */
+export type LenisInstance = Lenis | LenisSync
+
+export type LenisScrollCallback = (lenis: LenisInstance) => void
+
 export type LenisContextValue = {
-  lenis: Lenis
-  addCallback: (callback: ScrollCallback, priority: number) => void
-  removeCallback: (callback: ScrollCallback) => void
+  lenis: LenisInstance
+  addCallback: (callback: LenisScrollCallback, priority: number) => void
+  removeCallback: (callback: LenisScrollCallback) => void
 }
 
 export type LenisProps = ComponentPropsWithoutRef<'div'> & {
@@ -62,4 +74,32 @@ export type LenisRef = {
    * The lenis instance
    */
   lenis?: Lenis
+}
+
+export type LenisSyncProps = {
+  /**
+   * Register this instance in the global store so `useLenis` can reach it from
+   * anywhere in the app, like `<ReactLenis root>`.
+   * @default true
+   */
+  rootContext?: boolean
+  /**
+   * Register this instance under a name, reached via `useLenis(name)`.
+   */
+  name?: string
+  /**
+   * LenisSync options. Without `wrapper` it syncs the page (window and body).
+   */
+  options?: LenisSyncOptions
+  /**
+   * Children
+   */
+  children?: ReactNode
+}
+
+export type LenisSyncRef = {
+  /**
+   * The LenisSync instance
+   */
+  lenis?: LenisSync
 }

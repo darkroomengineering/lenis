@@ -30,6 +30,7 @@ export default defineConfig([
     entry: {
       lenis: 'packages/core/index.ts',
       'lenis-snap': 'packages/snap/index.ts',
+      'lenis-sync': 'packages/sync/index.ts',
     },
     dts: true,
     clean: true,
@@ -44,7 +45,7 @@ export default defineConfig([
     dts: { resolver: 'tsc' },
     clean: false,
     banner: '"use client";',
-    deps: { neverBundle: ['react', 'lenis'] },
+    deps: { neverBundle: ['react', 'lenis', 'lenis/sync'] },
   },
 
   // Snap React ESM

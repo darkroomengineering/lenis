@@ -1,0 +1,22 @@
+---
+import '~/raf-sync/style.css'
+import Layout from '../layouts/Layout.astro'
+---
+
+<Layout title="Raf sync">
+  <!-- no lenis: the page scrolls natively, a raf loop reads scrollY -->
+  <section id="s1">1</section>
+  <section id="s2">
+    2
+    <div id="box" class="box">raf polls scrollY<br />no scroll event</div>
+  </section>
+  <section id="s3">3</section>
+  <section id="s4">4</section>
+  <!-- #canvas: fixed above the content, like a WebGL canvas. The ghost sits
+       at document coordinates inside it and is offset by -scrollY -->
+  <div id="canvas">
+    <div id="ghost" class="ghost"></div>
+  </div>
+  <div id="readout"></div>
+  <script src="../../raf-sync/test.ts"></script>
+</Layout>

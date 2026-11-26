@@ -1,9 +1,11 @@
-import type Lenis from 'lenis'
-import type { ScrollCallback } from 'lenis'
 import { useContext, useEffect } from 'react'
 import { LenisContext } from './provider'
 import { ROOT_KEY, useRegistry } from './store'
-import type { LenisContextValue } from './types'
+import type {
+  LenisContextValue,
+  LenisInstance,
+  LenisScrollCallback,
+} from './types'
 
 // Fall back to an empty object if neither context nor registry has an instance
 const fallbackContext: Partial<LenisContextValue> = {}
@@ -15,6 +17,10 @@ const fallbackContext: Partial<LenisContextValue> = {}
  * back to the global root instance (`<ReactLenis root>` / `rootContext`).
  * Pass a name to reach a specific instance from anywhere in the app
  * (`<ReactLenis name="sidebar">` → `useLenis('sidebar')`), ignoring context.
+ *
+ * Under `<ReactLenisSync>` it resolves to a LenisSync: narrow with
+ * `instanceof Lenis` before smooth-only API (`lock`, `stop`, lerped
+ * `scrollTo`).
  *
  * @example <caption>Accessor</caption>
  *          const lenis = useLenis()
@@ -29,35 +35,35 @@ const fallbackContext: Partial<LenisContextValue> = {}
  *          useLenis('sidebar', (lenis) => {}, 1, [someDependency])
  */
 export function useLenis(
-  callback?: ScrollCallback,
+  callback?: LenisScrollCallback,
   deps?: unknown[]
-): Lenis | undefined
+): LenisInstance | undefined
 export function useLenis(
-  callback: ScrollCallback,
+  callback: LenisScrollCallback,
   priority: number,
   deps?: unknown[]
-): Lenis | undefined
+): LenisInstance | undefined
 export function useLenis(
   name: string,
-  callback?: ScrollCallback,
+  callback?: LenisScrollCallback,
   deps?: unknown[]
-): Lenis | undefined
+): LenisInstance | undefined
 export function useLenis(
   name: string,
-  callback: ScrollCallback,
+  callback: LenisScrollCallback,
   priority: number,
   deps?: unknown[]
-): Lenis | undefined
+): LenisInstance | undefined
 export function useLenis(
-  a?: ScrollCallback | string,
-  b?: ScrollCallback | number | unknown[],
+  a?: LenisScrollCallback | string,
+  b?: LenisScrollCallback | number | unknown[],
   c?: number | unknown[],
   d?: unknown[]
-): Lenis | undefined {
+): LenisInstance | undefined {
   const named = typeof a === 'string'
 
   const name = named ? a : undefined
-  const callback = (named ? b : a) as ScrollCallback | undefined
+  const callback = (named ? b : a) as LenisScrollCallback | undefined
 
   // The two args after the callback are (priority?, deps?) — but priority is
   // skippable, so the first of them is a number when priority is present and

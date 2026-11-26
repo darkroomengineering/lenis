@@ -1,0 +1,89 @@
+#smooth-wrapper {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+section {
+  height: 100vh;
+  padding: 1rem;
+  font: 700 10vw/1 system-ui, sans-serif;
+}
+
+section:nth-of-type(odd) {
+  background: #eee;
+}
+
+/* IntersectionObserver: lime outline while ≥50% visible */
+.in-view {
+  outline: 8px solid lime;
+  outline-offset: -8px;
+}
+
+/* sticky inside content — sticks to the wrapper (its scroll container) */
+.sticky {
+  position: sticky;
+  top: 0;
+  background: #f0f;
+  font-size: 1rem;
+}
+
+/* fixed inside content — no transform above it, so viewport-relative */
+.fixed {
+  position: fixed;
+  right: 1rem;
+  bottom: 1rem;
+  background: #ff0;
+  font-size: 1rem;
+}
+
+/* scroll-driven animations: red = wrapper timeline (visual), blue =
+   scroll(root) (target). Blue leads red while lerping. A bare scroll()
+   on a position: fixed element resolves to root, so name the timeline. */
+body {
+  timeline-scope: --smooth;
+}
+#smooth-wrapper {
+  scroll-timeline: --smooth y;
+}
+#progress,
+#progress-root {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 6px;
+  transform-origin: 0 0;
+  animation: grow linear both;
+}
+#progress {
+  background: red;
+  animation-timeline: --smooth;
+}
+#progress-root {
+  top: 6px;
+  background: blue;
+  animation-timeline: scroll(root);
+}
+@keyframes grow {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
+#anchor {
+  position: fixed;
+  top: 1rem;
+  right: 1rem;
+  font: 1rem system-ui, sans-serif;
+}
+
+iframe {
+  width: 100%;
+  height: 30vh;
+}

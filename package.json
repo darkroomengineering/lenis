@@ -1,6 +1,6 @@
 {
   "name": "lenis",
-  "version": "2.0.0-dev.4",
+  "version": "2.0.0-dev.6",
   "description": "How smooth scroll should be",
   "type": "module",
   "sideEffects": false,
@@ -85,6 +85,10 @@
     "./snap": {
       "types": "./dist/lenis-snap.d.ts",
       "default": "./dist/lenis-snap.mjs"
+    },
+    "./sync": {
+      "types": "./dist/lenis-sync.d.ts",
+      "default": "./dist/lenis-sync.mjs"
     },
     "./snap/react": {
       "types": "./dist/lenis-snap-react.d.ts",

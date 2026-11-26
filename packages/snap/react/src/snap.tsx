@@ -1,3 +1,4 @@
+import Lenis from 'lenis'
 import { ROOT_KEY, useLenis } from 'lenis/react'
 import type {
   OnSnapCallback,
@@ -81,7 +82,9 @@ export function ReactLenisSnap({
   name,
   ...options
 }: ReactLenisSnapProps) {
-  const lenis = useLenis()
+  const resolved = useLenis()
+  // Snap animates the scroll, which a LenisSync never does: it needs a Lenis.
+  const lenis = resolved instanceof Lenis ? resolved : undefined
 
   const [snap, setSnap] = useState<Snap>()
 
