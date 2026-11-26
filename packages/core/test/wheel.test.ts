@@ -1,7 +1,7 @@
 import { afterEach, beforeEach, expect, test } from 'vite-plus/test'
-import { userEvent } from 'vite-plus/test/browser'
 
 import Lenis from '../index'
+import { wheel } from './helpers'
 
 let lenis: Lenis | undefined
 let content: HTMLElement
@@ -25,7 +25,7 @@ test('Lenis takes the wheel and animates to the target', async () => {
   const positions: number[] = []
   lenis.on('scroll', ({ scroll }) => positions.push(scroll))
 
-  await userEvent.wheel(content, { delta: { y: 300 } })
+  await wheel(content, { y: 300 })
 
   expect(lenis.targetScroll).toBe(300)
   await expect.poll(() => window.scrollY, { timeout: 5000 }).toBe(300)
@@ -38,7 +38,7 @@ test('a stopped Lenis blocks the wheel', async () => {
   lenis = new Lenis({ autoRaf: true })
   lenis.stop()
 
-  await userEvent.wheel(content, { delta: { y: 300 } })
+  await wheel(content, { y: 300 })
   await new Promise((resolve) => setTimeout(resolve, 300))
 
   expect(window.scrollY).toBe(0)
