@@ -238,7 +238,7 @@ Read `lenis.scroll` (or `animatedScroll`) inside the render callback that runs a
 | Symptom | Fix |
 |---|---|
 | Nothing scrolls smoothly | Make sure exactly one driver calls `raf` (or `autoRaf: true`), and that the page scrolls natively without Lenis. |
-| Modal, dropdown, or code block will not scroll | `allowNestedScroll: true` (simplest, walks the DOM on each event), or mark the element with `data-lenis-prevent` (cheaper). Variants: `data-lenis-prevent-wheel`, `-touch`, `-vertical`, `-horizontal`. The `prevent: (node) => boolean` option handles elements you cannot mark up. |
+| Modal, dropdown, or code block will not scroll | `allowNestedScroll: true` (simplest, walks the DOM on each event), or mark the element with `data-lenis-prevent` (cheaper). From 1.3.29, `allowNestedScroll: 'smooth'` smooth-scrolls the nested element too, with its own Lenis instance. Variants: `data-lenis-prevent-wheel`, `-touch`, `-vertical`, `-horizontal`. The `prevent: (node) => boolean` option handles elements you cannot mark up. |
 | Anchor links jump or do nothing | `anchors: true`. For an 80px fixed header, set `scroll-padding-top: 80px` on `html` (Lenis honors it and `scroll-margin-top`) or pass `anchors: { offset: -80 }`. `offset` is added to the target position, so it must be negative to stop above it. |
 | Page still scrolls behind a modal that sets `overflow: hidden` on `<html>` | `autoToggle: true` with the recommended CSS (Safari > 17.3, Chrome > 116, Firefox > 128), or call `lenis.stop()` when the modal opens and `lenis.start()` when it closes. |
 | Inertia carries over after client-side navigation | `stopInertiaOnNavigate: true`, and `lenis.scrollTo(0, { immediate: true })` on route change if the router does not reset scroll. |
