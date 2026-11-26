@@ -437,7 +437,7 @@ export class Lenis {
       )
 
       if (hasPageLinkElementUrl) {
-        this.reset()
+        this.internalReset()
         return
       }
     }
@@ -445,7 +445,7 @@ export class Lenis {
 
   private onPointerDown = (event: PointerEvent | MouseEvent) => {
     if (event.button === 1) {
-      this.reset()
+      this.internalReset()
     }
   }
 
@@ -523,7 +523,7 @@ export class Lenis {
       !this.isLocked
 
     if (isTapToStop) {
-      this.reset()
+      this.internalReset()
       return
     }
 
@@ -761,12 +761,23 @@ export class Lenis {
     }, 400)
   }
 
-  private reset() {
+  private internalReset() {
     this.isLocked = false
     this.isScrolling = false
     this.animatedScroll = this.targetScroll = this.actualScroll
     this.lastVelocity = this.velocity = 0
     this.animate.stop()
+  }
+
+  /**
+   * Stop the current scroll animation where it is and sync Lenis to the page
+   *
+   * Call it before something else scrolls the page, like a client-side router
+   * on navigation, so Lenis doesn't carry on toward its previous target.
+   */
+  reset() {
+    this.internalReset()
+    this.emit()
   }
 
   /**
@@ -786,7 +797,7 @@ export class Lenis {
   private internalStart() {
     if (!this.isStopped) return
 
-    this.reset()
+    this.internalReset()
     this.isStopped = false
     this.emit()
   }
@@ -808,7 +819,7 @@ export class Lenis {
   private internalStop() {
     if (this.isStopped) return
 
-    this.reset()
+    this.internalReset()
     this.isStopped = true
     this.emit()
   }
@@ -992,7 +1003,7 @@ export class Lenis {
     if (immediate) {
       this.animatedScroll = this.targetScroll = target
       this.setScroll(this.scroll)
-      this.reset()
+      this.internalReset()
       this.preventNextNativeScrollEvent()
       this.emit()
       onComplete?.(this)
@@ -1044,7 +1055,7 @@ export class Lenis {
         if (!completed) this.emit()
 
         if (completed) {
-          this.reset()
+          this.internalReset()
           this.emit()
           onComplete?.(this)
           this.userData = {}
