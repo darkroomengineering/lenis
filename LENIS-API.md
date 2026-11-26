@@ -282,6 +282,13 @@ locked / not scrollable) — skip those when reacting to input.
 **Rule:** advance the animation by the clock `time` (ms). Called automatically when
 `autoRaf: true`; otherwise drive it yourself from a `requestAnimationFrame`/Tempus loop.
 
+### `reset()`
+**Rule:** stop the animation on every axis where it is, sync Lenis to the page's current
+scroll position, set `isScrolling` to `false` and emit one `scroll` event. An in-flight
+`scrollTo` resolves `false` and its `lock: true` is released; a manual `lock()` stays.
+For what `stopInertiaOnNavigate` cannot see: call it before a client-side router scrolls
+the page (back/forward, a navigation from code, a scroll at navigation commit).
+
 ### `resize()`
 **Rule:** force a re-measure of wrapper/content dimensions (normally automatic via the
 `ResizeObserver`).
