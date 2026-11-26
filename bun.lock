@@ -37,6 +37,9 @@
         "react": "^19.0.0",
       },
     },
+    "packages/sync": {
+      "name": "lenis-sync",
+    },
     "packages/utils": {
       "name": "lenis-utils",
     },
@@ -1277,6 +1280,8 @@
     "lenis-react": ["lenis-react@workspace:packages/react"],
 
     "lenis-snap": ["lenis-snap@workspace:packages/snap"],
+
+    "lenis-sync": ["lenis-sync@workspace:packages/sync"],
 
     "lenis-utils": ["lenis-utils@workspace:packages/utils"],
 
