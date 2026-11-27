@@ -61,9 +61,10 @@ export type ScrollToOptions = {
   /**
    * Lock the scroll to the target value
    *
-   * It holds back the gestures Lenis smooths: the wheel with `smoothWheel`,
-   * touch with `syncTouch`. A native touch or wheel scroll interrupts the
-   * scroll and frees the lock
+   * Ignored for native scrolling: it only holds back the gestures Lenis
+   * smooths (the wheel with `smoothWheel`, touch with `syncTouch`). Without
+   * `syncTouch`, a finger scrolls the page, interrupts the scroll and
+   * `onComplete` is not called
    * @default false
    */
   lock?: boolean
