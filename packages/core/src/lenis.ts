@@ -40,6 +40,8 @@ export class Lenis {
   private _resetVelocityTimeout: ReturnType<typeof setTimeout> | null = null
   private _rafId: number | null = null
   private _isDraggingSelection = false // true while a touch is dragging an iOS selection handle
+  private _isNativePanning = false // true while a finger is scrolling the page natively
+  private _isHeldByNativePan = false // true while a locked scrollTo waits for that finger to lift
   // Instances adopted via `allowNestedScroll: 'smooth'`, advanced by this instance's raf
   private readonly nestedInstances = new Set<Lenis>()
   private _nestedSweepFrame = 0 // frame counter gating the disconnect sweep
@@ -273,6 +275,7 @@ export class Lenis {
     }
 
     this.emitter.destroy()
+    this.releaseNativePanHold()
 
     if (this._resetVelocityTimeout !== null) {
       clearTimeout(this._resetVelocityTimeout)
@@ -512,6 +515,10 @@ export class Lenis {
 
     this.isTouching = event.type === 'touchstart' || event.type === 'touchmove'
 
+    if (isTouch && event.type !== 'touchmove') {
+      this._isNativePanning = false
+    }
+
     const isClickOrTap = deltaX === 0 && deltaY === 0
 
     const isTapToStop =
@@ -618,6 +625,9 @@ export class Lenis {
     if (this.isStopped || this.isLocked) {
       if (event.cancelable) {
         event.preventDefault() // this will stop forwarding the event to the parent, this is problematic
+      } else if (event.type === 'touchmove' && this.isLocked) {
+        // a native pan that had already started
+        this.holdForNativePan()
       }
       return
     }
@@ -627,6 +637,9 @@ export class Lenis {
       (this.options.smoothWheel && isWheel)
 
     if (!isSmooth) {
+      // once a native pan has started, its touchmove events are not cancelable
+      this._isNativePanning =
+        isTouch && event.type === 'touchmove' && !event.cancelable
       this.isScrolling = 'native'
       this.animate.stop()
       // a gesture that does not scroll the page (at a limit, cancelled, or
@@ -716,7 +729,12 @@ export class Lenis {
       return
     }
 
-    if (this.isScrolling === false || this.isScrolling === 'native') {
+    if (
+      this.isScrolling === false ||
+      this.isScrolling === 'native' ||
+      // the finger scrolls the page while a locked scrollTo waits for it
+      this._isHeldByNativePan
+    ) {
       const lastScroll = this.animatedScroll
       this.animatedScroll = this.targetScroll = this.actualScroll
       this.lastVelocity = this.velocity
@@ -725,7 +743,8 @@ export class Lenis {
         this.animatedScroll - lastScroll
       ) as Lenis['direction']
 
-      if (!this.isStopped) {
+      // a held scrollTo stays 'smooth': it has not ended
+      if (!this.isStopped && !this._isHeldByNativePan) {
         this.isScrolling = 'native'
       }
 
@@ -759,6 +778,45 @@ export class Lenis {
       this.isScrolling = false
       this.emit()
     }, 400)
+  }
+
+  /**
+   * Make a locked `scrollTo` wait for the finger that is scrolling the page
+   * natively.
+   *
+   * A native pan that has already started can't be taken from the finger: its
+   * `touchmove` events are not cancelable, and on iOS it puts the page back
+   * under the finger on every move, so animating against it makes the page
+   * jump back and forth. The animation starts over from where the finger
+   * leaves the page.
+   */
+  private holdForNativePan() {
+    if (this._isHeldByNativePan) return
+
+    this._isHeldByNativePan = true
+    window.addEventListener('touchend', this.onNativePanEnd, true)
+    window.addEventListener('touchcancel', this.onNativePanEnd, true)
+  }
+
+  private releaseNativePanHold() {
+    if (!this._isHeldByNativePan) return
+
+    this._isHeldByNativePan = false
+    window.removeEventListener('touchend', this.onNativePanEnd, true)
+    window.removeEventListener('touchcancel', this.onNativePanEnd, true)
+  }
+
+  private onNativePanEnd = (event: TouchEvent) => {
+    // another finger is still on the screen
+    if (event.touches.length > 0) return
+
+    this.releaseNativePanHold()
+
+    if (!this.animate.isRunning) return
+
+    this.animatedScroll = this.targetScroll = this.actualScroll
+    this.animate.from = this.animate.value = this.animatedScroll
+    this.animate.currentTime = 0
   }
 
   private internalReset() {
@@ -833,7 +891,9 @@ export class Lenis {
     const deltaTime = time - (this.time || time)
     this.time = time
 
-    this.animate.advance(deltaTime * 0.001)
+    if (!this._isHeldByNativePan) {
+      this.animate.advance(deltaTime * 0.001)
+    }
 
     // advance adopted nested instances on this clock (they never own a raf loop)
     if (this.nestedInstances.size > 0) {
@@ -1032,7 +1092,10 @@ export class Lenis {
       lerp,
       onStart: () => {
         // started
-        if (lock) this.isLocked = true
+        if (lock) {
+          this.isLocked = true
+          if (this._isNativePanning) this.holdForNativePan()
+        }
         this.isScrolling = 'smooth'
         onStart?.(this)
       },
@@ -1399,6 +1462,7 @@ export class Lenis {
   private set isLocked(value: boolean) {
     if (this._isLocked !== value) {
       this._isLocked = value
+      if (!value) this.releaseNativePanHold()
       this.updateClassName()
     }
   }
