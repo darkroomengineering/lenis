@@ -1056,6 +1056,15 @@ export class Lenis {
 
         if (completed) {
           this.internalReset()
+          // The browser rounds the position it is given, and `internalReset`
+          // reads that rounded position back. Keep the exact one, so deltas
+          // smaller than a pixel add up instead of being rounded away one by
+          // one: a precision touchpad moved slowly, a zoomed page, a small
+          // `wheelMultiplier` (#215). Only within a pixel: further away, the
+          // browser did not follow (stale limit, `infinite` wrap) and wins.
+          if (Math.abs(value - this.actualScroll) < 1) {
+            this.animatedScroll = this.targetScroll = value
+          }
           this.emit()
           onComplete?.(this)
           this.userData = {}

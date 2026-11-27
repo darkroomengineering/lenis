@@ -43,3 +43,18 @@ test('a stopped Lenis blocks the wheel', async () => {
 
   expect(window.scrollY).toBe(0)
 })
+
+test('wheel deltas smaller than a pixel add up', async () => {
+  // lerp: 1 ends each animation within a few frames
+  lenis = new Lenis({ autoRaf: true, lerp: 1 })
+
+  // A precision touchpad moved slowly: less than half a pixel per event, each
+  // one animated to its end before the next. The browser rounds every
+  // position it is given, and none of them may be lost to that (#215)
+  for (let i = 0; i < 25; i++) {
+    await wheel(content, { y: 0.4 })
+    await expect.poll(() => lenis?.isScrolling).toBe(false)
+  }
+
+  expect(Math.round(window.scrollY)).toBe(10)
+})
