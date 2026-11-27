@@ -36,6 +36,7 @@ export class Lenis {
   private _isScrolling: Scrolling = false // true when scroll is animating
   private _isStopped = false // true if user should not be able to scroll - enable/disable programmatically
   private _isLocked = false // same as isStopped but enabled/disabled when scroll reaches target
+  private _isManuallyLocked = false // between lock() and unlock()
   private _preventNextNativeScrollEvent = false
   private _resetVelocityTimeout: ReturnType<typeof setTimeout> | null = null
   private _rafId: number | null = null
@@ -834,6 +835,27 @@ export class Lenis {
   }
 
   /**
+   * Block wheel and touch gestures until `unlock()`, like
+   * `scrollTo(target, { lock: true })` does for the length of its scroll
+   *
+   * Unlike `stop()`, the page stays scrollable: `scrollTo` and native scrolling
+   * (keyboard, scrollbar, a native touch pan already under way) still run.
+   */
+  lock() {
+    this._isManuallyLocked = true
+    this.updateClassName()
+  }
+
+  /**
+   * Release the lock
+   */
+  unlock() {
+    this._isManuallyLocked = false
+    this._isLocked = false
+    this.updateClassName()
+  }
+
+  /**
    * RequestAnimationFrame for lenis
    *
    * @param time The time in ms from an external clock like `requestAnimationFrame` or Tempus
@@ -911,7 +933,8 @@ export class Lenis {
       }
     }
 
-    if ((this.isStopped || this.isLocked) && !force) return
+    // a locked scrollTo ignores the next ones, `lock()` only blocks gestures
+    if ((this.isStopped || this._isLocked) && !force) return
 
     let target: number | string | Element = _target
     let adjustedOffset = offset
@@ -1402,7 +1425,7 @@ export class Lenis {
    * Check if lenis is locked
    */
   get isLocked() {
-    return this._isLocked
+    return this._isLocked || this._isManuallyLocked
   }
 
   private set isLocked(value: boolean) {
