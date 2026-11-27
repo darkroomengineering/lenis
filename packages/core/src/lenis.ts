@@ -44,8 +44,8 @@ export class Lenis {
   // Instances adopted via `allowNestedScroll: 'smooth'`, advanced by this instance's raf
   private readonly nestedInstances = new Set<Lenis>()
   private _nestedSweepFrame = 0 // frame counter gating the disconnect sweep
-  // true on an instance created by `allowNestedScroll: 'smooth'`
-  private _isAdopted = false
+  // the instance that created this one via `allowNestedScroll: 'smooth'`
+  private _adopter: Lenis | null = null
   // `.matches` is read at scroll time so preference changes apply live, no listener needed
   private readonly reducedMotionMediaQuery = window.matchMedia(
     '(prefers-reduced-motion: reduce)'
@@ -254,10 +254,6 @@ export class Lenis {
     }
 
     instancesRegistry.set(this.rootElement, this)
-
-    if (this.options.autoRaf) {
-      this._rafId = requestAnimationFrame(this.raf)
-    }
   }
 
   /**
@@ -558,7 +554,7 @@ export class Lenis {
     // An adopted instance only takes gestures along its own axis. The others
     // go through untouched: native scroll, or the parent instance.
     if (
-      this._isAdopted &&
+      this._adopter &&
       gestureOrientation !== (this.isHorizontal ? 'horizontal' : 'vertical')
     ) {
       return
@@ -662,10 +658,9 @@ export class Lenis {
         ((this.animatedScroll > 0 && this.animatedScroll < this.limit) ||
           // adopted instances can be horizontal, so they compare their own
           // axis; others keep comparing deltaY as they always have
-          (this.animatedScroll === 0 &&
-            (this._isAdopted ? delta : deltaY) > 0) ||
+          (this.animatedScroll === 0 && (this._adopter ? delta : deltaY) > 0) ||
           (this.animatedScroll === this.limit &&
-            (this._isAdopted ? delta : deltaY) < 0)))
+            (this._adopter ? delta : deltaY) < 0)))
     ) {
       // @ts-expect-error
       event.lenisStopPropagation = true
@@ -861,14 +856,15 @@ export class Lenis {
    * @param time The time in ms from an external clock like `requestAnimationFrame` or Tempus
    */
   raf = (time: number) => {
-    const deltaTime = time - (this.time || time)
+    const lastTime = this.time || time
     this.time = time
 
-    this.animate.advance(deltaTime * 0.001)
+    this.animate.advance((time - lastTime) * 0.001)
 
     // advance adopted nested instances on this clock (they never own a raf loop)
     if (this.nestedInstances.size > 0) {
       for (const child of this.nestedInstances) {
+        child.time = lastTime
         child.raf(time)
       }
 
@@ -881,8 +877,32 @@ export class Lenis {
     }
 
     if (this.options.autoRaf) {
-      this._rafId = requestAnimationFrame(this.raf)
+      // the loop only runs while something animates, `scrollTo` starts it again
+      this._rafId = this.isAnimating ? requestAnimationFrame(this.raf) : null
     }
+  }
+
+  /** Whether this instance or one it adopted has an animation running */
+  private get isAnimating(): boolean {
+    if (this.animate.isRunning) return true
+    for (const child of this.nestedInstances) {
+      if (child.isAnimating) return true
+    }
+    return false
+  }
+
+  /** Start the `autoRaf` loop if it is idle */
+  private startRaf(): void {
+    // an adopted instance runs on its adopter's loop
+    if (this._adopter) return this._adopter.startRaf()
+    if (!this.options.autoRaf || this._rafId !== null) return
+
+    this._rafId = requestAnimationFrame((time) => {
+      // count one 60Hz frame instead of the time spent idle, which would
+      // make the animation jump
+      this.time = time - 1000 / 60
+      this.raf(time)
+    })
   }
 
   /**
@@ -1101,6 +1121,8 @@ export class Lenis {
         }
       },
     })
+
+    this.startRaf()
   }
 
   private preventNextNativeScrollEvent() {
@@ -1193,7 +1215,7 @@ export class Lenis {
       // driven by this instance's raf: an own loop would outlive the element
       autoRaf: false,
     })
-    child._isAdopted = true
+    child._adopter = this
 
     if (window.lenis) window.lenis.horizontal = isPageHorizontal
 
