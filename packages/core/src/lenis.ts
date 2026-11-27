@@ -226,6 +226,9 @@ export class Lenis {
     // Add event listeners
     this.options.wrapper.addEventListener('scroll', this.onNativeScroll)
 
+    window.addEventListener('touchend', this.onTouchRelease, true)
+    window.addEventListener('touchcancel', this.onTouchRelease, true)
+
     this.options.wrapper.addEventListener('scrollend', this.onScrollEnd, {
       capture: true,
     })
@@ -275,7 +278,8 @@ export class Lenis {
     }
 
     this.emitter.destroy()
-    this.releaseNativePanHold()
+    window.removeEventListener('touchend', this.onTouchRelease, true)
+    window.removeEventListener('touchcancel', this.onTouchRelease, true)
 
     if (this._resetVelocityTimeout !== null) {
       clearTimeout(this._resetVelocityTimeout)
@@ -515,8 +519,11 @@ export class Lenis {
 
     this.isTouching = event.type === 'touchstart' || event.type === 'touchmove'
 
-    if (isTouch && event.type !== 'touchmove') {
+    if (event.type === 'touchstart') {
+      // a new gesture: the pan before it is over, even if its end was missed
+      // (the element under the finger left the DOM)
       this._isNativePanning = false
+      this.resumeFromNativePan()
     }
 
     const isClickOrTap = deltaX === 0 && deltaY === 0
@@ -791,32 +798,29 @@ export class Lenis {
    * leaves the page.
    */
   private holdForNativePan() {
-    if (this._isHeldByNativePan) return
-
     this._isHeldByNativePan = true
-    window.addEventListener('touchend', this.onNativePanEnd, true)
-    window.addEventListener('touchcancel', this.onNativePanEnd, true)
   }
 
-  private releaseNativePanHold() {
+  private resumeFromNativePan() {
     if (!this._isHeldByNativePan) return
 
     this._isHeldByNativePan = false
-    window.removeEventListener('touchend', this.onNativePanEnd, true)
-    window.removeEventListener('touchcancel', this.onNativePanEnd, true)
-  }
-
-  private onNativePanEnd = (event: TouchEvent) => {
-    // another finger is still on the screen
-    if (event.touches.length > 0) return
-
-    this.releaseNativePanHold()
 
     if (!this.animate.isRunning) return
 
     this.animatedScroll = this.targetScroll = this.actualScroll
     this.animate.from = this.animate.value = this.animatedScroll
     this.animate.currentTime = 0
+  }
+
+  // On `window`, in the capture phase: `touchcancel` never reaches
+  // onVirtualScroll, and a `touchend` aimed at a nested scroller stops there
+  private onTouchRelease = (event: TouchEvent) => {
+    // another finger is still on the screen
+    if (event.touches.length > 0) return
+
+    this._isNativePanning = false
+    this.resumeFromNativePan()
   }
 
   private internalReset() {
@@ -1462,7 +1466,7 @@ export class Lenis {
   private set isLocked(value: boolean) {
     if (this._isLocked !== value) {
       this._isLocked = value
-      if (!value) this.releaseNativePanHold()
+      if (!value) this._isHeldByNativePan = false
       this.updateClassName()
     }
   }

@@ -60,6 +60,9 @@ export type ScrollToOptions = {
   immediate?: boolean
   /**
    * Lock the scroll to the target value
+   *
+   * A finger already scrolling the page natively can't be stopped: the scroll
+   * then starts when it lifts
    * @default false
    */
   lock?: boolean
