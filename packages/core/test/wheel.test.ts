@@ -58,6 +58,8 @@ test('wheel deltas smaller than a pixel add up', async () => {
       new WheelEvent('wheel', { deltaY: 0.25, bubbles: true, cancelable: true })
     )
     await expect.poll(() => lenis?.isScrolling).toBe(false)
+    // at rest, Lenis reports the position the browser is at
+    expect(lenis.scroll).toBe(window.scrollY)
   }
 
   expect(window.scrollY).toBe(8)
