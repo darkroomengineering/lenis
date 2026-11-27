@@ -43,3 +43,21 @@ test('a stopped Lenis blocks the wheel', async () => {
 
   expect(window.scrollY).toBe(0)
 })
+
+test('wheel deltas smaller than a pixel add up', async () => {
+  lenis = new Lenis({ autoRaf: true })
+
+  // A precision touchpad moved slowly: a quarter of a pixel per frame. Each
+  // delta used to complete its animation on its own first frame, and the
+  // browser rounded it away before the next one arrived (#215).
+  // Dispatched instead of `wheel()`: in WebKit a Playwright wheel smaller
+  // than a pixel never reaches the page.
+  for (let i = 0; i < 40; i++) {
+    content.dispatchEvent(
+      new WheelEvent('wheel', { deltaY: 0.25, bubbles: true, cancelable: true })
+    )
+    await new Promise((resolve) => requestAnimationFrame(resolve))
+  }
+
+  await expect.poll(() => window.scrollY, { timeout: 5000 }).toBe(10)
+})
