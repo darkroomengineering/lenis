@@ -41,9 +41,9 @@ export class Lenis {
   // ─── internal state ───
 
   private _isScrolling: Scrolling = false // true when scroll is animating
-  /** Instance-wide lock — both axes are locked together or neither is. @see {@link isLocked} */
+  /** The manual lock, held from `lock()` to `unlock()`. Instance-wide — both axes are locked together or neither is. @see {@link isLocked} */
   private _isLocked = false
-  /** True while the lock is held by a `scrollTo({ lock: true })` operation (vs a manual `lock()`), so `reset` can release it if the operation is interrupted mid-flight. */
+  /** The lock of a `scrollTo({ lock: true })`, held until that scroll ends or is interrupted. Kept apart from the manual lock so that neither releases the other. */
   private _scrollToLocked = false
   private _preventNextNativeScrollEvent = false
   /** True once a native scroll event arrived during the current `'native'` phase. A gesture alone starts that phase too, and may never scroll the page (at a limit, cancelled). */
@@ -682,12 +682,19 @@ export class Lenis {
    * lifetime of that scroll). Programmatic `scrollTo` runs regardless.
    */
   get isLocked() {
-    return this._isLocked
+    return this._isLocked || this._scrollToLocked
   }
 
   set isLocked(value: boolean) {
-    if (value === this._isLocked) return
     this._isLocked = value
+    // unlocking also ends the lock of a scrollTo in flight
+    if (!value) this._scrollToLocked = false
+    this.updateClassName()
+  }
+
+  private set scrollToLocked(value: boolean) {
+    if (value === this._scrollToLocked) return
+    this._scrollToLocked = value
     this.updateClassName()
   }
 
@@ -882,10 +889,7 @@ export class Lenis {
       this.y.animate.stop()
       // a locked scrollTo is over when a native pan gets here: release its
       // lock, a manual `lock()` stays
-      if (this._scrollToLocked) {
-        this._scrollToLocked = false
-        this.isLocked = false
-      }
+      this.scrollToLocked = false
       // A gesture that doesn't scroll the page (at a limit, cancelled, blocked
       // by `touch-action`) brings no native scroll event, so nothing would end
       // the 'native' state. Start the settle window from the gesture itself;
@@ -1238,10 +1242,7 @@ export class Lenis {
 
     // A reset interrupts any in-flight `scrollTo` — release its operation lock
     // (a manual `lock()` survives; only the scrollTo-scoped lock is dropped).
-    if (this._scrollToLocked) {
-      this._scrollToLocked = false
-      this.isLocked = false
-    }
+    this.scrollToLocked = false
 
     this.isScrolling = false
     this.x.reset()
@@ -1425,10 +1426,7 @@ export class Lenis {
 
     // Operation-scoped lock: suppress gestures (on both axes) for the lifetime
     // of the call, then release when it completes (or when `reset` interrupts it).
-    if (lock) {
-      this.isLocked = true
-      this._scrollToLocked = true
-    }
+    if (lock) this.scrollToLocked = true
 
     let started = false
     let pending = targets.length
@@ -1443,10 +1441,9 @@ export class Lenis {
       const handleComplete = () => {
         if (--pending > 0) return
         this.userData = {}
-        if (lock) {
-          this.isLocked = false
-          this._scrollToLocked = false
-        }
+        // also when this scroll replaced a locked one, whose lock would
+        // otherwise never be released
+        this.scrollToLocked = false
         onComplete?.(this)
         resolve(true)
       }
