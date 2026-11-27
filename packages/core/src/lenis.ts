@@ -118,6 +118,8 @@ export class Lenis {
   /** Instances adopted via `nested.mode: 'smooth'`, driven by this instance's raf. */
   private readonly nestedInstances = new Set<Lenis>()
   private _nestedSweepFrame = 0 // frame counter gating the disconnect sweep
+  /** The instance that created this one via `nested.mode: 'smooth'`. */
+  private _adopter: Lenis | null = null
 
   // ─── lifecycle ───
 
@@ -330,10 +332,6 @@ export class Lenis {
       'dragging',
       this.onDraggingChange as unknown as GestureCallback
     )
-
-    if (this.options.autoRaf) {
-      this._rafId = requestAnimationFrame(this.raf)
-    }
   }
 
   /**
@@ -471,7 +469,8 @@ export class Lenis {
    * @param time The time in ms from an external clock like `requestAnimationFrame` or Tempus
    */
   raf = (time: number) => {
-    const deltaTime = time - (this.time || time)
+    const lastTime = this.time || time
+    const deltaTime = time - lastTime
     this.time = time
 
     const xActive = this.x.advance(deltaTime * 0.001)
@@ -486,6 +485,7 @@ export class Lenis {
     // advance adopted nested instances on this clock (they never own a raf loop)
     if (this.nestedInstances.size > 0) {
       for (const child of this.nestedInstances) {
+        child.time = lastTime
         child.raf(time)
       }
 
@@ -498,8 +498,32 @@ export class Lenis {
     }
 
     if (this.options.autoRaf) {
-      this._rafId = requestAnimationFrame(this.raf)
+      // the loop only runs while something animates, `scrollTo` starts it again
+      this._rafId = this.isAnimating ? requestAnimationFrame(this.raf) : null
     }
+  }
+
+  /** Whether this instance or one it adopted has an animation running. */
+  private get isAnimating(): boolean {
+    if (this.isAnyAxisAnimating) return true
+    for (const child of this.nestedInstances) {
+      if (child.isAnimating) return true
+    }
+    return false
+  }
+
+  /** Start the `autoRaf` loop if it is idle. */
+  private startRaf(): void {
+    // an adopted instance runs on its adopter's loop
+    if (this._adopter) return this._adopter.startRaf()
+    if (!this.options.autoRaf || this._rafId !== null) return
+
+    this._rafId = requestAnimationFrame((time) => {
+      // count one 60Hz frame instead of the time spent idle, which would
+      // make the animation jump
+      this.time = time - 1000 / 60
+      this.raf(time)
+    })
   }
 
   /**
@@ -1068,6 +1092,7 @@ export class Lenis {
       autoRaf: false,
     })
 
+    child._adopter = this
     this.nestedInstances.add(child)
 
     // Hand off the in-flight gesture. For touch, seed the child's tracking
@@ -1588,6 +1613,8 @@ export class Lenis {
         }
       },
     })
+
+    this.startRaf()
   }
 
   /**
