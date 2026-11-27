@@ -2,9 +2,9 @@ import { afterEach, beforeEach, expect, test } from 'vite-plus/test'
 
 import Lenis from '../index'
 
-// A native touch pan that has already started can't be cancelled: its
-// touchmove events are not cancelable. A locked `scrollTo` waits for the finger
-// to lift instead of animating against it (#315)
+// `scrollTo(target, { lock: true })` holds back the gestures Lenis smooths.
+// Native touch (`syncTouch: false`) is not one of them: a pan that has started
+// can't be cancelled, so it interrupts the scroll instead of fighting it (#315)
 
 let lenis: Lenis | undefined
 let content: HTMLElement
@@ -27,15 +27,12 @@ const wait = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
 
 // Not `new TouchEvent()`: desktop Firefox and WebKit don't expose it
 function touch(
-  type: 'touchstart' | 'touchmove' | 'touchend' | 'touchcancel',
+  type: 'touchstart' | 'touchmove' | 'touchend',
   clientY: number,
   { cancelable = true } = {}
 ) {
   const event = new Event(type, { bubbles: true, cancelable, composed: true })
-  const touches =
-    type === 'touchend' || type === 'touchcancel'
-      ? []
-      : [{ clientX: 100, clientY }]
+  const touches = type === 'touchend' ? [] : [{ clientX: 100, clientY }]
 
   Object.defineProperties(event, {
     touches: { value: touches },
@@ -54,7 +51,19 @@ function nativePan(clientY: number, scroll: number) {
   window.scrollTo(0, scroll)
 }
 
-test('a locked scrollTo waits for a native pan to end', async () => {
+function wheel(deltaY: number) {
+  const event = new WheelEvent('wheel', {
+    deltaY,
+    bubbles: true,
+    cancelable: true,
+    composed: true,
+  })
+  content.dispatchEvent(event)
+
+  return event
+}
+
+test('a native pan interrupts a locked scrollTo and frees the lock', async () => {
   lenis = new Lenis({ autoRaf: true })
 
   touch('touchstart', 300)
@@ -69,47 +78,48 @@ test('a locked scrollTo waits for a native pan to end', async () => {
       completed = true
     },
   })
+  expect(lenis.isLocked).toBe(true)
 
   nativePan(260, 40)
+  expect(lenis.isLocked).toBe(false)
+
   await wait(100)
   nativePan(240, 60)
-  await wait(100)
+  await wait(400)
 
-  // the page stayed under the finger, and Lenis followed it
+  // the page stayed under the finger
   expect(window.scrollY).toBe(60)
   expect(lenis.scroll).toBe(60)
-  expect(lenis.isLocked).toBe(true)
   expect(completed).toBe(false)
 
   touch('touchend', 240)
 
-  await expect.poll(() => completed).toBe(true)
-  expect(window.scrollY).toBe(3000)
-  expect(lenis.isLocked).toBe(false)
+  // nothing is left locked: the next scrollTo runs
+  lenis.scrollTo(1000, { duration: 0.2 })
+  await expect.poll(() => window.scrollY).toBe(1000)
 })
 
-test('a locked scrollTo holds when the pan shows up after it started', async () => {
+test('a native touch that starts during a locked scrollTo is let through', async () => {
   lenis = new Lenis({ autoRaf: true })
 
   lenis.scrollTo(3000, { lock: true, duration: 1 })
   await expect.poll(() => window.scrollY).toBeGreaterThan(100)
 
-  nativePan(280, 50)
-  await wait(100)
-  nativePan(260, 70)
-  await wait(100)
+  touch('touchstart', 300)
+  expect(lenis.isLocked).toBe(true) // a finger that rests does not interrupt
 
-  expect(window.scrollY).toBe(70)
-  expect(lenis.isLocked).toBe(true)
+  const move = touch('touchmove', 280)
 
-  touch('touchend', 260)
+  expect(move.defaultPrevented).toBe(false)
+  expect(lenis.isLocked).toBe(false)
 
-  await expect.poll(() => lenis!.isLocked, { timeout: 3000 }).toBe(false)
-  expect(window.scrollY).toBe(3000)
+  const interruptedAt = window.scrollY
+  await wait(200)
+  expect(window.scrollY).toBe(interruptedAt)
 })
 
-test('a touch that starts during a lock is prevented, without holding', async () => {
-  lenis = new Lenis({ autoRaf: true })
+test('with syncTouch, a locked scrollTo swallows the touch', async () => {
+  lenis = new Lenis({ autoRaf: true, syncTouch: true })
 
   lenis.scrollTo(3000, { lock: true, duration: 0.3 })
 
@@ -117,56 +127,38 @@ test('a touch that starts during a lock is prevented, without holding', async ()
   const move = touch('touchmove', 280)
 
   expect(move.defaultPrevented).toBe(true)
-  // no touchend: the scroll does not wait for this finger
-  await expect.poll(() => lenis!.isLocked).toBe(false)
-  expect(window.scrollY).toBe(3000)
-})
-
-test('reset() during the hold frees the next scrollTo', async () => {
-  lenis = new Lenis({ autoRaf: true })
-
-  touch('touchstart', 300)
-  touch('touchmove', 295)
-  nativePan(280, 20)
-  lenis.scrollTo(3000, { lock: true, duration: 0.3 })
-  nativePan(260, 40)
-
-  lenis.reset()
-  expect(lenis.isLocked).toBe(false)
-
-  lenis.scrollTo(1000, { duration: 0.2 })
-  await expect.poll(() => window.scrollY).toBe(1000)
-})
-
-test('the hold ends on touchcancel too', async () => {
-  lenis = new Lenis({ autoRaf: true })
-
-  touch('touchstart', 300)
-  touch('touchmove', 295)
-  nativePan(280, 20)
-  lenis.scrollTo(3000, { lock: true, duration: 0.3 })
-  nativePan(260, 40)
-  await wait(100)
   expect(lenis.isLocked).toBe(true)
 
-  // the system took the touch over (a notification, an edge swipe)
-  touch('touchcancel', 260)
+  await expect.poll(() => lenis!.isLocked).toBe(false)
+  expect(window.scrollY).toBe(3000)
+})
+
+test('a locked scrollTo swallows the smoothed wheel', async () => {
+  lenis = new Lenis({ autoRaf: true })
+
+  lenis.scrollTo(3000, { lock: true, duration: 0.3 })
+
+  const event = wheel(-500)
+
+  expect(event.defaultPrevented).toBe(true)
+  expect(lenis.isLocked).toBe(true)
 
   await expect.poll(() => lenis!.isLocked).toBe(false)
   expect(window.scrollY).toBe(3000)
 })
 
-test('a pan whose end was missed does not hold the next locked scrollTo', async () => {
-  lenis = new Lenis({ autoRaf: true })
+test('with smoothWheel off, the wheel interrupts a locked scrollTo', async () => {
+  lenis = new Lenis({ autoRaf: true, smoothWheel: false })
 
-  touch('touchstart', 300)
-  touch('touchmove', 295)
-  nativePan(280, 20)
-  // no touchend: the element under the finger left the DOM
+  lenis.scrollTo(3000, { lock: true, duration: 1 })
+  await expect.poll(() => window.scrollY).toBeGreaterThan(100)
 
-  touch('touchstart', 300)
-  lenis.scrollTo(3000, { lock: true, duration: 0.3 })
+  const event = wheel(100)
 
-  await expect.poll(() => lenis!.isLocked).toBe(false)
-  expect(window.scrollY).toBe(3000)
+  expect(event.defaultPrevented).toBe(false)
+  expect(lenis.isLocked).toBe(false)
+
+  const interruptedAt = window.scrollY
+  await wait(200)
+  expect(window.scrollY).toBe(interruptedAt)
 })
