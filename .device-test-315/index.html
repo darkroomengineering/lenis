@@ -61,21 +61,15 @@
       const q = new URLSearchParams(location.search)
       // by-hand sequence: ?seq=0 walks through SEQ, one case per page load
       const SEQ = [
-        ['main', 'native', 'lock-during-pan', 'none'],
-        ['v2', 'native', 'lock-during-pan', 'none'],
-        ['main', 'smooth', 'lock-during-pan', 'none'],
-        ['main', 'native', 'stop-during-pan', 'none'],
-        ['main', 'native', 'lock-during-pan', 'hidden'],
-        ['main', 'native', 'lock-during-pan', 'clip'],
-        ['main', 'native', 'lock-during-pan', 'hidden-frame'],
-        ['main-fix', 'native', 'lock-during-pan', 'none'],
-        ['v2-fix', 'native', 'lock-during-pan', 'none'],
-        ['main', 'native', 'lock-during-pan', 'none'],
-        ['main-fix', 'native', 'lock-during-pan', 'none'],
-        ['main', 'native', 'lock-before-move', 'none'],
-        ['main', 'native', 'lock-during-momentum', 'none'],
-        ['main', 'native', 'lock-during-momentum', 'lockstart-hidden'],
-        ['main-fix', 'native', 'lock-during-momentum', 'none'],
+        ['main-hold', 'native', 'lock-during-pan', 'none'],
+        ['v2-hold', 'native', 'lock-during-pan', 'none'],
+        ['main-hold', 'native', 'lock-during-pan', 'none'],
+        ['v2-hold', 'native', 'lock-during-pan', 'none'],
+        ['main-hold', 'smooth', 'lock-during-pan', 'none'],
+        ['main-hold', 'native', 'lock-before-move', 'none'],
+        ['main-hold', 'native', 'lock-during-momentum', 'none'],
+        ['main', 'native', 'lock-during-pan', 'both-hidden'],
+        ['main', 'native', 'native-smooth-during-pan', 'none'],
       ]
       const seq = q.has('seq') ? Number(q.get('seq')) : null
       const session = q.get('session') || String(Date.now())
@@ -91,6 +85,7 @@
       const interrupt = preset?.[3] ?? (q.get('interrupt') || 'none')
       const run = q.get('run') || ''
       const isV2 = build.startsWith('v2')
+      const isHold = build.endsWith('-hold')
 
       const START = 3000
       const TARGET = 6000
@@ -187,6 +182,14 @@
           undo = set(root, 'overflow', 'hidden')
         else if (kind === 'clip') undo = set(root, 'overflow', 'clip')
         else if (kind === 'body-hidden') undo = set(document.body, 'overflow', 'hidden')
+        else if (kind === 'both-hidden') {
+          const undoRoot = set(root, 'overflow', 'hidden')
+          const undoBody = set(document.body, 'overflow', 'hidden')
+          undo = () => {
+            undoRoot()
+            undoBody()
+          }
+        }
         else if (kind === 'touchaction') undo = set(root, 'touch-action', 'none')
         else return
         restoreInterrupt = () => {
@@ -206,7 +209,13 @@
         state.yAtTrigger = y()
         if (seq !== null) {
           hud.className = 'big running'
-          hud.textContent = `${label}\n${kase === 'lock-during-momentum' ? 'wait…' : 'KEEP DRAGGING up and down'}`
+          hud.textContent = `${label}\n${
+            kase === 'lock-during-momentum'
+              ? 'wait…'
+              : isHold && touch === 'native' && kase === 'lock-during-pan'
+                ? 'Keep dragging 2 more seconds, then LIFT your finger'
+                : 'KEEP DRAGGING up and down'
+          }`
         }
         if (kase === 'stop-during-pan') {
           // reference: v1 stop() puts `overflow: clip` on the root through lenis.css
@@ -218,6 +227,15 @@
             state.tComplete = now()
             finish()
           }, 1500)
+          return
+        }
+        if (kase === 'native-smooth-during-pan') {
+          // the browser's own smooth scroll, no Lenis animation
+          window.scrollTo({ top: TARGET, behavior: 'smooth' })
+          setTimeout(() => {
+            state.tComplete = now()
+            finish()
+          }, 2500)
           return
         }
         const lock = kase !== 'nolock-during-pan'
@@ -237,11 +255,18 @@
             state.scrollToResult = value
           })
         }
-        // if it never completes (cancelled), still report
-        setTimeout(finish, DURATION * 1000 + 1200)
+        // if it never completes (cancelled), still report. A held scrollTo
+        // only starts when the finger lifts, so count from there.
+        const fallback = () => {
+          const since = touchActive ? 0 : now() - Math.max(state.tTrigger, state.tTouchEnd ?? 0)
+          if (since >= DURATION * 1000 + 1200 || now() - state.tTrigger > 20000) finish()
+          else setTimeout(fallback, 300)
+        }
+        setTimeout(fallback, DURATION * 1000 + 1200)
       }
 
       let moves = 0
+      let touchActive = false
       const onTouch = (event) => {
         const t = now()
         if (state.t0 === null) state.t0 = t
@@ -257,6 +282,13 @@
           ])
         }
 
+        if (event.type === 'touchstart') touchActive = true
+        if (event.type === 'touchend' || event.type === 'touchcancel') {
+          touchActive = event.touches.length > 0
+          if (isHold && state.tTrigger !== null && seq !== null && !finished) {
+            hud.textContent = `${label}\nWATCH: it should now scroll to 6000`
+          }
+        }
         if (event.type === 'touchstart') {
           if (kase === 'lock-before-move') setTimeout(trigger, 200)
           if (kase === 'control') setTimeout(finish, 4500)
@@ -267,13 +299,14 @@
             moves === 6 &&
             (kase === 'lock-during-pan' ||
               kase === 'nolock-during-pan' ||
+              kase === 'native-smooth-during-pan' ||
               kase === 'stop-during-pan')
           )
             trigger()
           if (
             lenis.isLocked &&
             !event.cancelable &&
-            ['hidden', 'clip', 'hidden-frame', 'body-hidden', 'touchaction'].includes(interrupt)
+            ['hidden', 'clip', 'hidden-frame', 'body-hidden', 'both-hidden', 'touchaction'].includes(interrupt)
           )
             applyInterrupt(interrupt)
         }
@@ -310,8 +343,26 @@
         const movesIn = touches.filter(
           (t) => t[1] === 'touchmove' && t[0] >= from && t[0] <= to
         )
+        // conflict: Lenis wrote this frame and the one before, yet the page
+        // sat far from where Lenis left it (50 px: above the one-frame
+        // read-back lag iOS shows at this speed, about 25 px)
+        let conflictFrames = 0
+        let maxConflictPx = 0
+        let writeFrames = 0
+        for (let i = 1; i < inWindow.length; i++) {
+          const wrote = Math.abs(inWindow[i][2] - inWindow[i][1]) > 0.5
+          const wrotePrev = Math.abs(inWindow[i - 1][2] - inWindow[i - 1][1]) > 0.5
+          if (wrote) writeFrames++
+          if (wrote && wrotePrev && Math.abs(inWindow[i][6]) > 50) {
+            conflictFrames++
+            maxConflictPx = Math.max(maxConflictPx, Math.abs(inWindow[i][6]))
+          }
+        }
         const summary = {
           ...state,
+          writeFrames,
+          conflictFrames,
+          maxConflictPx,
           yFinal: y(),
           yAtFirstTouch: frames[0]?.[1],
           framesInWindow: inWindow.length,
@@ -350,7 +401,7 @@
           window.__done = true
           hud.textContent =
             `${build} · touch=${touch} · ${kase} · interrupt=${interrupt}\n` +
-            `DONE fightFrames=${summary.fightFrames}/${summary.framesInWindow} ` +
+            `DONE conflict=${summary.conflictFrames} max=${summary.maxConflictPx}px fightFrames=${summary.fightFrames}/${summary.framesInWindow} ` +
             `maxFight=${summary.maxFightPx}px reversals=${summary.scrollReversals} ` +
             `nonCancelable=${summary.touchmovesInWindowNotCancelable}/${summary.touchmovesInWindow} ` +
             `yFinal=${summary.yFinal} completed=${state.tComplete !== null}`
@@ -387,7 +438,9 @@
             ? 'Touch and HOLD STILL until this turns yellow, then drag up and down'
             : kase === 'lock-during-momentum'
               ? 'FLICK up once, hard, and let go'
-              : 'Put a finger down and DRAG up and down slowly, without stopping, until this turns green')
+              : isHold && touch === 'native' && kase === 'lock-during-pan'
+                ? 'DRAG up and down slowly. When this turns yellow, drag 2 more seconds, then LIFT'
+                : 'Put a finger down and DRAG up and down slowly, without stopping, until this turns green')
       }
       window.__ready = true
     </script>
