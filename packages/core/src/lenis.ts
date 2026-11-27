@@ -40,6 +40,7 @@ export class Lenis {
   private _resetVelocityTimeout: ReturnType<typeof setTimeout> | null = null
   private _rafId: number | null = null
   private _isDraggingSelection = false // true while a touch is dragging an iOS selection handle
+  private _touchTravel = 0 // px the current touch has scrolled
   // Instances adopted via `allowNestedScroll: 'smooth'`, advanced by this instance's raf
   private readonly nestedInstances = new Set<Lenis>()
   private _nestedSweepFrame = 0 // frame counter gating the disconnect sweep
@@ -511,6 +512,7 @@ export class Lenis {
     }
 
     this.isTouching = event.type === 'touchstart' || event.type === 'touchmove'
+    if (event.type === 'touchstart') this._touchTravel = 0
 
     const isClickOrTap = deltaX === 0 && deltaY === 0
 
@@ -668,6 +670,26 @@ export class Lenis {
 
     const isSyncTouch = isTouch && this.options.syncTouch
     const isTouchEnd = isTouch && event.type === 'touchend'
+
+    // A browser that starts to pan a touch fires `pointercancel`, which is how
+    // a tap built on pointer events (Motion's `onTap`, Framer links on iOS)
+    // knows not to fire. We prevent that pan, so fire it ourselves, once the
+    // touch has scrolled further than a tap would.
+    if (isSyncTouch && !isTouchEnd) {
+      const travel = this._touchTravel
+      this._touchTravel += Math.hypot(deltaX, deltaY)
+
+      if (travel < 10 && this._touchTravel >= 10) {
+        event.target?.dispatchEvent(
+          new PointerEvent('pointercancel', {
+            bubbles: true,
+            composed: true,
+            pointerType: 'touch',
+            isPrimary: true,
+          })
+        )
+      }
+    }
 
     const hasTouchInertia = isTouchEnd
 
