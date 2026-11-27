@@ -453,6 +453,18 @@ export class Lenis {
   }
 
   /**
+   * Stop the current scroll animation where it is and sync Lenis to the page.
+   * An interrupted `scrollTo` resolves `false`, and a manual {@link lock} stays.
+   *
+   * Call it before something else scrolls the page, like a client-side router
+   * on navigation, so Lenis doesn't carry on toward its previous target.
+   */
+  reset() {
+    this.internalReset()
+    this.emit()
+  }
+
+  /**
    * RequestAnimationFrame for lenis
    *
    * @param time The time in ms from an external clock like `requestAnimationFrame` or Tempus
@@ -495,7 +507,7 @@ export class Lenis {
   resize() {
     this.scrollingBox.resize()
     this.sweepNestedInstances()
-    this.reset()
+    this.internalReset()
     this.emit()
   }
 
@@ -775,7 +787,7 @@ export class Lenis {
     // and lenis/snap snaps on it) — not ignored, just nothing to scroll.
     if (isTapToStop) {
       emitGesture()
-      this.reset()
+      this.internalReset()
       return
     }
 
@@ -1122,7 +1134,7 @@ export class Lenis {
       )
 
       if (hasPageLinkElementUrl) {
-        this.reset()
+        this.internalReset()
         return
       }
     }
@@ -1130,7 +1142,7 @@ export class Lenis {
 
   private onPointerDown = (event: PointerEvent | MouseEvent) => {
     if (event.button === 1) {
-      this.reset()
+      this.internalReset()
     }
   }
 
@@ -1173,7 +1185,7 @@ export class Lenis {
       // read before `reset`, which ends the 'native' phase and clears it
       const hasNativeScrolled = this._hasNativeScrolled
 
-      this.reset()
+      this.internalReset()
       this.emit()
 
       // Only when the page scrolled: a gesture that moved nothing has no end
@@ -1204,10 +1216,10 @@ export class Lenis {
     // The other axis may still be mid-flight (multi-axis): leave it and its
     // scrollTo lock alone. Otherwise settle instance state — isScrolling and
     // the lenis-scrolling/lenis-smooth classes, the scrollTo lock, the debounce
-    if (!this.isAnyAxisAnimating) this.reset()
+    if (!this.isAnyAxisAnimating) this.internalReset()
   }
 
-  private reset() {
+  private internalReset() {
     this.debouncedNativeScrollReset.cancel()
 
     // A reset interrupts any in-flight `scrollTo` — release its operation lock
