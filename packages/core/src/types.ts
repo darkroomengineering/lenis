@@ -105,7 +105,13 @@ export type ScrollToOptions = {
    */
   userData?: UserData
   /**
-   * Lock the scroll to the target value
+   * Lock the scroll to the target value: the user can't scroll until it is
+   * reached
+   *
+   * It can't stop a native touch scroll that is already under way (touch
+   * without `touch.smooth`): the finger then wins, the scroll is cancelled and
+   * the promise resolves `false`. Use `touch.smooth` for a lock that always
+   * holds
    * @default false
    */
   lock?: boolean
