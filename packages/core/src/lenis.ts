@@ -40,10 +40,6 @@ export class Lenis {
   private _resetVelocityTimeout: ReturnType<typeof setTimeout> | null = null
   private _rafId: number | null = null
   private _isDraggingSelection = false // true while a touch is dragging an iOS selection handle
-  // The fraction of a pixel the browser rounded away from where the last
-  // gesture ended. At rest `scroll` is the browser's position, so the fraction
-  // waits here and the next gesture gets it back (#215).
-  private _subpixel = 0
   // Instances adopted via `allowNestedScroll: 'smooth'`, advanced by this instance's raf
   private readonly nestedInstances = new Set<Lenis>()
   private _nestedSweepFrame = 0 // frame counter gating the disconnect sweep
@@ -681,10 +677,7 @@ export class Lenis {
         Math.abs(this.velocity) ** this.options.touchInertiaExponent
     }
 
-    const subpixel = this._subpixel
-    this._subpixel = 0
-
-    this.scrollTo(this.targetScroll + delta + subpixel, {
+    this.scrollTo(this.targetScroll + delta, {
       programmatic: false,
       ...(isSyncTouch
         ? {
@@ -728,8 +721,6 @@ export class Lenis {
       this.animatedScroll = this.targetScroll = this.actualScroll
       this.lastVelocity = this.velocity
       this.velocity = this.animatedScroll - lastScroll
-      // something else moved the page: the fraction no longer belongs there
-      if (this.velocity !== 0) this._subpixel = 0
       this.direction = Math.sign(
         this.animatedScroll - lastScroll
       ) as Lenis['direction']
@@ -775,7 +766,6 @@ export class Lenis {
     this.isScrolling = false
     this.animatedScroll = this.targetScroll = this.actualScroll
     this.lastVelocity = this.velocity = 0
-    this._subpixel = 0
     this.animate.stop()
   }
 
@@ -1066,15 +1056,6 @@ export class Lenis {
 
         if (completed) {
           this.internalReset()
-          // The browser rounds the position it is given, and `internalReset`
-          // reads that rounded position back. Keep what a gesture lost to it,
-          // so deltas smaller than a pixel add up instead of being rounded
-          // away one by one: a precision touchpad moved slowly, a zoomed
-          // page, a small `wheelMultiplier` (#215). Only within a pixel:
-          // further away, the browser did not follow (stale limit, `infinite`
-          // wrap) and nothing is owed.
-          const lost = value - this.actualScroll
-          if (!programmatic && Math.abs(lost) < 1) this._subpixel = lost
           this.emit()
           onComplete?.(this)
           this.userData = {}

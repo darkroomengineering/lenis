@@ -8,10 +8,12 @@ import type { EasingFunction, FromToOptions, OnUpdateCallback } from './types'
 // A distance, not a comparison of both values rounded: a target on a rounding
 // boundary (100.5) approached from below never rounds like its target does,
 // so the animation never completed.
-// The same value as on v2, smaller than a device pixel on any screen. Smaller
-// only makes the invisible end of the animation longer: at the default lerp,
-// each division by 10 holds `isScrolling`, `onComplete`, `scrollend` and a
-// `scrollTo` lock about 0.4s more.
+// The same value as on v2, smaller than a device pixel on any screen. At half
+// a pixel, a wheel delta smaller than that completed on its first frame and
+// the browser rounded it away, so a slow stream of them never moved the page
+// (#215). Smaller only makes the invisible end of the animation longer: at
+// the default lerp, each division by 10 holds `isScrolling`, `onComplete`,
+// `scrollend` and a `scrollTo` lock about 0.4s more.
 const EPSILON = 0.05
 
 /**
