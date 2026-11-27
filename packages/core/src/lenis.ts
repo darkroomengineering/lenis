@@ -619,12 +619,14 @@ export class Lenis {
       (this.options.syncTouch && isTouch) ||
       (this.options.smoothWheel && isWheel)
 
-    // The lock only holds back the gestures Lenis smooths: those it can
-    // swallow. A native touch pan can't be stopped once it started (its
+    // A native touch pan that is already under way can't be stopped: its
     // touchmove events are not cancelable, and on iOS the page follows the
-    // finger whatever is written to it), so a native gesture goes through and
-    // interrupts the scroll like it does without a lock (#315)
-    if (this.isStopped || (this.isLocked && isSmooth)) {
+    // finger whatever is written to it. The lock yields to it instead of
+    // animating against the finger (#315)
+    const isNativePan =
+      !isSmooth && event.type === 'touchmove' && !event.cancelable
+
+    if (this.isStopped || (this.isLocked && !isNativePan)) {
       if (event.cancelable) {
         event.preventDefault() // this will stop forwarding the event to the parent, this is problematic
       }
@@ -633,7 +635,7 @@ export class Lenis {
 
     if (!isSmooth) {
       this.isScrolling = 'native'
-      // the scrollTo that held the lock is over
+      // a locked scrollTo is over when a native pan gets here
       this.isLocked = false
       this.animate.stop()
       // a gesture that does not scroll the page (at a limit, cancelled, or
