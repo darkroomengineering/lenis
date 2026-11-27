@@ -59,7 +59,12 @@ export type ScrollToOptions = {
    */
   immediate?: boolean
   /**
-   * Lock the scroll to the target value
+   * Lock the scroll to the target value: the user can't scroll until it is
+   * reached
+   *
+   * It can't stop a native touch scroll that is already under way (touch
+   * without `syncTouch`): the finger then wins, the scroll is cancelled and
+   * `onComplete` is not called. Use `syncTouch` for a lock that always holds
    * @default false
    */
   lock?: boolean
