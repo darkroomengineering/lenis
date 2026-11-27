@@ -86,6 +86,8 @@ lenis.scrollTo(0, { immediate: true }) // snap to top, no tween
 - All-or-nothing and instance-wide (see [`isLocked`](#islocked--getset-boolean)); a
   partial `scrollTo({ x }, { lock: true })` still locks the whole instance.
 - Programmatic scrolls still run while locked — `lock` only gates **gestures**.
+- A manual [`lock()`](#lock--unlock) is a separate lock: it is still held when this scroll
+  ends.
 
 ```ts
 lenis.scrollTo(1000, { lock: true }) // user can't wheel-interrupt this scroll
