@@ -850,8 +850,21 @@ export class Lenis {
     }
 
     if (this.options.autoRaf) {
-      this._rafId = requestAnimationFrame(this.raf)
+      // only keep the loop alive while something animates, startAutoRaf resumes it
+      this._rafId = this.animate.isRunning
+        ? requestAnimationFrame(this.raf)
+        : null
     }
+  }
+
+  private startAutoRaf() {
+    if (!this.options.autoRaf || this._rafId !== null) return
+
+    this._rafId = requestAnimationFrame((time) => {
+      // the loop was idle, advance one frame instead of the whole idle gap
+      this.time = time - 1000 / 60
+      this.raf(time)
+    })
   }
 
   /**
@@ -1069,6 +1082,8 @@ export class Lenis {
         }
       },
     })
+
+    this.startAutoRaf()
   }
 
   private preventNextNativeScrollEvent() {
