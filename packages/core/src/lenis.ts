@@ -438,8 +438,9 @@ export class Lenis {
 
   /**
    * Lock gestures — the user gestures Lenis would smooth scroll (wheel, touch,
-   * drag) are suppressed on both axes. Native scrolling (keyboard, scrollbar)
-   * and programmatic `scrollTo` still run. Not a replacement for v1 `stop()`:
+   * drag) are suppressed on both axes. Native scrolling (keyboard, scrollbar,
+   * a native touch pan already under way) and programmatic `scrollTo` still
+   * run. Not a replacement for v1 `stop()`:
    * to pause scrolling, toggle the wrapper's CSS `overflow` (see
    * {@link isScrollable}). Pair with {@link unlock}.
    */
@@ -847,24 +848,31 @@ export class Lenis {
 
     if (isUnknownGesture) return emitGesture(true)
 
-    // Emit before the lock gate: an observer may lock in response (a lenis/snap
-    // grab starts its own scrollTo) and the gate then swallows this very
-    // gesture instead of applying it on top — which would cancel that scrollTo
-    // and leave the lock held. The flag reflects the pre-emit decision.
-    emitGesture(!this.isScrollable || this.isLocked)
-
-    if (!this.isScrollable || this.isLocked) {
-      if (event.cancelable) {
-        event.preventDefault() // this will stop forwarding the event to the parent, this is problematic
-      }
-      return
-    }
-
     const isSmooth =
       (this.options.touch.smooth && this.isTouch) ||
       (this.options.wheel.smooth && this.isWheel) ||
       // drag gestures only arrive when enabled, and dragging is inherently smooth
       this.isDrag
+
+    // A native touch pan that is already under way can't be stopped: its
+    // touchmove events are not cancelable, and on iOS the page follows the
+    // finger whatever is written to it. The lock yields to it instead of
+    // animating against the finger (#315)
+    const isNativePan =
+      !isSmooth && event.type === 'touchmove' && !event.cancelable
+
+    // Emit before the lock gate: an observer may lock in response (a lenis/snap
+    // grab starts its own scrollTo) and the gate then swallows this very
+    // gesture instead of applying it on top — which would cancel that scrollTo
+    // and leave the lock held. The flag reflects the pre-emit decision.
+    emitGesture(!this.isScrollable || (this.isLocked && !isNativePan))
+
+    if (!this.isScrollable || (this.isLocked && !isNativePan)) {
+      if (event.cancelable) {
+        event.preventDefault() // this will stop forwarding the event to the parent, this is problematic
+      }
+      return
+    }
 
     if (!isSmooth) {
       this.isScrolling = 'native'
@@ -872,6 +880,12 @@ export class Lenis {
       // a 2D scrollTo can be animating x even in single-axis mode
       this.x.animate.stop()
       this.y.animate.stop()
+      // a locked scrollTo is over when a native pan gets here: release its
+      // lock, a manual `lock()` stays
+      if (this._scrollToLocked) {
+        this._scrollToLocked = false
+        this.isLocked = false
+      }
       // A gesture that doesn't scroll the page (at a limit, cancelled, blocked
       // by `touch-action`) brings no native scroll event, so nothing would end
       // the 'native' state. Start the settle window from the gesture itself;
